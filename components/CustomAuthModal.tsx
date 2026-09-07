@@ -15,12 +15,10 @@ export default function CustomAuthModal({ isOpen, onClose }: CustomAuthModalProp
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Hook Google OAuth
   const { initOAuth } = useLoginWithOAuth({
     onComplete: () => onClose(),
   });
 
-  // Hook Email Login
   const { sendCode, loginWithCode } = useLoginWithEmail();
 
   if (!isOpen) return null;
@@ -48,7 +46,6 @@ export default function CustomAuthModal({ isOpen, onClose }: CustomAuthModalProp
     setLoading(true);
     setError(null);
     try {
-      // Correction ici : transmission unique du code
       await loginWithCode({ code });
       onClose();
     } catch (err: any) {
@@ -61,7 +58,6 @@ export default function CustomAuthModal({ isOpen, onClose }: CustomAuthModalProp
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fade-in">
       <div className="relative w-full max-w-md rounded-2xl glass-panel p-6 border border-[#f1ead9]/10 shadow-2xl bg-[#131217]">
-        {/* Bouton Fermer */}
         <button
           onClick={onClose}
           className="absolute top-4 right-4 text-[#f1ead9]/40 hover:text-[#f1ead9] transition-colors"
@@ -69,7 +65,6 @@ export default function CustomAuthModal({ isOpen, onClose }: CustomAuthModalProp
           ✕
         </button>
 
-        {/* Branding iorti */}
         <div className="text-center mb-6">
           <h2 className="text-2xl font-bold tracking-tight text-[#f1ead9] uppercase">iorti</h2>
           <p className="text-sm text-[#f1ead9]/60 mt-1">Connectez-vous pour accéder à votre pass</p>
@@ -81,7 +76,6 @@ export default function CustomAuthModal({ isOpen, onClose }: CustomAuthModalProp
           </div>
         )}
 
-        {/* Connexion Google */}
         <button
           onClick={() => initOAuth({ provider: "google" })}
           className="w-full flex items-center justify-center gap-3 px-4 py-3 rounded-xl bg-[#0b0b0e] border border-[#f1ead9]/15 text-[#f1ead9] font-medium hover:bg-[#1c1b22] transition-all"
@@ -116,7 +110,6 @@ export default function CustomAuthModal({ isOpen, onClose }: CustomAuthModalProp
           </span>
         </div>
 
-        {/* Connexion Email */}
         {step === "email-input" ? (
           <form onSubmit={handleSendEmail} className="space-y-3">
             <input
@@ -130,7 +123,7 @@ export default function CustomAuthModal({ isOpen, onClose }: CustomAuthModalProp
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3 rounded-xl bg-[#f1ead9] text-[#0b0b0e] font-semibold hover:bg-white transition-all disabled:opacity-50"
+              className="w-full py-3 rounded-xl bg-[#f1ead9] text-[#0b0b0e] font-semibold hover:bg-[#f1ead9]/90 transition-all disabled:opacity-50"
             >
               {loading ? "Envoi du code..." : "Recevoir un code"}
             </button>
@@ -148,14 +141,13 @@ export default function CustomAuthModal({ isOpen, onClose }: CustomAuthModalProp
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3 rounded-xl bg-[#f1ead9] text-[#0b0b0e] font-semibold hover:bg-white transition-all disabled:opacity-50"
+              className="w-full py-3 rounded-xl bg-[#f1ead9] text-[#0b0b0e] font-semibold hover:bg-[#f1ead9]/90 transition-all disabled:opacity-50"
             >
               {loading ? "Vérification..." : "Valider le code"}
             </button>
           </form>
         )}
 
-        {/* CGU */}
         <p className="text-center text-xs text-[#f1ead9]/40 mt-6">
           En continuant, vous acceptez nos{" "}
           <a href="/cgu" className="underline hover:text-[#f1ead9]">
