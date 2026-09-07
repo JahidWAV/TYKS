@@ -1,26 +1,32 @@
 'use client';
 
-import { usePrivy, useWallets } from '@privy-io/react-auth';
+import { usePrivy, useCreateWallet } from '@privy-io/react-auth';
 import QRCode from 'qrcode.react';
-import { Ticket, ShieldCheck, LogOut } from 'lucide-react';
+import { Ticket, ShieldCheck, LogOut, Wallet } from 'lucide-react';
 
 export default function TicketPass() {
   const { user, logout } = usePrivy();
-  const { wallets, ready: walletsReady } = useWallets();
+  const { createWallet } = useCreateWallet();
 
-  // On récupère le wallet Solana créé par Privy
-  const solanaWallet = wallets.find((w) => w.walletClientType === 'privy') || wallets[0];
-  const walletAddress = solanaWallet?.address;
+  // 1. On cherche une adresse de wallet dans le profil de l'utilisateur
+  const embeddedWallet = user?.linkedAccounts?.find(
+    (account) => account.type === 'wallet' && account.walletClientType === 'privy'
+  );
 
-  const truncatedAddress = walletAddress && walletAddress.length > 12 
+  // Alternative : n'importe quel wallet connecté
+  const fallbackWallet = user?.wallet;
+
+  const walletAddress = embeddedWallet?.address || fallbackWallet?.address;
+
+  const truncatedAddress = walletAddress
     ? `${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}`
-    : walletAddress || 'Création en cours...';
+    : 'Aucun wallet détecté';
 
   const userEmail = user?.email?.address || user?.google?.email || 'Membre iorti';
 
   return (
     <div className="max-w-md mx-auto my-8 p-6 bg-slate-900 border border-indigo-500/30 rounded-2xl shadow-2xl backdrop-blur-xl">
-      {/* En-tête du Pass */}
+      {/* En-tête */}
       <div className="flex items-center justify-between border-b border-slate-800 pb-4 mb-6">
         <div className="flex items-center gap-2 text-indigo-400">
           <Ticket className="w-6 h-6" />
@@ -32,7 +38,7 @@ export default function TicketPass() {
         </div>
       </div>
 
-      {/* Zone QR Code unique du client */}
+      {/* Zone QR Code */}
       <div className="bg-white p-4 rounded-xl flex flex-col items-center justify-center shadow-inner mb-6 min-h-[220px]">
         {walletAddress ? (
           <QRCode 
@@ -42,17 +48,25 @@ export default function TicketPass() {
             includeMargin={true}
           />
         ) : (
-          <div className="flex flex-col items-center gap-2 text-slate-500 text-sm">
-            <div className="w-6 h-6 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin" />
-            <span>Génération de ton QR d'accès...</span>
+          <div className="flex flex-col items-center gap-3 text-center px-4">
+            <p className="text-slate-600 text-sm font-medium">
+              Aucun wallet Solana associé à ce compte.
+            </p>
+            <button
+              onClick={() => createWallet()}
+              className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold px-4 py-2 rounded-lg transition-all"
+            >
+              <Wallet className="w-4 h-4" />
+              <span>Générer mon Pass Solana</span>
+            </button>
           </div>
         )}
-        <p className="text-[10px] text-slate-500 font-mono mt-2 tracking-tight">
+        <p className="text-[10px] text-slate-500 font-mono mt-3 tracking-tight">
           SCANNER À L'ENTRÉE DES SOIRÉES
         </p>
       </div>
 
-      {/* Infos Profil / Wallet */}
+      {/* Infos profil */}
       <div className="bg-slate-950/60 p-3,5 rounded-lg border border-slate-800 space-y-2 mb-6 text-xs">
         <div className="flex justify-between items-center text-slate-400">
           <span>Titulaire :</span>
