@@ -8,19 +8,20 @@ export default function Providers({ children }: { children: ReactNode }) {
     <PrivyProvider
       appId={process.env.NEXT_PUBLIC_PRIVY_APP_ID as string}
       config={{
-        // Seuls Google et Email sont proposés : aucune mention de wallet
-        // ou de "crypto" n'est jamais montrée à l'utilisateur.
-        loginMethods: ["google", "email"],
+        loginMethods: ["email", "google"],
         appearance: {
           theme: "dark",
-          accentColor: "#3D46FF",
+          accentColor: "#FFFFFF",
+          // Desactive les invites de confirmation de transaction/signature en UI
+          walletChainType: "solana-only",
+          showWalletLoginFirst: false,
+        },
+        // Suppression du branding explicite dans les flux d'authentification
+        legal: {
+          termsAndConditionsUrl: "/cgu",
+          privacyPolicyUrl: "/politique-de-confidentialite",
         },
         embeddedWallets: {
-          // Configuration spécifique Solana : cette clé indique à Privy de
-          // provisionner uniquement un wallet Solana (pas de wallet Ethereum)
-          // pour tout utilisateur qui n'en possède pas encore, dès sa
-          // première connexion — le tout en arrière-plan, sans jamais
-          // exposer de UI de wallet à l'écran.
           solana: {
             createOnLogin: "users-without-wallets",
           },
