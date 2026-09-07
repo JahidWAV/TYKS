@@ -182,18 +182,28 @@
    OVERRIDE WHITE LABEL PRIVY MODAL
    ========================================== */
 
-/* Overrides universels pour masquer le footer Privy */
-div[class*="privy"] p:has(svg),
-div[class*="privy"] span:has(svg),
-div[class*="privy"] a[href*="privy"],
-div[class*="privy"] footer,
-iframe[src*="privy"] {
+/* Masque uniquement le footer bas et le lien Privy */
+[id^="privy-modal"] footer,
+div[class*="PrivyModal"] footer,
+div[class*="privy-dialog"] footer,
+div[class*="PrivyModal"] a[href*="privy.io"],
+div[class*="privy"] a[href*="privy.io"] {
   display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
 }
 
-/* Cible le texte "Protected by" et ses conteneurs enfants dans la modale */
-[id^="privy-modal"] div:has(> a[href*="privy.io"]),
-[id^="privy-modal"] div:has(> svg),
-div[class*="PrivyModal"] div:last-child:has(a) {
-  display: none !important;
+/* Réintroduit et force l'affichage des icônes dans les boutons (Google, Mail, etc.) */
+[id^="privy-modal"] button svg,
+div[class*="PrivyModal"] button svg,
+div[class*="privy"] input ~ svg,
+div[class*="privy"] button img {
+  display: inline-block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+/* Ajustement du padding de la modale */
+div[class*="PrivyModal"] > div {
+  padding-bottom: 24px !important;
 }
