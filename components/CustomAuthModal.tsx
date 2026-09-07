@@ -48,7 +48,8 @@ export default function CustomAuthModal({ isOpen, onClose }: CustomAuthModalProp
     setLoading(true);
     setError(null);
     try {
-      await loginWithCode({ code, email });
+      // Correction ici : transmission unique du code
+      await loginWithCode({ code });
       onClose();
     } catch (err: any) {
       setError(err?.message || "Code invalide ou expiré");
