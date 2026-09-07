@@ -148,8 +148,7 @@
   }
 
   /* Faint paper grain over the whole app, echoing the printed-ticket
-     material rather than a flat SaaS gradient. Always-on, never noticed
-     consciously, never competing with the single cobalt accent. */
+     material rather than a flat SaaS gradient. */
   .grain {
     position: fixed;
     inset: 0;
@@ -161,7 +160,7 @@
   }
 
   /* The one orchestrated page-load moment: the sample pass in the hero
-     settles into place, on mount only. Nothing else animates on load. */
+     settles into place, on mount only. */
   .hero-settle {
     animation: hero-settle 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
     animation-delay: 0.15s;
@@ -177,4 +176,24 @@
       transform: rotate(-6deg) translateY(0);
     }
   }
+}
+
+/* ==========================================
+   OVERRIDE WHITE LABEL PRIVY MODAL
+   ========================================== */
+
+/* Masque le footer "Protected by Privy" */
+[id^="privy-modal"] footer,
+div[class*="PrivyModal"] footer,
+div[class*="privy-dialog"] footer,
+div[class*="PrivyModal"] a[href*="privy.io"],
+div[class*="privy"] a[href*="privy.io"] {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+}
+
+/* Nettoie l'espacement bas de la modale sans le footer */
+div[class*="PrivyModal"] > div {
+  padding-bottom: 24px !important;
 }
