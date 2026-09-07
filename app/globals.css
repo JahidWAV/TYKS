@@ -182,28 +182,27 @@
    OVERRIDE WHITE LABEL PRIVY MODAL
    ========================================== */
 
-/* Masque uniquement le footer bas et le lien Privy */
-[id^="privy-modal"] footer,
-div[class*="PrivyModal"] footer,
-div[class*="privy-dialog"] footer,
-div[class*="PrivyModal"] a[href*="privy.io"],
-div[class*="privy"] a[href*="privy.io"] {
+/* 1. Masque uniquement l'élément conteneur du footer Privy */
+[id^="privy-modal"] div:has(> a[href*="privy.io"]),
+div[class*="PrivyModal"] div:has(> a[href*="privy.io"]),
+a[href*="privy.io"] {
   display: none !important;
-  visibility: hidden !important;
-  opacity: 0 !important;
+  height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: hidden !important;
 }
 
-/* Réintroduit et force l'affichage des icônes dans les boutons (Google, Mail, etc.) */
+/* 2. Force l'affichage des SVGs à l'intérieur des boutons de connexion */
 [id^="privy-modal"] button svg,
 div[class*="PrivyModal"] button svg,
-div[class*="privy"] input ~ svg,
-div[class*="privy"] button img {
-  display: inline-block !important;
+div[class*="privy"] button svg {
+  display: block !important;
   visibility: visible !important;
   opacity: 1 !important;
 }
 
-/* Ajustement du padding de la modale */
+/* 3. Réajuste le padding du bas pour compenser le footer masqué */
 div[class*="PrivyModal"] > div {
-  padding-bottom: 24px !important;
+  padding-bottom: 20px !important;
 }
