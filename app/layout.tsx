@@ -1,19 +1,20 @@
 import type { Metadata } from "next";
-import { Inter, Space_Grotesk } from "next/font/google";
+import { Plus_Jakarta_Sans, Syne } from "next/font/google";
 import "./globals.css";
 import Providers from "./providers";
 import Navbar from "@/components/Navbar";
 
-const inter = Inter({
+const plusJakarta = Plus_Jakarta_Sans({
   subsets: ["latin"],
-  variable: "--font-inter",
+  variable: "--font-body",
+  weight: ["400", "500", "600"],
   display: "swap",
 });
 
-const spaceGrotesk = Space_Grotesk({
+const syne = Syne({
   subsets: ["latin"],
   variable: "--font-display",
-  weight: ["500", "700"],
+  weight: ["600", "700", "800"],
   display: "swap",
 });
 
@@ -29,8 +30,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="fr" className={`${inter.variable} ${spaceGrotesk.variable}`}>
-      <body className="font-sans antialiased">
+    <html lang="fr" className={`${plusJakarta.variable} ${syne.variable}`}>
+      <body className="font-sans antialiased bg-void">
         <Providers>
           <Navbar />
           {children}
