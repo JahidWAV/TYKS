@@ -8,30 +8,38 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        void: "#0D0B1A",
-        surface: "#151228",
-        "surface-raised": "#1B1733",
+        void: "#0A0A0D",
+        surface: "#131318",
+        "surface-raised": "#1C1C24",
+        "surface-hair": "rgba(255,255,255,0.07)",
         indigo: {
-          DEFAULT: "#6366f1",
-          soft: "#8385f5",
+          DEFAULT: "#4B4FA8",
+          soft: "#6D71C4",
+          dim: "#33355F",
         },
-        amber: {
-          DEFAULT: "#FFB238",
-          soft: "#FFCB7A",
+        gold: {
+          DEFAULT: "#C9A227",
+          soft: "#E3C669",
+          deep: "#8C7220",
         },
         ink: {
-          DEFAULT: "#F5F3FF",
-          muted: "#9A93B8",
-          faint: "#5F5880",
+          DEFAULT: "#F6F5F2",
+          muted: "#9C9AA3",
+          faint: "#5C5A63",
         },
       },
       fontFamily: {
-        sans: ["var(--font-inter)", "system-ui", "sans-serif"],
-        display: ["var(--font-display)", "var(--font-inter)", "system-ui", "sans-serif"],
+        sans: ["var(--font-body)", "system-ui", "sans-serif"],
+        display: ["var(--font-display)", "var(--font-body)", "system-ui", "sans-serif"],
       },
       backgroundImage: {
         "night-glow":
-          "radial-gradient(120% 120% at 15% 0%, rgba(99,102,241,0.25) 0%, rgba(13,11,26,0) 55%), radial-gradient(90% 90% at 90% 10%, rgba(255,178,56,0.12) 0%, rgba(13,11,26,0) 50%)",
+          "radial-gradient(110% 110% at 10% -10%, rgba(75,79,168,0.16) 0%, rgba(10,10,13,0) 55%), radial-gradient(80% 80% at 95% 0%, rgba(201,162,39,0.10) 0%, rgba(10,10,13,0) 50%)",
+        "metal-sheen":
+          "linear-gradient(135deg, rgba(255,255,255,0.14) 0%, rgba(255,255,255,0.02) 28%, rgba(255,255,255,0) 45%, rgba(255,255,255,0.05) 70%, rgba(255,255,255,0.12) 100%)",
+      },
+      letterSpacing: {
+        tightest: "-0.04em",
       },
     },
   },
