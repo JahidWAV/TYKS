@@ -7,6 +7,7 @@ import Navbar from '@/components/Navbar';
 import TicketPass from '@/components/TicketPass';
 import EventCard from '@/components/EventCard';
 import SamplePassPreview from '@/components/SamplePassPreview';
+import CustomAuthModal from '@/components/CustomAuthModal';
 import { supabaseBrowser } from '@/lib/supabase-browser';
 import type { IortiEvent } from '@/types/event';
 import { Sparkles, Calendar, Award, ArrowUpRight, MapPin, ChevronRight, Loader2 } from 'lucide-react';
@@ -18,10 +19,11 @@ const STATUS_LABEL: Record<string, string> = {
 };
 
 export default function HomePage() {
-  const { authenticated, login } = usePrivy();
+  const { authenticated } = usePrivy();
   const [activeTab, setActiveTab] = useState<'pass' | 'events' | 'rewards'>('events');
   const [events, setEvents] = useState<IortiEvent[]>([]);
   const [loadingEvents, setLoadingEvents] = useState(true);
+  const [isAuthOpen, setIsAuthOpen] = useState(false);
 
   useEffect(() => {
     async function fetchPublishedEvents() {
@@ -69,7 +71,7 @@ export default function HomePage() {
 
                 <div className="flex flex-col sm:flex-row lg:justify-start justify-center items-center gap-5 pt-2">
                   <button
-                    onClick={login}
+                    onClick={() => setIsAuthOpen(true)}
                     className="group relative inline-flex items-center justify-center gap-3 bg-cobalt text-bone font-semibold text-xs tracking-wide px-8 py-4 rounded-full transition-all duration-300 hover:bg-cobalt-soft hover:scale-[1.01] active:scale-[0.99]"
                   >
                     <span>Activer mon pass</span>
@@ -92,7 +94,7 @@ export default function HomePage() {
             </div>
           </section>
 
-          {/* COMMENT ÇA MARCHE — une vraie séquence, donc numérotée */}
+          {/* COMMENT ÇA MARCHE */}
           <section className="max-w-4xl mx-auto px-6 pb-24">
             <h2 className="font-display text-2xl sm:text-3xl font-bold tracking-tight text-bone text-center mb-12">
               Comment ça marche
@@ -122,7 +124,7 @@ export default function HomePage() {
             </div>
           </section>
 
-          {/* PROCHAINES SOIRÉES — vraies données, pas de mock marketing */}
+          {/* PROCHAINES SOIRÉES */}
           {!loadingEvents && events.length > 0 && (
             <section className="max-w-5xl mx-auto px-6 pb-24">
               <div className="flex items-end justify-between mb-8">
@@ -133,7 +135,7 @@ export default function HomePage() {
                   <p className="text-xs text-bone-faint mt-1">Billetterie officielle et événements partenaires</p>
                 </div>
                 <button
-                  onClick={login}
+                  onClick={() => setIsAuthOpen(true)}
                   className="hidden sm:inline-flex items-center gap-1.5 text-xs font-medium text-bone-muted hover:text-bone transition-colors shrink-0"
                 >
                   <span>Voir tout</span>
@@ -148,7 +150,7 @@ export default function HomePage() {
             </section>
           )}
 
-          {/* Fine print, comme au dos d'un vrai billet — pas une grille de cartes. */}
+          {/* Fine print */}
           <section className="max-w-4xl mx-auto px-6 pb-24">
             <div className="rounded-3xl border border-onyx-line bg-onyx-raised/50 overflow-hidden">
               <div className="grid grid-cols-1 sm:grid-cols-3 divide-y sm:divide-y-0 divide-onyx-line">
@@ -180,7 +182,7 @@ export default function HomePage() {
               Activez votre pass avant la prochaine soirée.
             </h2>
             <button
-              onClick={login}
+              onClick={() => setIsAuthOpen(true)}
               className="inline-flex items-center justify-center gap-3 bg-cobalt text-bone font-semibold text-xs tracking-wide px-8 py-4 rounded-full transition-all duration-300 hover:bg-cobalt-soft hover:scale-[1.01] active:scale-[0.99]"
             >
               <span>Activer mon pass</span>
@@ -208,7 +210,6 @@ export default function HomePage() {
       ) : (
         /* STATE 2 : UTILISATEUR CONNECTÉ */
         <main className="max-w-4xl mx-auto px-6 pt-10 pb-20">
-          {/* Controls / Tabs */}
           <div className="flex justify-center mb-12">
             <nav className="inline-flex p-1 bg-onyx-raised/80 backdrop-blur-md border border-onyx-line rounded-full">
               <button
@@ -247,7 +248,6 @@ export default function HomePage() {
             </nav>
           </div>
 
-          {/* TAB 1 : ÉVÉNEMENTS (RÉEL SUPABASE) */}
           {activeTab === 'events' && (
             <div className="space-y-8 fade-rise">
               <div className="flex items-center justify-between border-b border-onyx-line pb-5">
@@ -328,7 +328,6 @@ export default function HomePage() {
             </div>
           )}
 
-          {/* TAB 2 : PASS CLIENT */}
           {activeTab === 'pass' && (
             <div className="flex flex-col items-center justify-center fade-rise pt-4">
               <div className="text-center mb-8 space-y-1">
@@ -341,7 +340,6 @@ export default function HomePage() {
             </div>
           )}
 
-          {/* TAB 3 : PALMARÈS */}
           {activeTab === 'rewards' && (
             <div className="space-y-6 fade-rise max-w-lg mx-auto pt-4">
               <div className="text-center mb-8 space-y-1">
@@ -365,6 +363,12 @@ export default function HomePage() {
         </main>
       )}
       </div>
+
+      {/* Modale globale sur la page d'accueil */}
+      <CustomAuthModal
+        isOpen={isAuthOpen}
+        onClose={() => setIsAuthOpen(false)}
+      />
     </div>
   );
 }
