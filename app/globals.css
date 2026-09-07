@@ -8,18 +8,30 @@
   }
 
   body {
-    background-color: #0d0b1a;
-    color: #f5f3ff;
+    background-color: #0a0a0d;
+    color: #f6f5f2;
   }
 
   ::selection {
-    background-color: #6366f1;
-    color: #f5f3ff;
+    background-color: #4b4fa8;
+    color: #f6f5f2;
   }
 
   :focus-visible {
-    outline: 2px solid #ffb238;
+    outline: 2px solid #c9a227;
     outline-offset: 3px;
+    border-radius: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+      scroll-behavior: auto !important;
+    }
   }
 }
 
@@ -28,30 +40,30 @@
      used to separate the "stub" from the "body" of the event card. */
   .ticket-seam {
     position: relative;
-    border-top: 2px dashed rgba(154, 147, 184, 0.35);
+    border-top: 1px dashed rgba(156, 154, 163, 0.28);
   }
 
   .ticket-seam::before,
   .ticket-seam::after {
     content: "";
     position: absolute;
-    top: -12px;
-    width: 24px;
-    height: 24px;
+    top: -11px;
+    width: 22px;
+    height: 22px;
     border-radius: 9999px;
-    background: #0d0b1a;
+    background: #0a0a0d;
   }
 
   .ticket-seam::before {
-    left: -12px;
+    left: -33px;
   }
 
   .ticket-seam::after {
-    right: -12px;
+    right: -33px;
   }
 
-  /* Divider used between the three reassurance items, echoing the
-     perforation motif at a smaller scale without repeating card chrome. */
+  /* Divider used between reassurance items, echoing the perforation
+     motif at a smaller scale without repeating card chrome. */
   .punch-divider {
     position: relative;
   }
@@ -66,9 +78,66 @@
     background: linear-gradient(
       to bottom,
       transparent,
-      rgba(154, 147, 184, 0.3) 15%,
-      rgba(154, 147, 184, 0.3) 85%,
+      rgba(156, 154, 163, 0.25) 15%,
+      rgba(156, 154, 163, 0.25) 85%,
       transparent
     );
+  }
+
+  /* Elite glass surface used for chrome (nav, tab rail, panels). */
+  .glass-panel {
+    background: rgba(19, 19, 24, 0.72);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+  }
+
+  /* Slow diagonal gloss sweep across the metal pass card. */
+  .metal-card {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .metal-card::before {
+    content: "";
+    position: absolute;
+    inset: -40%;
+    background: linear-gradient(
+      115deg,
+      transparent 30%,
+      rgba(255, 255, 255, 0.06) 45%,
+      rgba(255, 255, 255, 0.12) 50%,
+      rgba(255, 255, 255, 0.06) 55%,
+      transparent 70%
+    );
+    transform: translateX(-100%);
+    animation: sheen-sweep 6s ease-in-out infinite;
+    pointer-events: none;
+  }
+
+  @keyframes sheen-sweep {
+    0%,
+    20% {
+      transform: translateX(-120%);
+    }
+    55%,
+    100% {
+      transform: translateX(120%);
+    }
+  }
+
+  .fade-rise {
+    animation: fade-rise 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  @keyframes fade-rise {
+    from {
+      opacity: 0;
+      transform: translateY(6px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
 }
