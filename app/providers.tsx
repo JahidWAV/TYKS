@@ -14,6 +14,8 @@ export default function Providers({ children }: { children: ReactNode }) {
           accentColor: "#FFFFFF",
           walletChainType: "solana-only",
           showWalletLoginFirst: false,
+          // Insère l'URL de ton logo iorti pour remplacer le titre générique si souhaité
+          // logo: "https://votre-domaine.com/logo.png",
         },
         legal: {
           termsAndConditionsUrl: "/cgu",
