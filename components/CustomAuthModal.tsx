@@ -66,7 +66,7 @@ export default function CustomAuthModal({ isOpen, onClose }: CustomAuthModalProp
         </button>
 
         <div className="text-center mb-6">
-          <h2 className="text-2xl font-bold tracking-tight text-[#f1ead9] uppercase">iorti</h2>
+          <h2 className="text-2xl font-bold tracking-tight text-[#f1ead9] uppercase">TYKS</h2>
           <p className="text-sm text-[#f1ead9]/60 mt-1">Connectez-vous pour accéder à votre pass</p>
         </div>
 
