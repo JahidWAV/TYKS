@@ -1,21 +1,21 @@
 'use client';
 
-import { usePrivy, useCreateWallet, WalletWithMetadata } from '@privy-io/react-auth';
+import { usePrivy } from '@privy-io/react-auth';
+import { useWallets, useCreateWallet } from '@privy-io/react-auth/solana';
 import QRCode from 'qrcode.react';
 import { ShieldCheck, LogOut, Wallet, Copy, Check } from 'lucide-react';
 import { useState } from 'react';
 
 export default function TicketPass() {
   const { user, logout } = usePrivy();
+  const { wallets } = useWallets();
   const { createWallet } = useCreateWallet();
   const [copied, setCopied] = useState(false);
 
-  const embeddedWallet = user?.linkedAccounts?.find(
-    (account): account is WalletWithMetadata =>
-      account.type === 'wallet' && account.walletClientType === 'privy'
-  );
-
-  const walletAddress = embeddedWallet?.address || user?.wallet?.address;
+  // L'app ne provisionne que des wallets embarqués Solana (voir providers.tsx),
+  // donc on lit directement le premier wallet connecté depuis le hook Solana
+  // plutôt que de fouiller dans user.linkedAccounts avec le type EVM.
+  const walletAddress = wallets[0]?.address;
 
   const truncatedAddress = walletAddress
     ? `${walletAddress.slice(0, 6)}···${walletAddress.slice(-4)}`
