@@ -13,7 +13,7 @@ export default function Providers({ children }: { children: ReactNode }) {
         loginMethods: ["google", "email"],
         appearance: {
           theme: "dark",
-          accentColor: "#6366f1",
+          accentColor: "#3D46FF",
         },
         embeddedWallets: {
           // Configuration spécifique Solana : cette clé indique à Privy de
