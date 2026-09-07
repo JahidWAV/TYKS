@@ -2,7 +2,7 @@
 
 import { usePrivy, useCreateWallet, WalletWithMetadata } from '@privy-io/react-auth';
 import QRCode from 'qrcode.react';
-import { Ticket, ShieldCheck, LogOut, Wallet, Sparkles, Copy, Check } from 'lucide-react';
+import { ShieldCheck, LogOut, Wallet, Copy, Check } from 'lucide-react';
 import { useState } from 'react';
 
 export default function TicketPass() {
@@ -11,15 +11,15 @@ export default function TicketPass() {
   const [copied, setCopied] = useState(false);
 
   const embeddedWallet = user?.linkedAccounts?.find(
-    (account): account is WalletWithMetadata => 
+    (account): account is WalletWithMetadata =>
       account.type === 'wallet' && account.walletClientType === 'privy'
   );
 
   const walletAddress = embeddedWallet?.address || user?.wallet?.address;
 
   const truncatedAddress = walletAddress
-    ? `${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}`
-    : 'Aucun wallet détecté';
+    ? `${walletAddress.slice(0, 6)}···${walletAddress.slice(-4)}`
+    : 'Non activé';
 
   const userEmail = user?.email?.address || user?.google?.email || 'Membre iorti';
 
@@ -33,80 +33,80 @@ export default function TicketPass() {
 
   return (
     <div className="max-w-md mx-auto my-4">
-      {/* Carte Pass VIP */}
-      <div className="relative overflow-hidden bg-gradient-to-b from-slate-900/90 to-slate-950/90 border border-indigo-500/30 rounded-3xl p-6 shadow-2xl shadow-indigo-950/50 backdrop-blur-2xl">
-        
-        {/* Glows d'arrière-plan */}
-        <div className="absolute -top-24 -left-24 w-48 h-48 bg-indigo-500/20 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute -bottom-24 -right-24 w-48 h-48 bg-pink-500/15 rounded-full blur-3xl pointer-events-none" />
+      {/* Carte membre métallique */}
+      <div className="metal-card relative bg-gradient-to-br from-[#1c1c24] via-[#151519] to-[#0d0d10] border border-white/10 rounded-[28px] p-7 shadow-2xl shadow-black/60">
 
-        {/* En-tête de la carte */}
-        <div className="relative flex items-center justify-between border-b border-white/10 pb-4 mb-6">
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-indigo-500/20 border border-indigo-500/30 flex items-center justify-center text-indigo-400">
-              <Ticket className="w-4 h-4" />
-            </div>
-            <span className="font-extrabold text-lg tracking-wide text-white">iorti PASS</span>
+        {/* Lueur d'ambiance */}
+        <div className="absolute -top-20 -left-16 w-56 h-56 bg-indigo/20 rounded-full blur-[80px] pointer-events-none" />
+        <div className="absolute -bottom-20 -right-16 w-56 h-56 bg-gold/10 rounded-full blur-[80px] pointer-events-none" />
+
+        {/* En-tête */}
+        <div className="relative flex items-center justify-between pb-5 mb-6 border-b border-white/8">
+          <div className="leading-none">
+            <p className="font-display text-lg font-bold tracking-tightest text-ink">iorti</p>
+            <p className="text-[10px] uppercase tracking-[0.2em] text-ink-faint mt-1">Membership Pass</p>
           </div>
-          <div className="flex items-center gap-1.5 bg-emerald-500/10 text-emerald-400 text-[11px] font-semibold px-3 py-1 rounded-full border border-emerald-500/20">
+          <div className="flex items-center gap-1.5 text-gold-soft text-[11px] font-medium">
             <ShieldCheck className="w-3.5 h-3.5" />
-            <span>Pass Vérifié</span>
+            <span>Vérifié</span>
           </div>
         </div>
 
         {/* Zone QR Code */}
-        <div className="relative bg-white p-5 rounded-2xl flex flex-col items-center justify-center shadow-2xl mb-6">
+        <div className="relative bg-ink p-5 rounded-2xl flex flex-col items-center justify-center mb-6">
           {walletAddress ? (
-            <QRCode 
-              value={walletAddress} 
-              size={190}
+            <QRCode
+              value={walletAddress}
+              size={188}
               level="H"
               includeMargin={false}
+              fgColor="#0A0A0D"
+              bgColor="#F6F5F2"
             />
           ) : (
             <div className="flex flex-col items-center gap-3 text-center py-6 px-2">
-              <p className="text-slate-700 text-xs font-semibold">
-                Génération de votre Pass Solana...
+              <p className="text-void/70 text-xs font-semibold">
+                Votre pass n'est pas encore activé
               </p>
               <button
                 onClick={() => createWallet()}
-                className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition-all shadow-md shadow-indigo-600/30"
+                className="flex items-center gap-2 bg-void hover:bg-surface text-ink text-xs font-semibold px-4 py-2.5 rounded-xl transition-colors"
               >
-                <Wallet className="w-4 h-4" />
+                <Wallet className="w-3.5 h-3.5" />
                 <span>Activer mon Pass</span>
               </button>
             </div>
           )}
-          
-          <div className="mt-3 flex items-center gap-1.5 text-[10px] text-slate-500 font-mono tracking-wider uppercase">
-            <Sparkles className="w-3 h-3 text-indigo-500" />
-            <span>QR Code d'accès unique</span>
+
+          <div className="mt-3 flex items-center gap-1.5 text-[10px] text-void/50 font-medium tracking-wide">
+            <span>Présentez ce code à l'entrée</span>
           </div>
         </div>
 
-        {/* Informations Utilisateur & Solana Wallet */}
-        <div className="relative bg-slate-950/80 border border-white/5 rounded-xl p-3.5 space-y-2.5 text-xs mb-6">
-          <div className="flex justify-between items-center text-slate-400">
-            <span>Membre</span>
-            <span className="text-white font-medium truncate max-w-[200px]">{userEmail}</span>
+        {/* Informations membre */}
+        <div className="relative space-y-3 text-xs mb-6">
+          <div className="flex justify-between items-center">
+            <span className="text-ink-faint">Membre</span>
+            <span className="text-ink font-medium truncate max-w-[210px]">{userEmail}</span>
           </div>
-          
-          <div className="flex justify-between items-center text-slate-400 pt-2 border-t border-white/5">
-            <span>Adresse Solana</span>
-            <button 
+
+          <div className="pt-3 border-t border-dashed border-white/10 flex justify-between items-center">
+            <span className="text-ink-faint">Identifiant du pass</span>
+            <button
               onClick={handleCopy}
-              className="flex items-center gap-1.5 font-mono text-indigo-300 bg-indigo-950/60 hover:bg-indigo-900/60 px-2.5 py-1 rounded-md border border-indigo-800/40 transition-colors"
+              disabled={!walletAddress}
+              className="flex items-center gap-1.5 font-mono text-ink-muted hover:text-ink bg-white/[0.04] hover:bg-white/[0.08] px-2.5 py-1 rounded-md border border-white/8 transition-colors disabled:opacity-50"
             >
               <span>{truncatedAddress}</span>
-              {copied ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3 text-indigo-400" />}
+              {copied ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3 text-ink-faint" />}
             </button>
           </div>
         </div>
 
-        {/* Bouton de déconnexion */}
+        {/* Déconnexion */}
         <button
           onClick={logout}
-          className="w-full flex items-center justify-center gap-2 text-xs text-slate-400 hover:text-rose-400 transition-colors py-1 font-medium"
+          className="relative w-full flex items-center justify-center gap-2 text-[11px] text-ink-faint hover:text-ink transition-colors py-1 font-medium"
         >
           <LogOut className="w-3.5 h-3.5" />
           <span>Se déconnecter</span>
