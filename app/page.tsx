@@ -2,8 +2,11 @@
 
 import { useState, useEffect } from 'react';
 import { usePrivy } from '@privy-io/react-auth';
+import Link from 'next/link';
 import Navbar from '@/components/Navbar';
 import TicketPass from '@/components/TicketPass';
+import EventCard from '@/components/EventCard';
+import SamplePassPreview from '@/components/SamplePassPreview';
 import { supabaseBrowser } from '@/lib/supabase-browser';
 import type { IortiEvent } from '@/types/event';
 import { Sparkles, Calendar, Award, ArrowUpRight, MapPin, ChevronRight, Loader2 } from 'lucide-react';
@@ -43,58 +46,164 @@ export default function HomePage() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-onyx text-bone font-sans antialiased selection:bg-cobalt/30 selection:text-bone">
+    <div className="relative min-h-screen bg-onyx text-bone font-sans antialiased selection:bg-cobalt/30 selection:text-bone">
+      <div className="grain" aria-hidden="true" />
+      <div className="relative z-10">
       <Navbar />
 
-      {/* STATE 1 : VISITEUR NON CONNECTÉ */}
+      {/* STATE 1 : VISITEUR NON CONNECTÉ — la vitrine */}
       {!authenticated ? (
-        <main className="max-w-4xl mx-auto px-6 pt-16 md:pt-28 pb-20">
-          <section className="text-center space-y-8">
-            <h1 className="font-display text-5xl sm:text-7xl font-extrabold tracking-tightest text-bone leading-[1.05]">
-              Votre soirée commence
-              <br />
-              par un pass.
-            </h1>
+        <main>
+          {/* HERO */}
+          <section className="max-w-5xl mx-auto px-6 pt-16 md:pt-24 pb-20">
+            <div className="grid lg:grid-cols-[1.15fr_0.85fr] gap-14 lg:gap-10 items-center">
+              <div className="text-center lg:text-left space-y-8">
+                <h1 className="font-display text-5xl sm:text-6xl lg:text-[4.2rem] font-extrabold tracking-tightest text-bone leading-[1.04]">
+                  Votre soirée commence par un pass.
+                </h1>
 
-            <p className="text-bone-muted text-sm sm:text-base max-w-lg mx-auto leading-relaxed font-normal">
-              TYKS est la billetterie premium des soirées d&apos;exception : un accès vérifié,
-              un prix honnête, et une entrée qui ne fait jamais attendre.
-            </p>
+                <p className="text-bone-muted text-sm sm:text-base max-w-md mx-auto lg:mx-0 leading-relaxed">
+                  TYKS est la billetterie premium des soirées d&apos;exception : un accès
+                  vérifié, un prix honnête, et une entrée qui ne fait jamais attendre.
+                </p>
 
-            <div className="pt-2 flex items-center justify-center">
-              <button
-                onClick={login}
-                className="group relative inline-flex items-center justify-center gap-3 bg-cobalt text-bone font-semibold text-xs tracking-wide px-8 py-4 rounded-full transition-all duration-300 hover:bg-cobalt-soft hover:scale-[1.01] active:scale-[0.99]"
-              >
-                <span>Activer mon pass</span>
-                <ArrowUpRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-              </button>
+                <div className="flex flex-col sm:flex-row lg:justify-start justify-center items-center gap-5 pt-2">
+                  <button
+                    onClick={login}
+                    className="group relative inline-flex items-center justify-center gap-3 bg-cobalt text-bone font-semibold text-xs tracking-wide px-8 py-4 rounded-full transition-all duration-300 hover:bg-cobalt-soft hover:scale-[1.01] active:scale-[0.99]"
+                  >
+                    <span>Activer mon pass</span>
+                    <ArrowUpRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                  </button>
+
+                  <Link
+                    href="/organisateur"
+                    className="inline-flex items-center gap-1.5 text-xs font-medium text-bone-muted hover:text-bone transition-colors"
+                  >
+                    <span>J&apos;organise des événements</span>
+                    <ChevronRight className="w-3.5 h-3.5" />
+                  </Link>
+                </div>
+              </div>
+
+              <div className="flex justify-center lg:justify-end">
+                <SamplePassPreview />
+              </div>
             </div>
           </section>
+
+          {/* COMMENT ÇA MARCHE — une vraie séquence, donc numérotée */}
+          <section className="max-w-4xl mx-auto px-6 pb-24">
+            <h2 className="font-display text-2xl sm:text-3xl font-bold tracking-tight text-bone text-center mb-12">
+              Comment ça marche
+            </h2>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-10 sm:gap-6">
+              <div className="text-center sm:text-left space-y-3">
+                <p className="font-mono text-sm text-cobalt-soft">01</p>
+                <h3 className="font-display font-semibold text-bone text-base">Trouvez votre soirée</h3>
+                <p className="text-xs text-bone-faint leading-relaxed max-w-[220px] mx-auto sm:mx-0">
+                  Parcourez les événements publiés par nos organisateurs partenaires.
+                </p>
+              </div>
+              <div className="text-center sm:text-left space-y-3">
+                <p className="font-mono text-sm text-cobalt-soft">02</p>
+                <h3 className="font-display font-semibold text-bone text-base">Payez en un geste</h3>
+                <p className="text-xs text-bone-faint leading-relaxed max-w-[220px] mx-auto sm:mx-0">
+                  Le prix affiché est le prix payé, sans frais ajoutés au paiement.
+                </p>
+              </div>
+              <div className="text-center sm:text-left space-y-3">
+                <p className="font-mono text-sm text-cobalt-soft">03</p>
+                <h3 className="font-display font-semibold text-bone text-base">Scannez à l&apos;entrée</h3>
+                <p className="text-xs text-bone-faint leading-relaxed max-w-[220px] mx-auto sm:mx-0">
+                  Votre pass s&apos;affiche, la porte s&apos;ouvre. Moins de deux secondes.
+                </p>
+              </div>
+            </div>
+          </section>
+
+          {/* PROCHAINES SOIRÉES — vraies données, pas de mock marketing */}
+          {!loadingEvents && events.length > 0 && (
+            <section className="max-w-5xl mx-auto px-6 pb-24">
+              <div className="flex items-end justify-between mb-8">
+                <div>
+                  <h2 className="font-display text-2xl font-bold tracking-tight text-bone">
+                    Les prochaines soirées
+                  </h2>
+                  <p className="text-xs text-bone-faint mt-1">Billetterie officielle et événements partenaires</p>
+                </div>
+                <button
+                  onClick={login}
+                  className="hidden sm:inline-flex items-center gap-1.5 text-xs font-medium text-bone-muted hover:text-bone transition-colors shrink-0"
+                >
+                  <span>Voir tout</span>
+                  <ChevronRight className="w-3.5 h-3.5" />
+                </button>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                {events.slice(0, 3).map((evt) => (
+                  <EventCard key={evt.id} event={evt} />
+                ))}
+              </div>
+            </section>
+          )}
 
           {/* Fine print, comme au dos d'un vrai billet — pas une grille de cartes. */}
-          <section className="mt-28 rounded-3xl border border-onyx-line bg-onyx-raised/50 overflow-hidden">
-            <div className="grid grid-cols-1 sm:grid-cols-3 divide-y sm:divide-y-0 divide-onyx-line">
-              <div className="punch-divider p-7 space-y-2">
-                <h3 className="font-display font-semibold text-bone text-sm">Entrée en deux secondes</h3>
-                <p className="text-xs text-bone-faint leading-relaxed">
-                  Un scan, une porte qui s&apos;ouvre. Aucune file, aucun papier.
-                </p>
-              </div>
-              <div className="punch-divider p-7 space-y-2">
-                <h3 className="font-display font-semibold text-bone text-sm">Prix affiché, prix payé</h3>
-                <p className="text-xs text-bone-faint leading-relaxed">
-                  Aucun frais ajouté à la dernière étape du paiement.
-                </p>
-              </div>
-              <div className="p-7 space-y-2">
-                <h3 className="font-display font-semibold text-bone text-sm">Un pass, toutes les soirées</h3>
-                <p className="text-xs text-bone-faint leading-relaxed">
-                  Chaque accès reste archivé dans votre pass, pour toujours.
-                </p>
+          <section className="max-w-4xl mx-auto px-6 pb-24">
+            <div className="rounded-3xl border border-onyx-line bg-onyx-raised/50 overflow-hidden">
+              <div className="grid grid-cols-1 sm:grid-cols-3 divide-y sm:divide-y-0 divide-onyx-line">
+                <div className="punch-divider p-7 space-y-2">
+                  <h3 className="font-display font-semibold text-bone text-sm">Entrée en deux secondes</h3>
+                  <p className="text-xs text-bone-faint leading-relaxed">
+                    Un scan, une porte qui s&apos;ouvre. Aucune file, aucun papier.
+                  </p>
+                </div>
+                <div className="punch-divider p-7 space-y-2">
+                  <h3 className="font-display font-semibold text-bone text-sm">Prix affiché, prix payé</h3>
+                  <p className="text-xs text-bone-faint leading-relaxed">
+                    Aucun frais ajouté à la dernière étape du paiement.
+                  </p>
+                </div>
+                <div className="p-7 space-y-2">
+                  <h3 className="font-display font-semibold text-bone text-sm">Un pass, toutes les soirées</h3>
+                  <p className="text-xs text-bone-faint leading-relaxed">
+                    Chaque accès reste archivé dans votre pass, pour toujours.
+                  </p>
+                </div>
               </div>
             </div>
           </section>
+
+          {/* CTA final */}
+          <section className="max-w-3xl mx-auto px-6 pb-24 text-center">
+            <h2 className="font-display text-3xl sm:text-4xl font-extrabold tracking-tightest text-bone leading-tight mb-5">
+              Activez votre pass avant la prochaine soirée.
+            </h2>
+            <button
+              onClick={login}
+              className="inline-flex items-center justify-center gap-3 bg-cobalt text-bone font-semibold text-xs tracking-wide px-8 py-4 rounded-full transition-all duration-300 hover:bg-cobalt-soft hover:scale-[1.01] active:scale-[0.99]"
+            >
+              <span>Activer mon pass</span>
+              <ArrowUpRight className="w-4 h-4" />
+            </button>
+          </section>
+
+          {/* FOOTER */}
+          <footer className="border-t border-onyx-line">
+            <div className="max-w-5xl mx-auto px-6 py-10 flex flex-col sm:flex-row items-center justify-between gap-4">
+              <div className="text-center sm:text-left">
+                <p className="font-display text-sm font-extrabold tracking-tightest text-bone">TYKS</p>
+                <p className="text-[11px] text-bone-faint mt-0.5">La billetterie premium des soirées d&apos;exception.</p>
+              </div>
+              <Link
+                href="/organisateur"
+                className="inline-flex items-center gap-1.5 text-xs font-medium text-bone-muted hover:text-bone transition-colors"
+              >
+                <span>Créer un espace organisateur</span>
+                <ChevronRight className="w-3.5 h-3.5" />
+              </Link>
+            </div>
+          </footer>
         </main>
       ) : (
         /* STATE 2 : UTILISATEUR CONNECTÉ */
@@ -255,6 +364,7 @@ export default function HomePage() {
           )}
         </main>
       )}
+      </div>
     </div>
   );
 }
