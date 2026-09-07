@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { usePrivy } from "@privy-io/react-auth";
 import { useWallets } from "@privy-io/react-auth/solana";
-import { ShieldCheck, LogOut, Loader2, Menu, X } from "lucide-react";
+import { LogOut, Loader2, Menu, X } from "lucide-react";
 
 function truncateAddress(address: string) {
   if (address.length <= 10) return address;
@@ -21,38 +21,29 @@ export default function Navbar() {
   return (
     <header className="sticky top-0 z-50 glass-panel">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-        {/* Logo + badge */}
-        <div className="flex items-center gap-3">
-          <span className="font-display text-xl font-bold tracking-tightest text-ink">
-            iorti
-          </span>
-          <span className="hidden items-center gap-1.5 rounded-full border border-gold/25 bg-gold/5 px-2.5 py-1 text-[11px] font-medium text-gold-soft sm:inline-flex">
-            <ShieldCheck className="h-3 w-3" />
-            Pass sécurisé
-          </span>
-        </div>
+        <span className="font-display text-2xl font-extrabold tracking-tightest text-bone">
+          TYKS
+        </span>
 
         {/* Desktop right side */}
         <div className="hidden items-center gap-4 sm:flex">
           {!ready ? (
-            <div className="flex h-10 w-40 items-center justify-center rounded-full border border-surface-hair bg-surface">
-              <Loader2 className="h-4 w-4 animate-spin text-ink-muted" />
+            <div className="flex h-10 w-40 items-center justify-center rounded-full border border-onyx-line bg-onyx-raised">
+              <Loader2 className="h-4 w-4 animate-spin text-bone-muted" />
             </div>
           ) : authenticated ? (
             <>
               <div className="flex flex-col items-end leading-tight">
-                {email && (
-                  <span className="text-sm font-medium text-ink">{email}</span>
-                )}
+                {email && <span className="text-sm font-medium text-bone">{email}</span>}
                 {solanaWallet && (
-                  <span className="font-mono text-xs text-ink-faint">
+                  <span className="font-mono text-xs text-bone-faint">
                     {truncateAddress(solanaWallet.address)}
                   </span>
                 )}
               </div>
               <button
                 onClick={logout}
-                className="inline-flex items-center gap-2 rounded-full border border-surface-hair px-4 py-2 text-sm font-medium text-ink transition hover:border-white/20 hover:bg-surface-raised"
+                className="inline-flex items-center gap-2 rounded-full border border-onyx-line px-4 py-2 text-sm font-medium text-bone transition hover:border-cobalt/40 hover:bg-onyx-raised"
               >
                 <LogOut className="h-4 w-4" />
                 Déconnexion
@@ -61,16 +52,16 @@ export default function Navbar() {
           ) : (
             <button
               onClick={login}
-              className="inline-flex items-center rounded-full bg-ink px-5 py-2.5 text-sm font-semibold text-void transition hover:bg-white"
+              className="inline-flex items-center rounded-full bg-cobalt px-5 py-2.5 text-sm font-semibold text-bone transition hover:bg-cobalt-soft"
             >
-              Connexion / Inscription
+              Connexion
             </button>
           )}
         </div>
 
         {/* Mobile toggle */}
         <button
-          className="inline-flex items-center justify-center rounded-full border border-surface-hair p-2 text-ink sm:hidden"
+          className="inline-flex items-center justify-center rounded-full border border-onyx-line p-2 text-bone sm:hidden"
           onClick={() => setMobileOpen((open) => !open)}
           aria-label="Ouvrir le menu"
         >
@@ -80,26 +71,24 @@ export default function Navbar() {
 
       {/* Mobile panel */}
       {mobileOpen && (
-        <div className="border-t border-surface-hair bg-void px-6 py-4 sm:hidden fade-rise">
+        <div className="border-t border-onyx-line bg-onyx px-6 py-4 sm:hidden fade-rise">
           {!ready ? (
-            <div className="flex h-10 items-center justify-center rounded-full border border-surface-hair bg-surface">
-              <Loader2 className="h-4 w-4 animate-spin text-ink-muted" />
+            <div className="flex h-10 items-center justify-center rounded-full border border-onyx-line bg-onyx-raised">
+              <Loader2 className="h-4 w-4 animate-spin text-bone-muted" />
             </div>
           ) : authenticated ? (
             <div className="flex flex-col gap-3">
               <div className="flex flex-col leading-tight">
-                {email && (
-                  <span className="text-sm font-medium text-ink">{email}</span>
-                )}
+                {email && <span className="text-sm font-medium text-bone">{email}</span>}
                 {solanaWallet && (
-                  <span className="font-mono text-xs text-ink-faint">
+                  <span className="font-mono text-xs text-bone-faint">
                     {truncateAddress(solanaWallet.address)}
                   </span>
                 )}
               </div>
               <button
                 onClick={logout}
-                className="inline-flex items-center justify-center gap-2 rounded-full border border-surface-hair px-4 py-2.5 text-sm font-medium text-ink"
+                className="inline-flex items-center justify-center gap-2 rounded-full border border-onyx-line px-4 py-2.5 text-sm font-medium text-bone"
               >
                 <LogOut className="h-4 w-4" />
                 Déconnexion
@@ -108,9 +97,9 @@ export default function Navbar() {
           ) : (
             <button
               onClick={login}
-              className="inline-flex w-full items-center justify-center rounded-full bg-ink px-5 py-2.5 text-sm font-semibold text-void"
+              className="inline-flex w-full items-center justify-center rounded-full bg-cobalt px-5 py-2.5 text-sm font-semibold text-bone"
             >
-              Connexion / Inscription
+              Connexion
             </button>
           )}
         </div>
