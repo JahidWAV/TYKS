@@ -146,4 +146,35 @@
       transform: translateY(0);
     }
   }
+
+  /* Faint paper grain over the whole app, echoing the printed-ticket
+     material rather than a flat SaaS gradient. Always-on, never noticed
+     consciously, never competing with the single cobalt accent. */
+  .grain {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0.05;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  /* The one orchestrated page-load moment: the sample pass in the hero
+     settles into place, on mount only. Nothing else animates on load. */
+  .hero-settle {
+    animation: hero-settle 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+    animation-delay: 0.15s;
+  }
+
+  @keyframes hero-settle {
+    from {
+      opacity: 0;
+      transform: rotate(-11deg) translateY(18px);
+    }
+    to {
+      opacity: 1;
+      transform: rotate(-6deg) translateY(0);
+    }
+  }
 }
