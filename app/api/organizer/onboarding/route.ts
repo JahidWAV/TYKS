@@ -2,7 +2,19 @@ import { NextRequest, NextResponse } from "next/server";
 import { supabaseServer } from "@/lib/supabase-server";
 import { getPrivyUserId } from "@/lib/privy-server";
 
-// POST /api/organizer/onboarding
+// Fonction utilitaire pour générer un slug propre à partir du nom
+function slugify(text: string): string {
+  return text
+    .toString()
+    .toLowerCase()
+    .trim()
+    .normalize("NFD") // Supprime les accents
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/\s+/g, "-") // Remplace les espaces par des tirets
+    .replace(/[^\w\-]+/g, "") // Supprime les caractères spéciaux
+    .replace(/\-\-+/g, "-"); // Évite les tirets multiples
+}
+
 export async function POST(req: NextRequest) {
   try {
     const privyUserId = await getPrivyUserId(req);
@@ -25,10 +37,17 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // 1. Créer la nouvelle organisation dans la base Supabase
+    // Génération du slug + ajout d'un suffixe aléatoire léger pour éviter les doublons
+    const baseSlug = slugify(name);
+    const uniqueSlug = `${baseSlug}-${Math.random().toString(36).substring(2, 6)}`;
+
+    // 1. Création de l'organisation avec le nom ET le slug
     const { data: org, error: orgError } = await supabaseServer
       .from("organizations")
-      .insert({ name: name.trim() })
+      .insert({
+        name: name.trim(),
+        slug: uniqueSlug,
+      })
       .select()
       .single();
 
@@ -36,7 +55,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: orgError.message }, { status: 500 });
     }
 
-    // 2. Lier l'utilisateur connecté comme "owner" dans organization_members
+    // 2. Lier l'utilisateur connecté comme "owner"
     const { error: memberError } = await supabaseServer
       .from("organization_members")
       .insert({
