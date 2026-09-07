@@ -1,20 +1,20 @@
 'use client';
 
 import { usePrivy, useWallets } from '@privy-io/react-auth';
-import { QRCodeSVG } from 'qrcode.react';
+import QRCode from 'qrcode.react';
 import { Ticket, ShieldCheck, LogOut } from 'lucide-react';
 
 export default function TicketPass() {
   const { user, logout } = usePrivy();
-  const { wallets } = useWallets();
+  const { wallets, ready: walletsReady } = useWallets();
 
   // On récupère le wallet Solana créé par Privy
   const solanaWallet = wallets.find((w) => w.walletClientType === 'privy') || wallets[0];
-  const walletAddress = solanaWallet?.address || 'Adresse en cours de création...';
+  const walletAddress = solanaWallet?.address;
 
-  const truncatedAddress = walletAddress.length > 12 
+  const truncatedAddress = walletAddress && walletAddress.length > 12 
     ? `${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}`
-    : walletAddress;
+    : walletAddress || 'Création en cours...';
 
   const userEmail = user?.email?.address || user?.google?.email || 'Membre iorti';
 
@@ -33,17 +33,18 @@ export default function TicketPass() {
       </div>
 
       {/* Zone QR Code unique du client */}
-      <div className="bg-white p-4 rounded-xl flex flex-col items-center justify-center shadow-inner mb-6">
-        {solanaWallet ? (
-          <QRCodeSVG 
+      <div className="bg-white p-4 rounded-xl flex flex-col items-center justify-center shadow-inner mb-6 min-h-[220px]">
+        {walletAddress ? (
+          <QRCode 
             value={walletAddress} 
             size={180}
             level="H"
             includeMargin={true}
           />
         ) : (
-          <div className="h-[180px] flex items-center justify-center text-slate-500 text-sm">
-            Génération du QR...
+          <div className="flex flex-col items-center gap-2 text-slate-500 text-sm">
+            <div className="w-6 h-6 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin" />
+            <span>Génération de ton QR d'accès...</span>
           </div>
         )}
         <p className="text-[10px] text-slate-500 font-mono mt-2 tracking-tight">
