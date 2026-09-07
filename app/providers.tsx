@@ -12,11 +12,10 @@ export default function Providers({ children }: { children: ReactNode }) {
         appearance: {
           theme: "dark",
           accentColor: "#FFFFFF",
-          // Desactive les invites de confirmation de transaction/signature en UI
           walletChainType: "solana-only",
           showWalletLoginFirst: false,
+          showPrivyRef: false, // Tente de masquer le branding "Protected by Privy"
         },
-        // Suppression du branding explicite dans les flux d'authentification
         legal: {
           termsAndConditionsUrl: "/cgu",
           privacyPolicyUrl: "/politique-de-confidentialite",
