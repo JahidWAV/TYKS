@@ -1,6 +1,6 @@
 'use client';
 
-import { usePrivy, useCreateWallet } from '@privy-io/react-auth';
+import { usePrivy, useCreateWallet, WalletWithMetadata } from '@privy-io/react-auth';
 import QRCode from 'qrcode.react';
 import { Ticket, ShieldCheck, LogOut, Wallet } from 'lucide-react';
 
@@ -8,15 +8,13 @@ export default function TicketPass() {
   const { user, logout } = usePrivy();
   const { createWallet } = useCreateWallet();
 
-  // 1. On cherche une adresse de wallet dans le profil de l'utilisateur
+  // On recherche explicitement le compte de type 'wallet'
   const embeddedWallet = user?.linkedAccounts?.find(
-    (account) => account.type === 'wallet' && account.walletClientType === 'privy'
+    (account): account is WalletWithMetadata => 
+      account.type === 'wallet' && account.walletClientType === 'privy'
   );
 
-  // Alternative : n'importe quel wallet connecté
-  const fallbackWallet = user?.wallet;
-
-  const walletAddress = embeddedWallet?.address || fallbackWallet?.address;
+  const walletAddress = embeddedWallet?.address || user?.wallet?.address;
 
   const truncatedAddress = walletAddress
     ? `${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}`
@@ -32,8 +30,8 @@ export default function TicketPass() {
           <Ticket className="w-6 h-6" />
           <span className="font-bold text-xl tracking-wide text-white">iorti Pass</span>
         </div>
-        <div className="flex items-center gap-1 bg-emerald-500/10 text-emerald-400 text-xs px-2,5 py-1 rounded-full border border-emerald-500/20">
-          <ShieldCheck className="w-3,5 h-3,5" />
+        <div className="flex items-center gap-1 bg-emerald-500/10 text-emerald-400 text-xs px-2.5 py-1 rounded-full border border-emerald-500/20">
+          <ShieldCheck className="w-3.5 h-3.5" />
           <span>Pass Membre</span>
         </div>
       </div>
@@ -67,14 +65,14 @@ export default function TicketPass() {
       </div>
 
       {/* Infos profil */}
-      <div className="bg-slate-950/60 p-3,5 rounded-lg border border-slate-800 space-y-2 mb-6 text-xs">
+      <div className="bg-slate-950/60 p-3.5 rounded-lg border border-slate-800 space-y-2 mb-6 text-xs">
         <div className="flex justify-between items-center text-slate-400">
           <span>Titulaire :</span>
           <span className="text-slate-200 font-medium">{userEmail}</span>
         </div>
         <div className="flex justify-between items-center text-slate-400">
           <span>Adresse SVM (Solana) :</span>
-          <span className="font-mono text-indigo-300 bg-indigo-950/50 px-2 py-0,5 rounded border border-indigo-800/40">
+          <span className="font-mono text-indigo-300 bg-indigo-950/50 px-2 py-0.5 rounded border border-indigo-800/40">
             {truncatedAddress}
           </span>
         </div>
@@ -85,7 +83,7 @@ export default function TicketPass() {
         onClick={logout}
         className="w-full flex items-center justify-center gap-2 text-xs text-slate-400 hover:text-rose-400 transition-colors py-2"
       >
-        <LogOut className="w-3,5 h-3,5" />
+        <LogOut className="w-3.5 h-3.5" />
         <span>Se déconnecter</span>
       </button>
     </div>
