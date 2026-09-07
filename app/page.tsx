@@ -1,271 +1,244 @@
 'use client';
 
-import { useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { usePrivy } from '@privy-io/react-auth';
-import TicketPass from '@/components/TicketPass';
-import {
-  Ticket,
-  Compass,
-  Trophy,
-  ArrowUpRight,
-  Calendar,
-  MapPin,
-  ShieldCheck,
-} from 'lucide-react';
+import Link from 'next/link';
+import { ArrowUpRight, Pencil, Trash2, Plus } from 'lucide-react';
+import type { IortiEvent } from '@/types/event';
+import type { OrgRole } from '@/lib/organizer';
 
-// Données de démonstration pour le catalogue d'événements
-const UPCOMING_EVENTS = [
-  {
-    id: 'neon-nights-2026',
-    title: 'Neon Nights Festival',
-    date: '12 sept. — 23h00',
-    location: 'Le Warehouse, Paris',
-    image: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=800&q=80',
-    tag: 'Techno / Industrial',
-    price: '25 €',
-  },
-  {
-    id: 'solaris-sunset',
-    title: 'Solaris Rooftop Sessions',
-    date: '18 sept. — 18h00',
-    location: 'Rooftop 52, Lyon',
-    image: 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?auto=format&fit=crop&w=800&q=80',
-    tag: 'House / Deep',
-    price: '18 €',
-  },
-  {
-    id: 'cyber-vault',
-    title: 'Cyber Vault: Underground',
-    date: '02 oct. — 00h00',
-    location: 'Nuits Fauves, Paris',
-    image: 'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?auto=format&fit=crop&w=800&q=80',
-    tag: 'Acid / Dark Electro',
-    price: '20 €',
-  },
-];
+const STATUS_LABEL: Record<string, string> = {
+  draft: 'Brouillon',
+  published: 'Publié',
+  cancelled: 'Annulé',
+};
 
-// Historique / Palmarès de démonstration
-const PAST_EVENTS = [
-  {
-    id: 'past-1',
-    title: 'Aura Open Air',
-    date: '14 juin 2025',
-    location: 'Bois de Vincennes',
-  },
-  {
-    id: 'past-2',
-    title: 'Klubraum w/ Charlotte K.',
-    date: '08 nov. 2025',
-    location: 'Rex Club',
-  },
-];
+function formatDate(iso: string) {
+  return new Date(iso).toLocaleString('fr-FR', {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+}
 
-const TABS = [
-  { id: 'pass', label: 'Mon Pass', icon: Ticket },
-  { id: 'events', label: 'Événements', icon: Compass },
-  { id: 'history', label: 'Palmarès', icon: Trophy },
-] as const;
+export default function OrganizerDashboard() {
+  const { ready, authenticated, login, getAccessToken } = usePrivy();
 
-type TabId = (typeof TABS)[number]['id'];
+  const [checking, setChecking] = useState(true);
+  const [role, setRole] = useState<OrgRole | null>(null);
+  const [events, setEvents] = useState<IortiEvent[]>([]);
+  const [error, setError] = useState<string | null>(null);
+  const [onboardingName, setOnboardingName] = useState('');
+  const [onboardingBusy, setOnboardingBusy] = useState(false);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
-export default function Home() {
-  const { authenticated, login, ready } = usePrivy();
-  const [activeTab, setActiveTab] = useState<TabId>('pass');
+  const loadDashboard = useCallback(async () => {
+    setChecking(true);
+    setError(null);
+    try {
+      const token = await getAccessToken();
+      const res = await fetch('/api/events?mine=1', {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const body = await res.json();
 
-  if (!ready) {
+      if (res.status === 403) {
+        // Pas encore d'espace organisateur — on affiche l'onboarding.
+        setRole(null);
+        setEvents([]);
+        return;
+      }
+      if (!res.ok) {
+        setError(body.error ?? 'Erreur inconnue.');
+        return;
+      }
+      setRole(body.role);
+      setEvents(body.events);
+    } catch {
+      setError('Impossible de contacter le serveur.');
+    } finally {
+      setChecking(false);
+    }
+  }, [getAccessToken]);
+
+  useEffect(() => {
+    if (ready && authenticated) loadDashboard();
+    else setChecking(false);
+  }, [ready, authenticated, loadDashboard]);
+
+  async function handleOnboard(e: React.FormEvent) {
+    e.preventDefault();
+    if (!onboardingName.trim()) return;
+    setOnboardingBusy(true);
+    setError(null);
+    try {
+      const token = await getAccessToken();
+      const res = await fetch('/api/organizer/onboarding', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ name: onboardingName.trim() }),
+      });
+      const body = await res.json();
+      if (!res.ok) {
+        setError(body.error ?? "Impossible de créer l'espace organisateur.");
+        return;
+      }
+      await loadDashboard();
+    } finally {
+      setOnboardingBusy(false);
+    }
+  }
+
+  async function handleDelete(id: string) {
+    if (!confirm('Supprimer définitivement cet événement ?')) return;
+    setDeletingId(id);
+    setError(null);
+    try {
+      const token = await getAccessToken();
+      const res = await fetch(`/api/events/${id}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const body = await res.json();
+      if (!res.ok) {
+        setError(body.error ?? 'Suppression impossible.');
+        return;
+      }
+      setEvents((prev) => prev.filter((evt) => evt.id !== id));
+    } finally {
+      setDeletingId(null);
+    }
+  }
+
+  if (!ready || checking) {
     return (
       <div className="min-h-screen bg-void text-ink flex items-center justify-center">
-        <div className="flex flex-col items-center gap-3">
-          <div className="w-7 h-7 border-2 border-gold/60 border-t-transparent rounded-full animate-spin" />
-          <p className="text-ink-faint text-xs tracking-wide">Chargement d'iorti</p>
-        </div>
+        <div className="w-7 h-7 border-2 border-gold/60 border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
+
+  if (!authenticated) {
+    return (
+      <div className="min-h-screen bg-void text-ink flex flex-col items-center justify-center gap-5 px-6 text-center">
+        <p className="text-ink-muted text-sm max-w-xs">
+          Connecte-toi pour accéder à l&apos;espace organisateur.
+        </p>
+        <button
+          onClick={login}
+          className="inline-flex items-center gap-2.5 bg-ink hover:bg-white text-void font-semibold px-7 py-3.5 rounded-full transition-colors"
+        >
+          <span>Se connecter</span>
+          <ArrowUpRight className="w-4 h-4" />
+        </button>
+      </div>
+    );
+  }
+
+  // Pas encore d'organisation : onboarding, comme "Je veux organiser un
+  // événement" chez Shotgun.
+  if (!role) {
+    return (
+      <div className="min-h-screen bg-void bg-night-glow text-ink flex items-center justify-center px-6">
+        <form
+          onSubmit={handleOnboard}
+          className="w-full max-w-sm bg-surface border border-surface-hair rounded-2xl p-7"
+        >
+          <h1 className="font-display text-xl font-bold text-ink mb-2">Devenir organisateur</h1>
+          <p className="text-sm text-ink-faint mb-6">
+            Crée ton espace pour publier et gérer tes événements.
+          </p>
+          <label className="block text-xs text-ink-faint mb-2">Nom de ton organisation</label>
+          <input
+            value={onboardingName}
+            onChange={(e) => setOnboardingName(e.target.value)}
+            placeholder="Ex : Nuits Fauves"
+            className="w-full bg-surface-raised border border-surface-hair rounded-xl px-4 py-3 text-sm text-ink mb-4 outline-none focus:border-gold/40"
+          />
+          {error && <p className="text-xs text-red-400 mb-4">{error}</p>}
+          <button
+            type="submit"
+            disabled={onboardingBusy}
+            className="w-full bg-ink hover:bg-white text-void font-semibold py-3 rounded-full transition-colors disabled:opacity-50"
+          >
+            {onboardingBusy ? 'Création…' : 'Créer mon espace organisateur'}
+          </button>
+        </form>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-void bg-night-glow text-ink pb-24 md:pb-14">
-
-      {/* Hero — visible uniquement avant connexion */}
-      {!authenticated && (
-        <section className="max-w-5xl mx-auto px-6 pt-20 pb-16 md:pt-28 md:pb-24">
-          <div className="max-w-2xl">
-            <p className="text-xs font-medium tracking-wide text-ink-faint mb-6">
-              Billetterie sélective pour soirées et festivals
+    <div className="min-h-screen bg-void bg-night-glow text-ink pt-10 pb-24">
+      <div className="max-w-5xl mx-auto px-6">
+        <div className="flex items-center justify-between mb-8">
+          <div>
+            <h1 className="font-display text-2xl font-bold tracking-tightest text-ink">Mes événements</h1>
+            <p className="text-sm text-ink-faint mt-1">
+              Rôle : <span className="text-gold-soft">{role}</span>
             </p>
-            <h1 className="font-display text-5xl md:text-7xl font-bold tracking-tightest leading-[0.98] text-ink">
-              Un pass. Chaque porte s'ouvre.
-            </h1>
-            <p className="mt-6 text-ink-muted text-base md:text-lg leading-relaxed max-w-md">
-              Connexion en un geste, un seul QR code pour accéder à chaque
-              soirée, et un palmarès qui garde la trace de chacune d'elles.
-            </p>
-            <div className="mt-9">
-              <button
-                onClick={login}
-                className="inline-flex items-center gap-2.5 bg-ink hover:bg-white text-void font-semibold px-7 py-3.5 rounded-full transition-colors"
-              >
-                <span>Obtenir mon pass</span>
-                <ArrowUpRight className="w-4 h-4" />
-              </button>
-            </div>
           </div>
+          {(role === 'owner' || role === 'editor') && (
+            <Link
+              href="/organisateur/nouveau"
+              className="inline-flex items-center gap-2 bg-ink hover:bg-white text-void font-semibold px-5 py-2.5 rounded-full transition-colors text-sm"
+            >
+              <Plus className="w-4 h-4" />
+              Nouvel événement
+            </Link>
+          )}
+        </div>
 
-          <div className="mt-16 pt-8 border-t border-surface-hair grid grid-cols-3 max-w-lg">
-            {[
-              { label: 'Sans friction', detail: 'Google ou email' },
-              { label: 'Infalsifiable', detail: 'Pass unique' },
-              { label: 'Zéro jargon', detail: 'Aucun wallet visible' },
-            ].map((item, i) => (
-              <div key={item.label} className={i < 2 ? 'punch-divider pr-4' : 'pl-4'}>
-                <p className="text-sm font-semibold text-ink">{item.label}</p>
-                <p className="text-xs text-ink-faint mt-1">{item.detail}</p>
+        {error && <p className="text-sm text-red-400 mb-4">{error}</p>}
+
+        {events.length === 0 ? (
+          <p className="text-sm text-ink-faint">Aucun événement pour l&apos;instant.</p>
+        ) : (
+          <div className="divide-y divide-surface-hair border-y border-surface-hair">
+            {events.map((evt) => (
+              <div key={evt.id} className="flex items-center justify-between py-5 gap-4">
+                <div className="min-w-0">
+                  <div className="flex items-center gap-2">
+                    <h4 className="font-semibold text-ink text-sm truncate">{evt.title}</h4>
+                    <span className="text-[10px] font-medium text-ink-faint border border-surface-hair px-2 py-0.5 rounded-full shrink-0">
+                      {STATUS_LABEL[evt.status] ?? evt.status}
+                    </span>
+                  </div>
+                  <p className="text-xs text-ink-faint mt-1">
+                    {evt.location} · {formatDate(evt.starts_at)}
+                  </p>
+                </div>
+                <div className="flex items-center gap-2 shrink-0">
+                  {(role === 'owner' || role === 'editor') && (
+                    <Link
+                      href={`/organisateur/${evt.id}`}
+                      className="p-2 rounded-lg border border-surface-hair text-ink-muted hover:text-ink hover:border-white/20 transition-colors"
+                      title="Modifier"
+                    >
+                      <Pencil className="w-4 h-4" />
+                    </Link>
+                  )}
+                  {role === 'owner' && (
+                    <button
+                      onClick={() => handleDelete(evt.id)}
+                      disabled={deletingId === evt.id}
+                      className="p-2 rounded-lg border border-surface-hair text-ink-muted hover:text-red-400 hover:border-red-400/30 transition-colors disabled:opacity-50"
+                      title="Supprimer"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  )}
+                </div>
               </div>
             ))}
           </div>
-        </section>
-      )}
-
-      {/* Espace membre — visible une fois connecté */}
-      {authenticated && (
-        <main className="max-w-5xl mx-auto px-6 pt-10">
-
-          {/* Rail d'onglets — desktop */}
-          <div className="hidden md:flex items-center gap-8 border-b border-surface-hair mb-10">
-            {TABS.map((tab) => {
-              const Icon = tab.icon;
-              const active = activeTab === tab.id;
-              return (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
-                  className={`relative flex items-center gap-2 pb-4 text-sm font-medium transition-colors ${
-                    active ? 'text-ink' : 'text-ink-faint hover:text-ink-muted'
-                  }`}
-                >
-                  <Icon className="w-4 h-4" />
-                  <span>{tab.label}</span>
-                  {active && (
-                    <span className="absolute -bottom-px left-0 right-0 h-[2px] bg-gold" />
-                  )}
-                </button>
-              );
-            })}
-          </div>
-
-          {/* VUE 1 : MON PASS */}
-          {activeTab === 'pass' && (
-            <div className="fade-rise">
-              <TicketPass />
-            </div>
-          )}
-
-          {/* VUE 2 : ÉVÉNEMENTS & BILLETTERIE */}
-          {activeTab === 'events' && (
-            <div className="space-y-8 fade-rise">
-              <div>
-                <h2 className="font-display text-2xl font-bold tracking-tightest text-ink">À l'affiche</h2>
-                <p className="text-sm text-ink-faint mt-1">Réservez directement sur votre pass, sans billet séparé</p>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {UPCOMING_EVENTS.map((evt) => (
-                  <article
-                    key={evt.id}
-                    className="group rounded-2xl overflow-hidden border border-surface-hair bg-surface transition-all duration-300 hover:-translate-y-0.5 hover:border-white/15"
-                  >
-                    <div className="relative h-56 overflow-hidden">
-                      <img
-                        src={evt.image}
-                        alt={evt.title}
-                        className="w-full h-full object-cover group-hover:scale-[1.04] transition-transform duration-700 ease-out"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/10 to-transparent" />
-                      <div className="absolute top-3.5 left-3.5 text-[10px] font-semibold tracking-wide text-ink/90 bg-black/40 backdrop-blur-sm px-2.5 py-1 rounded-full border border-white/10">
-                        {evt.tag}
-                      </div>
-                      <div className="absolute bottom-4 left-4 right-4">
-                        <h3 className="font-display text-lg font-bold text-white leading-tight">
-                          {evt.title}
-                        </h3>
-                        <div className="mt-2 flex flex-col gap-1 text-xs text-white/70">
-                          <span className="flex items-center gap-1.5">
-                            <Calendar className="w-3.5 h-3.5" /> {evt.date}
-                          </span>
-                          <span className="flex items-center gap-1.5">
-                            <MapPin className="w-3.5 h-3.5" /> {evt.location}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="px-4 py-3.5 flex items-center justify-between">
-                      <span className="text-base font-bold text-ink">{evt.price}</span>
-                      <button className="flex items-center gap-1.5 text-ink-muted hover:text-ink text-xs font-semibold transition-colors">
-                        <span>Réserver</span>
-                        <ArrowUpRight className="w-3.5 h-3.5" />
-                      </button>
-                    </div>
-                  </article>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* VUE 3 : PALMARÈS & SOUVENIRS */}
-          {activeTab === 'history' && (
-            <div className="space-y-8 fade-rise">
-              <div>
-                <h2 className="font-display text-2xl font-bold tracking-tightest text-ink">Mon Palmarès</h2>
-                <p className="text-sm text-ink-faint mt-1">L'historique de vos soirées, conservé sur votre pass</p>
-              </div>
-
-              <div className="divide-y divide-surface-hair border-y border-surface-hair">
-                {PAST_EVENTS.map((item) => (
-                  <div key={item.id} className="flex items-center justify-between py-5">
-                    <div className="flex items-center gap-4">
-                      <div className="w-10 h-10 shrink-0 rounded-full bg-surface-raised border border-white/8 flex items-center justify-center text-gold-soft">
-                        <ShieldCheck className="w-4 h-4" />
-                      </div>
-                      <div>
-                        <h4 className="font-semibold text-ink text-sm">{item.title}</h4>
-                        <p className="text-xs text-ink-faint mt-0.5">{item.location} · {item.date}</p>
-                      </div>
-                    </div>
-                    <span className="text-[11px] font-medium text-gold-soft border border-gold/20 bg-gold/5 px-2.5 py-1 rounded-full shrink-0">
-                      Vérifié
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-        </main>
-      )}
-
-      {/* Navigation mobile inférieure */}
-      {authenticated && (
-        <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 glass-panel px-6 py-2.5 flex items-center justify-around">
-          {TABS.map((tab) => {
-            const Icon = tab.icon;
-            const active = activeTab === tab.id;
-            return (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={`flex flex-col items-center gap-1 py-1 transition-colors ${
-                  active ? 'text-gold-soft' : 'text-ink-faint'
-                }`}
-              >
-                <Icon className="w-5 h-5" />
-                <span className="text-[10px] font-medium">{tab.label}</span>
-              </button>
-            );
-          })}
-        </nav>
-      )}
-
+        )}
+      </div>
     </div>
   );
 }
