@@ -12,27 +12,49 @@ export default function CustomAuthModal({ isOpen, onClose }: CustomAuthModalProp
   const [email, setEmail] = useState("");
   const [code, setCode] = useState("");
   const [step, setStep] = useState<"email-input" | "code-input">("email-input");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  // Hooks Headless de Privy
+  // Hook Google OAuth
   const { initOAuth } = useLoginWithOAuth({
     onComplete: () => onClose(),
   });
 
-  const { sendCode, loginWithCode } = useLoginWithEmail({
-    onSendCodeSuccess: () => setStep("code-input"),
-    onLoginSuccess: () => onClose(),
-  });
+  // Hook Email Login
+  const { sendCode, loginWithCode } = useLoginWithEmail();
 
   if (!isOpen) return null;
 
-  const handleSendEmail = (e: React.FormEvent) => {
+  const handleSendEmail = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (email) sendCode({ email });
+    if (!email) return;
+
+    setLoading(true);
+    setError(null);
+    try {
+      await sendCode({ email });
+      setStep("code-input");
+    } catch (err: any) {
+      setError(err?.message || "Erreur lors de l'envoi du code");
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleVerifyCode = (e: React.FormEvent) => {
+  const handleVerifyCode = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (code) loginWithCode({ code, email });
+    if (!code) return;
+
+    setLoading(true);
+    setError(null);
+    try {
+      await loginWithCode({ code, email });
+      onClose();
+    } catch (err: any) {
+      setError(err?.message || "Code invalide ou expiré");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -51,6 +73,12 @@ export default function CustomAuthModal({ isOpen, onClose }: CustomAuthModalProp
           <h2 className="text-2xl font-bold tracking-tight text-[#f1ead9] uppercase">iorti</h2>
           <p className="text-sm text-[#f1ead9]/60 mt-1">Connectez-vous pour accéder à votre pass</p>
         </div>
+
+        {error && (
+          <div className="mb-4 p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-xs text-center">
+            {error}
+          </div>
+        )}
 
         {/* Connexion Google */}
         <button
@@ -87,7 +115,7 @@ export default function CustomAuthModal({ isOpen, onClose }: CustomAuthModalProp
           </span>
         </div>
 
-        {/* Connexion Email en 2 étapes */}
+        {/* Connexion Email */}
         {step === "email-input" ? (
           <form onSubmit={handleSendEmail} className="space-y-3">
             <input
@@ -100,9 +128,10 @@ export default function CustomAuthModal({ isOpen, onClose }: CustomAuthModalProp
             />
             <button
               type="submit"
-              className="w-full py-3 rounded-xl bg-[#f1ead9] text-[#0b0b0e] font-semibold hover:bg-white transition-all"
+              disabled={loading}
+              className="w-full py-3 rounded-xl bg-[#f1ead9] text-[#0b0b0e] font-semibold hover:bg-white transition-all disabled:opacity-50"
             >
-              Recevoir un code
+              {loading ? "Envoi du code..." : "Recevoir un code"}
             </button>
           </form>
         ) : (
@@ -117,9 +146,10 @@ export default function CustomAuthModal({ isOpen, onClose }: CustomAuthModalProp
             />
             <button
               type="submit"
-              className="w-full py-3 rounded-xl bg-[#f1ead9] text-[#0b0b0e] font-semibold hover:bg-white transition-all"
+              disabled={loading}
+              className="w-full py-3 rounded-xl bg-[#f1ead9] text-[#0b0b0e] font-semibold hover:bg-white transition-all disabled:opacity-50"
             >
-              Valider le code
+              {loading ? "Vérification..." : "Valider le code"}
             </button>
           </form>
         )}
