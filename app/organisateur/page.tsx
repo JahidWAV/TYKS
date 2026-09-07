@@ -117,21 +117,21 @@ export default function OrganizerDashboard() {
 
   if (!ready || checking) {
     return (
-      <div className="min-h-screen bg-void text-ink flex items-center justify-center">
-        <div className="w-7 h-7 border-2 border-gold/60 border-t-transparent rounded-full animate-spin" />
+      <div className="min-h-screen bg-onyx text-bone flex items-center justify-center">
+        <div className="w-7 h-7 border-2 border-cobalt/60 border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
 
   if (!authenticated) {
     return (
-      <div className="min-h-screen bg-void text-ink flex flex-col items-center justify-center gap-5 px-6 text-center">
-        <p className="text-ink-muted text-sm max-w-xs">
+      <div className="min-h-screen bg-onyx text-bone flex flex-col items-center justify-center gap-5 px-6 text-center">
+        <p className="text-bone-muted text-sm max-w-xs">
           Connecte-toi pour accéder à l&apos;espace organisateur.
         </p>
         <button
           onClick={login}
-          className="inline-flex items-center gap-2.5 bg-ink hover:bg-white text-void font-semibold px-7 py-3.5 rounded-full transition-colors"
+          className="inline-flex items-center gap-2.5 bg-cobalt hover:bg-cobalt-soft text-bone font-semibold px-7 py-3.5 rounded-full transition-colors"
         >
           <span>Se connecter</span>
           <ArrowUpRight className="w-4 h-4" />
@@ -140,31 +140,30 @@ export default function OrganizerDashboard() {
     );
   }
 
-  // Pas encore d'organisation : onboarding, comme "Je veux organiser un
-  // événement" chez Shotgun.
+  // Pas encore d'organisation : onboarding.
   if (!role) {
     return (
-      <div className="min-h-screen bg-void bg-night-glow text-ink flex items-center justify-center px-6">
+      <div className="min-h-screen bg-onyx bg-night-glow text-bone flex items-center justify-center px-6">
         <form
           onSubmit={handleOnboard}
-          className="w-full max-w-sm bg-surface border border-surface-hair rounded-2xl p-7"
+          className="w-full max-w-sm bg-onyx-raised border border-onyx-line rounded-2xl p-7"
         >
-          <h1 className="font-display text-xl font-bold text-ink mb-2">Devenir organisateur</h1>
-          <p className="text-sm text-ink-faint mb-6">
+          <h1 className="font-display text-xl font-bold text-bone mb-2">Devenir organisateur</h1>
+          <p className="text-sm text-bone-faint mb-6">
             Crée ton espace pour publier et gérer tes événements.
           </p>
-          <label className="block text-xs text-ink-faint mb-2">Nom de ton organisation</label>
+          <label className="block text-xs text-bone-faint mb-2">Nom de ton organisation</label>
           <input
             value={onboardingName}
             onChange={(e) => setOnboardingName(e.target.value)}
             placeholder="Ex : Nuits Fauves"
-            className="w-full bg-surface-raised border border-surface-hair rounded-xl px-4 py-3 text-sm text-ink mb-4 outline-none focus:border-gold/40"
+            className="w-full bg-onyx border border-onyx-line rounded-xl px-4 py-3 text-sm text-bone mb-4 outline-none focus:border-cobalt/50"
           />
           {error && <p className="text-xs text-red-400 mb-4">{error}</p>}
           <button
             type="submit"
             disabled={onboardingBusy}
-            className="w-full bg-ink hover:bg-white text-void font-semibold py-3 rounded-full transition-colors disabled:opacity-50"
+            className="w-full bg-cobalt hover:bg-cobalt-soft text-bone font-semibold py-3 rounded-full transition-colors disabled:opacity-50"
           >
             {onboardingBusy ? 'Création…' : 'Créer mon espace organisateur'}
           </button>
@@ -174,19 +173,19 @@ export default function OrganizerDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-void bg-night-glow text-ink pt-10 pb-24">
+    <div className="min-h-screen bg-onyx bg-night-glow text-bone pt-10 pb-24">
       <div className="max-w-5xl mx-auto px-6">
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="font-display text-2xl font-bold tracking-tightest text-ink">Mes événements</h1>
-            <p className="text-sm text-ink-faint mt-1">
-              Rôle : <span className="text-gold-soft">{role}</span>
+            <h1 className="font-display text-2xl font-bold tracking-tightest text-bone">Mes événements</h1>
+            <p className="text-sm text-bone-faint mt-1">
+              Rôle : <span className="text-cobalt-soft">{role}</span>
             </p>
           </div>
           {(role === 'owner' || role === 'editor') && (
             <Link
               href="/organisateur/nouveau"
-              className="inline-flex items-center gap-2 bg-ink hover:bg-white text-void font-semibold px-5 py-2.5 rounded-full transition-colors text-sm"
+              className="inline-flex items-center gap-2 bg-cobalt hover:bg-cobalt-soft text-bone font-semibold px-5 py-2.5 rounded-full transition-colors text-sm"
             >
               <Plus className="w-4 h-4" />
               Nouvel événement
@@ -197,19 +196,19 @@ export default function OrganizerDashboard() {
         {error && <p className="text-sm text-red-400 mb-4">{error}</p>}
 
         {events.length === 0 ? (
-          <p className="text-sm text-ink-faint">Aucun événement pour l&apos;instant.</p>
+          <p className="text-sm text-bone-faint">Aucun événement pour l&apos;instant.</p>
         ) : (
-          <div className="divide-y divide-surface-hair border-y border-surface-hair">
+          <div className="divide-y divide-onyx-line border-y border-onyx-line">
             {events.map((evt) => (
               <div key={evt.id} className="flex items-center justify-between py-5 gap-4">
                 <div className="min-w-0">
                   <div className="flex items-center gap-2">
-                    <h4 className="font-semibold text-ink text-sm truncate">{evt.title}</h4>
-                    <span className="text-[10px] font-medium text-ink-faint border border-surface-hair px-2 py-0.5 rounded-full shrink-0">
+                    <h4 className="font-semibold text-bone text-sm truncate">{evt.title}</h4>
+                    <span className="text-[10px] font-medium text-bone-faint border border-onyx-line px-2 py-0.5 rounded-full shrink-0">
                       {STATUS_LABEL[evt.status] ?? evt.status}
                     </span>
                   </div>
-                  <p className="text-xs text-ink-faint mt-1">
+                  <p className="text-xs text-bone-faint mt-1">
                     {evt.location} · {formatDate(evt.starts_at)}
                   </p>
                 </div>
@@ -217,7 +216,7 @@ export default function OrganizerDashboard() {
                   {(role === 'owner' || role === 'editor') && (
                     <Link
                       href={`/organisateur/${evt.id}`}
-                      className="p-2 rounded-lg border border-surface-hair text-ink-muted hover:text-ink hover:border-white/20 transition-colors"
+                      className="p-2 rounded-lg border border-onyx-line text-bone-muted hover:text-bone hover:border-cobalt/40 transition-colors"
                       title="Modifier"
                     >
                       <Pencil className="w-4 h-4" />
@@ -227,7 +226,7 @@ export default function OrganizerDashboard() {
                     <button
                       onClick={() => handleDelete(evt.id)}
                       disabled={deletingId === evt.id}
-                      className="p-2 rounded-lg border border-surface-hair text-ink-muted hover:text-red-400 hover:border-red-400/30 transition-colors disabled:opacity-50"
+                      className="p-2 rounded-lg border border-onyx-line text-bone-muted hover:text-red-400 hover:border-red-400/30 transition-colors disabled:opacity-50"
                       title="Supprimer"
                     >
                       <Trash2 className="w-4 h-4" />
