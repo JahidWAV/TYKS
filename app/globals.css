@@ -182,18 +182,18 @@
    OVERRIDE WHITE LABEL PRIVY MODAL
    ========================================== */
 
-/* Masque le footer "Protected by Privy" */
-[id^="privy-modal"] footer,
-div[class*="PrivyModal"] footer,
-div[class*="privy-dialog"] footer,
-div[class*="PrivyModal"] a[href*="privy.io"],
-div[class*="privy"] a[href*="privy.io"] {
+/* Overrides universels pour masquer le footer Privy */
+div[class*="privy"] p:has(svg),
+div[class*="privy"] span:has(svg),
+div[class*="privy"] a[href*="privy"],
+div[class*="privy"] footer,
+iframe[src*="privy"] {
   display: none !important;
-  visibility: hidden !important;
-  opacity: 0 !important;
 }
 
-/* Nettoie l'espacement bas de la modale sans le footer */
-div[class*="PrivyModal"] > div {
-  padding-bottom: 24px !important;
+/* Cible le texte "Protected by" et ses conteneurs enfants dans la modale */
+[id^="privy-modal"] div:has(> a[href*="privy.io"]),
+[id^="privy-modal"] div:has(> svg),
+div[class*="PrivyModal"] div:last-child:has(a) {
+  display: none !important;
 }
