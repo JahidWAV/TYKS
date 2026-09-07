@@ -14,7 +14,6 @@ export default function Providers({ children }: { children: ReactNode }) {
           accentColor: "#FFFFFF",
           walletChainType: "solana-only",
           showWalletLoginFirst: false,
-          showPrivyRef: false, // Tente de masquer le branding "Protected by Privy"
         },
         legal: {
           termsAndConditionsUrl: "/cgu",
