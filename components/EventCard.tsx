@@ -3,6 +3,9 @@ import { MapPin, ArrowUpRight } from 'lucide-react';
 import type { IortiEvent } from '@/types/event';
 
 export default function EventCard({ event }: { event: IortiEvent }) {
+  // Cast en any pour éviter l'erreur TS si le champ price n'est pas encore dans l'interface
+  const evtData = event as any;
+
   return (
     <Link
       href={`/evenements/${event.id}`}
@@ -19,9 +22,9 @@ export default function EventCard({ event }: { event: IortiEvent }) {
             })}
           </span>
           <span className="text-[10px] font-mono text-bone-faint border border-onyx-line px-2 py-0.5 rounded">
-            {event.price && parseFloat(event.price) > 0
-              ? `${parseFloat(event.price).toFixed(2)} €`
-              : 'Gratuit'}
+            {evtData.price && parseFloat(evtData.price) > 0
+              ? `${parseFloat(evtData.price).toFixed(2)} €`
+              : 'Billetterie'}
           </span>
         </div>
 
