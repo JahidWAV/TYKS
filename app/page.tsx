@@ -69,7 +69,7 @@ export default function OrganizerDashboard() {
       const { error } = await supabaseBrowser.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/organisateur`,
+          redirectTo: `${window.location.origin}/auth/callback`,
         },
       });
       if (error) throw error;
@@ -199,7 +199,7 @@ export default function OrganizerDashboard() {
           <p className="text-sm text-bone-muted">Pilotez vos événements et suivez vos performances en direct</p>
         </div>
         <Link
-          href="/organisateur/nouveau"
+          href="/nouveau"
           className="inline-flex items-center justify-center gap-2 rounded-full bg-bone px-5 py-2.5 text-sm font-semibold text-onyx transition hover:bg-white"
         >
           <Plus className="h-4 w-4" />
@@ -287,7 +287,7 @@ export default function OrganizerDashboard() {
 
                   <div className="flex items-center gap-2">
                     <Link
-                      href={`/organisateur/${evt.id}`}
+                      href={`/${evt.id}`}
                       className="p-2 rounded-full border border-onyx-line hover:bg-white/10 text-bone transition-colors"
                       title="Modifier"
                     >
