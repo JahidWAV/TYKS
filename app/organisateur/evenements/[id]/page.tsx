@@ -2,7 +2,6 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { usePrivy } from '@privy-io/react-auth';
 import Link from 'next/link';
 import { ArrowLeft, Loader2, Calendar, MapPin, CheckCircle, Clock } from 'lucide-react';
 import { supabaseBrowser } from '@/lib/supabase-browser';
@@ -12,8 +11,6 @@ export default function ManageEventPage() {
   const params = useParams();
   const router = useRouter();
   const eventId = params?.id as string;
-
-  const { ready, authenticated } = usePrivy();
   const [event, setEvent] = useState<IortiEvent | null>(null);
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
