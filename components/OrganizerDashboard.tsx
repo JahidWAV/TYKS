@@ -203,7 +203,7 @@ export default function OrganizerDashboard() {
         </Link>
       </div>
 
-      {/* Ledger de stats — un seul panneau, pas 3 cartes identiques */}
+      {/* Ledger de stats */}
       <div className="grid divide-y divide-onyx-line rounded-2xl border border-onyx-line sm:grid-cols-3 sm:divide-x sm:divide-y-0">
         <div className="p-6">
           <p className="font-mono text-[11px] text-bone-faint">événements</p>
@@ -226,7 +226,7 @@ export default function OrganizerDashboard() {
         </div>
       </div>
 
-      {/* Liste des événements — talons de billet */}
+      {/* Liste des événements */}
       <div className="space-y-4">
         <h2 className="font-display text-xl font-bold text-bone">
           Vos événements
@@ -246,7 +246,7 @@ export default function OrganizerDashboard() {
                 key={evt.id}
                 className="group flex flex-col rounded-2xl border border-onyx-line bg-onyx-raised/40 transition-colors hover:bg-onyx-raised"
               >
-                <div className="space-y-3 p-6">
+                <div className="space-y-3 p-6 flex-1">
                   <div className="flex items-center justify-between">
                     <span className="font-mono text-[10px] text-bone-faint">
                       {new Date(evt.starts_at).toLocaleDateString('fr-FR', {
@@ -266,4 +266,38 @@ export default function OrganizerDashboard() {
                   </h3>
 
                   {evt.description && (
-                    <p className="line-clamp-2 text-xs leading-relaxed
+                    <p className="line-clamp-2 text-xs leading-relaxed text-bone-muted">
+                      {evt.description}
+                    </p>
+                  )}
+
+                  {evt.location && (
+                    <div className="flex items-center gap-1.5 text-xs text-bone-faint">
+                      <MapPin className="h-3.5 w-3.5" />
+                      <span className="truncate">{evt.location}</span>
+                    </div>
+                  )}
+                </div>
+
+                <div className="flex items-center justify-between border-t border-onyx-line px-6 py-3">
+                  <span className="font-mono text-xs text-bone">
+                    {evt.price ? `${evt.price} €` : 'Gratuit'}
+                  </span>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => handleDeleteEvent(evt.id)}
+                      className="p-1.5 text-bone-faint hover:text-red-400 transition-colors"
+                      title="Supprimer"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </button>
+                  </div>
+                </div>
+              </article>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
