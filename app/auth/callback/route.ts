@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerClient, type CookieOptions } from "@supabase/ssr";
+import { createClient } from "@supabase/supabase-js";
 import { cookies } from "next/headers";
 
 function slugify(text: string): string {
@@ -44,23 +45,28 @@ export async function GET(req: NextRequest) {
     );
 
     const { data: sessionData, error } = await supabase.auth.exchangeCodeForSession(code);
-    
-    console.log("--- DEBUG CALLBACK ---");
-    console.log("Exchange error:", error);
-    console.log("Session User ID:", sessionData?.user?.id);
 
     if (!error && sessionData?.user) {
       const user = sessionData.user;
 
+      // Utilisation du client Admin (Service Role) pour contourner les RLS et créer l'orga en toute sécurité
+      const supabaseAdmin = createClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.SUPABASE_SERVICE_ROLE_KEY!,
+        {
+          auth: {
+            persistSession: false,
+            autoRefreshToken: false,
+          },
+        }
+      );
+
       // 1. Vérifier si l'utilisateur a déjà une organisation liée
-      const { data: existingMember, error: memberCheckError } = await supabase
+      const { data: existingMember } = await supabaseAdmin
         .from("organization_members")
         .select("organization_id")
         .eq("user_id", user.id)
         .maybeSingle();
-
-      console.log("Existing member check error:", memberCheckError);
-      console.log("Existing member found:", existingMember);
 
       // 2. Si aucune organisation n'existe, on la crée automatiquement
       if (!existingMember) {
@@ -69,7 +75,7 @@ export async function GET(req: NextRequest) {
         const baseSlug = slugify(orgName);
         const uniqueSlug = `${baseSlug}-${Math.random().toString(36).substring(2, 6)}`;
 
-        const { data: org, error: orgError } = await supabase
+        const { data: org, error: orgError } = await supabaseAdmin
           .from("organizations")
           .insert({
             name: orgName,
@@ -78,19 +84,14 @@ export async function GET(req: NextRequest) {
           .select()
           .single();
 
-        console.log("Org creation error:", orgError);
-        console.log("Org created:", org);
-
         if (!orgError && org) {
-          const { error: insertMemberError } = await supabase
+          await supabaseAdmin
             .from("organization_members")
             .insert({
               organization_id: org.id,
               user_id: user.id,
               role: "owner",
             });
-          
-          console.log("Member insertion error:", insertMemberError);
         }
       }
 
@@ -98,6 +99,5 @@ export async function GET(req: NextRequest) {
     }
   }
 
-  // En cas d'échec ou d'absence de code
   return NextResponse.redirect(new URL("/login?error=auth_failed", requestUrl.origin));
 }
