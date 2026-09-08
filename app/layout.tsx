@@ -27,7 +27,7 @@ const fontMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'Tyks Pro - Billetterie',
+  title: 'TYKS - Billetterie Premium',
   description: 'Gérez vos événements en toute simplicité',
 };
 
