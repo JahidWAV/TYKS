@@ -3,10 +3,10 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft, Save, Trash2, MapPin } from 'lucide-react';
+import { ArrowLeft, MapPin, Save, Trash2 } from 'lucide-react';
 import { supabaseBrowser } from '@/lib/supabase-browser';
 
-export default function EditEventDetailsPage() {
+export default function EditEventPage() {
   const router = useRouter();
   const params = useParams();
   const eventId = params.id as string;
@@ -28,7 +28,7 @@ export default function EditEventDetailsPage() {
     status: 'draft',
   });
 
-  const fetchEvent = useCallback(async () => {
+  const loadEvent = useCallback(async () => {
     try {
       const { data, error } = await supabaseBrowser
         .from('events')
@@ -61,15 +61,8 @@ export default function EditEventDetailsPage() {
   }, [eventId]);
 
   useEffect(() => {
-    supabaseBrowser.auth.getSession().then(({ data: { session } }) => {
-      if (session) {
-        fetchEvent();
-      } else {
-        setError("Vous devez être connecté.");
-        setLoading(false);
-      }
-    });
-  }, [fetchEvent]);
+    loadEvent();
+  }, [loadEvent]);
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -144,12 +137,12 @@ export default function EditEventDetailsPage() {
             className="inline-flex items-center gap-2 text-xs text-red-400 hover:text-red-300 transition-colors disabled:opacity-50"
           >
             <Trash2 className="w-4 h-4" />
-            <span>Supprimer l&apos;événement</span>
+            <span>Supprimer l'événement</span>
           </button>
         </div>
 
         <div className="mb-8">
-          <h1 className="font-display text-2xl font-bold tracking-tight text-bone">Modifier l&apos;événement</h1>
+          <h1 className="font-display text-2xl font-bold tracking-tight text-bone">Modifier l'événement</h1>
         </div>
 
         {error && (

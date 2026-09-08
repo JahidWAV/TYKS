@@ -1,161 +1,312 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
-import Navbar from '@/components/Navbar';
-import TicketPass from '@/components/TicketPass';
-import EventCard from '@/components/EventCard';
-import SamplePassPreview from '@/components/SamplePassPreview';
-import CustomAuthModal from '@/components/CustomAuthModal';
-import { supabaseBrowser } from '@/lib/supabase-browser';
+import { ArrowUpRight, Plus, Loader2, Calendar, MapPin, Trash2, Edit3, TrendingUp, Users, DollarSign, ShieldCheck, Zap, Database } from 'lucide-react';
 import type { IortiEvent } from '@/types/event';
-import { Sparkles, Calendar, Award, ArrowUpRight, ChevronRight, Loader2 } from 'lucide-react';
+import { supabaseBrowser } from '@/lib/supabase-browser';
 
-export default function HomePage() {
-  const [authenticated, setAuthenticated] = useState(false);
-  const [activeTab, setActiveTab] = useState<'pass' | 'events' | 'rewards'>('events');
+const STATUS_LABEL: Record<string, string> = {
+  draft: 'Brouillon',
+  published: 'Publié',
+  cancelled: 'Annulé',
+};
+
+export default function OrganizerDashboard() {
+  const [user, setUser] = useState<any>(null);
+  const [ready, setReady] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [events, setEvents] = useState<IortiEvent[]>([]);
-  const [loadingEvents, setLoadingEvents] = useState(true);
-  const [isAuthOpen, setIsAuthOpen] = useState(false);
+  const [authLoading, setAuthLoading] = useState(false);
 
   useEffect(() => {
-    supabaseBrowser.auth.getSession().then(({ data: { session } }) => {
-      setAuthenticated(!!session);
-    });
+    async function getSession() {
+      const { data: { session } } = await supabaseBrowser.auth.getSession();
+      setUser(session?.user ?? null);
+      setReady(true);
+    }
+    getSession();
 
     const { data: { subscription } } = supabaseBrowser.auth.onAuthStateChange((_event, session) => {
-      setAuthenticated(!!session);
+      setUser(session?.user ?? null);
     });
 
     return () => subscription.unsubscribe();
   }, []);
 
-  useEffect(() => {
-    async function fetchPublishedEvents() {
-      try {
-        const { data, error } = await supabaseBrowser
-          .from('events')
-          .select('*')
-          .eq('status', 'published')
-          .order('starts_at', { ascending: true });
+  const loadDashboard = useCallback(async (userId: string) => {
+    try {
+      setLoading(true);
+      const { data, error } = await supabaseBrowser
+        .from('events')
+        .select('*')
+        .eq('created_by', userId)
+        .order('starts_at', { ascending: true });
 
-        if (!error && data) {
-          setEvents(data);
-        }
-      } catch {
-        // Fallback silencieux
-      } finally {
-        setLoadingEvents(false);
+      if (error) {
+        console.error('Erreur Supabase :', error.message);
+      } else if (data) {
+        setEvents(data);
       }
+    } catch (err) {
+      console.error('Erreur de chargement :', err);
+    } finally {
+      setLoading(false);
     }
-
-    fetchPublishedEvents();
   }, []);
 
-  return (
-    <div className="relative min-h-screen bg-onyx text-bone font-sans antialiased selection:bg-bone/20 selection:text-bone">
-      <div className="grain" aria-hidden="true" />
-      <div className="relative z-10">
-        <Navbar />
-        {!authenticated ? (
-          <main>
-            <section className="max-w-5xl mx-auto px-6 pt-16 md:pt-24 pb-20">
-              <div className="grid lg:grid-cols-[1.15fr_0.85fr] gap-14 lg:gap-10 items-center">
-                <div className="text-center lg:text-left space-y-8">
-                  <h1 className="font-display text-5xl sm:text-6xl lg:text-[4.2rem] font-extrabold tracking-tightest text-bone leading-[1.04]">
-                    Votre soirée commence par un pass.
-                  </h1>
-                  <p className="text-bone-muted text-sm sm:text-base max-w-md mx-auto lg:mx-0 leading-relaxed">
-                    TYKS est la billetterie premium des soirées d&apos;exception : un accès vérifié, un prix honnête, et une entrée qui ne fait jamais attendre.
-                  </p>
-                  <div className="flex flex-col sm:flex-row lg:justify-start justify-center items-center gap-5 pt-2">
-                    <button
-                      onClick={() => setIsAuthOpen(true)}
-                      className="group relative inline-flex items-center justify-center gap-3 bg-bone text-onyx font-semibold text-xs tracking-wide px-8 py-4 rounded-full transition-all duration-300 hover:bg-white hover:scale-[1.01] active:scale-[0.99]"
-                    >
-                      <span>Activer mon pass</span>
-                      <ArrowUpRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-                    </button>
-                    <Link
-                      href="/organisateur"
-                      className="inline-flex items-center gap-1.5 text-xs font-medium text-bone-muted hover:text-bone transition-colors"
-                    >
-                      <span>J&apos;organise des événements</span>
-                      <ChevronRight className="w-3.5 h-3.5" />
-                    </Link>
-                  </div>
-                </div>
-                <div className="flex justify-center lg:justify-end">
-                  <SamplePassPreview />
-                </div>
-              </div>
-            </section>
-            {!loadingEvents && events.length > 0 && (
-              <section className="max-w-5xl mx-auto px-6 pb-24">
-                <div className="flex items-end justify-between mb-8">
-                  <div>
-                    <h2 className="font-display text-2xl font-bold tracking-tight text-bone">
-                      Les prochaines soirées
-                    </h2>
-                    <p className="text-xs text-bone-faint mt-1">Billetterie officielle et événements partenaires</p>
-                  </div>
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                  {events.slice(0, 3).map((evt) => (
-                    <EventCard key={evt.id} event={evt} />
-                  ))}
-                </div>
-              </section>
+  useEffect(() => {
+    if (ready && user?.id) {
+      loadDashboard(user.id);
+    } else if (ready && !user) {
+      setLoading(false);
+    }
+  }, [ready, user, loadDashboard]);
+
+  const handleGoogleLogin = async () => {
+    try {
+      setAuthLoading(true);
+      const { error } = await supabaseBrowser.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: `${window.location.origin}/organisateur`,
+        },
+      });
+      if (error) throw error;
+    } catch (err) {
+      console.error('Erreur de connexion :', err);
+      setAuthLoading(false);
+    }
+  };
+
+  const handleDeleteEvent = async (eventId: string) => {
+    if (!confirm('Es-tu sûr de vouloir supprimer cet événement ?')) return;
+
+    try {
+      const { error } = await supabaseBrowser
+        .from('events')
+        .delete()
+        .eq('id', eventId);
+
+      if (error) throw error;
+      setEvents(events.filter((e) => e.id !== eventId));
+    } catch (err) {
+      console.error('Erreur lors de la suppression :', err);
+      alert('Impossible de supprimer l\'événement.');
+    }
+  };
+
+  if (!ready) {
+    return (
+      <div className="flex min-h-[60vh] items-center justify-center">
+        <Loader2 className="h-6 w-6 animate-spin text-bone-muted" />
+      </div>
+    );
+  }
+
+  // ==========================================
+  // 1. LANDING PAGE PRO (Non connectés)
+  // ==========================================
+  if (!user) {
+    return (
+      <div className="mx-auto max-w-5xl px-6 py-16 space-y-24">
+        {/* Hero Section */}
+        <div className="flex flex-col items-center text-center space-y-6">
+          <div className="inline-flex items-center gap-2 rounded-full border border-onyx-line bg-onyx-raised px-4 py-1.5 text-xs text-bone-muted">
+            <Zap className="w-3.5 h-3.5 text-bone" />
+            <span>L&apos;alternative moderne à Shotgun et DICE</span>
+          </div>
+
+          <h1 className="font-display text-4xl md:text-6xl font-bold text-bone tracking-tight max-w-3xl">
+            Reprenez le contrôle de votre billetterie et de vos marges.
+          </h1>
+
+          <p className="max-w-xl text-base text-bone-muted leading-relaxed">
+            Fins de commissions abusives et de données captives. Tyks Pro vous offre une plateforme sur-mesure, des frais réduits et l&apos;accès direct à votre communauté.
+          </p>
+
+          <button
+            onClick={handleGoogleLogin}
+            disabled={authLoading}
+            className="inline-flex items-center gap-3 rounded-full bg-bone px-8 py-4 text-sm font-semibold text-onyx transition hover:bg-white disabled:opacity-50 shadow-lg shadow-bone/5"
+          >
+            {authLoading ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <ArrowUpRight className="h-4 w-4" />
             )}
-          </main>
-        ) : (
-          <main className="max-w-4xl mx-auto px-6 pt-10 pb-20">
-            <div className="flex justify-center mb-12">
-              <nav className="inline-flex p-1 bg-onyx-raised/80 backdrop-blur-md border border-onyx-line rounded-full">
-                <button
-                  onClick={() => setActiveTab('events')}
-                  className={`flex items-center gap-2 px-6 py-2.5 rounded-full text-xs font-medium tracking-wide transition-all ${
-                    activeTab === 'events' ? 'bg-bone text-onyx font-semibold shadow-sm' : 'text-bone-muted hover:text-bone'
-                  }`}
-                >
-                  <Calendar className="w-3.5 h-3.5" />
-                  Événements
-                </button>
-                <button
-                  onClick={() => setActiveTab('pass')}
-                  className={`flex items-center gap-2 px-6 py-2.5 rounded-full text-xs font-medium tracking-wide transition-all ${
-                    activeTab === 'pass' ? 'bg-bone text-onyx font-semibold shadow-sm' : 'text-bone-muted hover:text-bone'
-                  }`}
-                >
-                  <Sparkles className="w-3.5 h-3.5" />
-                  Mon pass
-                </button>
-                <button
-                  onClick={() => setActiveTab('rewards')}
-                  className={`flex items-center gap-2 px-6 py-2.5 rounded-full text-xs font-medium tracking-wide transition-all ${
-                    activeTab === 'rewards' ? 'bg-bone text-onyx font-semibold shadow-sm' : 'text-bone-muted hover:text-bone'
-                  }`}
-                >
-                  <Award className="w-3.5 h-3.5" />
-                  Palmarès
-                </button>
-              </nav>
+            <span>Accéder à mon espace Pro</span>
+          </button>
+        </div>
+
+        {/* Grille Avantages / Comparatif rapide */}
+        <div className="grid md:grid-cols-3 gap-6 pt-10 border-t border-onyx-line">
+          <div className="p-8 rounded-2xl bg-onyx-raised/40 border border-onyx-line space-y-4">
+            <div className="w-10 h-10 rounded-xl bg-bone/10 flex items-center justify-center text-bone">
+              <DollarSign className="w-5 h-5" />
             </div>
-            {activeTab === 'pass' && (
-              <div className="flex flex-col items-center justify-center fade-rise pt-4">
-                <div className="text-center mb-8 space-y-1">
-                  <h2 className="font-display text-2xl font-bold tracking-tight">Pass membre permanent</h2>
-                  <p className="text-xs text-bone-muted">
-                    Présentez ce QR Code unique au contrôle d&apos;accès de l&apos;établissement.
-                  </p>
+            <h3 className="font-display text-lg font-bold text-bone">Marges maximales</h3>
+            <p className="text-xs text-bone-muted leading-relaxed">
+              Oubliez les grilles tarifaires rigides des grandes applications. Gardez un maximum de revenus sur chaque place vendue.
+            </p>
+          </div>
+
+          <div className="p-8 rounded-2xl bg-onyx-raised/40 border border-onyx-line space-y-4">
+            <div className="w-10 h-10 rounded-xl bg-bone/10 flex items-center justify-center text-bone">
+              <Database className="w-5 h-5" />
+            </div>
+            <h3 className="font-display text-lg font-bold text-bone">Données 100% vous</h3>
+            <p className="text-xs text-bone-muted leading-relaxed">
+              Contrairement aux plateformes qui conservent vos spectateurs captifs, accédez en temps réel aux emails et contacts de votre public.
+            </p>
+          </div>
+
+          <div className="p-8 rounded-2xl bg-onyx-raised/40 border border-onyx-line space-y-4">
+            <div className="w-10 h-10 rounded-xl bg-bone/10 flex items-center justify-center text-bone">
+              <ShieldCheck className="w-5 h-5" />
+            </div>
+            <h3 className="font-display text-lg font-bold text-bone">Image de marque</h3>
+            <p className="text-xs text-bone-muted leading-relaxed">
+              Profitez d&apos;un sous-domaine dédié (`pro.tyks.app`) et d&apos;une interface aux couleurs de votre univers artistique ou de votre structure.
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (loading) {
+    return (
+      <div className="flex min-h-[60vh] items-center justify-center">
+        <Loader2 className="h-6 w-6 animate-spin text-bone-muted" />
+      </div>
+    );
+  }
+
+  // Calculs statistiques globaux basés sur les événements réels
+  const totalEvents = events.length;
+  const publishedEvents = events.filter(e => e.status === 'published').length;
+
+  // ==========================================
+  // 2. DASHBOARD ORGANISATEUR (Connectés)
+  // ==========================================
+  return (
+    <div className="mx-auto max-w-6xl px-6 py-10 space-y-10">
+      {/* En-tête */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+          <h1 className="font-display text-3xl font-bold text-bone">Tableau de bord Pro</h1>
+          <p className="text-sm text-bone-muted">Pilotez vos événements et suivez vos performances en direct</p>
+        </div>
+        <Link
+          href="/organisateur/nouveau"
+          className="inline-flex items-center justify-center gap-2 rounded-full bg-bone px-5 py-2.5 text-sm font-semibold text-onyx transition hover:bg-white"
+        >
+          <Plus className="h-4 w-4" />
+          Créer un événement
+        </Link>
+      </div>
+
+      {/* Statistiques Globales */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div className="p-6 rounded-2xl border border-onyx-line bg-onyx-raised/40 space-y-2">
+          <div className="flex items-center justify-between text-bone-muted">
+            <span className="text-xs uppercase tracking-wider font-mono">Total Événements</span>
+            <Calendar className="w-4 h-4 text-bone-faint" />
+          </div>
+          <p className="font-display text-3xl font-bold text-bone">{totalEvents}</p>
+        </div>
+
+        <div className="p-6 rounded-2xl border border-onyx-line bg-onyx-raised/40 space-y-2">
+          <div className="flex items-center justify-between text-bone-muted">
+            <span className="text-xs uppercase tracking-wider font-mono">Événements publiés</span>
+            <TrendingUp className="w-4 h-4 text-bone-faint" />
+          </div>
+          <p className="font-display text-3xl font-bold text-bone">{publishedEvents}</p>
+        </div>
+
+        <div className="p-6 rounded-2xl border border-onyx-line bg-onyx-raised/40 space-y-2">
+          <div className="flex items-center justify-between text-bone-muted">
+            <span className="text-xs uppercase tracking-wider font-mono">Statut du compte</span>
+            <Users className="w-4 h-4 text-bone-faint" />
+          </div>
+          <p className="font-display text-sm font-semibold text-emerald-400 mt-2 flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+            Compte Vérifié & Actif
+          </p>
+        </div>
+      </div>
+
+      {/* Liste des Événements */}
+      <div className="space-y-4">
+        <h2 className="font-display text-xl font-bold text-bone">Vos Événements</h2>
+
+        {events.length === 0 ? (
+          <div className="rounded-2xl border border-onyx-line bg-onyx-raised/50 p-12 text-center space-y-3">
+            <Calendar className="h-8 w-8 text-bone-muted mx-auto" />
+            <p className="text-bone-muted text-sm">Aucun événement à votre actif pour le moment.</p>
+          </div>
+        ) : (
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {events.map((evt) => (
+              <article
+                key={evt.id}
+                className="group p-6 bg-onyx-raised/60 hover:bg-onyx-raised border border-onyx-line rounded-2xl transition-all duration-200 flex flex-col justify-between space-y-6"
+              >
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="font-mono text-[10px] text-bone-faint">
+                      {new Date(evt.starts_at).toLocaleDateString('fr-FR', {
+                        day: '2-digit',
+                        month: 'short',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                      })}
+                    </span>
+                    <span className="text-[10px] font-mono text-bone-faint border border-onyx-line px-2 py-0.5 rounded">
+                      {STATUS_LABEL[evt.status] ?? evt.status}
+                    </span>
+                  </div>
+
+                  <h3 className="font-display text-lg font-bold text-bone tracking-tight group-hover:text-white transition-colors">
+                    {evt.title}
+                  </h3>
+
+                  {evt.description && (
+                    <p className="text-xs text-bone-faint line-clamp-2 leading-relaxed">
+                      {evt.description}
+                    </p>
+                  )}
                 </div>
-                <TicketPass />
-              </div>
-            )}
-          </main>
+
+                <div className="pt-4 border-t border-onyx-line flex items-center justify-between">
+                  <div className="flex items-center gap-1.5 text-xs text-bone-muted">
+                    <MapPin className="w-3.5 h-3.5 text-bone-faint" />
+                    <span>{evt.location || 'Lieu non spécifié'}</span>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <Link
+                      href={`/organisateur/${evt.id}`}
+                      className="p-2 rounded-full border border-onyx-line hover:bg-white/10 text-bone transition-colors"
+                      title="Modifier"
+                    >
+                      <Edit3 className="w-3.5 h-3.5" />
+                    </Link>
+                    <button
+                      onClick={() => handleDeleteEvent(evt.id)}
+                      className="p-2 rounded-full border border-red-500/30 hover:bg-red-500/10 text-red-400 transition-colors"
+                      title="Supprimer"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                </div>
+              </article>
+            ))}
+          </div>
         )}
       </div>
-      <CustomAuthModal isOpen={isAuthOpen} onClose={() => setIsAuthOpen(false)} />
     </div>
   );
 }
