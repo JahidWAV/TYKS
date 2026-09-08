@@ -1,6 +1,7 @@
 import { headers } from 'next/headers';
-import OrganizerDashboardContent from '@/components/OrganizerDashboardContent';
+import OrganizerDashboard from '@/app/page-client'; // Ou ton code actuel
 
+// On extrait la logique serveur pour le domaine
 export default async function Page() {
   const headersList = await headers();
   const hostname = headersList.get('host') || '';
@@ -23,6 +24,7 @@ export default async function Page() {
     );
   }
 
-  // Si on est sur pro.tyks.app, on affiche ton dashboard organisateur complet
-  return <OrganizerDashboardContent />;
+  // Si on est sur pro.tyks.app, on importe ou garde ton dashboard pro
+  // Pour éviter de dupliquer, tu peux laisser ton code client habituel ici
+  return <OrganizerDashboard />;
 }
