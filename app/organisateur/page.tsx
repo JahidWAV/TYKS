@@ -3,34 +3,47 @@
 import { useCallback, useEffect, useState } from 'react';
 import { usePrivy } from '@privy-io/react-auth';
 import Link from 'next/link';
-import { ArrowUpRight, Plus, Loader2 } from 'lucide-react';
+import { ArrowUpRight, Plus, Loader2, Calendar, MapPin } from 'lucide-react';
 import type { IortiEvent } from '@/types/event';
-import type { OrgRole } from '@/lib/organizer';
 import CustomAuthModal from '@/components/CustomAuthModal';
+import { supabaseBrowser } from '@/lib/supabase-browser';
+
+const STATUS_LABEL: Record<string, string> = {
+  draft: 'Brouillon',
+  published: 'Publié',
+  cancelled: 'Annulé',
+};
 
 export default function OrganizerDashboard() {
-  const { ready, authenticated, getAccessToken } = usePrivy();
+  const { ready, authenticated, user } = usePrivy();
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [events, setEvents] = useState<IortiEvent[]>([]);
 
   const loadDashboard = useCallback(async () => {
+    if (!user?.id) return;
+
     try {
       setLoading(true);
-      const token = await getAccessToken();
-      if (!token) return;
 
-      // Charge tes événements/données organisateur ici via fetch()
-      // Exemple :
-      // const res = await fetch('/api/organizer/events', { headers: { Authorization: `Bearer ${token}` } });
-      // const data = await res.json();
-      // setEvents(data.events);
+      // Récupération des événements créés par l'utilisateur connecté
+      const { data, error } = await supabaseBrowser
+        .from('events')
+        .select('*')
+        .eq('created_by', user.id)
+        .order('starts_at', { ascending: true });
+
+      if (error) {
+        console.error('Erreur Supabase :', error.message);
+      } else if (data) {
+        setEvents(data);
+      }
     } catch (err) {
       console.error('Erreur de chargement :', err);
     } finally {
       setLoading(false);
     }
-  }, [getAccessToken]);
+  }, [user?.id]);
 
   useEffect(() => {
     if (ready && authenticated) {
@@ -94,12 +107,58 @@ export default function OrganizerDashboard() {
       </div>
 
       {events.length === 0 ? (
-        <div className="rounded-2xl border border-onyx-line bg-onyx-raised/50 p-12 text-center">
-          <p className="text-bone-muted">Aucun événement trouvé pour le moment.</p>
+        <div className="rounded-2xl border border-onyx-line bg-onyx-raised/50 p-12 text-center space-y-3">
+          <Calendar className="h-8 w-8 text-bone-muted mx-auto" />
+          <p className="text-bone-muted text-sm">Aucun événement créé pour le moment.</p>
         </div>
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {/* Liste des événements */}
+          {events.map((evt) => (
+            <article
+              key={evt.id}
+              className="group p-6 bg-onyx-raised/60 hover:bg-onyx-raised border border-onyx-line rounded-2xl transition-all duration-200 flex flex-col justify-between space-y-6"
+            >
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="font-mono text-[10px] text-bone-faint">
+                    {new Date(evt.starts_at).toLocaleDateString('fr-FR', {
+                      day: '2-digit',
+                      month: 'short',
+                      hour: '2-digit',
+                      minute: '2-digit',
+                    })}
+                  </span>
+                  <span className="text-[10px] font-mono text-bone-faint border border-onyx-line px-2 py-0.5 rounded">
+                    {STATUS_LABEL[evt.status] ?? evt.status}
+                  </span>
+                </div>
+
+                <h3 className="font-display text-lg font-bold text-bone tracking-tight group-hover:text-white transition-colors">
+                  {evt.title}
+                </h3>
+
+                {evt.description && (
+                  <p className="text-xs text-bone-faint line-clamp-2 leading-relaxed">
+                    {evt.description}
+                  </p>
+                )}
+              </div>
+
+              <div className="pt-4 border-t border-onyx-line flex items-center justify-between">
+                <div className="flex items-center gap-1.5 text-xs text-bone-muted">
+                  <MapPin className="w-3.5 h-3.5 text-bone-faint" />
+                  <span>{evt.location || 'Lieu non spécifié'}</span>
+                </div>
+
+                <Link
+                  href={`/organisateur/evenements/${evt.id}`}
+                  className="inline-flex items-center gap-1.5 bg-bone text-onyx font-semibold text-xs px-4 py-2 rounded-full transition-colors hover:bg-white"
+                >
+                  Gérer
+                </Link>
+              </div>
+            </article>
+          ))}
         </div>
       )}
     </div>
