@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { usePrivy } from "@privy-io/react-auth";
 import { useWallets } from "@privy-io/react-auth/solana";
 import { LogOut, Loader2, Menu, X } from "lucide-react";
@@ -24,9 +25,12 @@ export default function Navbar() {
     <>
       <header className="sticky top-0 z-50 glass-panel">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-          <span className="font-display text-2xl font-extrabold tracking-tightest text-bone">
-            TYKS
-          </span>
+          {/* Logo -> Retour à l'accueil */}
+          <Link href="/" className="group">
+            <span className="font-display text-2xl font-extrabold tracking-tightest text-bone transition-colors group-hover:text-bone-muted">
+              TYKS
+            </span>
+          </Link>
 
           {/* Desktop right side */}
           <div className="hidden items-center gap-4 sm:flex">
