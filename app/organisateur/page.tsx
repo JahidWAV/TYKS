@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
-import { ArrowUpRight, Plus, Loader2, Calendar, MapPin } from 'lucide-react';
+import { ArrowUpRight, Plus, Loader2, Calendar, MapPin, Trash2, Edit3 } from 'lucide-react';
 import type { IortiEvent } from '@/types/event';
 import { supabaseBrowser } from '@/lib/supabase-browser';
 
@@ -17,8 +17,9 @@ export default function OrganizerDashboard() {
   const [ready, setReady] = useState(false);
   const [loading, setLoading] = useState(true);
   const [events, setEvents] = useState<IortiEvent[]>([]);
+  const [authLoading, setAuthLoading] = useState(false);
 
-  // 1. Récupération de l'utilisateur connecté via Supabase Auth
+  // 1. Gestion de la session Supabase
   useEffect(() => {
     async function getSession() {
       const { data: { session } } = await supabaseBrowser.auth.getSession();
@@ -37,7 +38,6 @@ export default function OrganizerDashboard() {
   const loadDashboard = useCallback(async (userId: string) => {
     try {
       setLoading(true);
-
       const { data, error } = await supabaseBrowser
         .from('events')
         .select('*')
@@ -64,7 +64,41 @@ export default function OrganizerDashboard() {
     }
   }, [ready, user, loadDashboard]);
 
-  // 1. En attente d'initialisation
+  // Connexion Google directe depuis le sous-domaine
+  const handleGoogleLogin = async () => {
+    try {
+      setAuthLoading(true);
+      const { error } = await supabaseBrowser.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: `${window.location.origin}/organisateur`,
+        },
+      });
+      if (error) throw error;
+    } catch (err) {
+      console.error('Erreur de connexion :', err);
+      setAuthLoading(false);
+    }
+  };
+
+  // Suppression d'un événement
+  const handleDeleteEvent = async (eventId: string) => {
+    if (!confirm('Es-tu sûr de vouloir supprimer cet événement ?')) return;
+
+    try {
+      const { error } = await supabaseBrowser
+        .from('events')
+        .delete()
+        .eq('id', eventId);
+
+      if (error) throw error;
+      setEvents(events.filter((e) => e.id !== eventId));
+    } catch (err) {
+      console.error('Erreur lors de la suppression :', err);
+      alert('Impossible de supprimer l\'événement.');
+    }
+  };
+
   if (!ready) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
@@ -73,25 +107,33 @@ export default function OrganizerDashboard() {
     );
   }
 
-  // 2. Non authentifié
+  // Écran de connexion intégré propre au sous-domaine Pro
   if (!user) {
     return (
-      <div className="flex min-h-[70vh] flex-col items-center justify-center gap-5 px-6 text-center">
-        <p className="max-w-xs text-sm text-bone-muted">
-          Connecte-toi pour accéder à l&apos;espace organisateur.
-        </p>
-        <Link
-          href="/"
-          className="inline-flex items-center gap-2.5 rounded-full bg-bone px-7 py-3.5 text-sm font-semibold text-onyx transition-colors hover:bg-white"
+      <div className="flex min-h-[70vh] flex-col items-center justify-center gap-6 px-6 text-center">
+        <div className="space-y-2">
+          <h1 className="font-display text-3xl font-bold text-bone">Espace Organisateur Pro</h1>
+          <p className="max-w-sm text-sm text-bone-muted">
+            Connecte-toi pour piloter tes ventes, créer et configurer tes événements sur Tyks.
+          </p>
+        </div>
+
+        <button
+          onClick={handleGoogleLogin}
+          disabled={authLoading}
+          className="inline-flex items-center gap-3 rounded-full bg-bone px-8 py-4 text-sm font-semibold text-onyx transition hover:bg-white disabled:opacity-50"
         >
-          <span>Se connecter sur le site principal</span>
-          <ArrowUpRight className="h-4 w-4" />
-        </Link>
+          {authLoading ? (
+            <Loader2 className="h-4 w-4 animate-spin" />
+          ) : (
+            <ArrowUpRight className="h-4 w-4" />
+          )}
+          <span>Se connecter avec Google</span>
+        </button>
       </div>
     );
   }
 
-  // 3. Chargement des données organisateur
   if (loading) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
@@ -100,16 +142,15 @@ export default function OrganizerDashboard() {
     );
   }
 
-  // 4. Authentifié et chargé
   return (
     <div className="mx-auto max-w-6xl px-6 py-10">
       <div className="mb-8 flex items-center justify-between">
         <div>
-          <h1 className="font-display text-3xl font-bold text-bone">Espace Organisateur</h1>
-          <p className="text-sm text-bone-muted">Gère tes événements et ta billetterie</p>
+          <h1 className="font-display text-3xl font-bold text-bone">Tableau de bord</h1>
+          <p className="text-sm text-bone-muted">Gère tes événements, modifications et suppressions</p>
         </div>
         <Link
-          href="/organisateur/evenements/nouveau"
+          href="/organisateur/nouveau"
           className="inline-flex items-center gap-2 rounded-full bg-bone px-5 py-2.5 text-sm font-semibold text-onyx transition hover:bg-white"
         >
           <Plus className="h-4 w-4" />
@@ -120,7 +161,7 @@ export default function OrganizerDashboard() {
       {events.length === 0 ? (
         <div className="rounded-2xl border border-onyx-line bg-onyx-raised/50 p-12 text-center space-y-3">
           <Calendar className="h-8 w-8 text-bone-muted mx-auto" />
-          <p className="text-bone-muted text-sm">Aucun événement créé pour le moment.</p>
+          <p className="text-bone-muted text-sm">Aucun événement à ton actif pour le moment.</p>
         </div>
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -161,12 +202,22 @@ export default function OrganizerDashboard() {
                   <span>{evt.location || 'Lieu non spécifié'}</span>
                 </div>
 
-                <Link
-                  href={`/organisateur/evenements/${evt.id}`}
-                  className="inline-flex items-center gap-1.5 bg-bone text-onyx font-semibold text-xs px-4 py-2 rounded-full transition-colors hover:bg-white"
-                >
-                  Gérer
-                </Link>
+                <div className="flex items-center gap-2">
+                  <Link
+                    href={`/organisateur/${evt.id}`}
+                    className="p-2 rounded-full border border-onyx-line hover:bg-white/10 text-bone transition-colors"
+                    title="Modifier"
+                  >
+                    <Edit3 className="w-3.5 h-3.5" />
+                  </Link>
+                  <button
+                    onClick={() => handleDeleteEvent(evt.id)}
+                    className="p-2 rounded-full border border-red-500/30 hover:bg-red-500/10 text-red-400 transition-colors"
+                    title="Supprimer"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </button>
+                </div>
               </div>
             </article>
           ))}
