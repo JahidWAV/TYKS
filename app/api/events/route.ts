@@ -48,18 +48,22 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Titre, lieu et date de début sont requis." }, { status: 400 });
     }
 
+    const parsedPrice = price ? parseFloat(price) : 0;
+
     const { data: event, error } = await supabaseServer
       .from("events")
       .insert({
         organization_id: membership.organizationId,
         title,
-        description,
+        description: description || null,
         location,
         starts_at,
-        ends_at,
-        price: price ? parseFloat(price) : 0,
-        capacity: capacity ? parseInt(capacity) : null,
-        image_url,
+        ends_at: ends_at || null,
+        price: parsedPrice,
+        price_cents: Math.round(parsedPrice * 100),
+        capacity: capacity ? parseInt(capacity, 10) : null,
+        image_url: image_url || null,
+        created_by: privyUserId, // <-- Injections de l'ID pour corriger l'erreur NOT NULL
         status: "draft",
       })
       .select()
