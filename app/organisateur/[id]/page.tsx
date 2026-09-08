@@ -2,15 +2,14 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { useRouter, useParams } from 'next/navigation';
-import { usePrivy } from '@privy-io/react-auth';
 import Link from 'next/link';
-import { ArrowLeft, Calendar, MapPin, Euro, Users, Image as ImageIcon, Save, Trash2 } from 'lucide-react';
+import { ArrowLeft, MapPin, Save, Trash2 } from 'lucide-react';
+import { supabaseBrowser } from '@/lib/supabase-browser';
 
 export default function EditEventPage() {
   const router = useRouter();
   const params = useParams();
   const eventId = params.id as string;
-  const { getAccessToken } = usePrivy();
 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -31,36 +30,35 @@ export default function EditEventPage() {
 
   const loadEvent = useCallback(async () => {
     try {
-      const token = await getAccessToken();
-      const res = await fetch(`/api/events`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error);
+      const { data, error } = await supabaseBrowser
+        .from('events')
+        .select('*')
+        .eq('id', eventId)
+        .single();
 
-      const currentEvent = data.events.find((e: any) => e.id === eventId);
-      if (!currentEvent) {
+      if (error) throw error;
+      if (!data) {
         setError('Événement introuvable.');
         return;
       }
 
       setForm({
-        title: currentEvent.title || '',
-        description: currentEvent.description || '',
-        location: currentEvent.location || '',
-        starts_at: currentEvent.starts_at ? new Date(currentEvent.starts_at).toISOString().slice(0, 16) : '',
-        ends_at: currentEvent.ends_at ? new Date(currentEvent.ends_at).toISOString().slice(0, 16) : '',
-        price: currentEvent.price?.toString() || '0',
-        capacity: currentEvent.capacity?.toString() || '',
-        image_url: currentEvent.image_url || '',
-        status: currentEvent.status || 'draft',
+        title: data.title || '',
+        description: data.description || '',
+        location: data.location || '',
+        starts_at: data.starts_at ? new Date(data.starts_at).toISOString().slice(0, 16) : '',
+        ends_at: data.ends_at ? new Date(data.ends_at).toISOString().slice(0, 16) : '',
+        price: data.price?.toString() || '0',
+        capacity: data.capacity?.toString() || '',
+        image_url: data.image_url || '',
+        status: data.status || 'draft',
       });
     } catch (err: any) {
       setError(err.message || 'Impossible de charger cet événement.');
     } finally {
       setLoading(false);
     }
-  }, [eventId, getAccessToken]);
+  }, [eventId]);
 
   useEffect(() => {
     loadEvent();
@@ -76,20 +74,13 @@ export default function EditEventPage() {
     setError(null);
 
     try {
-      const token = await getAccessToken();
-      const res = await fetch(`/api/events/${eventId}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(form),
-      });
+      const { error } = await supabaseBrowser
+        .from('events')
+        .update(form)
+        .eq('id', eventId);
 
-      const data = await res.json();
-
-      if (!res.ok) {
-        setError(data.error ?? 'Erreur lors de la mise à jour.');
+      if (error) {
+        setError(error.message || 'Erreur lors de la mise à jour.');
         return;
       }
 
@@ -106,12 +97,12 @@ export default function EditEventPage() {
     if (!confirm('Es-tu sûr de vouloir supprimer définitivement cet événement ?')) return;
     setDeleting(true);
     try {
-      const token = await getAccessToken();
-      const res = await fetch(`/api/events/${eventId}`, {
-        method: 'DELETE',
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      if (!res.ok) throw new Error('Erreur lors de la suppression.');
+      const { error } = await supabaseBrowser
+        .from('events')
+        .delete()
+        .eq('id', eventId);
+
+      if (error) throw error;
       router.push('/organisateur');
       router.refresh();
     } catch (err: any) {
@@ -161,7 +152,6 @@ export default function EditEventPage() {
         )}
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Statut de l'événement */}
           <div className="bg-onyx-raised border border-onyx-line rounded-2xl p-6 space-y-4">
             <h2 className="text-sm font-semibold text-bone border-b border-onyx-line pb-3">Statut de publication</h2>
             <div>
@@ -178,10 +168,8 @@ export default function EditEventPage() {
             </div>
           </div>
 
-          {/* Détails */}
           <div className="bg-onyx-raised border border-onyx-line rounded-2xl p-6 space-y-4">
             <h2 className="text-sm font-semibold text-bone border-b border-onyx-line pb-3">Détails généraux</h2>
-            
             <div>
               <label className="block text-xs text-bone-faint mb-1.5">Titre *</label>
               <input
@@ -193,7 +181,6 @@ export default function EditEventPage() {
                 className="w-full bg-onyx border border-onyx-line rounded-xl px-4 py-3 text-sm text-bone outline-none focus:border-cobalt/50 transition-colors"
               />
             </div>
-
             <div>
               <label className="block text-xs text-bone-faint mb-1.5">Description</label>
               <textarea
@@ -204,7 +191,6 @@ export default function EditEventPage() {
                 className="w-full bg-onyx border border-onyx-line rounded-xl px-4 py-3 text-sm text-bone outline-none focus:border-cobalt/50 transition-colors resize-none"
               />
             </div>
-
             <div>
               <label className="block text-xs text-bone-faint mb-1.5">Lieu / Adresse *</label>
               <div className="relative">
@@ -221,10 +207,8 @@ export default function EditEventPage() {
             </div>
           </div>
 
-          {/* Dates, Prix & Jauge */}
           <div className="bg-onyx-raised border border-onyx-line rounded-2xl p-6 space-y-4">
             <h2 className="text-sm font-semibold text-bone border-b border-onyx-line pb-3">Dates & Billetterie</h2>
-            
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="block text-xs text-bone-faint mb-1.5">Début *</label>
@@ -248,7 +232,6 @@ export default function EditEventPage() {
                 />
               </div>
             </div>
-
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
               <div>
                 <label className="block text-xs text-bone-faint mb-1.5">Prix (€)</label>
