@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
-import { ArrowUpRight, Plus, Loader2, Calendar, MapPin, Trash2, Edit3 } from 'lucide-react';
+import { ArrowUpRight, Plus, Loader2, Calendar, MapPin, Trash2 } from 'lucide-react';
 import type { IortiEvent } from '@/types/event';
 import { supabaseBrowser } from '@/lib/supabase-browser';
 
@@ -281,7 +281,7 @@ export default function OrganizerDashboard() {
 
                 <div className="flex items-center justify-between border-t border-onyx-line px-6 py-3">
                   <span className="font-mono text-xs text-bone">
-                    {evt.price ? `${evt.price} €` : 'Gratuit'}
+                    {STATUS_LABEL[evt.status] ?? evt.status}
                   </span>
                   <div className="flex items-center gap-2">
                     <button
