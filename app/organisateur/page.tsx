@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { ArrowUpRight, Pencil, Trash2, Plus } from 'lucide-react';
 import type { IortiEvent } from '@/types/event';
 import type { OrgRole } from '@/lib/organizer';
-import AuthModal from '@/components/AuthModal'; // Importe ta modal personnalisée
+import AuthFlowModal from '@/components/AuthFlowModal'; // Importe ta modal personnalisée
 
 export default function OrganizerDashboard() {
   const { ready, authenticated, getAccessToken } = usePrivy();
