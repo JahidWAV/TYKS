@@ -4,13 +4,11 @@ import { Inter, Space_Grotesk, JetBrains_Mono } from 'next/font/google';
 import Navbar from '@/components/Navbar';
 import './globals.css';
 
-// Ajustez ces trois fonts selon votre charte d'origine si ce n'était pas
-// exactement celles-ci — ce qui compte est de bien exposer les variables
-// CSS attendues par tailwind.config.ts : --font-body, --font-display, --font-mono
 const fontBody = Inter({
   subsets: ['latin'],
   variable: '--font-body',
   display: 'swap',
+  fallback: ['system-ui', 'sans-serif'],
 });
 
 const fontDisplay = Space_Grotesk({
@@ -18,12 +16,14 @@ const fontDisplay = Space_Grotesk({
   weight: ['500', '700'],
   variable: '--font-display',
   display: 'swap',
+  fallback: ['system-ui', 'sans-serif'],
 });
 
 const fontMono = JetBrains_Mono({
   subsets: ['latin'],
   variable: '--font-mono',
   display: 'swap',
+  fallback: ['ui-monospace', 'monospace'],
 });
 
 export const metadata: Metadata = {
