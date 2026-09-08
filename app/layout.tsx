@@ -45,9 +45,10 @@ export default async function RootLayout({
       lang="fr"
       className={`${fontBody.variable} ${fontDisplay.variable} ${fontMono.variable}`}
     >
-      <body className="min-h-screen bg-onyx text-bone flex flex-col selection:bg-bone/20 selection:text-bone font-sans">
+      <body className="relative min-h-screen bg-onyx bg-night-glow text-bone flex flex-col selection:bg-bone/20 selection:text-bone font-sans">
+        <div className="grain" aria-hidden="true" />
         <Navbar isPro={isPro} />
-        <main className="flex-1">{children}</main>
+        <main className="relative z-10 flex-1">{children}</main>
       </body>
     </html>
   );
