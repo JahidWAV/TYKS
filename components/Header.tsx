@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { usePrivy } from '@privy-io/react-auth';
 import { ArrowUpRight } from 'lucide-react';
-import CustomAuthModal from '@/components/CustomAuthModal'; // Importe ta modal personnalisée
+import CustomAuthModal from '@/components/CustomAuthModal';
 
 export default function Header() {
   const { ready, authenticated, logout } = usePrivy();
@@ -15,10 +15,10 @@ export default function Header() {
       <header className="w-full border-b border-onyx-line bg-onyx/80 backdrop-blur-md sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2 group">
-            <span className="font-display text-xl font-bold tracking-tightest text-bone group-hover:text-cobalt transition-colors">
+            <span className="font-display text-xl font-bold tracking-tightest text-bone group-hover:text-bone-muted transition-colors">
               TYKS
             </span>
-            <span className="text-[10px] uppercase tracking-widest px-2 py-0.5 rounded-full bg-cobalt/10 text-cobalt border border-cobalt/20 font-mono">
+            <span className="text-[10px] uppercase tracking-widest px-2 py-0.5 rounded-full bg-bone/10 text-bone border border-bone/20 font-mono">
               PRO
             </span>
           </Link>
@@ -43,7 +43,7 @@ export default function Header() {
                 ) : (
                   <button
                     onClick={() => setIsAuthModalOpen(true)}
-                    className="inline-flex items-center gap-2 bg-cobalt hover:bg-cobalt-soft text-bone text-xs font-semibold px-4 py-2 rounded-full transition-colors"
+                    className="inline-flex items-center gap-2 bg-bone hover:bg-white text-onyx text-xs font-semibold px-4 py-2 rounded-full transition-colors"
                   >
                     <span>Connexion</span>
                     <ArrowUpRight className="w-3.5 h-3.5" />
