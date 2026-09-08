@@ -2,19 +2,21 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
+import { usePrivy } from '@privy-io/react-auth';
 import Link from 'next/link';
-import Navbar from '@/components/Navbar';
-import { ArrowLeft, Loader2, Calendar, MapPin, Sparkles, ArrowUpRight } from 'lucide-react';
+import { ArrowLeft, Loader2, Calendar, MapPin, CheckCircle, Clock } from 'lucide-react';
 import { supabaseBrowser } from '@/lib/supabase-browser';
 import type { IortiEvent } from '@/types/event';
 
-export default function EventDetailPage() {
+export default function ManageEventPage() {
   const params = useParams();
   const router = useRouter();
   const eventId = params?.id as string;
 
+  const { ready, authenticated } = usePrivy();
   const [event, setEvent] = useState<IortiEvent | null>(null);
   const [loading, setLoading] = useState(true);
+  const [updating, setUpdating] = useState(false);
 
   const fetchEvent = useCallback(async () => {
     if (!eventId) return;
@@ -26,7 +28,9 @@ export default function EventDetailPage() {
         .eq('id', eventId)
         .single();
 
-      if (!error && data) {
+      if (error) {
+        console.error('Erreur Supabase :', error.message);
+      } else {
         setEvent(data);
       }
     } catch (err) {
@@ -37,157 +41,129 @@ export default function EventDetailPage() {
   }, [eventId]);
 
   useEffect(() => {
-    fetchEvent();
-  }, [fetchEvent]);
+    if (ready && authenticated) {
+      fetchEvent();
+    }
+  }, [ready, authenticated, fetchEvent]);
 
-  if (loading) {
+  // Passer le statut de l'événement de 'draft' à 'published' (ou inversement)
+  const toggleStatus = async () => {
+    if (!event) return;
+    const newStatus = event.status === 'published' ? 'draft' : 'published';
+
+    try {
+      setUpdating(true);
+      const { error } = await supabaseBrowser
+        .from('events')
+        .update({ status: newStatus })
+        .eq('id', event.id);
+
+      if (error) {
+        alert("Erreur lors de la mise à jour du statut.");
+      } else {
+        setEvent({ ...event, status: newStatus });
+      }
+    } finally {
+      setUpdating(false);
+    }
+  };
+
+  if (!ready || loading) {
     return (
-      <div className="min-h-screen bg-onyx text-bone flex flex-col">
-        <Navbar />
-        <div className="flex-1 flex items-center justify-center">
-          <Loader2 className="h-6 w-6 animate-spin text-bone-muted" />
-        </div>
+      <div className="flex min-h-[60vh] items-center justify-center">
+        <Loader2 className="h-6 w-6 animate-spin text-bone-muted" />
       </div>
     );
   }
 
   if (!event) {
     return (
-      <div className="min-h-screen bg-onyx text-bone flex flex-col">
-        <Navbar />
-        <div className="mx-auto max-w-4xl px-6 py-24 text-center flex-1 flex flex-col items-center justify-center">
-          <p className="text-bone-muted text-sm mb-4">Cet événement est introuvable ou a été supprimé.</p>
-          <Link
-            href="/"
-            className="inline-flex items-center gap-2 bg-bone text-onyx font-semibold text-xs px-6 py-3 rounded-full transition-colors hover:bg-white"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            <span>Retour à l&apos;accueil</span>
-          </Link>
-        </div>
+      <div className="mx-auto max-w-3xl px-6 py-12 text-center">
+        <p className="text-bone-muted">Événement introuvable.</p>
+        <Link href="/organisateur" className="mt-4 inline-block text-xs text-bone underline">
+          Retour au tableau de bord
+        </Link>
       </div>
     );
   }
 
-  const evtData = event as any;
-  const priceFormatted = evtData.price && parseFloat(evtData.price) > 0 
-    ? `${parseFloat(evtData.price).toFixed(2)} €` 
-    : 'Gratuit';
-
   return (
-    <div className="min-h-screen bg-onyx text-bone font-sans antialiased selection:bg-bone/25 selection:text-bone">
-      <div className="grain" aria-hidden="true" />
-      <div className="relative z-10 flex flex-col min-h-screen">
-        <Navbar />
+    <div className="min-h-screen bg-onyx text-bone pt-8 pb-24">
+      <div className="max-w-4xl mx-auto px-6">
+        <Link
+          href="/organisateur"
+          className="inline-flex items-center gap-2 text-xs text-bone-faint hover:text-bone transition-colors mb-6"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          <span>Retour aux événements</span>
+        </Link>
 
-        <main className="flex-1 max-w-6xl w-full mx-auto px-6 pt-10 pb-24">
-          {/* Fil d'Ariane / Retour */}
-          <div className="mb-8">
-            <Link
-              href="/"
-              className="inline-flex items-center gap-2 text-xs font-medium text-bone-faint hover:text-bone transition-colors"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              <span>Retour aux événements</span>
-            </Link>
-          </div>
-
-          {/* Grille Principale Immersive */}
-          <div className="grid grid-cols-1 lg:grid-cols-[1fr_400px] gap-10 items-start">
-            
-            {/* Colonne Gauche : Visuel & Informations détaillées */}
-            <div className="space-y-8">
-              {/* Bannière / Visuel de l'événement */}
-              <div className="relative aspect-[16/9] w-full overflow-hidden rounded-3xl border border-onyx-line bg-onyx-raised shadow-2xl">
-                {evtData.image_url ? (
-                  <img
-                    src={evtData.image_url}
-                    alt={event.title}
-                    className="h-full w-full object-cover"
-                  />
+        {/* Header événement */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-onyx-line pb-6 mb-8">
+          <div>
+            <div className="flex items-center gap-3 mb-2">
+              <span
+                className={`inline-flex items-center gap-1.5 text-xs font-mono px-2.5 py-1 rounded-full border ${
+                  event.status === 'published'
+                    ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-400'
+                    : 'border-amber-500/30 bg-amber-500/10 text-amber-400'
+                }`}
+              >
+                {event.status === 'published' ? (
+                  <>
+                    <CheckCircle className="w-3 h-3" /> Publié
+                  </>
                 ) : (
-                  <div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-onyx-raised to-onyx text-bone-faint">
-                    <Sparkles className="w-10 h-10 mb-2 opacity-40" />
-                    <span className="font-mono text-xs tracking-widest uppercase">TYKS Experience</span>
-                  </div>
+                  <>
+                    <Clock className="w-3 h-3" /> En attente de validation (Brouillon)
+                  </>
                 )}
-                <div className="absolute top-4 left-4">
-                  <span className="bg-onyx/80 backdrop-blur-md border border-onyx-line text-bone font-mono text-[10px] px-3 py-1.5 rounded-full uppercase tracking-wider">
-                    {event.status === 'published' ? 'Officiel' : 'Brouillon'}
-                  </span>
-                </div>
-              </div>
-
-              {/* Titre et description */}
-              <div className="space-y-4">
-                <h1 className="font-display text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-bone leading-[1.1]">
-                  {event.title}
-                </h1>
-
-                <div className="flex flex-wrap items-center gap-6 pt-2 text-xs text-bone-muted border-y border-onyx-line py-4 font-mono">
-                  <div className="flex items-center gap-2">
-                    <Calendar className="w-4 h-4 text-bone-faint" />
-                    <span>
-                      {new Date(event.starts_at).toLocaleDateString('fr-FR', {
-                        weekday: 'long',
-                        day: 'numeric',
-                        month: 'long',
-                        year: 'numeric',
-                        hour: '2-digit',
-                        minute: '2-digit',
-                      })}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <MapPin className="w-4 h-4 text-bone-faint" />
-                    <span>{event.location}</span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="bg-onyx-raised/60 border border-onyx-line rounded-3xl p-8 space-y-4">
-                <h3 className="font-display text-lg font-bold text-bone">À propos de l&apos;événement</h3>
-                <p className="text-sm text-bone-muted leading-relaxed whitespace-pre-line">
-                  {event.description || 'Aucune description détaillée fournie pour le moment.'}
-                </p>
-              </div>
+              </span>
             </div>
-
-            {/* Colonne Droite : Bloc de Réservation Sticky */}
-            <div className="lg:sticky lg:top-28 space-y-6">
-              <div className="bg-onyx-raised border border-onyx-line rounded-3xl p-8 space-y-6 shadow-xl backdrop-blur-xl">
-                <div>
-                  <p className="text-xs font-mono text-bone-faint uppercase tracking-wider">Tarif d'accès</p>
-                  <p className="font-display text-4xl font-extrabold text-bone mt-1">{priceFormatted}</p>
-                </div>
-
-                <div className="space-y-3 pt-4 border-t border-onyx-line text-xs text-bone-muted">
-                  <div className="flex justify-between">
-                    <span>Frais de service</span>
-                    <span className="text-emerald-400 font-mono">0,00 € (Offerts)</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Validation du pass</span>
-                    <span className="text-bone font-mono">Instantanée</span>
-                  </div>
-                </div>
-
-                <button
-                  onClick={() => alert("Module de génération de pass en cours d'activation")}
-                  className="w-full inline-flex items-center justify-center gap-2 bg-bone text-onyx font-semibold text-xs tracking-wide py-4 rounded-full transition-all hover:bg-white hover:scale-[1.01] active:scale-[0.99] shadow-lg"
-                >
-                  <span>Obtenir mon pass</span>
-                  <ArrowUpRight className="w-4 h-4" />
-                </button>
-
-                <p className="text-[11px] text-center text-bone-faint leading-relaxed">
-                  Accès sécurisé par QR Code infalsifiable. Présentez votre pass directement à l&apos;entrée.
-                </p>
-              </div>
-            </div>
-
+            <h1 className="font-display text-3xl font-bold tracking-tight text-bone">{event.title}</h1>
           </div>
-        </main>
+
+          {/* Action de publication manuelle */}
+          <button
+            onClick={toggleStatus}
+            disabled={updating}
+            className="inline-flex items-center gap-2 bg-bone hover:bg-white text-onyx font-semibold px-5 py-2.5 rounded-full text-xs transition-colors self-start sm:self-auto disabled:opacity-50"
+          >
+            {updating ? (
+              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+            ) : event.status === 'published' ? (
+              'Repasser en brouillon'
+            ) : (
+              'Valider et publier'
+            )}
+          </button>
+        </div>
+
+        {/* Détails de l'événement */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="md:col-span-2 space-y-6">
+            <div className="bg-onyx-raised border border-onyx-line rounded-2xl p-6 space-y-4">
+              <h2 className="text-sm font-semibold text-bone border-b border-onyx-line pb-3">Informations</h2>
+              <p className="text-sm text-bone-muted leading-relaxed">
+                {event.description || 'Aucune description fournie.'}
+              </p>
+            </div>
+          </div>
+
+          <div className="space-y-6">
+            <div className="bg-onyx-raised border border-onyx-line rounded-2xl p-6 space-y-4 text-xs">
+              <h2 className="text-sm font-semibold text-bone border-b border-onyx-line pb-3">Détails clés</h2>
+              <div className="flex items-center gap-2 text-bone-muted">
+                <MapPin className="w-4 h-4 text-bone-faint" />
+                <span>{event.location}</span>
+              </div>
+              <div className="flex items-center gap-2 text-bone-muted">
+                <Calendar className="w-4 h-4 text-bone-faint" />
+                <span>{new Date(event.starts_at).toLocaleString('fr-FR')}</span>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
