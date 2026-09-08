@@ -37,5 +37,6 @@ export async function GET(req: NextRequest) {
     }
   }
 
+  // En cas d'échec ou d'absence de code
   return NextResponse.redirect(new URL("/login?error=auth_failed", requestUrl.origin));
 }
