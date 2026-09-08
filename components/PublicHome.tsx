@@ -6,10 +6,7 @@ export default function PublicHome() {
         <h1 className="font-display text-5xl font-extrabold text-bone">TYKS</h1>
         <p className="text-bone-muted text-lg">La billetterie nouvelle génération.</p>
         <div>
-          
-            href="https://pro.tyks.app"
-            className="inline-block rounded-full bg-bone px-6 py-3 text-sm font-semibold text-onyx hover:bg-white transition"
-          >
+          <a href="https://pro.tyks.app" className="inline-block rounded-full bg-bone px-6 py-3 text-sm font-semibold text-onyx hover:bg-white transition">
             Espace Organisateur (Pro)
           </a>
         </div>
