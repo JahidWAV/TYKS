@@ -1,124 +1,185 @@
-import { notFound } from 'next/navigation';
-import Image from 'next/image';
+'use client';
+
+import { useCallback, useEffect, useState } from 'react';
+import { useParams } from 'next/navigation';
 import Link from 'next/link';
-import { Calendar, MapPin, Ticket, ArrowLeft } from 'lucide-react';
-import { supabaseServer } from '@/lib/supabase-server';
+import Navbar from '@/components/Navbar';
+import { ArrowLeft, Loader2, Calendar, MapPin, Sparkles, ArrowUpRight } from 'lucide-react';
+import { supabaseBrowser } from '@/lib/supabase-browser';
+import type { IortiEvent } from '@/types/event';
 
-interface Props {
-  params: Promise<{ id: string }>;
-}
+export default function EventPublicPage() {
+  const params = useParams();
+  const eventId = params?.id as string;
 
-export default async function PublicEventPage({ params }: Props) {
-  const { id } = await params;
+  const [event, setEvent] = useState<IortiEvent | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  // Récupération publique de l'événement
-  const { data: event, error } = await supabaseServer
-    .from('events')
-    .select('*')
-    .eq('id', id)
-    .single();
+  const fetchEvent = useCallback(async () => {
+    if (!eventId) return;
+    try {
+      setLoading(true);
+      const { data, error } = await supabaseBrowser
+        .from('events')
+        .select('*')
+        .eq('id', eventId)
+        .single();
 
-  // Si l'événement n'existe pas ou n'est pas encore publié
-  if (error || !event || event.status !== 'published') {
-    notFound();
+      if (!error && data) {
+        setEvent(data);
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  }, [eventId]);
+
+  useEffect(() => {
+    fetchEvent();
+  }, [fetchEvent]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-onyx text-bone flex flex-col">
+        <Navbar />
+        <div className="flex-1 flex items-center justify-center">
+          <Loader2 className="h-6 w-6 animate-spin text-bone-muted" />
+        </div>
+      </div>
+    );
   }
 
-  const formattedDate = new Date(event.starts_at).toLocaleDateString('fr-FR', {
-    weekday: 'long',
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-  });
+  if (!event) {
+    return (
+      <div className="min-h-screen bg-onyx text-bone flex flex-col">
+        <Navbar />
+        <div className="mx-auto max-w-4xl px-6 py-24 text-center flex-1 flex flex-col items-center justify-center">
+          <p className="text-bone-muted text-sm mb-4">Cet événement est introuvable.</p>
+          <Link
+            href="/"
+            className="inline-flex items-center gap-2 bg-bone text-onyx font-semibold text-xs px-6 py-3 rounded-full transition-colors hover:bg-white"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            <span>Retour à l&apos;accueil</span>
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  const evtData = event as any;
+  const priceFormatted = evtData.price && parseFloat(evtData.price) > 0 
+    ? `${parseFloat(evtData.price).toFixed(2)} €` 
+    : 'Gratuit';
 
   return (
-    <div className="min-h-screen bg-onyx text-bone pt-8 pb-24">
-      <div className="max-w-4xl mx-auto px-6">
-        <Link
-          href="/"
-          className="inline-flex items-center gap-2 text-xs text-bone-faint hover:text-bone transition-colors mb-6"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          <span>Voir tous les événements</span>
-        </Link>
+    <div className="min-h-screen bg-onyx text-bone font-sans antialiased selection:bg-bone/25 selection:text-bone">
+      <div className="grain" aria-hidden="true" />
+      <div className="relative z-10 flex flex-col min-h-screen">
+        <Navbar />
 
-        {/* Hero / Visual Header */}
-        <div className="relative w-full h-64 sm:h-96 rounded-3xl overflow-hidden border border-onyx-line bg-onyx-raised mb-8">
-          {event.image_url ? (
-            <img
-              src={event.image_url}
-              alt={event.title}
-              className="w-full h-full object-cover"
-            />
-          ) : (
-            <div className="w-full h-full flex items-center justify-center text-bone-faint text-sm">
-              Affiche à venir
-            </div>
-          )}
-        </div>
-
-        {/* Contenu principal */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-2 space-y-6">
-            <div>
-              <span className="text-xs font-mono text-bone-faint uppercase tracking-wider">
-                {event.tag || 'Événement'}
-              </span>
-              <h1 className="font-display text-3xl sm:text-4xl font-bold tracking-tight text-bone mt-1">
-                {event.title}
-              </h1>
-            </div>
-
-            <div className="bg-onyx-raised border border-onyx-line rounded-2xl p-6 space-y-3">
-              <h2 className="text-sm font-semibold text-bone">À propos</h2>
-              <p className="text-sm text-bone-muted leading-relaxed whitespace-pre-line">
-                {event.description || 'Aucune description disponible pour cet événement.'}
-              </p>
-            </div>
+        <main className="flex-1 max-w-6xl w-full mx-auto px-6 pt-10 pb-24">
+          {/* Retour */}
+          <div className="mb-8">
+            <Link
+              href="/"
+              className="inline-flex items-center gap-2 text-xs font-medium text-bone-faint hover:text-bone transition-colors"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              <span>Retour aux événements</span>
+            </Link>
           </div>
 
-          {/* Sidebar d'achat du Pass */}
-          <div className="space-y-6">
-            <div className="bg-onyx-raised border border-onyx-line rounded-2xl p-6 space-y-6 sticky top-24">
-              <div className="space-y-4">
-                <div className="flex items-start gap-3">
-                  <Calendar className="w-5 h-5 text-bone-faint shrink-0 mt-0.5" />
-                  <div>
-                    <p className="text-xs text-bone-faint">Date & Heure</p>
-                    <p className="text-sm font-medium text-bone capitalize">{formattedDate}</p>
+          {/* Grille Principale */}
+          <div className="grid grid-cols-1 lg:grid-cols-[1fr_400px] gap-10 items-start">
+            
+            {/* Colonne Gauche */}
+            <div className="space-y-8">
+              <div className="relative aspect-[16/9] w-full overflow-hidden rounded-3xl border border-onyx-line bg-onyx-raised shadow-2xl">
+                {evtData.image_url ? (
+                  <img
+                    src={evtData.image_url}
+                    alt={event.title}
+                    className="h-full w-full object-cover"
+                  />
+                ) : (
+                  <div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-onyx-raised to-onyx text-bone-faint">
+                    <Sparkles className="w-10 h-10 mb-2 opacity-40" />
+                    <span className="font-mono text-xs tracking-widest uppercase">TYKS Experience</span>
                   </div>
-                </div>
+                )}
+              </div>
 
-                <div className="flex items-start gap-3">
-                  <MapPin className="w-5 h-5 text-bone-faint shrink-0 mt-0.5" />
-                  <div>
-                    <p className="text-xs text-bone-faint">Lieu</p>
-                    <p className="text-sm font-medium text-bone">{event.location}</p>
+              <div className="space-y-4">
+                <h1 className="font-display text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-bone leading-[1.1]">
+                  {event.title}
+                </h1>
+
+                <div className="flex flex-wrap items-center gap-6 pt-2 text-xs text-bone-muted border-y border-onyx-line py-4 font-mono">
+                  <div className="flex items-center gap-2">
+                    <Calendar className="w-4 h-4 text-bone-faint" />
+                    <span>
+                      {new Date(event.starts_at).toLocaleDateString('fr-FR', {
+                        weekday: 'long',
+                        day: 'numeric',
+                        month: 'long',
+                        year: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                      })}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <MapPin className="w-4 h-4 text-bone-faint" />
+                    <span>{event.location}</span>
                   </div>
                 </div>
               </div>
 
-              <div className="border-t border-onyx-line pt-6 flex items-center justify-between">
+              <div className="bg-onyx-raised/60 border border-onyx-line rounded-3xl p-8 space-y-4">
+                <h3 className="font-display text-lg font-bold text-bone">À propos de l&apos;événement</h3>
+                <p className="text-sm text-bone-muted leading-relaxed whitespace-pre-line">
+                  {event.description || 'Aucune description détaillée fournie.'}
+                </p>
+              </div>
+            </div>
+
+            {/* Colonne Droite (Sticky) */}
+            <div className="lg:sticky lg:top-28 space-y-6">
+              <div className="bg-onyx-raised border border-onyx-line rounded-3xl p-8 space-y-6 shadow-xl backdrop-blur-xl">
                 <div>
-                  <p className="text-xs text-bone-faint">Prix</p>
-                  <p className="text-xl font-bold text-bone">
-                    {event.price && parseFloat(event.price) > 0
-                      ? `${parseFloat(event.price).toFixed(2)} €`
-                      : 'Gratuit'}
-                  </p>
+                  <p className="text-xs font-mono text-bone-faint uppercase tracking-wider">Tarif d&apos;accès</p>
+                  <p className="font-display text-4xl font-extrabold text-bone mt-1">{priceFormatted}</p>
+                </div>
+
+                <div className="space-y-3 pt-4 border-t border-onyx-line text-xs text-bone-muted">
+                  <div className="flex justify-between">
+                    <span>Frais de service</span>
+                    <span className="text-emerald-400 font-mono">0,00 €</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Validation du pass</span>
+                    <span className="text-bone font-mono">Instantanée</span>
+                  </div>
                 </div>
 
                 <button
-                  className="inline-flex items-center gap-2 bg-bone hover:bg-white text-onyx font-semibold px-6 py-3 rounded-full text-sm transition-colors"
+                  onClick={() => alert("Module de génération de pass en cours d'activation")}
+                  className="w-full inline-flex items-center justify-center gap-2 bg-bone text-onyx font-semibold text-xs tracking-wide py-4 rounded-full transition-all hover:bg-white hover:scale-[1.01] active:scale-[0.99] shadow-lg"
                 >
-                  <Ticket className="w-4 h-4" />
                   <span>Obtenir mon pass</span>
+                  <ArrowUpRight className="w-4 h-4" />
                 </button>
+
+                <p className="text-[11px] text-center text-bone-faint leading-relaxed">
+                  Accès sécurisé par QR Code. Présentez votre pass à l&apos;entrée.
+                </p>
               </div>
             </div>
+
           </div>
-        </div>
+        </main>
       </div>
     </div>
   );
