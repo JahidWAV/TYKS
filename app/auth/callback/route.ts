@@ -7,8 +7,8 @@ export async function GET(request: Request) {
   const origin = requestUrl.origin;
 
   if (code) {
-    const supabase = await supabaseServer();
-    await supabase.auth.exchangeCodeForSession(code);
+    // supabaseServer est un client direct, pas une fonction
+    await supabaseServer.auth.exchangeCodeForSession(code);
   }
 
   return NextResponse.redirect(`${origin}`);
