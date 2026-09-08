@@ -1,8 +1,8 @@
+cat > components/PublicHome.tsx << 'EOF'
 export default function PublicHome() {
   return (
     <div className="relative">
       <div className="grain" aria-hidden="true" />
-
       <div className="relative z-10 mx-auto max-w-6xl px-6 py-20 text-center space-y-6">
         <h1 className="font-display text-5xl font-extrabold text-bone">TYKS</h1>
         <p className="text-bone-muted text-lg">La billetterie nouvelle génération.</p>
@@ -18,3 +18,7 @@ export default function PublicHome() {
     </div>
   );
 }
+EOF
+git add components/PublicHome.tsx
+git commit -m "fix: restore missing <a> opening tag in PublicHome.tsx"
+git push
