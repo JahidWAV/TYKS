@@ -8,7 +8,7 @@ export async function GET(req: NextRequest) {
   const next = requestUrl.searchParams.get("next") ?? "/";
 
   if (code) {
-    const cookieStore = cookies();
+    const cookieStore = await cookies(); // Ajout du await ici
     const supabase = createServerClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -37,6 +37,5 @@ export async function GET(req: NextRequest) {
     }
   }
 
-  // En cas d'échec ou d'absence de code
   return NextResponse.redirect(new URL("/login?error=auth_failed", requestUrl.origin));
 }
