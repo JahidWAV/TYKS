@@ -81,4 +81,3 @@ export async function POST(req: NextRequest) {
   }
   return NextResponse.json({ member: data }, { status: 201 });
 }
-```[cite: 10]
