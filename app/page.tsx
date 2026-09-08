@@ -1,28 +1,17 @@
 import { headers } from 'next/headers';
+import PublicHome from '@/components/PublicHome';
 import OrganizerDashboard from '@/components/OrganizerDashboard';
 
 export default async function Page() {
   const headersList = await headers();
   const hostname = headersList.get('host') || '';
+  const isPro = hostname.startsWith('pro.');
 
-  // Si on est sur le site public principal (tyks.app)
-  if (!hostname.startsWith('pro.')) {
-    return (
-      <div className="mx-auto max-w-6xl px-6 py-20 text-center space-y-6">
-        <h1 className="font-display text-5xl font-extrabold text-bone">TYKS</h1>
-        <p className="text-bone-muted text-lg">La billetterie nouvelle génération.</p>
-        <div>
-          <a 
-            href="https://pro.tyks.app" 
-            className="inline-block rounded-full bg-bone px-6 py-3 text-sm font-semibold text-onyx hover:bg-white transition"
-          >
-            Espace Organisateur (Pro)
-          </a>
-        </div>
-      </div>
-    );
+  // pro.tyks.app -> dashboard organisateur
+  if (isPro) {
+    return <OrganizerDashboard />;
   }
 
-  // Si on est sur pro.tyks.app, on affiche le tableau de bord organisateur
-  return <OrganizerDashboard />;
+  // tyks.app -> vitrine publique
+  return <PublicHome />;
 }
