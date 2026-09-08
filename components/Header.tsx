@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { usePrivy } from '@privy-io/react-auth';
 import { ArrowUpRight } from 'lucide-react';
-import AuthFlowModal from '@/components/AuthFlowModal'; // Importe ta modal personnalisée
+import CustomAuthModal from '@/components/CustomAuthModal'; // Importe ta modal personnalisée
 
 export default function Header() {
   const { ready, authenticated, logout } = usePrivy();
