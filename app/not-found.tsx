@@ -20,7 +20,7 @@ export default function NotFound() {
 
   return (
     <div className="min-h-screen bg-onyx bg-night-glow text-bone flex flex-col items-center justify-center px-6 relative overflow-hidden">
-      {/* Effet de lueur d'arrière-plan */}
+      {/* Lueur d'ambiance design */}
       <div className="absolute w-96 h-96 bg-cobalt/10 rounded-full blur-3xl pointer-events-none animate-pulse" />
 
       <div className="max-w-md text-center space-y-6 relative z-10">
@@ -30,10 +30,10 @@ export default function NotFound() {
         
         <div className="space-y-2">
           <h1 className="font-display text-2xl font-bold tracking-tight text-bone">
-            Oups, vous vous êtes égaré...
+            Page introuvable
           </h1>
           <p className="text-sm text-bone-faint">
-            Cette page n'existe pas ou a été déplacée dans une autre dimension.
+            L'adresse que vous avez demandée n'existe pas ou a été déplacée.
           </p>
         </div>
 
