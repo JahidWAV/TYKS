@@ -48,7 +48,7 @@ export default function HomePage() {
   }, []);
 
   return (
-    <div className="relative min-h-screen bg-onyx text-bone font-sans antialiased selection:bg-cobalt/30 selection:text-bone">
+    <div className="relative min-h-screen bg-onyx text-bone font-sans antialiased selection:bg-bone/20 selection:text-bone">
       <div className="grain" aria-hidden="true" />
       <div className="relative z-10">
       <Navbar />
@@ -72,7 +72,7 @@ export default function HomePage() {
                 <div className="flex flex-col sm:flex-row lg:justify-start justify-center items-center gap-5 pt-2">
                   <button
                     onClick={() => setIsAuthOpen(true)}
-                    className="group relative inline-flex items-center justify-center gap-3 bg-cobalt text-bone font-semibold text-xs tracking-wide px-8 py-4 rounded-full transition-all duration-300 hover:bg-cobalt-soft hover:scale-[1.01] active:scale-[0.99]"
+                    className="group relative inline-flex items-center justify-center gap-3 bg-bone text-onyx font-semibold text-xs tracking-wide px-8 py-4 rounded-full transition-all duration-300 hover:bg-white hover:scale-[1.01] active:scale-[0.99]"
                   >
                     <span>Activer mon pass</span>
                     <ArrowUpRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
@@ -101,21 +101,21 @@ export default function HomePage() {
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-10 sm:gap-6">
               <div className="text-center sm:text-left space-y-3">
-                <p className="font-mono text-sm text-cobalt-soft">01</p>
+                <p className="font-mono text-sm text-bone-faint">01</p>
                 <h3 className="font-display font-semibold text-bone text-base">Trouvez votre soirée</h3>
                 <p className="text-xs text-bone-faint leading-relaxed max-w-[220px] mx-auto sm:mx-0">
                   Parcourez les événements publiés par nos organisateurs partenaires.
                 </p>
               </div>
               <div className="text-center sm:text-left space-y-3">
-                <p className="font-mono text-sm text-cobalt-soft">02</p>
+                <p className="font-mono text-sm text-bone-faint">02</p>
                 <h3 className="font-display font-semibold text-bone text-base">Payez en un geste</h3>
                 <p className="text-xs text-bone-faint leading-relaxed max-w-[220px] mx-auto sm:mx-0">
                   Le prix affiché est le prix payé, sans frais ajoutés au paiement.
                 </p>
               </div>
               <div className="text-center sm:text-left space-y-3">
-                <p className="font-mono text-sm text-cobalt-soft">03</p>
+                <p className="font-mono text-sm text-bone-faint">03</p>
                 <h3 className="font-display font-semibold text-bone text-base">Scannez à l&apos;entrée</h3>
                 <p className="text-xs text-bone-faint leading-relaxed max-w-[220px] mx-auto sm:mx-0">
                   Votre pass s&apos;affiche, la porte s&apos;ouvre. Moins de deux secondes.
@@ -183,7 +183,7 @@ export default function HomePage() {
             </h2>
             <button
               onClick={() => setIsAuthOpen(true)}
-              className="inline-flex items-center justify-center gap-3 bg-cobalt text-bone font-semibold text-xs tracking-wide px-8 py-4 rounded-full transition-all duration-300 hover:bg-cobalt-soft hover:scale-[1.01] active:scale-[0.99]"
+              className="inline-flex items-center justify-center gap-3 bg-bone text-onyx font-semibold text-xs tracking-wide px-8 py-4 rounded-full transition-all duration-300 hover:bg-white hover:scale-[1.01] active:scale-[0.99]"
             >
               <span>Activer mon pass</span>
               <ArrowUpRight className="w-4 h-4" />
@@ -286,7 +286,7 @@ export default function HomePage() {
                     >
                       <div className="space-y-3">
                         <div className="flex items-center justify-between">
-                          <span className="font-mono text-[10px] text-cobalt-soft">
+                          <span className="font-mono text-[10px] text-bone-faint">
                             {new Date(evt.starts_at).toLocaleDateString('fr-FR', {
                               day: '2-digit',
                               month: 'short',
@@ -316,7 +316,7 @@ export default function HomePage() {
                           <span>{evt.location}</span>
                         </div>
 
-                        <button className="inline-flex items-center gap-1.5 bg-bone text-onyx font-semibold text-xs px-4 py-2 rounded-full transition-colors hover:bg-stub">
+                        <button className="inline-flex items-center gap-1.5 bg-bone text-onyx font-semibold text-xs px-4 py-2 rounded-full transition-colors hover:bg-white">
                           <span>Accéder</span>
                           <ChevronRight className="w-3.5 h-3.5" />
                         </button>
