@@ -1,14 +1,23 @@
+import type { Metadata } from 'next';
 import Navbar from '@/components/Navbar';
+import './globals.css';
 
-export default function OrganizerLayout({
+export const metadata: Metadata = {
+  title: 'Tyks Pro - Billetterie',
+  description: 'Gérez vos événements en toute simplicité',
+};
+
+export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   return (
-    <div className="min-h-screen bg-onyx text-bone flex flex-col selection:bg-bone/20 selection:text-bone">
-      <Navbar />
-      <main className="flex-1">{children}</main>
-    </div>
+    <html lang="fr">
+      <body className="min-h-screen bg-onyx text-bone flex flex-col selection:bg-bone/20 selection:text-bone">
+        <Navbar />
+        <main className="flex-1">{children}</main>
+      </body>
+    </html>
   );
 }
