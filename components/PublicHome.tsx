@@ -17,7 +17,3 @@ export default function PublicHome() {
     </div>
   );
 }
-EOF
-git add components/PublicHome.tsx
-git commit -m "fix: restore missing <a> opening tag in PublicHome.tsx"
-git push
