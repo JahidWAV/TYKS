@@ -1,11 +1,9 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import { usePrivy } from '@privy-io/react-auth';
 import Link from 'next/link';
 import { ArrowUpRight, Plus, Loader2, Calendar, MapPin } from 'lucide-react';
 import type { IortiEvent } from '@/types/event';
-import CustomAuthModal from '@/components/CustomAuthModal';
 import { supabaseBrowser } from '@/lib/supabase-browser';
 
 const STATUS_LABEL: Record<string, string> = {
@@ -15,22 +13,35 @@ const STATUS_LABEL: Record<string, string> = {
 };
 
 export default function OrganizerDashboard() {
-  const { ready, authenticated, user } = usePrivy();
-  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [user, setUser] = useState<any>(null);
+  const [ready, setReady] = useState(false);
   const [loading, setLoading] = useState(true);
   const [events, setEvents] = useState<IortiEvent[]>([]);
 
-  const loadDashboard = useCallback(async () => {
-    if (!user?.id) return;
+  // 1. Récupération de l'utilisateur connecté via Supabase Auth
+  useEffect(() => {
+    async function getSession() {
+      const { data: { session } } = await supabaseBrowser.auth.getSession();
+      setUser(session?.user ?? null);
+      setReady(true);
+    }
+    getSession();
 
+    const { data: { subscription } } = supabaseBrowser.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const loadDashboard = useCallback(async (userId: string) => {
     try {
       setLoading(true);
 
-      // Récupération des événements créés par l'utilisateur connecté
       const { data, error } = await supabaseBrowser
         .from('events')
         .select('*')
-        .eq('created_by', user.id)
+        .eq('created_by', userId)
         .order('starts_at', { ascending: true });
 
       if (error) {
@@ -43,15 +54,17 @@ export default function OrganizerDashboard() {
     } finally {
       setLoading(false);
     }
-  }, [user?.id]);
+  }, []);
 
   useEffect(() => {
-    if (ready && authenticated) {
-      loadDashboard();
+    if (ready && user?.id) {
+      loadDashboard(user.id);
+    } else if (ready && !user) {
+      setLoading(false);
     }
-  }, [ready, authenticated, loadDashboard]);
+  }, [ready, user, loadDashboard]);
 
-  // 1. En attente d'initialisation de Privy
+  // 1. En attente d'initialisation
   if (!ready) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
@@ -61,21 +74,19 @@ export default function OrganizerDashboard() {
   }
 
   // 2. Non authentifié
-  if (!authenticated) {
+  if (!user) {
     return (
       <div className="flex min-h-[70vh] flex-col items-center justify-center gap-5 px-6 text-center">
         <p className="max-w-xs text-sm text-bone-muted">
           Connecte-toi pour accéder à l&apos;espace organisateur.
         </p>
-        <button
-          onClick={() => setIsAuthModalOpen(true)}
+        <Link
+          href="/"
           className="inline-flex items-center gap-2.5 rounded-full bg-bone px-7 py-3.5 text-sm font-semibold text-onyx transition-colors hover:bg-white"
         >
-          <span>Se connecter</span>
+          <span>Se connecter sur le site principal</span>
           <ArrowUpRight className="h-4 w-4" />
-        </button>
-
-        <CustomAuthModal isOpen={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)} />
+        </Link>
       </div>
     );
   }
