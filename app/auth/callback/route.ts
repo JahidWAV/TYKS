@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createServerClient, type CookieOptions } from "@ssr/supabase"; // ou ton instance supabaseServer habituelle
+import { createServerClient, type CookieOptions } from "@supabase/ssr";
 import { cookies } from "next/headers";
 
 export async function GET(req: NextRequest) {
@@ -18,10 +18,14 @@ export async function GET(req: NextRequest) {
             return cookieStore.get(name)?.value;
           },
           set(name: string, value: string, options: CookieOptions) {
-            cookieStore.set({ name, value, ...options });
+            try {
+              cookieStore.set({ name, value, ...options });
+            } catch {}
           },
           remove(name: string, options: CookieOptions) {
-            cookieStore.set({ name, value: "", ...options });
+            try {
+              cookieStore.set({ name, value: "", ...options });
+            } catch {}
           },
         },
       }
@@ -33,6 +37,5 @@ export async function GET(req: NextRequest) {
     }
   }
 
-  // Redirection en cas d'échec
   return NextResponse.redirect(new URL("/login?error=auth_failed", requestUrl.origin));
 }
