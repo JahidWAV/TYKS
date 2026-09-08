@@ -7,10 +7,11 @@ export function middleware(request: NextRequest) {
   
   // Si on est sur le sous-domaine pro
   if (hostname === 'pro.tyks.app') {
-    // Évite de réécrire les fichiers internes de Next.js ou les API
+    // Ne pas réécrire pour les fichiers internes, les API, ou le callback d'auth
     if (
       url.pathname.startsWith('/_next') ||
       url.pathname.startsWith('/api') ||
+      url.pathname.startsWith('/auth/callback') ||
       url.pathname.includes('.')
     ) {
       return NextResponse.next()
