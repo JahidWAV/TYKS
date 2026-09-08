@@ -2,13 +2,11 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { usePrivy } from '@privy-io/react-auth';
 import Link from 'next/link';
 import { ArrowLeft, Calendar, MapPin, Euro, Users, Image as ImageIcon, Sparkles } from 'lucide-react';
 
 export default function NewEventPage() {
   const router = useRouter();
-  const { getAccessToken } = usePrivy();
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
