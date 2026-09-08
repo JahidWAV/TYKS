@@ -20,11 +20,11 @@ export default function NotFound() {
 
   return (
     <div className="min-h-screen bg-onyx bg-night-glow text-bone flex flex-col items-center justify-center px-6 relative overflow-hidden">
-      {/* Lueur d'ambiance design */}
-      <div className="absolute w-96 h-96 bg-cobalt/10 rounded-full blur-3xl pointer-events-none animate-pulse" />
+      {/* Lueur d'ambiance cohérente avec le reste de ton app */}
+      <div className="absolute w-96 h-96 bg-cobalt/10 rounded-full blur-3xl pointer-events-none" />
 
       <div className="max-w-md text-center space-y-6 relative z-10">
-        <div className="font-display text-8xl font-black tracking-wider text-cobalt animate-bounce">
+        <div className="font-display text-8xl font-black tracking-wider text-cobalt">
           404
         </div>
         
@@ -40,7 +40,7 @@ export default function NotFound() {
         <div className="pt-4">
           <a
             href={homeUrl}
-            className="inline-flex items-center gap-2 bg-cobalt hover:bg-cobalt-soft text-bone font-semibold px-8 py-3.5 rounded-full text-sm transition-all shadow-lg shadow-cobalt/20 hover:scale-105 active:scale-95"
+            className="inline-flex items-center gap-2 bg-cobalt hover:bg-cobalt-soft text-bone font-semibold px-7 py-3 rounded-full text-sm transition-colors shadow-lg shadow-cobalt/20"
           >
             <Home className="w-4 h-4" />
             <span>{homeLabel}</span>
