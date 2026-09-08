@@ -1,7 +1,5 @@
 import type { Metadata } from 'next';
-import { headers } from 'next/headers';
 import { Inter, Space_Grotesk, JetBrains_Mono } from 'next/font/google';
-import Navbar from '@/components/Navbar';
 import './globals.css';
 
 const fontBody = Inter({
@@ -31,15 +29,11 @@ export const metadata: Metadata = {
   description: 'Gérez vos événements en toute simplicité',
 };
 
-export default async function RootLayout({
+export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const headersList = await headers();
-  const hostname = headersList.get('host') || '';
-  const isPro = hostname.startsWith('pro.');
-
   return (
     <html
       lang="fr"
@@ -47,8 +41,7 @@ export default async function RootLayout({
     >
       <body className="relative min-h-screen bg-onyx bg-night-glow text-bone flex flex-col selection:bg-bone/20 selection:text-bone font-sans">
         <div className="grain" aria-hidden="true" />
-        <Navbar isPro={isPro} />
-        <main className="relative z-10 flex-1">{children}</main>
+        <main className="relative z-10 flex-1 flex flex-col">{children}</main>
       </body>
     </html>
   );
