@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useLoginWithOAuth, useLoginWithEmail } from "@privy-io/react-auth";
+import { supabaseBrowser } from "@/lib/supabase-browser";
 
 interface CustomAuthModalProps {
   isOpen: boolean;
@@ -10,48 +10,48 @@ interface CustomAuthModalProps {
 
 export default function CustomAuthModal({ isOpen, onClose }: CustomAuthModalProps) {
   const [email, setEmail] = useState("");
-  const [code, setCode] = useState("");
-  const [step, setStep] = useState<"email-input" | "code-input">("email-input");
   const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-
-  const { initOAuth } = useLoginWithOAuth({
-    onComplete: () => onClose(),
-  });
-
-  const { sendCode, loginWithCode } = useLoginWithEmail();
 
   if (!isOpen) return null;
 
-  const handleSendEmail = async (e: React.FormEvent) => {
+  const handleLoginWithEmail = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email) return;
 
     setLoading(true);
     setError(null);
+    setMessage(null);
+
     try {
-      await sendCode({ email });
-      setStep("code-input");
+      const { error } = await supabaseBrowser.auth.signInWithOtp({
+        email,
+        options: {
+          emailRedirectTo: window.location.origin,
+        },
+      });
+
+      if (error) throw error;
+      setMessage("Un lien de connexion magique a été envoyé à votre adresse email !");
     } catch (err: any) {
-      setError(err?.message || "Erreur lors de l'envoi du code");
+      setError(err?.message || "Erreur lors de l'envoi de l'email");
     } finally {
       setLoading(false);
     }
   };
 
-  const handleVerifyCode = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!code) return;
-
-    setLoading(true);
-    setError(null);
+  const handleLoginWithGoogle = async () => {
     try {
-      await loginWithCode({ code });
-      onClose();
+      const { error } = await supabaseBrowser.auth.signInWithOAuth({
+        provider: "google",
+        options: {
+          redirectTo: `${window.location.origin}/auth/callback`,
+        },
+      });
+      if (error) throw error;
     } catch (err: any) {
-      setError(err?.message || "Code invalide ou expiré");
-    } finally {
-      setLoading(false);
+      setError(err?.message || "Erreur de connexion Google");
     }
   };
 
@@ -67,7 +67,7 @@ export default function CustomAuthModal({ isOpen, onClose }: CustomAuthModalProp
 
         <div className="text-center mb-6">
           <h2 className="text-2xl font-bold tracking-tight text-[#f1ead9] uppercase">TYKS</h2>
-          <p className="text-sm text-[#f1ead9]/60 mt-1">Connectez-vous pour accéder à votre pass</p>
+          <p className="text-sm text-[#f1ead9]/60 mt-1">Connectez-vous pour accéder à votre espace</p>
         </div>
 
         {error && (
@@ -76,8 +76,14 @@ export default function CustomAuthModal({ isOpen, onClose }: CustomAuthModalProp
           </div>
         )}
 
+        {message && (
+          <div className="mb-4 p-3 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs text-center">
+            {message}
+          </div>
+        )}
+
         <button
-          onClick={() => initOAuth({ provider: "google" })}
+          onClick={handleLoginWithGoogle}
           className="w-full flex items-center justify-center gap-3 px-4 py-3 rounded-xl bg-[#0b0b0e] border border-[#f1ead9]/15 text-[#f1ead9] font-medium hover:bg-[#1c1b22] transition-all"
         >
           <svg className="w-5 h-5" viewBox="0 0 24 24">
@@ -106,59 +112,27 @@ export default function CustomAuthModal({ isOpen, onClose }: CustomAuthModalProp
             <div className="w-full border-t border-[#f1ead9]/10"></div>
           </div>
           <span className="relative px-3 text-xs uppercase tracking-wider bg-[#131217] text-[#f1ead9]/40">
-            ou par e-mail
+            ou par lien magique
           </span>
         </div>
 
-        {step === "email-input" ? (
-          <form onSubmit={handleSendEmail} className="space-y-3">
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="votre@email.com"
-              className="w-full px-4 py-3 rounded-xl bg-[#0b0b0e] border border-[#f1ead9]/15 text-[#f1ead9] placeholder-[#f1ead9]/30 focus:outline-none focus:border-[#7a81ff]"
-              required
-            />
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full py-3 rounded-xl bg-[#f1ead9] text-[#0b0b0e] font-semibold hover:bg-[#f1ead9]/90 transition-all disabled:opacity-50"
-            >
-              {loading ? "Envoi du code..." : "Recevoir un code"}
-            </button>
-          </form>
-        ) : (
-          <form onSubmit={handleVerifyCode} className="space-y-3">
-            <input
-              type="text"
-              value={code}
-              onChange={(e) => setCode(e.target.value)}
-              placeholder="Code reçu par mail"
-              className="w-full px-4 py-3 rounded-xl bg-[#0b0b0e] border border-[#f1ead9]/15 text-[#f1ead9] text-center tracking-widest placeholder-[#f1ead9]/30 focus:outline-none focus:border-[#7a81ff]"
-              required
-            />
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full py-3 rounded-xl bg-[#f1ead9] text-[#0b0b0e] font-semibold hover:bg-[#f1ead9]/90 transition-all disabled:opacity-50"
-            >
-              {loading ? "Vérification..." : "Valider le code"}
-            </button>
-          </form>
-        )}
-
-        <p className="text-center text-xs text-[#f1ead9]/40 mt-6">
-          En continuant, vous acceptez nos{" "}
-          <a href="/cgu" className="underline hover:text-[#f1ead9]">
-            CGU
-          </a>{" "}
-          et notre{" "}
-          <a href="/politique-de-confidentialite" className="underline hover:text-[#f1ead9]">
-            Politique de confidentialité
-          </a>
-          .
-        </p>
+        <form onSubmit={handleLoginWithEmail} className="space-y-3">
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="votre@email.com"
+            className="w-full px-4 py-3 rounded-xl bg-[#0b0b0e] border border-[#f1ead9]/15 text-[#f1ead9] placeholder-[#f1ead9]/30 focus:outline-none focus:border-[#7a81ff]"
+            required
+          />
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full py-3 rounded-xl bg-[#f1ead9] text-[#0b0b0e] font-semibold hover:bg-[#f1ead9]/90 transition-all disabled:opacity-50"
+          >
+            {loading ? "Envoi en cours..." : "Recevoir mon lien de connexion"}
+          </button>
+        </form>
       </div>
     </div>
   );
