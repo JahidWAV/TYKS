@@ -7,12 +7,11 @@ export async function GET(request: Request) {
   const origin = requestUrl.origin
 
   if (code) {
-    // Si supabaseServer est déjà une instance configurée, on l'utilise sans les parentheses `()`, 
-    // ou si c'est une fonction asynchrone/factory, adapte selon ton fichier lib/supabase-server.ts.
     const supabase = supabaseServer
     // @ts-ignore
     await supabase.auth.exchangeCodeForSession(code)
   }
 
+  // Redirection propre vers l'espace organisateur
   return NextResponse.redirect(`${origin}/organisateur`)
 }
