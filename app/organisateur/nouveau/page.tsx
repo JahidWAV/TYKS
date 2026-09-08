@@ -61,7 +61,7 @@ export default function NewEventPage() {
   }
 
   return (
-    <div className="min-h-screen bg-onyx bg-night-glow text-bone pt-8 pb-24">
+    <div className="min-h-screen bg-onyx text-bone pt-8 pb-24">
       <div className="max-w-3xl mx-auto px-6">
         <Link
           href="/organisateur"
@@ -98,7 +98,7 @@ export default function NewEventPage() {
                 value={form.title}
                 onChange={handleChange}
                 placeholder="Ex : Nuit Blanche Electro #4"
-                className="w-full bg-onyx border border-onyx-line rounded-xl px-4 py-3 text-sm text-bone outline-none focus:border-cobalt/50 transition-colors"
+                className="w-full bg-onyx border border-onyx-line rounded-xl px-4 py-3 text-sm text-bone outline-none focus:border-bone/40 transition-colors"
               />
             </div>
 
@@ -110,7 +110,7 @@ export default function NewEventPage() {
                 value={form.description}
                 onChange={handleChange}
                 placeholder="Présentation du lineup, ambiance, consignes d'accès..."
-                className="w-full bg-onyx border border-onyx-line rounded-xl px-4 py-3 text-sm text-bone outline-none focus:border-cobalt/50 transition-colors resize-none"
+                className="w-full bg-onyx border border-onyx-line rounded-xl px-4 py-3 text-sm text-bone outline-none focus:border-bone/40 transition-colors resize-none"
               />
             </div>
 
@@ -125,7 +125,7 @@ export default function NewEventPage() {
                   value={form.location}
                   onChange={handleChange}
                   placeholder="Ex : Le Rex Club, 5 Bd Poissonnière, 75002 Paris"
-                  className="w-full bg-onyx border border-onyx-line rounded-xl pl-10 pr-4 py-3 text-sm text-bone outline-none focus:border-cobalt/50 transition-colors"
+                  className="w-full bg-onyx border border-onyx-line rounded-xl pl-10 pr-4 py-3 text-sm text-bone outline-none focus:border-bone/40 transition-colors"
                 />
               </div>
             </div>
@@ -145,7 +145,7 @@ export default function NewEventPage() {
                     required
                     value={form.starts_at}
                     onChange={handleChange}
-                    className="w-full bg-onyx border border-onyx-line rounded-xl pl-10 pr-4 py-3 text-sm text-bone outline-none focus:border-cobalt/50 transition-colors"
+                    className="w-full bg-onyx border border-onyx-line rounded-xl pl-10 pr-4 py-3 text-sm text-bone outline-none focus:border-bone/40 transition-colors"
                   />
                 </div>
               </div>
@@ -159,7 +159,7 @@ export default function NewEventPage() {
                     name="ends_at"
                     value={form.ends_at}
                     onChange={handleChange}
-                    className="w-full bg-onyx border border-onyx-line rounded-xl pl-10 pr-4 py-3 text-sm text-bone outline-none focus:border-cobalt/50 transition-colors"
+                    className="w-full bg-onyx border border-onyx-line rounded-xl pl-10 pr-4 py-3 text-sm text-bone outline-none focus:border-bone/40 transition-colors"
                   />
                 </div>
               </div>
@@ -182,7 +182,7 @@ export default function NewEventPage() {
                     value={form.price}
                     onChange={handleChange}
                     placeholder="0 pour gratuit"
-                    className="w-full bg-onyx border border-onyx-line rounded-xl pl-10 pr-4 py-3 text-sm text-bone outline-none focus:border-cobalt/50 transition-colors"
+                    className="w-full bg-onyx border border-onyx-line rounded-xl pl-10 pr-4 py-3 text-sm text-bone outline-none focus:border-bone/40 transition-colors"
                   />
                 </div>
               </div>
@@ -198,7 +198,7 @@ export default function NewEventPage() {
                     value={form.capacity}
                     onChange={handleChange}
                     placeholder="Ex : 500"
-                    className="w-full bg-onyx border border-onyx-line rounded-xl pl-10 pr-4 py-3 text-sm text-bone outline-none focus:border-cobalt/50 transition-colors"
+                    className="w-full bg-onyx border border-onyx-line rounded-xl pl-10 pr-4 py-3 text-sm text-bone outline-none focus:border-bone/40 transition-colors"
                   />
                 </div>
               </div>
@@ -218,7 +218,7 @@ export default function NewEventPage() {
                   value={form.image_url}
                   onChange={handleChange}
                   placeholder="https://images.unsplash.com/..."
-                  className="w-full bg-onyx border border-onyx-line rounded-xl pl-10 pr-4 py-3 text-sm text-bone outline-none focus:border-cobalt/50 transition-colors"
+                  className="w-full bg-onyx border border-onyx-line rounded-xl pl-10 pr-4 py-3 text-sm text-bone outline-none focus:border-bone/40 transition-colors"
                 />
               </div>
             </div>
@@ -240,7 +240,7 @@ export default function NewEventPage() {
             <button
               type="submit"
               disabled={loading}
-              className="inline-flex items-center gap-2 bg-cobalt hover:bg-cobalt-soft text-bone font-semibold px-7 py-3 rounded-full transition-colors text-sm disabled:opacity-50"
+              className="inline-flex items-center gap-2 bg-bone hover:bg-white text-onyx font-semibold px-7 py-3 rounded-full transition-colors text-sm disabled:opacity-50"
             >
               <Sparkles className="w-4 h-4" />
               <span>{loading ? 'Création...' : 'Publier le brouillon'}</span>
