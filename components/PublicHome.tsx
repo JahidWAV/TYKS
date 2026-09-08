@@ -56,6 +56,7 @@ export default function PublicHome() {
               Voir les événements
             </Link>
             
+            <a
               href="https://pro.tyks.app"
               className="inline-flex items-center rounded-full border border-onyx-line px-7 py-3.5 text-sm font-semibold text-bone transition hover:border-bone/40 hover:bg-onyx-raised"
             >
@@ -151,7 +152,7 @@ export default function PublicHome() {
         </div>
 
         <div className="mt-8">
-          
+          <a
             href="https://pro.tyks.app"
             className="inline-flex items-center rounded-full bg-bone px-7 py-3.5 text-sm font-semibold text-onyx transition hover:bg-white"
           >
