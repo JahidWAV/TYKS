@@ -1,4 +1,3 @@
-cat > components/PublicHome.tsx << 'EOF'
 export default function PublicHome() {
   return (
     <div className="relative">
