@@ -75,15 +75,13 @@ export default function EventCompactPage() {
     : 'Gratuit';
 
   return (
-    <div className="h-screen bg-onyx text-bone font-sans antialiased selection:bg-bone/25 selection:text-bone overflow-hidden flex flex-col">
+    <div className="min-h-screen bg-onyx text-bone font-sans antialiased selection:bg-bone/25 selection:text-bone flex flex-col">
       <div className="grain" aria-hidden="true" />
       <Navbar />
 
-      {/* Conteneur principal optimisé pour tenir sur un seul écran */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-6 py-6 flex flex-col justify-between">
-        
-        {/* Navigation retour discrète */}
-        <div>
+      <main className="flex-1 max-w-6xl w-full mx-auto px-6 py-8 flex flex-col justify-center">
+        {/* Retour */}
+        <div className="mb-6">
           <Link
             href="/"
             className="inline-flex items-center gap-2 text-xs font-medium text-bone-faint hover:text-bone transition-colors"
@@ -93,12 +91,12 @@ export default function EventCompactPage() {
           </Link>
         </div>
 
-        {/* Grille principale : Affiche verticale à gauche / Blocs de droite */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center my-auto">
+        {/* Grille Principale */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
           
-          {/* GAUCHE : Affiche au format strictement vertical (ex: 3/4 ou 4/5) */}
-          <div className="lg:col-span-5 flex justify-center">
-            <div className="relative aspect-[3/4] w-full max-w-[340px] lg:max-w-none h-[420px] lg:h-[500px] overflow-hidden rounded-2xl border border-onyx-line bg-onyx-raised shadow-2xl">
+          {/* GAUCHE : Affiche au format strictement vertical (3/4) */}
+          <div className="lg:col-span-5 flex">
+            <div className="relative aspect-[3/4] w-full rounded-2xl border border-onyx-line bg-onyx-raised overflow-hidden shadow-2xl flex flex-col">
               {evtData.image_url ? (
                 <img
                   src={evtData.image_url}
@@ -119,15 +117,15 @@ export default function EventCompactPage() {
             </div>
           </div>
 
-          {/* DROITE : Prix en haut, Détails essentiels en bas */}
-          <div className="lg:col-span-7 flex flex-col gap-5">
+          {/* DROITE : Titre, Prix en haut, Détails en bas */}
+          <div className="lg:col-span-7 flex flex-col justify-between space-y-6">
             
-            {/* Titre & Infos rapides */}
-            <div className="space-y-2">
-              <h1 className="font-display text-2xl lg:text-4xl font-extrabold tracking-tight text-bone leading-tight">
+            {/* Titre et Infos */}
+            <div className="space-y-3">
+              <h1 className="font-display text-3xl lg:text-4xl font-extrabold tracking-tight text-bone leading-tight">
                 {event.title}
               </h1>
-              <div className="flex flex-wrap items-center gap-4 text-xs text-bone-muted font-mono pt-1">
+              <div className="flex flex-wrap items-center gap-4 text-xs text-bone-muted font-mono">
                 <div className="flex items-center gap-1.5">
                   <Calendar className="w-3.5 h-3.5 text-bone-faint" />
                   <span>
@@ -142,7 +140,7 @@ export default function EventCompactPage() {
                 </div>
                 <div className="flex items-center gap-1.5">
                   <MapPin className="w-3.5 h-3.5 text-bone-faint" />
-                  <span className="truncate max-w-[200px]">{event.location}</span>
+                  <span className="truncate max-w-[220px]">{event.location}</span>
                 </div>
               </div>
             </div>
@@ -162,35 +160,35 @@ export default function EventCompactPage() {
               </button>
             </div>
 
-            {/* DÉTAILS & DESCRIPTION COURTE (Bas droite) */}
-            <div className="bg-onyx-raised/60 border border-onyx-line rounded-2xl p-5 space-y-3">
-              <div className="flex items-center justify-between">
-                <h3 className="text-xs font-mono text-bone-faint uppercase tracking-wider">À propos</h3>
-                {event.description && event.description.length > 120 && (
-                  <button
-                    onClick={() => setShowDetailsModal(true)}
-                    className="inline-flex items-center gap-1 text-xs text-bone hover:underline font-medium"
-                  >
-                    <span>Voir plus de détails</span>
-                    <ChevronRight className="w-3.5 h-3.5" />
-                  </button>
-                )}
+            {/* DÉTAILS (Bas droite) */}
+            <div className="bg-onyx-raised/60 border border-onyx-line rounded-2xl p-5 space-y-3 flex-1 flex flex-col justify-between">
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <h3 className="text-xs font-mono text-bone-faint uppercase tracking-wider">À propos</h3>
+                  {event.description && event.description.length > 100 && (
+                    <button
+                      onClick={() => setShowDetailsModal(true)}
+                      className="inline-flex items-center gap-1 text-xs text-bone hover:underline font-medium"
+                    >
+                      <span>Voir plus de détails</span>
+                      <ChevronRight className="w-3.5 h-3.5" />
+                    </button>
+                  )}
+                </div>
+                <p className="text-xs text-bone-muted leading-relaxed line-clamp-3">
+                  {event.description || 'Aucune description fournie.'}
+                </p>
               </div>
-              <p className="text-xs text-bone-muted leading-relaxed line-clamp-3">
-                {event.description || 'Aucune description fournie.'}
-              </p>
             </div>
 
           </div>
         </div>
-
-        <div className="h-4" />
       </main>
 
       {/* MODAL POUR "VOIR PLUS DE DÉTAILS" */}
       {showDetailsModal && (
         <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-onyx-raised border border-onyx-line rounded-3xl max-w-xl w-full p-8 space-y-6 relative shadow-2xl animate-in fade-in zoom-in-95 duration-150">
+          <div className="bg-onyx-raised border border-onyx-line rounded-3xl max-w-xl w-full p-8 space-y-6 relative shadow-2xl">
             <button
               onClick={() => setShowDetailsModal(false)}
               className="absolute top-6 right-6 text-bone-faint hover:text-bone transition-colors"
