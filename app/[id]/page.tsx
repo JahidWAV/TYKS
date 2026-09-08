@@ -1,18 +1,22 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import { useRouter, useParams } from 'next/navigation';
+import { useRouter, useParams, notFound } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, MapPin, Save, Trash2 } from 'lucide-react';
 import { supabaseBrowser } from '@/lib/supabase-browser';
 
-// Regex pour valider un UUID v4 standard
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 export default function EditEventPage() {
   const router = useRouter();
   const params = useParams();
   const eventId = params.id as string;
+
+  // Si l'ID n'est pas un UUID valide (ex: "/nouveau"), on déclenche la vraie 404 de Next.js
+  if (!eventId || !UUID_REGEX.test(eventId)) {
+    notFound();
+  }
 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -32,13 +36,6 @@ export default function EditEventPage() {
   });
 
   const loadEvent = useCallback(async () => {
-    // Si l'ID dans l'URL n'est pas un UUID valide (ex: "nouveau"), on bloque net
-    if (!eventId || !UUID_REGEX.test(eventId)) {
-      setError("Cet événement n'existe pas ou l'identifiant est invalide.");
-      setLoading(false);
-      return;
-    }
-
     try {
       const { data, error } = await supabaseBrowser
         .from('events')
@@ -125,25 +122,6 @@ export default function EditEventPage() {
     return (
       <div className="min-h-screen bg-onyx text-bone flex items-center justify-center">
         <div className="w-7 h-7 border-2 border-cobalt/60 border-t-transparent rounded-full animate-spin" />
-      </div>
-    );
-  }
-
-  // Si l'ID est invalide (ex: /nouveau), on affiche un message propre au lieu de planter la base de données
-  if (!UUID_REGEX.test(eventId)) {
-    return (
-      <div className="min-h-screen bg-onyx bg-night-glow text-bone flex flex-col items-center justify-center px-6">
-        <div className="max-w-md text-center space-y-4">
-          <h1 className="font-display text-2xl font-bold">Page introuvable</h1>
-          <p className="text-sm text-bone-faint">L'adresse que vous avez demandée n'est pas valide (les créations d'événements se font via /new).</p>
-          <Link
-            href="/organisateur"
-            className="inline-flex items-center gap-2 bg-cobalt hover:bg-cobalt-soft text-bone font-semibold px-6 py-2.5 rounded-full text-sm transition-colors"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            <span>Retour au dashboard</span>
-          </Link>
-        </div>
       </div>
     );
   }
