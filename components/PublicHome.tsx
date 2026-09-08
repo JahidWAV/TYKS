@@ -36,7 +36,6 @@ const FIELDS = [
 export default function PublicHome() {
   return (
     <div className="mx-auto max-w-6xl px-6">
-      {/* ============ HERO ============ */}
       <section className="grid gap-16 py-20 lg:grid-cols-[1fr_auto] lg:items-center lg:gap-12 lg:py-28">
         <div className="space-y-8">
           <h1 className="font-display text-4xl font-bold leading-[1.05] tracking-tight text-bone md:text-6xl">
@@ -65,7 +64,6 @@ export default function PublicHome() {
           </div>
         </div>
 
-        {/* Le billet — seul moment de mouvement et d'éclat de la page */}
         <div className="mx-auto lg:mx-0">
           <div className="hero-settle metal-card flex w-72 rotate-[-6deg] rounded-3xl border border-onyx-line bg-onyx-raised shadow-2xl shadow-black/50">
             <div className="flex-1 space-y-5 p-6">
@@ -92,7 +90,6 @@ export default function PublicHome() {
               </div>
             </div>
 
-            {/* stub perforé */}
             <div className="relative flex w-16 shrink-0 items-center justify-center border-l border-dashed border-onyx-line/70">
               <span
                 className="font-mono text-[10px] tracking-wider text-bone-faint"
@@ -107,7 +104,6 @@ export default function PublicHome() {
         </div>
       </section>
 
-      {/* ============ COMMENT ÇA MARCHE ============ */}
       <section className="border-t border-onyx-line py-16">
         <div className="grid gap-10 sm:grid-cols-3 sm:gap-8">
           {STEPS.map((step) => (
@@ -126,7 +122,6 @@ export default function PublicHome() {
         </div>
       </section>
 
-      {/* ============ POUR LES ORGANISATEURS ============ */}
       <section className="border-t border-onyx-line py-16">
         <div className="mb-10 max-w-lg space-y-3">
           <h2 className="font-display text-2xl font-bold text-bone">
