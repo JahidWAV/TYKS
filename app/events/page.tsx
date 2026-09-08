@@ -1,11 +1,9 @@
-import { createClient } from '@/lib/supabase-server';
+import { supabaseServer } from '@/lib/supabase-server';
 import Link from 'next/link';
 
 export default async function EventsPage() {
-  const supabase = await createClient();
-  
-  // Récupération de la liste des événements publics
-  const { data: events, error } = await supabase
+  // Récupération de la liste des événements publics avec le client admin
+  const { data: events, error } = await supabaseServer
     .from('events')
     .select('*')
     .order('created_at', { ascending: false });
