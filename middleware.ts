@@ -3,11 +3,21 @@ import type { NextRequest } from 'next/server'
 
 export function middleware(request: NextRequest) {
   const hostname = request.headers.get('host') || ''
+  const url = request.nextUrl
   
-  // En production, si on tape sur pro.tyks.app
+  // Si on est sur le sous-domaine pro
   if (hostname === 'pro.tyks.app') {
-    // On réécrit l'URL en interne vers ton dossier /organisateur
-    return NextResponse.rewrite(new URL(`/organisateur${request.nextUrl.pathname}`, request.url))
+    // Évite de réécrire les fichiers internes de Next.js ou les API
+    if (
+      url.pathname.startsWith('/_next') ||
+      url.pathname.startsWith('/api') ||
+      url.pathname.includes('.')
+    ) {
+      return NextResponse.next()
+    }
+
+    // Réécriture transparente vers le dossier /organisateur
+    return NextResponse.rewrite(new URL(`/organisateur${url.pathname}`, request.url))
   }
 
   return NextResponse.next()
