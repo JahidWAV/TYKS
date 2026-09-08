@@ -3,24 +3,17 @@
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { usePrivy } from "@privy-io/react-auth";
-import { useWallets } from "@privy-io/react-auth/solana";
 import { LogOut, Loader2, Menu, X, Search, Calendar, MapPin, ArrowUpRight } from "lucide-react";
 import CustomAuthModal from "@/components/CustomAuthModal";
 import { supabaseBrowser } from "@/lib/supabase-browser";
 
-function truncateAddress(address: string) {
-  if (address.length <= 10) return address;
-  return `${address.slice(0, 4)}···${address.slice(-4)}`;
-}
-
 export default function Navbar() {
-  const { ready, authenticated, user, logout } = usePrivy();
-  const { wallets } = useWallets();
   const router = useRouter();
 
   const [mobileOpen, setMobileOpen] = useState(false);
   const [isAuthOpen, setIsAuthOpen] = useState(false);
+  const [user, setUser] = useState<any>(null);
+  const [loadingUser, setLoadingUser] = useState(true);
 
   // États pour la recherche
   const [searchQuery, setSearchQuery] = useState("");
@@ -29,10 +22,30 @@ export default function Navbar() {
   const [showDropdown, setShowDropdown] = useState(false);
   const searchRef = useRef<HTMLDivElement>(null);
 
-  const solanaWallet = wallets[0];
-  const email = user?.email?.address ?? user?.google?.email ?? null;
+  // Vérification de la session Supabase
+  useEffect(() => {
+    const getSession = async () => {
+      const { data: { session } } = await supabaseBrowser.auth.getSession();
+      setUser(session?.user ?? null);
+      setLoadingUser(false);
+    };
 
-  // Recherche en temps réel invisible / fluide
+    getSession();
+
+    const { data: { subscription } } = supabaseBrowser.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const handleLogout = async () => {
+    await supabaseBrowser.auth.signOut();
+    setUser(null);
+    router.refresh();
+  };
+
+  // Recherche en temps réel
   useEffect(() => {
     const fetchResults = async () => {
       if (!searchQuery.trim()) {
@@ -86,7 +99,7 @@ export default function Navbar() {
             </span>
           </Link>
 
-          {/* BARRE DE RECHERCHE CENTRALE (Plus épaisse et lisible) */}
+          {/* BARRE DE RECHERCHE CENTRALE */}
           <div className="relative hidden md:block flex-1 max-w-lg mx-6" ref={searchRef}>
             <div className="relative flex items-center">
               <Search className="absolute left-4 h-4 w-4 text-bone font-bold pointer-events-none" />
@@ -99,10 +112,9 @@ export default function Navbar() {
                 }}
                 onFocus={() => setShowDropdown(true)}
                 placeholder="Rechercher un événement, un lieu..."
-                className="w-full bg-onyx-raised border-2 border-onyx-line rounded-2xl pl-11 pr-10 py-3 text-sm font-medium text-bone placeholder:text-bone-faint focus:outline-none focus:border-bone/60 transition-all shadow-xl"
+                className="w-full bg-onyx-raised border-2 border-onyx-line rounded-2xl pl-11 pr-10 py-3 text-sm font-medium text-bone placeholder:text-bone-faint focus:outline-none focus:border-bone/65 transition-all shadow-xl"
               />
               
-              {/* Bouton de suppression séparé du chargement (aucun clignotement de la croix) */}
               {searchQuery && (
                 <button
                   onClick={() => {
@@ -116,7 +128,6 @@ export default function Navbar() {
               )}
             </div>
 
-            {/* Dropdown de résultats avec une excellente lisibilité */}
             {showDropdown && searchQuery.trim().length > 0 && (
               <div className="absolute top-full left-0 right-0 mt-3 bg-onyx-raised border-2 border-onyx-line rounded-2xl shadow-2xl overflow-hidden z-50 backdrop-blur-2xl divide-y divide-onyx-line">
                 {results.length > 0 ? (
@@ -172,22 +183,17 @@ export default function Navbar() {
 
           {/* Desktop right side */}
           <div className="hidden items-center gap-4 sm:flex shrink-0">
-            {!ready ? (
+            {loadingUser ? (
               <div className="flex h-10 w-40 items-center justify-center rounded-full border border-onyx-line bg-onyx-raised">
                 <Loader2 className="h-4 w-4 animate-spin text-bone-muted" />
               </div>
-            ) : authenticated ? (
+            ) : user ? (
               <>
                 <div className="flex flex-col items-end leading-tight">
-                  {email && <span className="text-sm font-medium text-bone">{email}</span>}
-                  {solanaWallet && (
-                    <span className="font-mono text-xs text-bone-faint">
-                      {truncateAddress(solanaWallet.address)}
-                    </span>
-                  )}
+                  <span className="text-sm font-medium text-bone">{user.email}</span>
                 </div>
                 <button
-                  onClick={logout}
+                  onClick={handleLogout}
                   className="inline-flex items-center gap-2 rounded-full border border-onyx-line px-4 py-2 text-sm font-medium text-bone transition hover:border-bone/40 hover:bg-onyx-raised"
                 >
                   <LogOut className="h-4 w-4" />
@@ -246,22 +252,15 @@ export default function Navbar() {
               </div>
             )}
 
-            {!ready ? (
+            {loadingUser ? (
               <div className="flex h-10 items-center justify-center rounded-full border border-onyx-line bg-onyx-raised">
                 <Loader2 className="h-4 w-4 animate-spin text-bone-muted" />
               </div>
-            ) : authenticated ? (
+            ) : user ? (
               <div className="flex flex-col gap-3 pt-2">
-                <div className="flex flex-col leading-tight">
-                  {email && <span className="text-sm font-medium text-bone">{email}</span>}
-                  {solanaWallet && (
-                    <span className="font-mono text-xs text-bone-faint">
-                      {truncateAddress(solanaWallet.address)}
-                    </span>
-                  )}
-                </div>
+                <span className="text-sm font-medium text-bone">{user.email}</span>
                 <button
-                  onClick={logout}
+                  onClick={handleLogout}
                   className="inline-flex items-center justify-center gap-2 rounded-full border border-onyx-line px-4 py-2.5 text-sm font-medium text-bone"
                 >
                   <LogOut className="h-4 w-4" />
