@@ -3,16 +3,16 @@
 import { useCallback, useEffect, useState } from 'react';
 import { usePrivy } from '@privy-io/react-auth';
 import Link from 'next/link';
-import { ArrowUpRight, Pencil, Trash2, Plus } from 'lucide-react';
+import { ArrowUpRight } from 'lucide-react';
 import type { IortiEvent } from '@/types/event';
 import type { OrgRole } from '@/lib/organizer';
-import AuthFlowModal from '@/components/AuthFlowModal'; // Importe ta modal personnalisée
+import CustomAuthModal from '@/components/CustomAuthModal';
 
 export default function OrganizerDashboard() {
   const { ready, authenticated, getAccessToken } = usePrivy();
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
-  // ... garde ton state et tes fonctions loadDashboard / handleOnboard / handleDelete ...
+  // ... garde tes states et fonctions loadDashboard / handleOnboard / handleDelete ...
 
   if (!authenticated) {
     return (
@@ -28,8 +28,7 @@ export default function OrganizerDashboard() {
           <ArrowUpRight className="w-4 h-4" />
         </button>
 
-        {/* Modal personnalisée */}
-        <AuthModal isOpen={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)} />
+        <CustomAuthModal isOpen={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)} />
       </div>
     );
   }
