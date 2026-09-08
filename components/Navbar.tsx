@@ -144,7 +144,7 @@ export default function Navbar({ isPro = false }: { isPro?: boolean }) {
                             onClick={() => {
                               setShowDropdown(false);
                               setSearchQuery("");
-                              router.push(`/evenements/${evt.id}`);
+                              router.push(`/events/${evt.id}`);
                             }}
                             className="w-full text-left px-5 py-3.5 hover:bg-onyx transition-all flex items-center justify-between group"
                           >
@@ -245,7 +245,7 @@ export default function Navbar({ isPro = false }: { isPro?: boolean }) {
                         onClick={() => {
                           setMobileOpen(false);
                           setSearchQuery("");
-                          router.push(`/evenements/${evt.id}`);
+                          router.push(`/events/${evt.id}`);
                         }}
                         className="p-3 text-xs text-bone flex justify-between items-center"
                       >
