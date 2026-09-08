@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import Navbar '@/components/Navbar';
+import Navbar from '@/components/Navbar';
 import TicketPass from '@/components/TicketPass';
 import EventCard from '@/components/EventCard';
 import SamplePassPreview from '@/components/SamplePassPreview';
@@ -19,7 +19,6 @@ export default function HomePage() {
   const [isAuthOpen, setIsAuthOpen] = useState(false);
 
   useEffect(() => {
-    // Vérifie la session Supabase active
     supabaseBrowser.auth.getSession().then(({ data: { session } }) => {
       setAuthenticated(!!session);
     });
