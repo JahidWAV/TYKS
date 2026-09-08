@@ -32,7 +32,7 @@ export default function Navbar() {
   const solanaWallet = wallets[0];
   const email = user?.email?.address ?? user?.google?.email ?? null;
 
-  // Recherche en temps réel fluide (sans faire disparaître le conteneur)
+  // Recherche en temps réel invisible / fluide
   useEffect(() => {
     const fetchResults = async () => {
       if (!searchQuery.trim()) {
@@ -86,10 +86,10 @@ export default function Navbar() {
             </span>
           </Link>
 
-          {/* BARRE DE RECHERCHE CENTRALE OPTIMISÉE */}
-          <div className="relative hidden md:block flex-1 max-w-md mx-4" ref={searchRef}>
+          {/* BARRE DE RECHERCHE CENTRALE (Plus épaisse et lisible) */}
+          <div className="relative hidden md:block flex-1 max-w-lg mx-6" ref={searchRef}>
             <div className="relative flex items-center">
-              <Search className="absolute left-3.5 h-4 w-4 text-bone-faint pointer-events-none" />
+              <Search className="absolute left-4 h-4 w-4 text-bone font-bold pointer-events-none" />
               <input
                 type="text"
                 value={searchQuery}
@@ -99,32 +99,28 @@ export default function Navbar() {
                 }}
                 onFocus={() => setShowDropdown(true)}
                 placeholder="Rechercher un événement, un lieu..."
-                className="w-full bg-onyx-raised/80 border border-onyx-line rounded-full pl-10 pr-10 py-2.5 text-xs text-bone placeholder:text-bone-faint focus:outline-none focus:border-bone/40 transition-all shadow-inner"
+                className="w-full bg-onyx-raised border-2 border-onyx-line rounded-2xl pl-11 pr-10 py-3 text-sm font-medium text-bone placeholder:text-bone-faint focus:outline-none focus:border-bone/60 transition-all shadow-xl"
               />
               
-              {/* Indicateur de chargement discret (ne décale rien) */}
-              <div className="absolute right-3.5 flex items-center">
-                {isSearching ? (
-                  <Loader2 className="h-3.5 w-3.5 animate-spin text-bone-faint" />
-                ) : searchQuery ? (
-                  <button
-                    onClick={() => {
-                      setSearchQuery("");
-                      setResults([]);
-                    }}
-                    className="text-bone-faint hover:text-bone transition-colors"
-                  >
-                    <X className="h-4 w-4" />
-                  </button>
-                ) : null}
-              </div>
+              {/* Bouton de suppression séparé du chargement (aucun clignotement de la croix) */}
+              {searchQuery && (
+                <button
+                  onClick={() => {
+                    setSearchQuery("");
+                    setResults([]);
+                  }}
+                  className="absolute right-3.5 text-bone-faint hover:text-bone transition-colors p-1"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              )}
             </div>
 
-            {/* Dropdown stable et lisible */}
+            {/* Dropdown de résultats avec une excellente lisibilité */}
             {showDropdown && searchQuery.trim().length > 0 && (
-              <div className="absolute top-full left-0 right-0 mt-2.5 bg-onyx-raised/95 border border-onyx-line rounded-2xl shadow-2xl overflow-hidden z-50 backdrop-blur-xl divide-y divide-onyx-line/60">
+              <div className="absolute top-full left-0 right-0 mt-3 bg-onyx-raised border-2 border-onyx-line rounded-2xl shadow-2xl overflow-hidden z-50 backdrop-blur-2xl divide-y divide-onyx-line">
                 {results.length > 0 ? (
-                  <div className="py-1.5">
+                  <div className="py-2">
                     {results.map((evt) => {
                       const priceFormatted = evt.price && parseFloat(evt.price) > 0 
                         ? `${parseFloat(evt.price).toFixed(2)} €` 
@@ -138,36 +134,36 @@ export default function Navbar() {
                             setSearchQuery("");
                             router.push(`/evenements/${evt.id}`);
                           }}
-                          className="w-full text-left px-4 py-3 hover:bg-onyx/80 transition-all flex items-center justify-between group"
+                          className="w-full text-left px-5 py-3.5 hover:bg-onyx transition-all flex items-center justify-between group"
                         >
-                          <div className="space-y-1 pr-3 truncate">
-                            <p className="text-xs font-bold text-bone group-hover:text-white transition-colors truncate">
+                          <div className="space-y-1.5 pr-4 truncate">
+                            <p className="text-sm font-bold text-bone group-hover:text-white transition-colors truncate">
                               {evt.title}
                             </p>
-                            <div className="flex items-center gap-3 text-[10px] font-mono text-bone-faint">
-                              <span className="flex items-center gap-1">
-                                <Calendar className="w-3 h-3 text-bone-faint" />
-                                {new Date(evt.starts_at).toLocaleDateString("fr-FR", { day: "numeric", month: "short" })}
+                            <div className="flex items-center gap-4 text-xs font-mono text-bone-faint">
+                              <span className="flex items-center gap-1.5">
+                                <Calendar className="w-3.5 h-3.5 text-bone" />
+                                {new Date(evt.starts_at).toLocaleDateString("fr-FR", { day: "numeric", month: "short", year: "numeric" })}
                               </span>
-                              <span className="flex items-center gap-1 truncate">
-                                <MapPin className="w-3 h-3 text-bone-faint" />
+                              <span className="flex items-center gap-1.5 truncate">
+                                <MapPin className="w-3.5 h-3.5 text-bone" />
                                 {evt.location}
                               </span>
                             </div>
                           </div>
-                          <div className="flex items-center gap-2 shrink-0">
-                            <span className="font-mono text-xs font-semibold text-bone bg-onyx px-2.5 py-1 rounded-md border border-onyx-line">
+                          <div className="flex items-center gap-3 shrink-0">
+                            <span className="font-mono text-xs font-bold text-bone bg-onyx px-3 py-1.5 rounded-lg border border-onyx-line shadow-sm">
                               {priceFormatted}
                             </span>
-                            <ArrowUpRight className="w-3.5 h-3.5 text-bone-faint group-hover:text-bone transition-colors" />
+                            <ArrowUpRight className="w-4 h-4 text-bone-faint group-hover:text-bone transition-colors" />
                           </div>
                         </button>
                       );
                     })}
                   </div>
                 ) : (
-                  <div className="px-4 py-8 text-center">
-                    <p className="text-xs text-bone-faint font-medium">Aucun événement trouvé pour &quot;{searchQuery}&quot;</p>
+                  <div className="px-6 py-8 text-center">
+                    <p className="text-xs text-bone-faint font-semibold uppercase tracking-wider">Aucun événement trouvé pour &quot;{searchQuery}&quot;</p>
                   </div>
                 )}
               </div>
@@ -222,13 +218,13 @@ export default function Navbar() {
         {mobileOpen && (
           <div className="border-t border-onyx-line bg-onyx px-6 py-4 sm:hidden fade-rise space-y-4">
             <div className="relative flex items-center">
-              <Search className="absolute left-3.5 h-4 w-4 text-bone-faint pointer-events-none" />
+              <Search className="absolute left-3.5 h-4 w-4 text-bone pointer-events-none" />
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Rechercher un événement..."
-                className="w-full bg-onyx-raised border border-onyx-line rounded-full pl-10 pr-4 py-2.5 text-xs text-bone placeholder:text-bone-faint focus:outline-none"
+                className="w-full bg-onyx-raised border border-onyx-line rounded-2xl pl-10 pr-4 py-3 text-xs text-bone placeholder:text-bone-faint focus:outline-none"
               />
             </div>
             {searchQuery.trim().length > 0 && results.length > 0 && (
