@@ -28,7 +28,7 @@ export default function CustomAuthModal({ isOpen, onClose }: CustomAuthModalProp
       const { error } = await supabaseBrowser.auth.signInWithOtp({
         email,
         options: {
-          emailRedirectTo: window.location.origin,
+          emailRedirectTo: `${window.location.origin}/auth/callback`,
         },
       });
 
@@ -47,6 +47,10 @@ export default function CustomAuthModal({ isOpen, onClose }: CustomAuthModalProp
         provider: "google",
         options: {
           redirectTo: `${window.location.origin}/auth/callback`,
+          queryParams: {
+            access_type: 'offline',
+            prompt: 'consent',
+          },
         },
       });
       if (error) throw error;
