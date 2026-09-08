@@ -10,13 +10,7 @@ import SamplePassPreview from '@/components/SamplePassPreview';
 import CustomAuthModal from '@/components/CustomAuthModal';
 import { supabaseBrowser } from '@/lib/supabase-browser';
 import type { IortiEvent } from '@/types/event';
-import { Sparkles, Calendar, Award, ArrowUpRight, MapPin, ChevronRight, Loader2 } from 'lucide-react';
-
-const STATUS_LABEL: Record<string, string> = {
-  draft: 'Brouillon',
-  published: 'Publié',
-  cancelled: 'Annulé',
-};
+import { Sparkles, Calendar, Award, ArrowUpRight, ChevronRight, Loader2 } from 'lucide-react';
 
 export default function HomePage() {
   const { authenticated } = usePrivy();
@@ -134,13 +128,6 @@ export default function HomePage() {
                   </h2>
                   <p className="text-xs text-bone-faint mt-1">Billetterie officielle et événements partenaires</p>
                 </div>
-                <button
-                  onClick={() => setIsAuthOpen(true)}
-                  className="hidden sm:inline-flex items-center gap-1.5 text-xs font-medium text-bone-muted hover:text-bone transition-colors shrink-0"
-                >
-                  <span>Voir tout</span>
-                  <ChevronRight className="w-3.5 h-3.5" />
-                </button>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 {events.slice(0, 3).map((evt) => (
@@ -280,48 +267,7 @@ export default function HomePage() {
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {events.map((evt) => (
-                    <article
-                      key={evt.id}
-                      className="group p-6 bg-onyx-raised/60 hover:bg-onyx-raised border border-onyx-line rounded-2xl transition-all duration-200 flex flex-col justify-between space-y-6"
-                    >
-                      <div className="space-y-3">
-                        <div className="flex items-center justify-between">
-                          <span className="font-mono text-[10px] text-bone-faint">
-                            {new Date(evt.starts_at).toLocaleDateString('fr-FR', {
-                              day: '2-digit',
-                              month: 'short',
-                              hour: '2-digit',
-                              minute: '2-digit',
-                            })}
-                          </span>
-                          <span className="text-[10px] font-mono text-bone-faint border border-onyx-line px-2 py-0.5 rounded">
-                            {STATUS_LABEL[evt.status] ?? evt.status}
-                          </span>
-                        </div>
-
-                        <h3 className="font-display text-lg font-bold text-bone tracking-tight group-hover:text-white transition-colors">
-                          {evt.title}
-                        </h3>
-
-                        {evt.description && (
-                          <p className="text-xs text-bone-faint line-clamp-2 leading-relaxed">
-                            {evt.description}
-                          </p>
-                        )}
-                      </div>
-
-                      <div className="pt-4 border-t border-onyx-line flex items-center justify-between">
-                        <div className="flex items-center gap-1.5 text-xs text-bone-muted">
-                          <MapPin className="w-3.5 h-3.5 text-bone-faint" />
-                          <span>{evt.location}</span>
-                        </div>
-
-                        <button className="inline-flex items-center gap-1.5 bg-bone text-onyx font-semibold text-xs px-4 py-2 rounded-full transition-colors hover:bg-white">
-                          <span>Accéder</span>
-                          <ChevronRight className="w-3.5 h-3.5" />
-                        </button>
-                      </div>
-                    </article>
+                    <EventCard key={evt.id} event={evt} />
                   ))}
                 </div>
               )}
