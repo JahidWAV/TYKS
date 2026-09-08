@@ -1,5 +1,3 @@
-import Header from "@/components/Header";
-
 export default function OrganizerLayout({
   children,
 }: {
@@ -7,7 +5,6 @@ export default function OrganizerLayout({
 }) {
   return (
     <div className="min-h-screen bg-onyx text-bone flex flex-col selection:bg-cobalt selection:text-bone">
-      <Header />
       <main className="flex-1">{children}</main>
     </div>
   );
