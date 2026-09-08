@@ -49,49 +49,54 @@ export async function GET(req: NextRequest) {
     if (!error && sessionData?.user) {
       const user = sessionData.user;
 
-      // Utilisation du client Admin (Service Role) pour contourner les RLS et créer l'orga en toute sécurité
-      const supabaseAdmin = createClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.SUPABASE_SERVICE_ROLE_KEY!,
-        {
-          auth: {
-            persistSession: false,
-            autoRefreshToken: false,
-          },
-        }
-      );
+      // On vérifie si la connexion provient bien du sous-domaine pro
+      const isProSubdomain = requestUrl.hostname.startsWith("pro.");
 
-      // 1. Vérifier si l'utilisateur a déjà une organisation liée
-      const { data: existingMember } = await supabaseAdmin
-        .from("organization_members")
-        .select("organization_id")
-        .eq("user_id", user.id)
-        .maybeSingle();
+      if (isProSubdomain) {
+        // Utilisation du client Admin (Service Role) pour contourner les RLS et créer l'orga en toute sécurité
+        const supabaseAdmin = createClient(
+          process.env.NEXT_PUBLIC_SUPABASE_URL!,
+          process.env.SUPABASE_SERVICE_ROLE_KEY!,
+          {
+            auth: {
+              persistSession: false,
+              autoRefreshToken: false,
+            },
+          }
+        );
 
-      // 2. Si aucune organisation n'existe, on la crée automatiquement
-      if (!existingMember) {
-        const emailPrefix = user.email ? user.email.split("@")[0] : "Mon Organisation";
-        const orgName = `Organisation de ${emailPrefix}`;
-        const baseSlug = slugify(orgName);
-        const uniqueSlug = `${baseSlug}-${Math.random().toString(36).substring(2, 6)}`;
+        // 1. Vérifier si l'utilisateur a déjà une organisation liée
+        const { data: existingMember } = await supabaseAdmin
+          .from("organization_members")
+          .select("organization_id")
+          .eq("user_id", user.id)
+          .maybeSingle();
 
-        const { data: org, error: orgError } = await supabaseAdmin
-          .from("organizations")
-          .insert({
-            name: orgName,
-            slug: uniqueSlug,
-          })
-          .select()
-          .single();
+        // 2. Si aucune organisation n'existe, on la crée automatiquement (uniquement sur pro)
+        if (!existingMember) {
+          const emailPrefix = user.email ? user.email.split("@")[0] : "Mon Organisation";
+          const orgName = `Organisation de ${emailPrefix}`;
+          const baseSlug = slugify(orgName);
+          const uniqueSlug = `${baseSlug}-${Math.random().toString(36).substring(2, 6)}`;
 
-        if (!orgError && org) {
-          await supabaseAdmin
-            .from("organization_members")
+          const { data: org, error: orgError } = await supabaseAdmin
+            .from("organizations")
             .insert({
-              organization_id: org.id,
-              user_id: user.id,
-              role: "owner",
-            });
+              name: orgName,
+              slug: uniqueSlug,
+            })
+            .select()
+            .single();
+
+          if (!orgError && org) {
+            await supabaseAdmin
+              .from("organization_members")
+              .insert({
+                organization_id: org.id,
+                user_id: user.id,
+                role: "owner",
+              });
+          }
         }
       }
 
