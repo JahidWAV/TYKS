@@ -33,7 +33,7 @@ export async function middleware(request: NextRequest) {
   const isDashboard = hostname.startsWith('dashboard.')
   const isMarketingPro = hostname.startsWith('pro.')
 
-  // 1. Gestion du Dashboard (dashboard.tyks.app)
+  // 1. Dashboard (dashboard.tyks.app) -> réécrit vers le dossier physique /dashboard
   if (isDashboard) {
     const isAuthRoute = url.pathname.startsWith('/auth')
     if ((error || !user) && !isAuthRoute) {
@@ -43,13 +43,13 @@ export async function middleware(request: NextRequest) {
     return NextResponse.rewrite(url)
   }
 
-  // 2. Gestion de la Landing Pro (pro.tyks.app)
+  // 2. Landing Pro (pro.tyks.app) -> réécrit vers le dossier physique /pro
   if (isMarketingPro) {
     url.pathname = `/pro${url.pathname}`
     return NextResponse.rewrite(url)
   }
 
-  // 3. Site Public par défaut (tyks.app)
+  // 3. Site Public (tyks.app) -> réécrit vers le dossier physique /public
   url.pathname = `/public${url.pathname}`
   return NextResponse.rewrite(url)
 }
