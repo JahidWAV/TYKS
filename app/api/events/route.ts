@@ -23,14 +23,12 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
-    // 1. Récupérer le token d'authentification envoyé par le front-end
     const authHeader = request.headers.get('authorization');
     if (!authHeader) {
       return NextResponse.json({ error: "Non autorisé (token manquant)" }, { status: 401 });
     }
     const token = authHeader.replace('Bearer ', '');
 
-    // 2. Instancier un client Supabase lié au contexte de l'utilisateur
     const supabase = createClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -43,21 +41,32 @@ export async function POST(request: Request) {
       }
     );
 
-    // 3. Vérifier et récupérer l'utilisateur connecté
     const { data: { user }, error: userError } = await supabase.auth.getUser(token);
     if (userError || !user) {
       return NextResponse.json({ error: "Utilisateur non authentifié" }, { status: 401 });
     }
 
+    // 1. Récupérer l'organisation liée à l'utilisateur connecté via la table organization_members
+    const { data: membership, error: memberError } = await supabase
+      .from('organization_members')
+      .select('organization_id')
+      .eq('user_id', user.id)
+      .single();
+
+    if (memberError || !membership) {
+      return NextResponse.json({ error: "Aucune organisation associée à cet utilisateur." }, { status: 400 });
+    }
+
     const body = await request.json();
 
-    // 4. Insérer l'événement en associant explicitement created_by à l'UID de l'utilisateur
+    // 2. Insérer l'événement en incluant l'organization_id obligatoire
     const { data, error } = await supabase
       .from('events')
       .insert([
         {
           ...body,
-          created_by: user.id, // C'est cette ligne qui satisfait la règle RLS
+          organization_id: membership.organization_id, // Indispensable par rapport à ton schéma
+          created_by: user.id,
         },
       ])
       .select()
