@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Loader2, User, Mail, Shield, Bell, Key, Check, Calendar, MapPin, Hash, Building2, ChevronRight, Lock } from "lucide-react";
+import { Loader2, User, Mail, Shield, Bell, Key, Check, Calendar, MapPin, Hash, Building2 } from "lucide-react";
 import { supabaseBrowser } from "@/lib/supabase-browser";
 
 export default function SettingsPage() {
@@ -28,7 +28,7 @@ export default function SettingsPage() {
   const [newsletter, setNewsletter] = useState(true);
   const [currency, setCurrency] = useState("EUR");
 
-  // Onglet actif pour le design par panneaux distincts
+  // Onglet actif
   const [activeTab, setActiveTab] = useState("profile");
 
   const tabs = [
@@ -59,19 +59,32 @@ export default function SettingsPage() {
       const currentUser = session.user;
       setEmail(currentUser.email || "");
 
-      const meta = currentUser.user_metadata || {};
-      setFirstName(meta.first_name || meta.full_name?.split(" ")[0] || "");
-      setLastName(meta.last_name || meta.full_name?.split(" ").slice(1).join(" ") || "");
-      setBirthDate(meta.birth_date || "");
-      setAddress(meta.address || "");
-      setAddressComplement(meta.address_complement || "");
-      setPostalCode(meta.postal_code || "");
-      setCity(meta.city || "");
-
       const provider = currentUser.app_metadata?.provider;
       const identities = currentUser.identities || [];
       const isGoogle = provider === "google" || identities.some((id: any) => id.provider === "google");
       setIsGoogleProvider(isGoogle);
+
+      // Récupération des données depuis la table publique profiles
+      const { data: profileData, error } = await supabaseBrowser
+        .from("profiles")
+        .select("*")
+        .eq("id", currentUser.id)
+        .single();
+
+      if (profileData && !error) {
+        setFirstName(profileData.first_name || "");
+        setLastName(profileData.last_name || "");
+        setBirthDate(profileData.birth_date || "");
+        setAddress(profileData.address || "");
+        setAddressComplement(profileData.address_complement || "");
+        setPostalCode(profileData.postal_code || "");
+        setCity(profileData.city || "");
+      } else {
+        // Fallback optionnel sur les metadata si le profil n'existe pas encore dans la table
+        const meta = currentUser.user_metadata || {};
+        setFirstName(meta.first_name || meta.full_name?.split(" ")[0] || "");
+        setLastName(meta.last_name || meta.full_name?.split(" ").slice(1).join(" ") || "");
+      }
 
       setLoading(false);
     };
@@ -79,7 +92,7 @@ export default function SettingsPage() {
     fetchUserData();
   }, [router]);
 
-  // Synchronisation avec Supabase Auth
+  // Synchronisation avec la table profiles de Supabase
   const handleSaveProfile = async (e: React.FormEvent) => {
     e.preventDefault();
     setSaving(true);
@@ -87,24 +100,27 @@ export default function SettingsPage() {
     setErrorMessage("");
 
     try {
-      const fullName = `${firstName} ${lastName}`.trim();
-      const { error } = await supabaseBrowser.auth.updateUser({
-        data: {
+      const { data: { session } } = await supabaseBrowser.auth.getSession();
+      if (!session) throw new Error("Non authentifié");
+
+      const { error } = await supabaseBrowser
+        .from("profiles")
+        .upsert({
+          id: session.user.id,
           first_name: firstName,
           last_name: lastName,
-          full_name: fullName,
-          birth_date: birthDate,
-          address: address,
+          birth_date: birthDate || null,
+          address,
           address_complement: addressComplement,
           postal_code: postalCode,
-          city: city,
-        }
-      });
+          city,
+          updated_at: new Date(),
+        });
 
       if (error) throw error;
-      setSuccessMessage("Profil mis à jour et synchronisé avec Supabase.");
+      setSuccessMessage("Profil enregistré avec succès dans la table profiles !");
     } catch (err: any) {
-      setErrorMessage(err.message || "Erreur lors de la mise à jour.");
+      setErrorMessage(err.message || "Erreur lors de la sauvegarde.");
     } finally {
       setSaving(false);
     }
@@ -122,11 +138,11 @@ export default function SettingsPage() {
     <div className="min-h-screen bg-[#F7F5F0] text-[#111110] selection:bg-[#111110] selection:text-[#F7F5F0]">
       <div className="mx-auto max-w-5xl px-6 py-12 md:px-12 space-y-10">
         
-        {/* En-tête épuré avec Jauge globale */}
+        {/* En-tête */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-6 border-b border-[#111110]/10">
           <div className="space-y-1">
             <h1 className="font-display text-2xl md:text-3xl font-bold tracking-tight">Paramètres</h1>
-            <p className="text-xs font-mono opacity-60 uppercase tracking-wider">Espace personnel & Synchronisation Supabase</p>
+            <p className="text-xs font-mono opacity-60 uppercase tracking-wider">Espace personnel & Table profiles</p>
           </div>
 
           <div className="flex items-center gap-4 bg-white/80 border border-[#111110]/15 rounded-2xl p-4 shadow-sm backdrop-blur-md">
@@ -164,10 +180,9 @@ export default function SettingsPage() {
           </div>
         )}
 
-        {/* NOUVEAU DESIGN : Disposition en cartes d'onglets horizontaux en haut + Panneau de contenu unique et fluide en dessous */}
         <div className="space-y-6">
           
-          {/* Barre d'onglets supérieure responsive */}
+          {/* Barre d'onglets supérieure */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             {tabs.map((tab) => {
               const Icon = tab.icon;
@@ -192,7 +207,7 @@ export default function SettingsPage() {
             })}
           </div>
 
-          {/* Contenu de la vue active (Panneau unifié sans décalage bizarre) */}
+          {/* Panneau de contenu */}
           <div className="rounded-3xl border border-[#111110]/15 bg-white/70 p-6 md:p-8 backdrop-blur-md shadow-sm transition-all">
             
             {/* ONGLET 1 : PROFIL & ADRESSE */}
@@ -201,7 +216,7 @@ export default function SettingsPage() {
                 <div className="flex items-center justify-between border-b border-[#111110]/10 pb-4">
                   <div className="space-y-0.5">
                     <h2 className="text-sm font-bold uppercase tracking-wider font-mono">Informations personnelles & Adresse</h2>
-                    <p className="text-xs opacity-60">Ces données sont directement synchronisées avec votre compte Supabase.</p>
+                    <p className="text-xs opacity-60">Enregistré dans la table publique <code className="font-mono bg-black/5 px-1 py-0.5 rounded">profiles</code>.</p>
                   </div>
                   <button
                     type="submit"
@@ -221,7 +236,7 @@ export default function SettingsPage() {
                       value={firstName}
                       onChange={(e) => setFirstName(e.target.value)}
                       placeholder="Votre prénom"
-                      className="w-full rounded-2xl border border-[#111110]/20 bg-[#F7F5F0] px-4 py-3 text-xs focus:outline-none focus:border-[#111110]/60 transition-colors"
+                      className="w-full rounded-2xl border border-[#111110]/20 bg-[#F7F5F0] px-4 py-3 text-xs focus:outline-none focus:border-[#111110]/65 transition-colors"
                     />
                   </div>
 
@@ -232,7 +247,7 @@ export default function SettingsPage() {
                       value={lastName}
                       onChange={(e) => setLastName(e.target.value)}
                       placeholder="Votre nom"
-                      className="w-full rounded-2xl border border-[#111110]/20 bg-[#F7F5F0] px-4 py-3 text-xs focus:outline-none focus:border-[#111110]/60 transition-colors"
+                      className="w-full rounded-2xl border border-[#111110]/20 bg-[#F7F5F0] px-4 py-3 text-xs focus:outline-none focus:border-[#111110]/65 transition-colors"
                     />
                   </div>
 
@@ -257,7 +272,7 @@ export default function SettingsPage() {
                         type="date"
                         value={birthDate}
                         onChange={(e) => setBirthDate(e.target.value)}
-                        className="w-full rounded-2xl border border-[#111110]/20 bg-[#F7F5F0] px-4 py-3 pl-11 text-xs focus:outline-none focus:border-[#111110]/60 font-mono"
+                        className="w-full rounded-2xl border border-[#111110]/20 bg-[#F7F5F0] px-4 py-3 pl-11 text-xs focus:outline-none focus:border-[#111110]/65 font-mono"
                       />
                     </div>
                   </div>
@@ -271,7 +286,7 @@ export default function SettingsPage() {
                         value={address}
                         onChange={(e) => setAddress(e.target.value)}
                         placeholder="Numéro et nom de rue"
-                        className="w-full rounded-2xl border border-[#111110]/20 bg-[#F7F5F0] px-4 py-3 pl-11 text-xs focus:outline-none focus:border-[#111110]/60"
+                        className="w-full rounded-2xl border border-[#111110]/20 bg-[#F7F5F0] px-4 py-3 pl-11 text-xs focus:outline-none focus:border-[#111110]/65"
                       />
                     </div>
                   </div>
@@ -285,7 +300,7 @@ export default function SettingsPage() {
                         value={addressComplement}
                         onChange={(e) => setAddressComplement(e.target.value)}
                         placeholder="Appartement, bâtiment, étage, interphone..."
-                        className="w-full rounded-2xl border border-[#111110]/20 bg-[#F7F5F0] px-4 py-3 pl-11 text-xs focus:outline-none focus:border-[#111110]/60"
+                        className="w-full rounded-2xl border border-[#111110]/20 bg-[#F7F5F0] px-4 py-3 pl-11 text-xs focus:outline-none focus:border-[#111110]/65"
                       />
                     </div>
                   </div>
@@ -299,7 +314,7 @@ export default function SettingsPage() {
                         value={postalCode}
                         onChange={(e) => setPostalCode(e.target.value)}
                         placeholder="Ex: 59100"
-                        className="w-full rounded-2xl border border-[#111110]/20 bg-[#F7F5F0] px-4 py-3 pl-11 text-xs focus:outline-none focus:border-[#111110]/60 font-mono"
+                        className="w-full rounded-2xl border border-[#111110]/20 bg-[#F7F5F0] px-4 py-3 pl-11 text-xs focus:outline-none focus:border-[#111110]/65 font-mono"
                       />
                     </div>
                   </div>
@@ -311,7 +326,7 @@ export default function SettingsPage() {
                       value={city}
                       onChange={(e) => setCity(e.target.value)}
                       placeholder="Ex: Roubaix"
-                      className="w-full rounded-2xl border border-[#111110]/20 bg-[#F7F5F0] px-4 py-3 text-xs focus:outline-none focus:border-[#111110]/60"
+                      className="w-full rounded-2xl border border-[#111110]/20 bg-[#F7F5F0] px-4 py-3 text-xs focus:outline-none focus:border-[#111110]/65"
                     />
                   </div>
                 </div>
@@ -437,7 +452,7 @@ export default function SettingsPage() {
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-5 rounded-2xl border border-red-500/20 bg-red-500/5">
                   <div className="space-y-1">
                     <p className="text-xs font-bold">Suppression du compte</p>
-                    <p className="text-[11px] opacity-60 font-mono">Supprime définitivement vos données de Supabase</p>
+                    <p className="text-[11px] opacity-60 font-mono">Supprime définitivement vos données</p>
                   </div>
                   <button 
                     onClick={() => alert("Veuillez contacter le support.")}
