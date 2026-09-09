@@ -17,6 +17,7 @@ export async function GET() {
 
     return NextResponse.json({ events }, { status: 200 });
   } catch (err: any) {
+    console.error("ERREUR GET /api/events:", err);
     return NextResponse.json({ error: err.message || 'Erreur serveur' }, { status: 500 });
   }
 }
@@ -54,6 +55,7 @@ export async function POST(request: Request) {
       .single();
 
     if (memberError || !membership) {
+      console.error("ERREUR MEMBERSHIP:", memberError);
       return NextResponse.json({ error: "Aucune organisation associée à cet utilisateur." }, { status: 400 });
     }
 
@@ -65,17 +67,30 @@ export async function POST(request: Request) {
       .insert([
         {
           ...body,
-          organization_id: membership.organization_id, // Indispensable par rapport à ton schéma
+          organization_id: membership.organization_id,
           created_by: user.id,
         },
       ])
       .select()
       .single();
 
-    if (error) throw error;
+    if (error) {
+      // Log détaillé de l'erreur Supabase/Postgres dans la console serveur
+      console.error("ERREUR SUPABASE INSERT EVENT:", {
+        message: error.message,
+        details: error.details,
+        hint: error.hint,
+        code: error.code
+      });
+      throw error;
+    }
 
     return NextResponse.json({ event: data }, { status: 201 });
   } catch (err: any) {
-    return NextResponse.json({ error: err.message || 'Erreur lors de la création' }, { status: 500 });
+    console.error("ERREUR GLOBALE POST /api/events:", err);
+    return NextResponse.json({ 
+      error: err.message || 'Erreur lors de la création',
+      details: err.details || null 
+    }, { status: 500 });
   }
 }
