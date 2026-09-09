@@ -2,13 +2,15 @@
 
 import { useState } from "react";
 import { supabaseBrowser } from "@/lib/supabase-browser";
+import { X, Loader2 } from "lucide-react";
 
 interface CustomAuthModalProps {
   isOpen: boolean;
   onClose: () => void;
+  isDarkMode?: boolean;
 }
 
-export default function CustomAuthModal({ isOpen, onClose }: CustomAuthModalProps) {
+export default function CustomAuthModal({ isOpen, onClose, isDarkMode = false }: CustomAuthModalProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -53,22 +55,28 @@ export default function CustomAuthModal({ isOpen, onClose }: CustomAuthModalProp
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fade-in">
-      <div className="relative w-full max-w-md rounded-2xl glass-panel p-6 border border-[#f1ead9]/10 shadow-2xl bg-[#131217]">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-in fade-in duration-300">
+      <div className={`relative w-full max-w-md rounded-2xl p-8 shadow-2xl border transition-all duration-300 animate-in zoom-in-95 ${
+        isDarkMode 
+          ? 'bg-[#111110] border-[#F7F5F0]/15 text-[#F7F5F0]' 
+          : 'bg-[#F7F5F0] border-[#111110]/15 text-[#111110]'
+      }`}>
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 text-[#f1ead9]/40 hover:text-[#f1ead9] transition-colors"
+          className={`absolute top-5 right-5 p-1 rounded-full transition-colors opacity-60 hover:opacity-100`}
         >
-          ✕
+          <X className="w-4 h-4" />
         </button>
 
-        <div className="text-center mb-6">
-          <h2 className="text-2xl font-bold tracking-tight text-[#f1ead9] uppercase">TYKS</h2>
-          <p className="text-sm text-[#f1ead9]/60 mt-1">Connectez-vous pour accéder à votre espace</p>
+        <div className="text-center mb-8 space-y-2">
+          <h2 className="font-display text-2xl font-bold tracking-tight">TYKS</h2>
+          <p className={`text-xs font-light ${isDarkMode ? 'text-[#F7F5F0]/60' : 'text-[#111110]/60'}`}>
+            Connectez-vous pour accéder à votre espace
+          </p>
         </div>
 
         {error && (
-          <div className="mb-4 p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-xs text-center">
+          <div className="mb-6 p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-xs text-center font-mono">
             {error}
           </div>
         )}
@@ -77,9 +85,13 @@ export default function CustomAuthModal({ isOpen, onClose }: CustomAuthModalProp
           <button
             onClick={handleLoginWithGoogle}
             disabled={loading}
-            className="w-full flex items-center justify-center gap-3 px-4 py-3 rounded-xl bg-[#0b0b0e] border border-[#f1ead9]/15 text-[#f1ead9] font-medium hover:bg-[#1c1b22] transition-all disabled:opacity-50"
+            className={`w-full flex items-center justify-center gap-3 px-4 py-3.5 rounded-full border text-xs font-semibold transition-all hover:scale-[1.02] disabled:opacity-50 ${
+              isDarkMode 
+                ? 'border-[#F7F5F0]/20 bg-[#F7F5F0]/5 hover:bg-[#F7F5F0]/10 text-[#F7F5F0]' 
+                : 'border-[#111110]/20 bg-[#111110]/5 hover:bg-[#111110]/10 text-[#111110]'
+            }`}
           >
-            <svg className="w-5 h-5" viewBox="0 0 24 24">
+            <svg className="w-4 h-4" viewBox="0 0 24 24">
               <path
                 fill="#4285F4"
                 d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
@@ -103,14 +115,24 @@ export default function CustomAuthModal({ isOpen, onClose }: CustomAuthModalProp
           <button
             onClick={handleLoginWithApple}
             disabled={loading}
-            className="w-full flex items-center justify-center gap-3 px-4 py-3 rounded-xl bg-[#0b0b0e] border border-[#f1ead9]/15 text-[#f1ead9] font-medium hover:bg-[#1c1b22] transition-all disabled:opacity-50"
+            className={`w-full flex items-center justify-center gap-3 px-4 py-3.5 rounded-full border text-xs font-semibold transition-all hover:scale-[1.02] disabled:opacity-50 ${
+              isDarkMode 
+                ? 'border-[#F7F5F0]/20 bg-[#F7F5F0]/5 hover:bg-[#F7F5F0]/10 text-[#F7F5F0]' 
+                : 'border-[#111110]/20 bg-[#111110]/5 hover:bg-[#111110]/10 text-[#111110]'
+            }`}
           >
-            <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
+            <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
               <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 6.01c.65-.79 1.09-1.89.97-2.99-.96.04-2.13.64-2.82 1.43-.6.68-1.13 1.78-.99 2.85 1.08.08 2.19-.53 2.84-1.29z"/>
             </svg>
             Continuer avec Apple
           </button>
         </div>
+
+        {loading && (
+          <div className="absolute inset-0 bg-black/20 backdrop-blur-[2px] rounded-2xl flex items-center justify-center">
+            <Loader2 className="w-6 h-6 animate-spin opacity-80" />
+          </div>
+        )}
       </div>
     </div>
   );
