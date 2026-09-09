@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft, Plus, MapPin, ArrowRight, Check, FileText, Calendar, Euro } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Check, MapPin, FileText, Calendar, Euro } from 'lucide-react';
 import { supabaseBrowser } from '@/lib/supabase-browser';
 
 export default function NewEventPage() {
@@ -89,7 +89,7 @@ export default function NewEventPage() {
 
   return (
     <div className="min-h-screen bg-onyx bg-night-glow text-bone pt-8 pb-24">
-      <div className="max-w-2xl mx-auto px-6">
+      <div className="max-w-3xl mx-auto px-6">
         <div className="mb-6">
           <Link
             href="/"
@@ -107,7 +107,7 @@ export default function NewEventPage() {
             <span className="text-xs font-mono text-bone-faint uppercase tracking-wider">Étape {step} sur 3</span>
           </div>
 
-          <div className="grid grid-cols-3 gap-2">
+          <div className="grid grid-cols-3 gap-3">
             {stepsMeta.map((s) => {
               const Icon = s.icon;
               const isActive = step === s.number;
@@ -115,7 +115,7 @@ export default function NewEventPage() {
               return (
                 <div
                   key={s.number}
-                  className={`flex items-center gap-2 p-3 rounded-2xl border transition-all ${
+                  className={`flex items-center gap-2.5 p-3.5 rounded-2xl border transition-all ${
                     isActive
                       ? "bg-onyx-raised border-cobalt/50 text-bone shadow-sm"
                       : isPassed
@@ -141,7 +141,7 @@ export default function NewEventPage() {
           
           {/* ÉTAPE 1 : GÉNÉRAL */}
           {step === 1 && (
-            <div className="bg-onyx-raised border border-onyx-line rounded-2xl p-6 space-y-4 animate-fadeIn">
+            <div className="bg-onyx-raised border border-onyx-line rounded-2xl p-6 space-y-4">
               <h2 className="text-sm font-semibold text-bone border-b border-onyx-line pb-3">Détails généraux</h2>
               <div>
                 <label className="block text-xs text-bone-faint mb-1.5">Titre *</label>
@@ -184,7 +184,7 @@ export default function NewEventPage() {
 
           {/* ÉTAPE 2 : DATES & BILLETTERIE */}
           {step === 2 && (
-            <div className="bg-onyx-raised border border-onyx-line rounded-2xl p-6 space-y-4 animate-fadeIn">
+            <div className="bg-onyx-raised border border-onyx-line rounded-2xl p-6 space-y-4">
               <h2 className="text-sm font-semibold text-bone border-b border-onyx-line pb-3">Dates & Billetterie</h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
@@ -237,7 +237,7 @@ export default function NewEventPage() {
 
           {/* ÉTAPE 3 : VISUEL */}
           {step === 3 && (
-            <div className="bg-onyx-raised border border-onyx-line rounded-2xl p-6 space-y-4 animate-fadeIn">
+            <div className="bg-onyx-raised border border-onyx-line rounded-2xl p-6 space-y-4">
               <h2 className="text-sm font-semibold text-bone border-b border-onyx-line pb-3">Visuel de l&apos;événement</h2>
               <div>
                 <label className="block text-xs text-bone-faint mb-1.5">URL de l&apos;image de couverture</label>
