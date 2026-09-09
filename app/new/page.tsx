@@ -100,7 +100,7 @@ export default function NewEventPage() {
           </Link>
         </div>
 
-        {/* En-tête & Indicateur d'étapes */}
+        {/* En-tête & Indicateur d'étapes aux couleurs de la DA */}
         <div className="mb-8 space-y-4">
           <div className="flex items-center justify-between">
             <h1 className="font-display text-2xl font-bold tracking-tight text-bone">Créer un événement</h1>
@@ -117,10 +117,10 @@ export default function NewEventPage() {
                   key={s.number}
                   className={`flex items-center gap-2.5 p-3.5 rounded-2xl border transition-all ${
                     isActive
-                      ? "bg-onyx-raised border-cobalt/50 text-bone shadow-sm"
+                      ? "bg-onyx-raised border-cobalt text-bone shadow-sm"
                       : isPassed
-                      ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-400"
-                      : "bg-onyx border-onyx-line opacity-40 text-bone-faint"
+                      ? "bg-onyx-raised border-onyx-line text-bone"
+                      : "bg-onyx border-onyx-line opacity-50 text-bone-faint"
                   }`}
                 >
                   <Icon className="w-4 h-4 shrink-0" />
