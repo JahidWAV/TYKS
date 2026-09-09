@@ -54,34 +54,34 @@ export async function middleware(request: NextRequest) {
     }
   )
 
-  // 1. Récupérer l'utilisateur courant auprès de Supabase Auth
   const { data: { user }, error } = await supabase.auth.getUser()
 
   const url = request.nextUrl
   const hostname = request.headers.get('host') || ''
 
-  // 2. Si l'utilisateur est sur une page protégée (ex: /organisateur, /new, etc.) 
-  // mais que son compte a été supprimé ou que le token est invalide
-  const isProtectedPath = url.pathname.startsWith('/organisateur') || url.pathname.startsWith('/new') || url.pathname.startsWith('/api/events')
+  // Distinction des sous-domaines
+  const isDashboard = hostname.startsWith('dashboard.')
+  const isMarketingPro = hostname.startsWith('pro.')
 
-  if (isProtectedPath && (error || !user)) {
-    // Rediriger vers la page de connexion / accueil avec un nettoyage des cookies de session
-    const redirectUrl = new URL('/', request.url)
-    return NextResponse.redirect(redirectUrl)
+  // 1. Si on est sur dashboard.tyks.app : tout le site est protégé (sauf auth/callback)
+  if (isDashboard) {
+    const isAuthRoute = url.pathname.startsWith('/auth')
+    
+    if ((error || !user) && !isAuthRoute) {
+      // S'il n'est pas connecté sur le dashboard, on le renvoie vers la landing pro (ou vers la page de login)
+      const loginUrl = new URL('https://pro.tyks.app', request.url)
+      return NextResponse.redirect(loginUrl)
+    }
   }
+
+  // 2. Si on est sur pro.tyks.app (Landing page marketing), pas besoin de bloquer l'accès public,
+  // la Navbar s'affichera grâce au layout marketing.
 
   return response
 }
 
 export const config = {
   matcher: [
-    /*
-     * Match all request paths except for the ones starting with:
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     * - auth/callback (callback route)
-     */
     '/((?!_next/static|_next/image|favicon.ico|auth/callback).*)',
   ],
 }
