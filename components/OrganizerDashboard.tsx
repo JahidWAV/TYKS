@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
-import { ArrowUpRight, Plus, Loader2, Calendar, MapPin, Trash2, Edit3, BarChart3, Users, Euro, Ticket } from 'lucide-react';
+import { ArrowUpRight, Plus, Loader2, Calendar, MapPin, Trash2, Edit3, Euro, Ticket } from 'lucide-react';
 import type { IortiEvent } from '@/types/event';
 import { supabaseBrowser } from '@/lib/supabase-browser';
 
@@ -192,8 +192,8 @@ export default function OrganizerDashboard() {
   const totalEvents = events.length;
   const publishedEvents = events.filter((e) => e.status === 'published').length;
 
-  const totalRevenue = events.reduce((acc, curr) => acc + (Number(curr.price) || 0) * 12, 0); 
-  const totalTicketsSold = events.reduce((acc, curr) => acc + 12, 0);
+  const totalRevenue = events.reduce((acc, curr: any) => acc + (Number(curr.price || curr.ticket_price || 0)) * 12, 0); 
+  const totalTicketsSold = events.reduce((acc) => acc + 12, 0);
 
   // ==========================================
   // 2. DASHBOARD ORGANISATEUR (connectés)
@@ -280,7 +280,7 @@ export default function OrganizerDashboard() {
             </div>
           ) : (
             <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-              {events.map((evt) => (
+              {events.map((evt: any) => (
                 <article
                   key={evt.id}
                   className="group flex flex-col rounded-3xl border border-[#111110]/15 bg-white/70 backdrop-blur-md transition-all hover:bg-white overflow-hidden shadow-sm"
@@ -320,7 +320,7 @@ export default function OrganizerDashboard() {
 
                   <div className="flex items-center justify-between border-t border-[#111110]/10 px-6 py-3.5 bg-white/40">
                     <span className="font-mono text-xs font-bold">
-                      {evt.price ? `${evt.price} €` : 'Gratuit'}
+                      {(evt.price || evt.ticket_price) ? `${evt.price || evt.ticket_price} €` : 'Gratuit'}
                     </span>
                     <div className="flex items-center gap-2">
                       <Link
