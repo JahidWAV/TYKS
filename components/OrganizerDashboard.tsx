@@ -6,7 +6,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { 
   ArrowUpRight, Plus, Loader2, Calendar, MapPin, Trash2, Edit3, 
   Euro, Ticket, Search, RefreshCw, ShieldCheck, LayoutDashboard, 
-  BarChart3, Users, Megaphone, Globe, Wallet, Settings, LogOut, User
+  BarChart3, Users, Megaphone, Globe, Wallet, Settings, LogOut
 } from 'lucide-react';
 import type { IortiEvent } from '@/types/event';
 import { supabaseBrowser } from '@/lib/supabase-browser';
@@ -230,7 +230,7 @@ export default function OrganizerDashboard() {
   return (
     <div className="min-h-screen bg-[#F7F5F0] text-[#111110] selection:bg-[#111110] selection:text-[#F7F5F0] flex">
       
-      {/* Menu Latéral Pro avec vraies routes et bloc profil/settings en bas */}
+      {/* Menu Latéral Pro avec routes directes en racine (ex: /banking, /events...) */}
       <aside className="w-64 border-r border-[#111110]/10 bg-white/40 backdrop-blur-md flex flex-col justify-between sticky top-0 h-screen shrink-0">
         <div className="p-6 space-y-8">
           <div className="flex items-center gap-2.5">
@@ -242,9 +242,9 @@ export default function OrganizerDashboard() {
             <p className="text-[10px] font-mono uppercase tracking-wider opacity-40 px-3 pb-2">Navigation</p>
             
             <Link 
-              href="/dashboard" 
+              href="/" 
               className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-medium transition ${
-                pathname === '/dashboard' 
+                pathname === '/' 
                   ? 'bg-[#111110] text-[#F7F5F0] shadow-sm' 
                   : 'opacity-70 hover:opacity-100 hover:bg-[#111110]/5'
               }`}
@@ -253,9 +253,9 @@ export default function OrganizerDashboard() {
             </Link>
 
             <Link 
-              href="/dashboard/events" 
+              href="/events" 
               className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-medium transition ${
-                pathname === '/dashboard/events' 
+                pathname === '/events' 
                   ? 'bg-[#111110] text-[#F7F5F0] shadow-sm' 
                   : 'opacity-70 hover:opacity-100 hover:bg-[#111110]/5'
               }`}
@@ -264,9 +264,9 @@ export default function OrganizerDashboard() {
             </Link>
 
             <Link 
-              href="/dashboard/analytics" 
+              href="/analytics" 
               className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-medium transition ${
-                pathname === '/dashboard/analytics' 
+                pathname === '/analytics' 
                   ? 'bg-[#111110] text-[#F7F5F0] shadow-sm' 
                   : 'opacity-70 hover:opacity-100 hover:bg-[#111110]/5'
               }`}
@@ -275,9 +275,9 @@ export default function OrganizerDashboard() {
             </Link>
 
             <Link 
-              href="/dashboard/marketing" 
+              href="/marketing" 
               className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-medium transition ${
-                pathname === '/dashboard/marketing' 
+                pathname === '/marketing' 
                   ? 'bg-[#111110] text-[#F7F5F0] shadow-sm' 
                   : 'opacity-70 hover:opacity-100 hover:bg-[#111110]/5'
               }`}
@@ -286,9 +286,9 @@ export default function OrganizerDashboard() {
             </Link>
 
             <Link 
-              href="/dashboard/community" 
+              href="/community" 
               className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-medium transition ${
-                pathname === '/dashboard/community' 
+                pathname === '/community' 
                   ? 'bg-[#111110] text-[#F7F5F0] shadow-sm' 
                   : 'opacity-70 hover:opacity-100 hover:bg-[#111110]/5'
               }`}
@@ -297,9 +297,9 @@ export default function OrganizerDashboard() {
             </Link>
 
             <Link 
-              href="/dashboard/banking" 
+              href="/banking" 
               className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-medium transition ${
-                pathname === '/dashboard/banking' 
+                pathname === '/banking' 
                   ? 'bg-[#111110] text-[#F7F5F0] shadow-sm' 
                   : 'opacity-70 hover:opacity-100 hover:bg-[#111110]/5'
               }`}
@@ -308,9 +308,9 @@ export default function OrganizerDashboard() {
             </Link>
 
             <Link 
-              href="/dashboard/page" 
+              href="/page" 
               className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-medium transition ${
-                pathname === '/dashboard/page' 
+                pathname === '/page' 
                   ? 'bg-[#111110] text-[#F7F5F0] shadow-sm' 
                   : 'opacity-70 hover:opacity-100 hover:bg-[#111110]/5'
               }`}
@@ -320,7 +320,7 @@ export default function OrganizerDashboard() {
           </div>
         </div>
 
-        {/* Bloc Profil & Settings en bas du menu latéral */}
+        {/* Bloc Profil & Settings en bas du menu latéral (sans navbar du haut) */}
         <div className="p-4 border-t border-[#111110]/10 space-y-2 bg-white/30">
           <div className="flex items-center justify-between px-2 py-1.5">
             <div className="truncate pr-2">
@@ -331,9 +331,9 @@ export default function OrganizerDashboard() {
 
           <div className="grid grid-cols-2 gap-1 pt-1">
             <Link 
-              href="/dashboard/settings" 
+              href="/settings" 
               className={`flex items-center justify-center gap-2 px-3 py-2 rounded-xl text-xs font-medium border border-[#111110]/10 transition ${
-                pathname === '/dashboard/settings' 
+                pathname === '/settings' 
                   ? 'bg-[#111110] text-[#F7F5F0]' 
                   : 'bg-white/60 hover:bg-white text-[#111110]'
               }`}
@@ -353,7 +353,7 @@ export default function OrganizerDashboard() {
         </div>
       </aside>
 
-      {/* Contenu Principal */}
+      {/* Contenu Principal (Absolument aucune navbar superflue en haut) */}
       <main className="flex-1 min-w-0 overflow-y-auto">
         <div className="max-w-7xl mx-auto px-8 py-10 space-y-8">
           
