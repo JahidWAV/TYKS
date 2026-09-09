@@ -79,8 +79,8 @@ interface PublicHomeProps {
 
 export default function PublicHome({ isDarkMode = false }: PublicHomeProps) {
   return (
-    <div className={`min-h-screen transition-colors duration-300 ${isDarkMode ? 'bg-[#111110] text-[#F7F5F0]' : 'bg-[#F7F5F0] text-[#111110]'}`}>
-      <main className="mx-auto max-w-7xl px-6 md:px-12">
+    <div className="w-full">
+      <div className="mx-auto max-w-7xl px-6 md:px-12">
 
         {/* ─── HERO ─── */}
         <section className="py-24 md:py-36 grid lg:grid-cols-[1.2fr_0.8fr] gap-16 items-end">
@@ -205,7 +205,7 @@ export default function PublicHome({ isDarkMode = false }: PublicHomeProps) {
           </a>
         </section>
 
-      </main>
+      </div>
     </div>
   );
 }
