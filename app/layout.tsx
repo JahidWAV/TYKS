@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { headers } from 'next/headers';
 import { Inter, Space_Grotesk, JetBrains_Mono } from 'next/font/google';
 import Navbar from '@/components/Navbar';
-import Footer from '@/components/Footer'; // 1. Importe ton footer ici
+import Footer from '@/components/Footer';
 import './globals.css';
 
 const fontBody = Inter({
@@ -48,9 +48,14 @@ export default async function RootLayout({
     >
       <body className="relative min-h-screen bg-onyx bg-night-glow text-bone flex flex-col selection:bg-bone/20 selection:text-bone font-sans">
         <div className="grain" aria-hidden="true" />
-        <Navbar isPro={isPro} />
+        
+        {/* La Navbar ne s'affiche QUE si on n'est PAS sur le sous-domaine pro */}
+        {!isPro && <Navbar isPro={isPro} />}
+
         <main className="relative z-10 flex-1">{children}</main>
-        <Footer /> {/* 2. Place ton footer ici pour qu'il soit global */}
+        
+        {/* Idem pour le footer si tu ne le veux pas non plus sur le dashboard pro */}
+        {!isPro && <Footer />}
       </body>
     </html>
   );
