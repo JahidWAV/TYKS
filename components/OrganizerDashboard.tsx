@@ -4,8 +4,7 @@ import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { 
   ArrowUpRight, Plus, Loader2, Calendar, MapPin, Trash2, Edit3, 
-  Euro, Ticket, Users, TrendingUp, AlertCircle, CheckCircle2, 
-  Download, Search, Filter, RefreshCw, ExternalLink, ShieldCheck 
+  Euro, Ticket, Search, RefreshCw, ShieldCheck 
 } from 'lucide-react';
 import type { IortiEvent } from '@/types/event';
 import { supabaseBrowser } from '@/lib/supabase-browser';
@@ -37,7 +36,6 @@ export default function OrganizerDashboard() {
     totalEventsCount: 0,
   });
   
-  // États de filtrage et recherche pour la production
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [authLoading, setAuthLoading] = useState(false);
@@ -63,7 +61,6 @@ export default function OrganizerDashboard() {
       if (isRefresh) setRefreshing(true);
       else setLoading(true);
 
-      // Récupération de l'organisation associée au membre
       const { data: membership } = await supabaseBrowser
         .from('organization_members')
         .select('organization_id')
@@ -88,13 +85,9 @@ export default function OrganizerDashboard() {
       if (eventsData) {
         setEvents(eventsData);
 
-        // Calculs dynamiques basés sur les données réelles de la base (pas de valeurs mockées)
         const totalEventsCount = eventsData.length;
         const publishedEventsCount = eventsData.filter((e) => e.status === 'published').length;
 
-        // Récupération sécurisée du chiffre d'affaires et des billets via les réservations réelles si la table existe,
-        // ou calcul basé sur les propriétés réelles de l'événement (ex: prix * billets réservés).
-        // Ici, appel d'une agrégation ou simulation propre basée sur les champs réels de l'événement.
         let calculatedRevenue = 0;
         let calculatedTickets = 0;
         let calculatedCapacity = 0;
@@ -174,23 +167,19 @@ export default function OrganizerDashboard() {
     );
   }
 
-  // ==========================================
-  // 1. LANDING PAGE PRO (non connectés)
-  // ==========================================
   if (!user) {
     return (
       <div className="min-h-screen bg-[#F7F5F0] text-[#111110] selection:bg-[#111110] selection:text-[#F7F5F0]">
         <div className="mx-auto max-w-4xl px-6 py-24 text-center space-y-8">
-          <p className="text-xs font-mono opacity-60 uppercase tracking-wider">Espace organisateur certifié</p>
+          <p className="text-xs font-mono opacity-60 uppercase tracking-wider">Espace organisateur illimité</p>
 
           <h1 className="font-display text-4xl font-bold leading-tight tracking-tight md:text-5xl">
-            Reprenez le contrôle total de votre
-            <br className="hidden md:block" /> billetterie et de vos flux financiers.
+            Créez autant d&apos;événements que vous voulez.
+            <br className="hidden md:block" /> Zéro abonnement, commission à la performance.
           </h1>
 
           <p className="mx-auto max-w-md text-xs leading-relaxed opacity-70">
-            Solution professionnelle de gestion d&apos;événements. Zéro commission opaque, 
-            propriété exclusive de vos données clients et encaissement direct via Stripe Connect.
+            Aucune limite de volume ni de jauge. Publiez vos événements en illimité et ne payez qu&apos;en cas de vente réussie.
           </p>
 
           <button
@@ -203,35 +192,8 @@ export default function OrganizerDashboard() {
             ) : (
               <ArrowUpRight className="h-4 w-4" />
             )}
-            Connexion Sécurisée Pro
+            Accéder à mon espace Pro
           </button>
-
-          <div className="grid divide-y md:divide-y-0 md:divide-x divide-[#111110]/15 rounded-3xl border border-[#111110]/15 bg-white/70 backdrop-blur-md pt-2 text-left sm:grid-cols-3 shadow-sm">
-            <div className="space-y-2 p-8">
-              <h3 className="font-display text-sm font-bold uppercase tracking-wider font-mono">
-                Trésorerie Directe
-              </h3>
-              <p className="text-xs leading-relaxed opacity-60">
-                Fonds versés directement sur votre compte bancaire via passerelle de paiement sécurisée.
-              </p>
-            </div>
-            <div className="space-y-2 p-8">
-              <h3 className="font-display text-sm font-bold uppercase tracking-wider font-mono">
-                CRM & Données CRM
-              </h3>
-              <p className="text-xs leading-relaxed opacity-60">
-                Exportez l&apos;intégralité des opt-ins et données participants sans restriction ni intermédiaire.
-              </p>
-            </div>
-            <div className="space-y-2 p-8">
-              <h3 className="font-display text-sm font-bold uppercase tracking-wider font-mono">
-                Marque Blanche
-              </h3>
-              <p className="text-xs leading-relaxed opacity-60">
-                Personnalisation complète du parcours d&apos;achat aux couleurs de votre structure.
-              </p>
-            </div>
-          </div>
         </div>
       </div>
     );
@@ -245,7 +207,6 @@ export default function OrganizerDashboard() {
     );
   }
 
-  // Filtrage des événements pour la section gestion
   const filteredEvents = events.filter((evt: any) => {
     const matchesSearch = evt.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
                           evt.location?.toLowerCase().includes(searchQuery.toLowerCase());
@@ -257,24 +218,19 @@ export default function OrganizerDashboard() {
     ? Math.round((stats.totalTicketsSold / stats.totalCapacity) * 100) 
     : 0;
 
-  // ==========================================
-  // 2. DASHBOARD ORGANISATEUR (connectés - Production Ready)
-  // ==========================================
   return (
     <div className="min-h-screen bg-[#F7F5F0] text-[#111110] selection:bg-[#111110] selection:text-[#F7F5F0]">
       <div className="mx-auto max-w-7xl px-6 py-10 space-y-8">
         
-        {/* En-tête du Dashboard Pro */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 border-b border-[#111110]/10">
           <div className="space-y-1">
             <div className="flex items-center gap-2">
               <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-mono bg-emerald-500/10 text-emerald-700 font-semibold border border-emerald-500/20">
-                <ShieldCheck className="w-3 h-3" /> Session Pro Vérifiée
+                <ShieldCheck className="w-3 h-3" /> Accès Illimité (Sans Abonnement)
               </span>
-              <span className="text-xs font-mono opacity-50">ID: {user.id.substring(0, 8)}...</span>
             </div>
             <h1 className="font-display text-2xl md:text-3xl font-bold tracking-tight">Tableau de bord Opérationnel</h1>
-            <p className="text-xs font-mono opacity-60 uppercase tracking-wider">Supervision des ventes, billetterie et flux d&apos;audience</p>
+            <p className="text-xs font-mono opacity-60 uppercase tracking-wider">Suivi de vos ventes en temps réel</p>
           </div>
 
           <div className="flex items-center gap-3">
@@ -282,7 +238,6 @@ export default function OrganizerDashboard() {
               onClick={() => loadDashboard(user.id, true)}
               disabled={refreshing}
               className="inline-flex items-center gap-2 rounded-xl border border-[#111110]/15 bg-white/70 px-4 py-2.5 text-xs font-semibold transition hover:bg-white disabled:opacity-50"
-              title="Rafraîchir les données"
             >
               <RefreshCw className={`h-3.5 w-3.5 ${refreshing ? 'animate-spin' : ''}`} />
               <span className="hidden sm:inline">Actualiser</span>
@@ -292,85 +247,59 @@ export default function OrganizerDashboard() {
               className="inline-flex items-center justify-center gap-2 rounded-full bg-[#111110] px-5 py-2.5 text-xs font-semibold text-[#F7F5F0] transition-transform hover:scale-[1.02] shadow-sm"
             >
               <Plus className="h-4 w-4" />
-              Nouvel événement
+              Créer un événement illimité
             </Link>
           </div>
         </div>
 
-        {/* Bloc Statistiques Avancées & Détaillées */}
+        {/* Statistiques globales (sans notions de quotas ni plafonds) */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          
-          {/* Carte CA */}
           <div className="p-6 rounded-3xl border border-[#111110]/15 bg-white/70 backdrop-blur-md shadow-sm space-y-3">
             <div className="flex items-center justify-between">
-              <p className="text-xs font-mono opacity-60 uppercase tracking-wide">Chiffre d&apos;affaires net</p>
-              <div className="p-2 rounded-xl bg-[#111110]/5">
-                <Euro className="w-4 h-4 opacity-70" />
-              </div>
+              <p className="text-xs font-mono opacity-60 uppercase tracking-wide">Chiffre d&apos;affaires généré</p>
+              <Euro className="w-4 h-4 opacity-70" />
             </div>
-            <div>
-              <p className="font-display text-2xl md:text-3xl font-bold tracking-tight">
-                {stats.totalRevenue.toLocaleString('fr-FR')} €
-              </p>
-              <p className="text-[11px] opacity-60 font-mono mt-1">Total encaissé (TTC)</p>
-            </div>
+            <p className="font-display text-2xl md:text-3xl font-bold tracking-tight">
+              {stats.totalRevenue.toLocaleString('fr-FR')} €
+            </p>
+            <p className="text-[11px] opacity-60 font-mono">Volume brut encaissé</p>
           </div>
 
-          {/* Carte Billets */}
           <div className="p-6 rounded-3xl border border-[#111110]/15 bg-white/70 backdrop-blur-md shadow-sm space-y-3">
             <div className="flex items-center justify-between">
-              <p className="text-xs font-mono opacity-60 uppercase tracking-wide">Billets émis</p>
-              <div className="p-2 rounded-xl bg-[#111110]/5">
-                <Ticket className="w-4 h-4 opacity-70" />
-              </div>
+              <p className="text-xs font-mono opacity-60 uppercase tracking-wide">Billets vendus</p>
+              <Ticket className="w-4 h-4 opacity-70" />
             </div>
-            <div>
-              <p className="font-display text-2xl md:text-3xl font-bold tracking-tight">
-                {stats.totalTicketsSold} <span className="text-xs font-normal opacity-50">/ {stats.totalCapacity} max</span>
-              </p>
-              <div className="w-full bg-[#111110]/10 rounded-full h-1.5 mt-2 overflow-hidden">
-                <div 
-                  className="bg-[#111110] h-full rounded-full transition-all duration-500" 
-                  style={{ width: `${Math.min(fillRate, 100)}%` }}
-                />
-              </div>
-              <p className="text-[11px] opacity-60 font-mono mt-1">Taux de remplissage global : {fillRate}%</p>
-            </div>
+            <p className="font-display text-2xl md:text-3xl font-bold tracking-tight">
+              {stats.totalTicketsSold}
+            </p>
+            <p className="text-[11px] opacity-60 font-mono">Taux de remplissage : {fillRate}%</p>
           </div>
 
-          {/* Carte Événements */}
           <div className="p-6 rounded-3xl border border-[#111110]/15 bg-white/70 backdrop-blur-md shadow-sm space-y-3">
             <div className="flex items-center justify-between">
-              <p className="text-xs font-mono opacity-60 uppercase tracking-wide">Événements</p>
-              <div className="p-2 rounded-xl bg-[#111110]/5">
-                <Calendar className="w-4 h-4 opacity-70" />
-              </div>
+              <p className="text-xs font-mono opacity-60 uppercase tracking-wide">Événements publiés</p>
+              <Calendar className="w-4 h-4 opacity-70" />
             </div>
-            <div>
-              <p className="font-display text-2xl md:text-3xl font-bold tracking-tight">
-                {stats.publishedEventsCount} <span className="text-sm opacity-40 font-normal">/ {stats.totalEventsCount}</span>
-              </p>
-              <p className="text-[11px] opacity-60 font-mono mt-1">Actifs en ligne / Total créés</p>
-            </div>
+            <p className="font-display text-2xl md:text-3xl font-bold tracking-tight">
+              {stats.publishedEventsCount} <span className="text-xs font-normal opacity-50">({stats.totalEventsCount} au total)</span>
+            </p>
+            <p className="text-[11px] opacity-60 font-mono">Aucune limite de création</p>
           </div>
 
-          {/* Carte Passerelle de Paiement */}
           <div className="p-6 rounded-3xl border border-[#111110]/15 bg-white/70 backdrop-blur-md shadow-sm space-y-3">
             <div className="flex items-center justify-between">
-              <p className="text-xs font-mono opacity-60 uppercase tracking-wide">Passerelle Paiement</p>
-              <span className="h-2.5 w-2.5 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
+              <p className="text-xs font-mono opacity-60 uppercase tracking-wide">Modèle tarifaire</p>
+              <span className="h-2.5 w-2.5 rounded-full bg-emerald-500 animate-pulse" />
             </div>
-            <div>
-              <p className="font-display text-base font-bold tracking-tight pt-1">
-                Stripe Connect actif
-              </p>
-              <p className="text-[11px] opacity-60 font-mono mt-1">Virements automatiques J+1</p>
-            </div>
+            <p className="font-display text-base font-bold tracking-tight pt-1">
+              Commission sur ventes
+            </p>
+            <p className="text-[11px] opacity-60 font-mono">0 € d&apos;abonnement fixe</p>
           </div>
-
         </div>
 
-        {/* Section Filtrage et Outils de Recherche */}
+        {/* Barre de recherche et filtres */}
         <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4 pt-4">
           <div className="flex items-center gap-3 flex-1">
             <div className="relative flex-1 max-w-md">
@@ -400,19 +329,19 @@ export default function OrganizerDashboard() {
             </div>
           </div>
           <span className="text-xs font-mono opacity-60 text-right">
-            {filteredEvents.length} résultat(s) affiché(s)
+            {filteredEvents.length} événement(s)
           </span>
         </div>
 
-        {/* Grille de Gestion des Événements */}
+        {/* Liste des événements */}
         <div className="space-y-6">
           {filteredEvents.length === 0 ? (
             <div className="rounded-3xl border border-[#111110]/15 bg-white/70 p-16 text-center space-y-3 backdrop-blur-md">
               <Calendar className="mx-auto h-6 w-6 opacity-40" />
               <p className="text-xs font-mono opacity-60">
                 {events.length === 0 
-                  ? "Aucun événement enregistré dans votre organisation pour le moment." 
-                  : "Aucun événement ne correspond à vos critères de recherche."}
+                  ? "Vous n'avez pas encore créé d'événement. Lancez-vous, c'est illimité !" 
+                  : "Aucun événement ne correspond à vos filtres."}
               </p>
               {events.length === 0 && (
                 <div className="pt-2">
@@ -482,14 +411,14 @@ export default function OrganizerDashboard() {
                         <Link
                           href={`/events/${evt.slug || evt.id}/edit`}
                           className="p-2 rounded-xl border border-[#111110]/15 bg-white text-[#111110] hover:bg-[#111110] hover:text-[#F7F5F0] transition-colors"
-                          title="Modifier l'événement"
+                          title="Modifier"
                         >
                           <Edit3 className="h-3.5 w-3.5" />
                         </Link>
                         <button
                           onClick={() => handleDeleteEvent(evt.id)}
                           className="p-2 rounded-xl border border-red-500/20 bg-white text-red-600 hover:bg-red-500 hover:text-white transition-colors"
-                          title="Supprimer l'événement"
+                          title="Supprimer"
                         >
                           <Trash2 className="h-3.5 w-3.5" />
                         </button>
