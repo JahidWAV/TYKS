@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { LogOut, Loader2, Menu, X, Search, Calendar, MapPin, ArrowUpRight, User as UserIcon } from "lucide-react";
+import { LogOut, Loader2, Menu, X, Search, Calendar, MapPin, ArrowUpRight, User as UserIcon, Settings, ChevronDown } from "lucide-react";
 import CustomAuthModal from "@/components/CustomAuthModal";
 import { supabaseBrowser } from "@/lib/supabase-browser";
 
@@ -19,6 +19,10 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
   const [isAuthOpen, setIsAuthOpen] = useState(false);
   const [user, setUser] = useState<any>(null);
   const [loadingUser, setLoadingUser] = useState(true);
+
+  // États pour le menu utilisateur
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const userMenuRef = useRef<HTMLDivElement>(null);
 
   // États pour la recherche
   const [searchQuery, setSearchQuery] = useState("");
@@ -44,10 +48,25 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
   }, []);
 
   const handleLogout = async () => {
+    setUserMenuOpen(false);
     await supabaseBrowser.auth.signOut();
     setUser(null);
     router.refresh();
   };
+
+  // Fermeture des menus au clic extérieur
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
+        setShowDropdown(false);
+      }
+      if (userMenuRef.current && !userMenuRef.current.contains(event.target as Node)) {
+        setUserMenuOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   useEffect(() => {
     if (isPro) return;
@@ -81,16 +100,6 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
     return () => clearTimeout(timer);
   }, [searchQuery, isPro]);
 
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
-        setShowDropdown(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
   return (
     <>
       <header className={`sticky top-0 z-50 border-b transition-colors duration-300 ${
@@ -98,8 +107,7 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
           ? 'bg-[#111110] border-[#F7F5F0]/10 text-[#F7F5F0]' 
           : 'bg-[#F7F5F0] border-[#111110]/10 text-[#111110]'
       }`}>
-        {/* Grille à 3 colonnes symétriques (1fr - auto - 1fr) pour garantir un centrage mathématique absolu et éviter tout décalage */}
-        <div className="mx-auto grid grid-cols-[1fr_auto_1fr] items-center max-w-7xl px-6 py-4 md:px-12 gap-4">
+        <div className="mx-auto grid grid-cols-[1fr_auto_1fr] items-center max-w-7xl px-6 py-4 md:px-12 gap-6">
 
           {/* Logo */}
           <Link href={isPro ? "/" : "/"} className="group justify-self-start">
@@ -108,11 +116,11 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
             </span>
           </Link>
 
-          {/* BARRE DE RECHERCHE STRICTEMENT CENTRÉE */}
+          {/* BARRE DE RECHERCHE ÉLARGIE & CENTRÉE */}
           {!isPro ? (
-            <div className="relative hidden md:block w-full max-w-md justify-self-center" ref={searchRef}>
+            <div className="relative hidden md:block w-full max-w-lg justify-self-center" ref={searchRef}>
               <div className="relative flex items-center w-full">
-                <Search className={`absolute left-4 h-4 w-4 pointer-events-none ${isDarkMode ? 'text-[#F7F5F0]/40' : 'text-[#111110]/40'}`} />
+                <Search className={`absolute left-4 h-4 w-4 pointer-events-none ${isDarkMode ? 'text-[#F7F5F0]/50' : 'text-[#111110]/50'}`} />
                 <input
                   type="text"
                   value={searchQuery}
@@ -121,11 +129,11 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
                     if (!showDropdown) setShowDropdown(true);
                   }}
                   onFocus={() => setShowDropdown(true)}
-                  placeholder="Rechercher un événement, un lieu..."
-                  className={`w-full rounded-full border px-4 py-2.5 pl-11 pr-10 text-xs focus:outline-none transition-all shadow-sm ${
+                  placeholder="Rechercher un événement, un artiste, un lieu..."
+                  className={`w-full rounded-full border px-4 py-3 pl-11 pr-10 text-xs font-medium focus:outline-none transition-all shadow-sm ${
                     isDarkMode 
-                      ? 'bg-[#111110]/40 border-[#F7F5F0]/15 text-[#F7F5F0] placeholder:text-[#F7F5F0]/30 focus:border-[#F7F5F0]/50' 
-                      : 'bg-[#F7F5F0]/40 border-[#111110]/15 text-[#111110] placeholder:text-[#111110]/30 focus:border-[#111110]/50'
+                      ? 'bg-[#111110] border-[#F7F5F0]/20 text-[#F7F5F0] placeholder:text-[#F7F5F0]/40 focus:border-[#F7F5F0]/60' 
+                      : 'bg-[#F7F5F0] border-[#111110]/20 text-[#111110] placeholder:text-[#111110]/40 focus:border-[#111110]/60'
                   }`}
                 />
 
@@ -211,24 +219,52 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
                 <Loader2 className="h-4 w-4 animate-spin opacity-60" />
               </div>
             ) : user ? (
-              <>
-                {/* Icône de profil propre au lieu de l'adresse email brute */}
-                <div className={`inline-flex items-center gap-2 px-3.5 py-2 rounded-full border text-xs font-mono ${
-                  isDarkMode ? 'border-[#F7F5F0]/20 bg-[#F7F5F0]/5 text-[#F7F5F0]' : 'border-[#111110]/20 bg-[#111110]/5 text-[#111110]'
-                }`} title={user.email}>
-                  <UserIcon className="w-3.5 h-3.5 opacity-70" />
-                  <span className="max-w-[120px] truncate">{user.email.split('@')[0]}</span>
-                </div>
+              /* MENU DÉROULANT UTILISATEUR PROPRE */
+              <div className="relative" ref={userMenuRef}>
                 <button
-                  onClick={handleLogout}
-                  className={`inline-flex items-center gap-2 rounded-full border px-4 py-2 text-xs font-medium transition ${
-                    isDarkMode ? 'border-[#F7F5F0]/25 hover:border-[#F7F5F0]/60 hover:bg-[#F7F5F0]/5' : 'border-[#111110]/25 hover:border-[#111110]/60 hover:bg-[#111110]/5'
+                  onClick={() => setUserMenuOpen(!userMenuOpen)}
+                  className={`inline-flex items-center gap-2.5 px-4 py-2 rounded-full border text-xs font-medium transition-all ${
+                    isDarkMode 
+                      ? 'border-[#F7F5F0]/20 bg-[#F7F5F0]/5 text-[#F7F5F0] hover:border-[#F7F5F0]/50' 
+                      : 'border-[#111110]/20 bg-[#111110]/5 text-[#111110] hover:border-[#111110]/50'
                   }`}
                 >
-                  <LogOut className="h-3.5 w-3.5" />
-                  Déconnexion
+                  <div className={`w-5 h-5 rounded-full flex items-center justify-center ${isDarkMode ? 'bg-[#F7F5F0] text-[#111110]' : 'bg-[#111110] text-[#F7F5F0]'}`}>
+                    <UserIcon className="w-3 h-3" />
+                  </div>
+                  <span className="font-mono max-w-[110px] truncate">{user.email.split('@')[0]}</span>
+                  <ChevronDown className={`w-3.5 h-3.5 opacity-60 transition-transform ${userMenuOpen ? 'rotate-180' : ''}`} />
                 </button>
-              </>
+
+                {userMenuOpen && (
+                  <div className={`absolute right-0 mt-2 w-56 rounded-2xl shadow-xl overflow-hidden z-50 border py-1.5 ${
+                    isDarkMode ? 'bg-[#111110] border-[#F7F5F0]/15 text-[#F7F5F0]' : 'bg-[#F7F5F0] border-[#111110]/15 text-[#111110]'
+                  }`}>
+                    <div className="px-4 py-2.5 border-b border-inherit opacity-60 text-[10px] font-mono truncate">
+                      {user.email}
+                    </div>
+
+                    <Link
+                      href="/settings"
+                      onClick={() => setUserMenuOpen(false)}
+                      className={`w-full text-left px-4 py-2.5 text-xs flex items-center gap-2.5 transition-colors ${
+                        isDarkMode ? 'hover:bg-[#F7F5F0]/10' : 'hover:bg-[#111110]/10'
+                      }`}
+                    >
+                      <Settings className="w-3.5 h-3.5 opacity-70" />
+                      Paramètres
+                    </Link>
+
+                    <button
+                      onClick={handleLogout}
+                      className={`w-full text-left px-4 py-2.5 text-xs flex items-center gap-2.5 transition-colors text-red-500 hover:bg-red-500/10`}
+                    >
+                      <LogOut className="w-3.5 h-3.5" />
+                      Déconnexion
+                    </button>
+                  </div>
+                )}
+              </div>
             ) : (
               <button
                 onClick={() => setIsAuthOpen(true)}
@@ -296,16 +332,24 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
                 <Loader2 className="h-4 w-4 animate-spin opacity-60" />
               </div>
             ) : user ? (
-              <div className="flex flex-col gap-3 pt-2">
-                <div className={`flex items-center gap-2 px-3.5 py-2.5 rounded-full border text-xs font-mono ${
+              <div className="flex flex-col gap-2.5 pt-2">
+                <div className={`flex items-center gap-2 px-4 py-2.5 rounded-full border text-xs font-mono ${
                   isDarkMode ? 'border-[#F7F5F0]/20 bg-[#F7F5F0]/5 text-[#F7F5F0]' : 'border-[#111110]/20 bg-[#111110]/5 text-[#111110]'
                 }`}>
                   <UserIcon className="w-3.5 h-3.5 opacity-70" />
                   <span className="truncate">{user.email}</span>
                 </div>
+                <Link
+                  href="/settings"
+                  onClick={() => setMobileOpen(false)}
+                  className={`inline-flex items-center justify-center gap-2 rounded-full border px-4 py-2.5 text-xs font-medium ${isDarkMode ? 'border-[#F7F5F0]/20' : 'border-[#111110]/20'}`}
+                >
+                  <Settings className="h-3.5 w-3.5 opacity-70" />
+                  Paramètres
+                </Link>
                 <button
                   onClick={handleLogout}
-                  className={`inline-flex items-center justify-center gap-2 rounded-full border px-4 py-2.5 text-xs font-medium ${isDarkMode ? 'border-[#F7F5F0]/20' : 'border-[#111110]/20'}`}
+                  className={`inline-flex items-center justify-center gap-2 rounded-full border border-red-500/30 text-red-500 px-4 py-2.5 text-xs font-medium bg-red-500/5`}
                 >
                   <LogOut className="h-3.5 w-3.5" />
                   Déconnexion
