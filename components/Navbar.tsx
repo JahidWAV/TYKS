@@ -95,21 +95,22 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
     <>
       <header className={`sticky top-0 z-50 backdrop-blur-md border-b transition-colors duration-300 ${
         isDarkMode 
-          ? 'bg-[#111110]/60 border-[#F7F5F0]/10 text-[#F7F5F0]' 
-          : 'bg-[#F7F5F0]/60 border-[#111110]/10 text-[#111110]'
+          ? 'bg-[#111110]/80 border-[#F7F5F0]/10 text-[#F7F5F0]' 
+          : 'bg-[#F7F5F0]/80 border-[#111110]/10 text-[#111110]'
       }`}>
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 md:px-12 gap-4">
+        {/* Utilisation d'une grille à 3 colonnes égales pour garantir un centrage parfait absolu du bloc recherche */}
+        <div className="mx-auto grid grid-cols-[auto_1fr_auto] items-center max-w-7xl px-6 py-4 md:px-12 gap-4">
 
           {/* Logo */}
-          <Link href={isPro ? "/" : "/"} className="group shrink-0">
+          <Link href={isPro ? "/" : "/"} className="group justify-self-start">
             <span className="font-display text-xl font-bold tracking-tighter">
               TYKS{isPro && <span className="opacity-60"> Pro</span>}
             </span>
           </Link>
 
-          {/* BARRE DE RECHERCHE CENTRÉE — masquée sur pro.tyks.app */}
-          {!isPro && (
-            <div className="relative hidden md:flex flex-1 max-w-md mx-auto items-center" ref={searchRef}>
+          {/* BARRE DE RECHERCHE CENTRÉE */}
+          {!isPro ? (
+            <div className="relative hidden md:block w-full max-w-md justify-self-center" ref={searchRef}>
               <div className="relative flex items-center w-full">
                 <Search className={`absolute left-4 h-4 w-4 pointer-events-none ${isDarkMode ? 'text-[#F7F5F0]/40' : 'text-[#111110]/40'}`} />
                 <input
@@ -199,10 +200,12 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
                 </div>
               )}
             </div>
+          ) : (
+            <div />
           )}
 
           {/* Desktop right side */}
-          <div className="hidden items-center gap-4 sm:flex shrink-0 ml-auto">
+          <div className="hidden items-center gap-4 sm:flex justify-self-end">
             {loadingUser ? (
               <div className={`flex h-10 w-32 items-center justify-center rounded-full border ${isDarkMode ? 'border-[#F7F5F0]/20 bg-[#111110]' : 'border-[#111110]/20 bg-[#F7F5F0]'}`}>
                 <Loader2 className="h-4 w-4 animate-spin opacity-60" />
@@ -215,7 +218,7 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
                 <button
                   onClick={handleLogout}
                   className={`inline-flex items-center gap-2 rounded-full border px-4 py-2 text-xs font-medium transition ${
-                    isDarkMode ? 'border-[#F7F5F0]/20 hover:border-[#F7F5F0]/50 hover:bg-[#F7F5F0]/5' : 'border-[#111110]/20 hover:border-[#111110]/50 hover:bg-[#111110]/5'
+                    isDarkMode ? 'border-[#F7F5F0]/25 hover:border-[#F7F5F0]/60 hover:bg-[#F7F5F0]/5' : 'border-[#111110]/25 hover:border-[#111110]/60 hover:bg-[#111110]/5'
                   }`}
                 >
                   <LogOut className="h-3.5 w-3.5" />
@@ -235,7 +238,7 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
           </div>
 
           {/* Mobile toggle */}
-          <div className="flex items-center gap-2 sm:hidden">
+          <div className="flex items-center gap-2 sm:hidden justify-self-end">
             <button
               className={`inline-flex items-center justify-center rounded-full border p-2 shrink-0 ${isDarkMode ? 'border-[#F7F5F0]/20 text-[#F7F5F0]' : 'border-[#111110]/20 text-[#111110]'}`}
               onClick={() => setMobileOpen((open) => !open)}
@@ -317,6 +320,7 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
       <CustomAuthModal
         isOpen={isAuthOpen}
         onClose={() => setIsAuthOpen(false)}
+        isDarkMode={isDarkMode}
       />
     </>
   );
