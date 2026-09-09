@@ -51,14 +51,14 @@ export async function POST(request: Request) {
 
     let organizationId = membership?.organization_id;
 
-    // 3. S'il n'en a pas encore (pas d'onboarding fait), on lui crée une orga par défaut automatiquement !
+    // 3. S'il n'en a pas encore, on lui crée une orga par défaut automatiquement
     if (!organizationId) {
       const orgName = user.email ? `Organisation de ${user.email.split('@')[0]}` : "Mon Organisation";
-      const uniqueSlug = `${slugify(orgName)}-${Math.random().toString(36).substring(2, 6)}`;
+      const uniqueOrgSlug = `${slugify(orgName)}-${Math.random().toString(36).substring(2, 6)}`;
 
       const { data: newOrg, error: orgError } = await supabaseServer
         .from('organizations')
-        .insert({ name: orgName, slug: uniqueSlug })
+        .insert({ name: orgName, slug: uniqueOrgSlug })
         .select()
         .single();
 
@@ -77,12 +77,18 @@ export async function POST(request: Request) {
 
     const body = await request.json();
 
-    // 4. Insérer l'événement proprement rattaché à l'organisation
+    // 4. Générer un slug unique pour l'événement basé sur son titre
+    const eventTitle = body.title || 'evenement';
+    const baseSlug = slugify(eventTitle);
+    const uniqueEventSlug = `${baseSlug}-${Math.random().toString(36).substring(2, 6)}`;
+
+    // 5. Insérer l'événement proprement avec son slug
     const { data, error } = await supabaseServer
       .from('events')
       .insert([
         {
           ...body,
+          slug: uniqueEventSlug,
           organization_id: organizationId,
           created_by: user.id,
         },
