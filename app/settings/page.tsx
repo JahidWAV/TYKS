@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Loader2, User, Mail, Shield, Check } from "lucide-react";
 import { supabaseBrowser } from "@/lib/supabase-browser";
-// Ne plus importer Navbar ici
 
 export default function SettingsPage() {
   const router = useRouter();
@@ -67,8 +66,6 @@ export default function SettingsPage() {
 
   return (
     <div className="min-h-screen bg-[#F7F5F0] text-[#111110] selection:bg-[#111110] selection:text-[#F7F5F0]">
-      {/* Navbar retirée d'ici pour éviter le doublon */}
-
       <main className="mx-auto max-w-4xl px-6 py-12 md:px-12">
         <div className="space-y-2 mb-10">
           <h1 className="font-display text-3xl font-bold tracking-tight">Paramètres du compte</h1>
