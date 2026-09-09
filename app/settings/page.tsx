@@ -2,9 +2,9 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Loader2, User, Mail, Shield, Bell, Lock, Check } from "lucide-react";
+import { Loader2, User, Mail, Shield, Check } from "lucide-react";
 import { supabaseBrowser } from "@/lib/supabase-browser";
-import Navbar from "@/components/Navbar";
+// Ne plus importer Navbar ici
 
 export default function SettingsPage() {
   const router = useRouter();
@@ -58,7 +58,6 @@ export default function SettingsPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-[#F7F5F0] text-[#111110]">
-        <Navbar />
         <div className="flex h-[80vh] items-center justify-center">
           <Loader2 className="h-6 w-6 animate-spin opacity-60" />
         </div>
@@ -68,7 +67,7 @@ export default function SettingsPage() {
 
   return (
     <div className="min-h-screen bg-[#F7F5F0] text-[#111110] selection:bg-[#111110] selection:text-[#F7F5F0]">
-      <Navbar />
+      {/* Navbar retirée d'ici pour éviter le doublon */}
 
       <main className="mx-auto max-w-4xl px-6 py-12 md:px-12">
         <div className="space-y-2 mb-10">
@@ -90,7 +89,6 @@ export default function SettingsPage() {
         )}
 
         <div className="space-y-8">
-          {/* Section Profil */}
           <section className="rounded-3xl border border-[#111110]/15 bg-white/40 p-6 md:p-8 backdrop-blur-md space-y-6">
             <div className="flex items-center gap-3 border-b border-[#111110]/10 pb-4">
               <User className="h-4 w-4 opacity-60" />
@@ -137,7 +135,6 @@ export default function SettingsPage() {
             </form>
           </section>
 
-          {/* Section Sécurité / Billetterie */}
           <section className="rounded-3xl border border-[#111110]/15 bg-white/40 p-6 md:p-8 backdrop-blur-md space-y-6">
             <div className="flex items-center gap-3 border-b border-[#111110]/10 pb-4">
               <Shield className="h-4 w-4 opacity-60" />
