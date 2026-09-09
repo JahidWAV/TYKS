@@ -1,8 +1,7 @@
 'use client';
 
-import { useState } from 'react';
 import Link from 'next/link';
-import { ArrowUpRight, Sun, Moon } from 'lucide-react';
+import { ArrowUpRight } from 'lucide-react';
 
 const EVENTS = [
   {
@@ -74,12 +73,14 @@ const MANIFESTO = [
   },
 ];
 
-export default function PublicHome() {
-  const [isDarkMode, setIsDarkMode] = useState(false);
+interface PublicHomeProps {
+  isDarkMode?: boolean;
+}
 
+export default function PublicHome({ isDarkMode = false }: PublicHomeProps) {
   return (
-    <div className={`min-h-screen transition-colors duration-300 ${isDarkMode ? 'bg-[#111110] text-[#F7F5F0]' : 'bg-[#F7F5F0] text-[#111110]'}`}>
-      <main className="mx-auto max-w-7xl px-6 md:px-12">
+    <div className="flex-1 flex flex-col">
+      <main className="mx-auto max-w-7xl px-6 md:px-12 w-full">
 
         {/* ─── HERO ─── */}
         <section className="py-24 md:py-36 grid lg:grid-cols-[1.2fr_0.8fr] gap-16 items-end">
@@ -205,39 +206,6 @@ export default function PublicHome() {
         </section>
 
       </main>
-
-      {/* ─── FOOTER & THEME SWITCHER ─── */}
-      <footer className={`border-t py-12 px-6 md:px-12 text-xs transition-colors ${isDarkMode ? 'border-[#F7F5F0]/10 text-[#F7F5F0]/60' : 'border-[#111110]/10 text-[#111110]/60'}`}>
-        <div className="mx-auto max-w-7xl flex flex-col md:flex-row items-center justify-between gap-6">
-          <div className="flex items-center gap-6">
-            <Link href="/mentions" className={`transition-colors ${isDarkMode ? 'hover:text-[#F7F5F0]' : 'hover:text-[#111110]'}`}>Mentions légales</Link>
-            <Link href="/confidentialite" className={`transition-colors ${isDarkMode ? 'hover:text-[#F7F5F0]' : 'hover:text-[#111110]'}`}>Confidentialité</Link>
-            <Link href="/contact" className={`transition-colors ${isDarkMode ? 'hover:text-[#F7F5F0]' : 'hover:text-[#111110]'}`}>Contact</Link>
-          </div>
-          
-          {/* Theme Switcher */}
-          <button
-            onClick={() => setIsDarkMode(!isDarkMode)}
-            className={`inline-flex items-center gap-2 px-4 py-2 rounded-full border transition-transform hover:scale-105 ${isDarkMode ? 'border-[#F7F5F0]/20 text-[#F7F5F0]' : 'border-[#111110]/20 text-[#111110]'}`}
-            aria-label="Changer le thème"
-          >
-            {isDarkMode ? (
-              <>
-                <Sun className="w-3.5 h-3.5" />
-                <span className="font-mono uppercase text-[10px]">Mode Clair</span>
-              </>
-            ) : (
-              <>
-                <Moon className="w-3.5 h-3.5" />
-                <span className="font-mono uppercase text-[10px]">Mode Sombre</span>
-              </>
-            )}
-          </button>
-
-          <p>© 2026 TYKS — Tous droits réservés.</p>
-        </div>
-      </footer>
-
     </div>
   );
 }
