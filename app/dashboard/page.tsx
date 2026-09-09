@@ -178,32 +178,84 @@ export default function OrganizerDashboard() {
 
   if (!user) {
     return (
-      <div className="min-h-screen bg-[#F7F5F0] text-[#111110] selection:bg-[#111110] selection:text-[#F7F5F0]">
-        <div className="mx-auto max-w-4xl px-6 py-24 text-center space-y-8">
-          <p className="text-xs font-mono opacity-60 uppercase tracking-wider">TYKS PRO · ESPACE ORGANISATEUR</p>
+      <div className="min-h-screen bg-[#F7F5F0] text-[#111110] flex flex-col lg:flex-row w-full overflow-hidden selection:bg-[#111110] selection:text-[#F7F5F0]">
+        
+        {/* Colonne gauche : Branding & Connexion */}
+        <div className="w-full lg:w-1/2 flex flex-col justify-between p-8 lg:p-20 z-10 bg-[#F7F5F0]">
+          <div className="flex items-center gap-2.5">
+            <span className="h-7 w-7 rounded-xl bg-[#111110] text-[#F7F5F0] flex items-center justify-center font-bold text-xs tracking-wider">T</span>
+            <span className="font-display font-bold text-base tracking-tight">TYKS Pro</span>
+          </div>
 
-          <h1 className="font-display text-4xl font-bold leading-tight tracking-tight md:text-5xl">
-            Créez autant d&apos;événements que vous voulez.
-            <br className="hidden md:block" /> Zéro abonnement, commission à la performance.
-          </h1>
+          <div className="space-y-6 my-auto py-12">
+            <p className="text-xs font-mono opacity-60 uppercase tracking-wider">TYKS PRO · ESPACE ORGANISATEUR</p>
+            <h1 className="font-display text-4xl font-bold leading-tight tracking-tight md:text-5xl">
+              Créez autant d&apos;événements que vous voulez.
+            </h1>
+            <p className="text-xs leading-relaxed opacity-70 max-w-md">
+              Zéro abonnement, commission à la performance. Aucune limite de volume ni de jauge. Publiez vos événements en illimité et ne payez qu&apos;en cas de vente réussie.
+            </p>
+            <div>
+              <button
+                onClick={handleGoogleLogin}
+                disabled={authLoading}
+                className="inline-flex items-center gap-3 rounded-full bg-[#111110] px-8 py-3.5 text-xs font-semibold text-[#F7F5F0] transition hover:opacity-95 disabled:opacity-50 shadow-sm"
+              >
+                {authLoading ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <ArrowUpRight className="h-4 w-4" />
+                )}
+                Accéder à mon espace Pro
+              </button>
+            </div>
+          </div>
 
-          <p className="mx-auto max-w-md text-xs leading-relaxed opacity-70">
-            Aucune limite de volume ni de jauge. Publiez vos événements en illimité et ne payez qu&apos;en cas de vente réussie.
-          </p>
-
-          <button
-            onClick={handleGoogleLogin}
-            disabled={authLoading}
-            className="inline-flex items-center gap-3 rounded-full bg-[#111110] px-8 py-3.5 text-xs font-semibold text-[#F7F5F0] transition hover:opacity-95 disabled:opacity-50 shadow-sm"
-          >
-            {authLoading ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
-            ) : (
-              <ArrowUpRight className="h-4 w-4" />
-            )}
-            Accéder à mon espace Pro
-          </button>
+          <div className="text-xs font-mono opacity-40">
+            © TYKS Inc.
+          </div>
         </div>
+
+        {/* Colonne droite : Aperçu élégant du Dashboard en arrière-plan */}
+        <div className="hidden lg:flex w-1/2 bg-[#111110] text-white p-12 relative overflow-hidden items-center justify-center select-none pointer-events-none">
+          <div className="absolute inset-0 opacity-15 bg-[radial-gradient(#ffffff_1px,transparent_1px)] [background-size:20px_20px]"></div>
+          
+          <div className="w-full max-w-lg bg-white/5 border border-white/10 rounded-3xl p-6 backdrop-blur-md space-y-6 shadow-2xl">
+            <div className="flex items-center justify-between border-b border-white/10 pb-4">
+              <div className="flex items-center gap-2">
+                <span className="h-3 w-3 rounded-full bg-red-500/80"></span>
+                <span className="h-3 w-3 rounded-full bg-yellow-500/80"></span>
+                <span className="h-3 w-3 rounded-full bg-emerald-500/80"></span>
+              </div>
+              <span className="text-[10px] font-mono text-white/40">dashboard.tyks.app</span>
+            </div>
+
+            <div className="grid grid-cols-3 gap-3">
+              <div className="bg-white/5 p-4 rounded-2xl border border-white/5 space-y-2">
+                <div className="h-2 w-12 bg-white/20 rounded"></div>
+                <div className="h-6 w-20 bg-white/40 rounded"></div>
+              </div>
+              <div className="bg-white/5 p-4 rounded-2xl border border-white/5 space-y-2">
+                <div className="h-2 w-12 bg-white/20 rounded"></div>
+                <div className="h-6 w-16 bg-white/40 rounded"></div>
+              </div>
+              <div className="bg-white/5 p-4 rounded-2xl border border-white/5 space-y-2">
+                <div className="h-2 w-12 bg-white/20 rounded"></div>
+                <div className="h-6 w-14 bg-emerald-500/40 rounded"></div>
+              </div>
+            </div>
+
+            <div className="h-40 bg-white/5 rounded-2xl border border-white/5 flex items-end p-4 gap-2">
+              <div className="w-1/6 h-1/2 bg-white/20 rounded-t-lg"></div>
+              <div className="w-1/6 h-3/4 bg-white/30 rounded-t-lg"></div>
+              <div className="w-1/6 h-2/3 bg-white/20 rounded-t-lg"></div>
+              <div className="w-1/6 h-full bg-white/50 rounded-t-lg"></div>
+              <div className="w-1/6 h-4/5 bg-white/30 rounded-t-lg"></div>
+              <div className="w-1/6 h-5/6 bg-white/40 rounded-t-lg"></div>
+            </div>
+          </div>
+        </div>
+
       </div>
     );
   }
