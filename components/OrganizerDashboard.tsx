@@ -34,26 +34,7 @@ export default function OrganizerDashboard() {
     return () => subscription.unsubscribe();
   }, []);
 
-  const loadDashboard = useCallback(async (userId: string) => {
-    try {
-      setLoading(true);
-      const { data, error } = await supabaseBrowser
-        .from('events')
-        .select('*')
-        .eq('created_by', userId)
-        .order('starts_at', { ascending: true });
-
-      if (error) {
-        console.error('Erreur Supabase :', error.message);
-      } else if (data) {
-        setEvents(data);
-      }
-    } catch (err) {
-      console.error('Erreur de chargement :', err);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+  app/events/new/page.tsx
 
   useEffect(() => {
     if (ready && user?.id) {
