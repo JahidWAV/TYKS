@@ -292,3 +292,32 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
               <div className="flex flex-col gap-3 pt-2">
                 <span className="text-xs font-medium opacity-80">{user.email}</span>
                 <button
+                  onClick={handleLogout}
+                  className={`inline-flex items-center justify-center gap-2 rounded-full border px-4 py-2.5 text-xs font-medium ${isDarkMode ? 'border-[#F7F5F0]/20' : 'border-[#111110]/20'}`}
+                >
+                  <LogOut className="h-3.5 w-3.5" />
+                  Déconnexion
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={() => {
+                  setMobileOpen(false);
+                  setIsAuthOpen(true);
+                }}
+                className={`inline-flex w-full items-center justify-center rounded-full px-5 py-2.5 text-xs font-semibold ${isDarkMode ? 'bg-[#F7F5F0] text-[#111110]' : 'bg-[#111110] text-[#F7F5F0]'}`}
+              >
+                {isPro ? "Connexion Pro" : "Connexion"}
+              </button>
+            )}
+          </div>
+        )}
+      </header>
+
+      <CustomAuthModal
+        isOpen={isAuthOpen}
+        onClose={() => setIsAuthOpen(false)}
+      />
+    </>
+  );
+}
