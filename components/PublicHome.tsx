@@ -1,211 +1,214 @@
 import Link from 'next/link';
-import { Zap, ArrowUpRight, Search, ScanLine, Wallet, Share2, RefreshCw, MoreHorizontal } from 'lucide-react';
+import { Search, Check } from 'lucide-react';
 
-const EVENTS = [
-  { title: 'Nuit Électro', venue: 'Le Sous-Sol, Lyon', date: '12 – 13 sept.', price: '14 €', tags: ['Techno', 'House'], img: 'https://picsum.photos/seed/tyks-electro/500/650' },
-  { title: 'Dystopia 2026', venue: 'Parc Expo, Saint-Étienne', date: '4 – 6 déc.', price: '48 €', tags: ['Hardcore', 'Hardstyle'], img: 'https://picsum.photos/seed/tyks-dystopia/500/650' },
-  { title: 'Club Interdit', venue: 'La Chapelle, Lille', date: '28 nov. – 1 déc.', price: '18 €', tags: ['Drum & Bass'], img: 'https://picsum.photos/seed/tyks-interdit/500/650' },
+const PARTNERS = ['Le Sous-Sol', 'Rézo Sud', 'Nord Nocturne', 'La Cordonnerie', 'Basalte', 'Les Docks'];
+
+const CHECKLIST = [
+  'Accédez à des événements complets',
+  'Invitez vos amis en un geste',
+  'Profitez d\u2019offres exclusives des organisateurs',
 ];
 
-// Genre/scene words stacked at varying sizes — the marquee device, built from real vocabulary of the platform
-const SCENE_WORDS = [
-  { text: 'TECHNO', size: 'text-6xl md:text-8xl' },
-  { text: 'open air', size: 'text-3xl md:text-5xl' },
-  { text: 'DRUM & BASS', size: 'text-5xl md:text-7xl' },
-  { text: 'clubs indépendants', size: 'text-2xl md:text-4xl' },
-  { text: 'RAVE', size: 'text-6xl md:text-8xl' },
-];
+// Three simple single-stroke illustrations — a nod to DICE's line-art creatures, kept minimal and hand-drawn in feel
+function Blob1() {
+  return (
+    <svg viewBox="0 0 80 80" fill="none" className="h-16 w-16" stroke="currentColor" strokeWidth="1.5">
+      <path d="M40 8c16 0 26 12 26 27s-11 30-27 30S13 49 13 34 24 8 40 8Z" />
+      <path d="M30 34c2-4 6-4 8 0M50 34c-2-4-6-4-8 0M30 50c4 4 16 4 20 0" strokeLinecap="round" />
+    </svg>
+  );
+}
+function Blob2() {
+  return (
+    <svg viewBox="0 0 80 80" fill="none" className="h-16 w-16" stroke="currentColor" strokeWidth="1.5">
+      <path d="M15 45c0-18 10-32 25-32s25 14 25 32c0 12-11 22-25 22S15 57 15 45Z" />
+      <path d="M28 40h6M46 40h6" strokeLinecap="round" />
+      <path d="M28 55c6 5 18 5 24 0" strokeLinecap="round" />
+    </svg>
+  );
+}
+function Blob3() {
+  return (
+    <svg viewBox="0 0 80 80" fill="none" className="h-16 w-16" stroke="currentColor" strokeWidth="1.5">
+      <path d="M40 10c20 6 28 20 24 38-3 14-15 22-24 22s-21-8-24-22c-4-18 4-32 24-38Z" />
+      <circle cx="32" cy="42" r="2.5" fill="currentColor" />
+      <circle cx="48" cy="42" r="2.5" fill="currentColor" />
+      <path d="M33 56c4 3 10 3 14 0" strokeLinecap="round" />
+    </svg>
+  );
+}
 
 const HOW = [
-  { icon: Zap, title: 'Achetez en un instant', body: 'Le temps de lire cette phrase, votre billet est réservé.' },
-  { icon: Wallet, title: 'Prix affiché, prix payé', body: "Le montant à l'achat est celui à l'entrée. Aucune surprise au moment de payer." },
-  { icon: ScanLine, title: 'Scan direct, sans file', body: "Votre pass numérique s'affiche à l'écran, prêt à scanner." },
+  { Icon: Blob1, title: 'Achetez plus vite qu\u2019il ne faut pour lire ceci' },
+  { Icon: Blob2, title: 'Le prix affiché est le prix payé, sans surprise à la caisse' },
+  { Icon: Blob3, title: 'Des recommandations pensées pour vos goûts' },
 ];
 
 export default function PublicHome() {
   return (
-    <div className="bg-bone">
+    <div className="bg-bone text-onyx">
       {/* ---------- NAV ---------- */}
-      <header className="mx-auto flex max-w-6xl items-center justify-between px-6 py-6">
-        <span className="font-display text-lg font-bold tracking-tight text-onyx">TYKS</span>
+      <header className="mx-auto flex max-w-6xl items-center justify-between px-6 py-8">
+        <span className="font-display text-lg font-bold tracking-tight">TYKS</span>
         <div className="hidden flex-1 max-w-sm items-center gap-2 rounded-full border border-onyx/15 px-4 py-2 sm:flex sm:mx-8">
           <Search className="h-4 w-4 text-onyx/40" />
           <span className="text-sm text-onyx/40">Rechercher un événement, une ville…</span>
         </div>
-        <Link href="/evenements" className="text-sm font-semibold text-onyx">
-          Se connecter
+        <Link href="/evenements" className="rounded-full bg-onyx px-5 py-2.5 text-sm font-semibold text-bone">
+          Voir les événements
         </Link>
       </header>
 
-      {/* ---------- HERO — flat, bold, paper ---------- */}
-      <section className="mx-auto max-w-6xl px-6 pb-16 pt-8">
-        <div className="grid gap-12 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
-          <div>
-            <h1 className="font-display text-[3.4rem] font-bold uppercase leading-[0.92] tracking-tight text-onyx md:text-[5.5rem]">
-              Chope ton
-              <br />
-              billet.
-            </h1>
-            <p className="mt-6 max-w-sm text-base leading-relaxed text-onyx/60">
-              Les événements de créateurs et de salles indépendantes,
-              vendus en direct, sans commission cachée.
-            </p>
-            <div className="mt-8 flex flex-wrap items-center gap-3">
-              <Link href="/evenements" className="inline-flex items-center gap-2 rounded-full bg-onyx px-7 py-3.5 text-sm font-semibold text-bone">
-                Voir les événements
-              </Link>
-              <a href="#organisateurs" className="inline-flex items-center rounded-full border border-onyx/20 px-7 py-3.5 text-sm font-semibold text-onyx">
-                Je suis organisateur
-              </a>
-            </div>
-          </div>
-
-          {/* Phone mockup — the actual ticket, QR and all, like a real product screenshot */}
-          <div className="mx-auto lg:mx-0 lg:justify-self-end">
-            <div className="w-[15.5rem] rounded-[2.25rem] border-[6px] border-onyx bg-onyx p-1.5 shadow-[0_25px_50px_-20px_rgba(0,0,0,0.4)]">
-              <div className="rounded-[1.6rem] bg-bone px-5 pb-6 pt-8">
-                <div className="text-center">
-                  <p className="font-mono text-[10px] uppercase tracking-wide text-onyx/40">Nuit Électro</p>
-                  <p className="text-xs text-onyx/50">jeu 12 mars, 21:00</p>
-                </div>
-                <div className="mt-5 rounded-xl border border-dashed border-onyx/20 p-3">
-                  <div className="grid grid-cols-8 gap-[3px]">
-                    {Array.from({ length: 64 }).map((_, i) => (
-                      <span key={i} className={`aspect-square rounded-[1px] ${QR_PATTERN[i] ? 'bg-onyx' : 'bg-transparent'}`} />
-                    ))}
-                  </div>
-                </div>
-                <p className="mt-4 text-center font-mono text-xs text-onyx">Place A12</p>
-                <div className="mt-5 flex items-center justify-around border-t border-onyx/10 pt-4">
-                  <RefreshCw className="h-4 w-4 text-onyx/50" />
-                  <Share2 className="h-4 w-4 text-onyx/50" />
-                  <MoreHorizontal className="h-4 w-4 text-onyx/50" />
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ---------- TRENDING EVENTS — real posters ---------- */}
-      <section className="mx-auto max-w-6xl px-6 py-16">
-        <div className="mb-8 flex items-end justify-between">
-          <h2 className="font-display text-xl font-bold uppercase tracking-tight text-onyx">Événements populaires</h2>
-          <Link href="/evenements" className="text-sm font-semibold text-onyx/60 hover:text-onyx">
-            Plus d'événements →
+      {/* ---------- HERO — one headline, vast air ---------- */}
+      <section className="mx-auto max-w-6xl px-6 pb-32 pt-16 md:pt-24">
+        <h1 className="font-display text-[3.6rem] font-bold uppercase leading-[0.94] tracking-tight md:text-[6.5rem]">
+          Bienvenue
+          <br />
+          dans l&apos;alternative.
+        </h1>
+        <p className="mt-8 max-w-md text-base leading-relaxed text-onyx/55">
+          Des salles indépendantes. Des prix affichés d&apos;avance. Aucune
+          commission cachée. TYKS simplifie la billetterie.
+        </p>
+        <div className="mt-8">
+          <Link href="/evenements" className="inline-flex items-center rounded-full bg-onyx px-7 py-3.5 text-sm font-semibold text-bone">
+            Voir les événements
           </Link>
         </div>
 
-        <div className="grid gap-6 sm:grid-cols-3">
-          {EVENTS.map((event) => (
-            <Link key={event.title} href="/evenements" className="group">
-              <div className="overflow-hidden rounded-lg">
-                <img src={event.img} alt="" className="h-64 w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]" />
-              </div>
-              <h3 className="mt-3 font-display text-base font-bold text-onyx">{event.title}</h3>
-              <p className="text-sm text-onyx/60">{event.venue}</p>
-              <p className="text-sm text-onyx/60">{event.date} · {event.price}</p>
-              <div className="mt-2 flex flex-wrap gap-1.5">
-                {event.tags.map((tag) => (
-                  <span key={tag} className="rounded-full bg-onyx/[0.06] px-2.5 py-1 text-[11px] font-medium text-onyx/70">
-                    {tag}
-                  </span>
-                ))}
-              </div>
-            </Link>
-          ))}
+        <div className="mt-28 flex flex-col items-start justify-between gap-6 border-t border-onyx/10 pt-10 sm:flex-row sm:items-center">
+          <div>
+            <p className="text-sm font-semibold">Tendances à Lyon</p>
+            <p className="mt-1 max-w-sm text-sm text-onyx/55">
+              Les événements les plus suivis en ce moment près de vous.
+            </p>
+          </div>
+          <Link href="/evenements" className="rounded-full border border-onyx/20 px-6 py-3 text-sm font-semibold">
+            Parcourir les événements
+          </Link>
         </div>
       </section>
 
-      {/* ---------- SCENE MARQUEE — full black break ---------- */}
-      <section className="bg-onyx py-24">
+      {/* ---------- SIMPLE, INK — three illustrated ideas ---------- */}
+      <section className="bg-onyx py-32 text-bone">
         <div className="mx-auto max-w-6xl px-6">
-          <div className="flex flex-wrap items-baseline gap-x-6 gap-y-2">
-            {SCENE_WORDS.map((word) => (
-              <span key={word.text} className={`font-display font-bold uppercase leading-none text-bone ${word.size}`}>
-                {word.text}
+          <h2 className="text-center font-display text-xl font-medium text-bone-muted">Une billetterie étonnamment simple</h2>
+          <div className="mt-16 grid gap-16 sm:grid-cols-3">
+            {HOW.map((step) => (
+              <div key={step.title} className="flex flex-col items-center text-center">
+                <step.Icon />
+                <p className="mt-6 max-w-[20ch] text-sm leading-relaxed text-bone-muted">{step.title}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ---------- WHAT ELSE — real screen, modest ---------- */}
+      <section className="py-32">
+        <div className="mx-auto grid max-w-6xl gap-16 px-6 lg:grid-cols-2 lg:items-center">
+          <div className="mx-auto w-[13rem] rounded-[1.75rem] border-[5px] border-onyx bg-onyx p-1">
+            <div className="rounded-[1.3rem] bg-bone p-4">
+              <div className="h-20 rounded-md bg-onyx/10" />
+              <p className="mt-3 text-xs font-semibold">Nuit Électro</p>
+              <p className="text-[11px] text-onyx/50">Le Sous-Sol, Lyon</p>
+              <div className="mt-3 flex items-center justify-between text-xs">
+                <span className="text-onyx/50">Prix</span>
+                <span className="font-semibold">14,00 €</span>
+              </div>
+              <div className="mt-2 flex items-center justify-between rounded-full border border-onyx/15 px-3 py-1.5 text-xs">
+                <span>—</span>
+                <span>1</span>
+                <span>+</span>
+              </div>
+              <div className="mt-3 rounded-full bg-onyx py-2.5 text-center text-xs font-semibold text-bone">Réserver</div>
+            </div>
+          </div>
+
+          <div>
+            <h2 className="font-display text-2xl font-bold">Et sinon ?</h2>
+            <ul className="mt-6 space-y-4">
+              {CHECKLIST.map((item) => (
+                <li key={item} className="flex items-start gap-3 text-sm text-onyx/70">
+                  <Check className="mt-0.5 h-4 w-4 shrink-0 text-onyx/40" />
+                  {item}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      {/* ---------- NETWORK — logo wall, ink ---------- */}
+      <section className="bg-onyx py-28 text-bone">
+        <div className="mx-auto max-w-6xl px-6">
+          <div className="max-w-lg">
+            <h2 className="font-display text-2xl font-bold">Un réseau de salles et d&apos;organisateurs indépendants</h2>
+            <p className="mt-3 text-sm leading-relaxed text-bone-muted">
+              Nous travaillons avec les lieux et les collectifs qui font
+              vivre la scène partout en France.
+            </p>
+          </div>
+          <div className="mt-14 grid grid-cols-2 gap-x-8 gap-y-10 sm:grid-cols-3">
+            {PARTNERS.map((name) => (
+              <span key={name} className="font-display text-lg font-medium text-bone-faint">
+                {name}
               </span>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ---------- HOW IT WORKS — flat icon block, still on black ---------- */}
-      <section className="bg-onyx pb-24">
-        <div className="mx-auto max-w-6xl px-6">
-          <div className="grid gap-10 border-t border-white/10 pt-16 sm:grid-cols-3">
-            {HOW.map((step) => {
-              const Icon = step.icon;
-              return (
-                <div key={step.title}>
-                  <Icon className="h-6 w-6 text-bone" strokeWidth={1.5} />
-                  <h3 className="mt-4 font-display text-base font-bold text-bone">{step.title}</h3>
-                  <p className="mt-2 text-sm leading-relaxed text-bone-muted">{step.body}</p>
-                </div>
-              );
-            })}
-          </div>
+      {/* ---------- TESTIMONIAL ---------- */}
+      <section className="py-32">
+        <div className="mx-auto max-w-2xl px-6 text-center">
+          <p className="font-display text-2xl font-medium leading-snug md:text-3xl">
+            &laquo; Enfin une billetterie qui ne prend pas la moitié de la
+            marge pour un simple lien de paiement. Simple, honnête, ça
+            change tout. &raquo;
+          </p>
+          <p className="mt-6 text-sm text-onyx/50">— Un organisateur indépendant</p>
         </div>
       </section>
 
-      {/* ---------- ORGANIZER TEASER — flat banner, paper ---------- */}
-      <section id="organisateurs" className="mx-auto max-w-6xl px-6 py-20">
-        <div className="flex flex-col items-start justify-between gap-6 border-t border-onyx/10 pt-16 sm:flex-row sm:items-center">
-          <div>
-            <h2 className="font-display text-2xl font-bold uppercase tracking-tight text-onyx">
-              Vous organisez un événement ?
-            </h2>
-            <p className="mt-2 max-w-md text-sm leading-relaxed text-onyx/60">
-              Vendez à la bonne personne, au bon prix, sans dépendre d'une plateforme tierce.
-            </p>
-          </div>
-          <a href="https://pro.tyks.app" className="inline-flex shrink-0 items-center gap-2 rounded-full bg-onyx px-7 py-3.5 text-sm font-semibold text-bone">
-            Publier mon événement
-            <ArrowUpRight className="h-4 w-4" />
+      {/* ---------- ORGANIZER — one quiet line, not a section ---------- */}
+      <section className="border-t border-onyx/10">
+        <div className="mx-auto flex max-w-6xl flex-col items-start justify-between gap-4 px-6 py-10 sm:flex-row sm:items-center">
+          <p className="text-sm text-onyx/60">Vous organisez un événement ?</p>
+          <a href="https://pro.tyks.app" className="text-sm font-semibold underline underline-offset-4">
+            Publiez-le sur TYKS
           </a>
         </div>
       </section>
 
       {/* ---------- FOOTER ---------- */}
-      <footer className="border-t border-onyx/10 bg-onyx">
-        <div className="mx-auto max-w-6xl px-6 py-16">
-          <div className="grid gap-10 sm:grid-cols-4">
+      <footer className="bg-onyx py-16 text-bone">
+        <div className="mx-auto max-w-6xl px-6">
+          <div className="grid gap-10 sm:grid-cols-3">
             <div>
-              <h4 className="font-mono text-[11px] uppercase tracking-wide text-bone-faint">À propos</h4>
+              <h4 className="text-xs font-semibold text-bone-faint">Notre société</h4>
               <ul className="mt-4 space-y-2 text-sm text-bone-muted">
-                <li>Je suis organisateur</li>
-                <li>Kit presse</li>
-                <li>On recrute</li>
+                <li>À propos de TYKS</li>
+                <li>Carrières</li>
               </ul>
             </div>
             <div>
-              <h4 className="font-mono text-[11px] uppercase tracking-wide text-bone-faint">Villes</h4>
-              <ul className="mt-4 space-y-2 text-sm text-bone-muted">
-                <li>Paris</li>
-                <li>Lyon</li>
-                <li>Marseille</li>
-                <li>Lille</li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-mono text-[11px] uppercase tracking-wide text-bone-faint">Organisateurs</h4>
-              <ul className="mt-4 space-y-2 text-sm text-bone-muted">
-                <li>Collectif Basalte</li>
-                <li>Rézo Sud</li>
-                <li>Nord Nocturne</li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-mono text-[11px] uppercase tracking-wide text-bone-faint">Support</h4>
+              <h4 className="text-xs font-semibold text-bone-faint">Support</h4>
               <ul className="mt-4 space-y-2 text-sm text-bone-muted">
                 <li>Aide</li>
-                <li>Nous contacter</li>
-                <li>Signaler un contenu</li>
+                <li>Demander un remboursement</li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="text-xs font-semibold text-bone-faint">Ressources</h4>
+              <ul className="mt-4 space-y-2 text-sm text-bone-muted">
+                <li>Organisateurs</li>
+                <li>Salles</li>
               </ul>
             </div>
           </div>
-          <div className="mt-14 flex items-center justify-between border-t border-white/10 pt-6 text-xs text-bone-faint">
-            <span>© 2026 TYKS. Tous droits réservés.</span>
+          <div className="mt-16 flex items-center justify-between border-t border-white/10 pt-6 text-xs text-bone-faint">
+            <span>© 2026 TYKS</span>
             <span className="font-display font-bold text-bone">TYKS</span>
           </div>
         </div>
@@ -213,9 +216,3 @@ export default function PublicHome() {
     </div>
   );
 }
-
-// Fixed pseudo-QR pattern (decorative, not a real scannable code)
-const QR_PATTERN = [
-  1,1,1,0,1,0,1,1, 1,0,1,0,0,1,0,1, 1,1,1,0,1,1,0,1, 0,0,0,0,0,0,1,0,
-  1,1,0,1,1,0,1,1, 0,1,0,0,1,0,0,1, 1,0,1,1,0,1,1,1, 1,1,1,0,1,0,1,1,
-];
