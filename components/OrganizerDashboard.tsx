@@ -34,7 +34,39 @@ export default function OrganizerDashboard() {
     return () => subscription.unsubscribe();
   }, []);
 
-  app/events/new/page.tsx
+  const loadDashboard = useCallback(async (userId: string) => {
+    try {
+      setLoading(true);
+
+      const { data: membership } = await supabaseBrowser
+        .from('organization_members')
+        .select('organization_id')
+        .eq('user_id', userId)
+        .maybeSingle();
+
+      if (!membership) {
+        setEvents([]);
+        setLoading(false);
+        return;
+      }
+
+      const { data, error } = await supabaseBrowser
+        .from('events')
+        .select('*')
+        .eq('organization_id', membership.organization_id)
+        .order('starts_at', { ascending: true });
+
+      if (error) {
+        console.error('Erreur Supabase :', error.message);
+      } else if (data) {
+        setEvents(data);
+      }
+    } catch (err) {
+      console.error('Erreur de chargement :', err);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
     if (ready && user?.id) {
