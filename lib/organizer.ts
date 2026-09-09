@@ -10,15 +10,14 @@ export interface Membership {
 }
 
 /**
- * Renvoie l'appartenance d'un utilisateur Privy à une organisation, ou null
- * s'il n'en a aucune. (Un utilisateur = un seul workspace organisateur pour
- * l'instant, comme un compte pro Shotgun classique.)
+ * Renvoie l'appartenance d'un utilisateur Supabase Auth à une organisation, ou null
+ * s'il n'en a aucune.
  */
-export async function getMembership(privyUserId: string): Promise<Membership | null> {
+export async function getMembership(userId: string): Promise<Membership | null> {
   const { data, error } = await supabaseServer
     .from("organization_members")
     .select("organization_id, role, organizations(name)")
-    .eq("privy_user_id", privyUserId)
+    .eq("user_id", userId)
     .maybeSingle();
 
   if (error || !data) return null;
