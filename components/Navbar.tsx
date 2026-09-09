@@ -93,10 +93,10 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
 
   return (
     <>
-      <header className={`sticky top-0 z-50 border-b transition-colors duration-300 ${
+      <header className={`sticky top-0 z-50 backdrop-blur-xl border-b transition-all duration-300 ${
         isDarkMode 
-          ? 'bg-[#111110] border-[#F7F5F0]/10 text-[#F7F5F0]' 
-          : 'bg-[#F7F5F0] border-[#111110]/10 text-[#111110]'
+          ? 'bg-[#111110]/60 border-[#F7F5F0]/10 text-[#F7F5F0]' 
+          : 'bg-[#F7F5F0]/65 border-[#111110]/10 text-[#111110]'
       }`}>
         {/* Utilisation d'une grille à 3 colonnes égales pour garantir un centrage parfait absolu du bloc recherche */}
         <div className="mx-auto grid grid-cols-[auto_1fr_auto] items-center max-w-7xl px-6 py-4 md:px-12 gap-4">
