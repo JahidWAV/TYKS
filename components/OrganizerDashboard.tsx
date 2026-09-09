@@ -208,7 +208,7 @@ export default function OrganizerDashboard() {
           </p>
         </div>
         <Link
-          href="/nouveau"
+          href="/new"
           className="inline-flex items-center justify-center gap-2 rounded-full bg-bone px-5 py-2.5 text-sm font-semibold text-onyx transition hover:bg-white"
         >
           <Plus className="h-4 w-4" />
