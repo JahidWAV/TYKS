@@ -38,23 +38,24 @@ export default function OrganizerDashboard() {
     try {
       setLoading(true);
 
+      // 1. Tenter de récupérer l'organization_id via organization_members
       const { data: membership } = await supabaseBrowser
         .from('organization_members')
         .select('organization_id')
         .eq('user_id', userId)
         .maybeSingle();
 
-      if (!membership) {
-        setEvents([]);
-        setLoading(false);
-        return;
+      let query = supabaseBrowser.from('events').select('*');
+
+      if (membership?.organization_id) {
+        // Si l'orga est trouvée, on filtre par organization_id
+        query = query.eq('organization_id', membership.organization_id);
+      } else {
+        // Sinon, fallback de sécurité sur created_by pour ne pas afficher 0 si la liaison n'est pas encore faite
+        query = query.eq('created_by', userId);
       }
 
-      const { data, error } = await supabaseBrowser
-        .from('events')
-        .select('*')
-        .eq('organization_id', membership.organization_id)
-        .order('starts_at', { ascending: true });
+      const { data, error } = await query.order('starts_at', { ascending: true });
 
       if (error) {
         console.error('Erreur Supabase :', error.message);
