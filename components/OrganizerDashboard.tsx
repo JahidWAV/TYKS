@@ -2,10 +2,11 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
+import { usePathname, useRouter } from 'next/navigation';
 import { 
   ArrowUpRight, Plus, Loader2, Calendar, MapPin, Trash2, Edit3, 
   Euro, Ticket, Search, RefreshCw, ShieldCheck, LayoutDashboard, 
-  BarChart3, Users, Megaphone, Globe, Wallet, Settings, LogOut, Sparkles
+  BarChart3, Users, Megaphone, Globe, Wallet, Settings, LogOut, User
 } from 'lucide-react';
 import type { IortiEvent } from '@/types/event';
 import { supabaseBrowser } from '@/lib/supabase-browser';
@@ -25,6 +26,8 @@ interface DashboardStats {
 }
 
 export default function OrganizerDashboard() {
+  const router = useRouter();
+  const pathname = usePathname();
   const [user, setUser] = useState<any>(null);
   const [ready, setReady] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -177,7 +180,7 @@ export default function OrganizerDashboard() {
     return (
       <div className="min-h-screen bg-[#F7F5F0] text-[#111110] selection:bg-[#111110] selection:text-[#F7F5F0]">
         <div className="mx-auto max-w-4xl px-6 py-24 text-center space-y-8">
-          <p className="text-xs font-mono opacity-60 uppercase tracking-wider">Espace organisateur illimité</p>
+          <p className="text-xs font-mono opacity-60 uppercase tracking-wider">TYKS PRO · ESPACE ORGANISATEUR</p>
 
           <h1 className="font-display text-4xl font-bold leading-tight tracking-tight md:text-5xl">
             Créez autant d&apos;événements que vous voulez.
@@ -227,56 +230,132 @@ export default function OrganizerDashboard() {
   return (
     <div className="min-h-screen bg-[#F7F5F0] text-[#111110] selection:bg-[#111110] selection:text-[#F7F5F0] flex">
       
-      {/* Menu Latéral Pro (Sidebar) */}
-      <aside className="w-64 border-r border-[#111110]/10 bg-white/40 backdrop-blur-md flex flex-col justify-between hidden lg:flex sticky top-0 h-screen">
+      {/* Menu Latéral Pro avec vraies routes et bloc profil/settings en bas */}
+      <aside className="w-64 border-r border-[#111110]/10 bg-white/40 backdrop-blur-md flex flex-col justify-between sticky top-0 h-screen shrink-0">
         <div className="p-6 space-y-8">
           <div className="flex items-center gap-2.5">
-            <span className="h-7 w-7 rounded-xl bg-[#111110] text-[#F7F5F0] flex items-center justify-center font-bold text-xs">I</span>
-            <span className="font-display font-bold text-base tracking-tight">Iorti Pro</span>
+            <span className="h-7 w-7 rounded-xl bg-[#111110] text-[#F7F5F0] flex items-center justify-center font-bold text-xs tracking-wider">T</span>
+            <span className="font-display font-bold text-base tracking-tight">TYKS Pro</span>
           </div>
 
           <div className="space-y-1">
             <p className="text-[10px] font-mono uppercase tracking-wider opacity-40 px-3 pb-2">Navigation</p>
-            <a href="#overview" className="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-[#111110] text-[#F7F5F0] text-xs font-medium shadow-sm">
+            
+            <Link 
+              href="/dashboard" 
+              className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-medium transition ${
+                pathname === '/dashboard' 
+                  ? 'bg-[#111110] text-[#F7F5F0] shadow-sm' 
+                  : 'opacity-70 hover:opacity-100 hover:bg-[#111110]/5'
+              }`}
+            >
               <LayoutDashboard className="w-4 h-4" /> Overview
-            </a>
-            <a href="#events" className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-medium opacity-70 hover:opacity-100 hover:bg-[#111110]/5 transition">
+            </Link>
+
+            <Link 
+              href="/dashboard/events" 
+              className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-medium transition ${
+                pathname === '/dashboard/events' 
+                  ? 'bg-[#111110] text-[#F7F5F0] shadow-sm' 
+                  : 'opacity-70 hover:opacity-100 hover:bg-[#111110]/5'
+              }`}
+            >
               <Calendar className="w-4 h-4" /> Events
-            </a>
-            <a href="#analytics" className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-medium opacity-70 hover:opacity-100 hover:bg-[#111110]/5 transition">
+            </Link>
+
+            <Link 
+              href="/dashboard/analytics" 
+              className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-medium transition ${
+                pathname === '/dashboard/analytics' 
+                  ? 'bg-[#111110] text-[#F7F5F0] shadow-sm' 
+                  : 'opacity-70 hover:opacity-100 hover:bg-[#111110]/5'
+              }`}
+            >
               <BarChart3 className="w-4 h-4" /> Analytics
-            </a>
-            <a href="#marketing" className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-medium opacity-70 hover:opacity-100 hover:bg-[#111110]/5 transition">
+            </Link>
+
+            <Link 
+              href="/dashboard/marketing" 
+              className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-medium transition ${
+                pathname === '/dashboard/marketing' 
+                  ? 'bg-[#111110] text-[#F7F5F0] shadow-sm' 
+                  : 'opacity-70 hover:opacity-100 hover:bg-[#111110]/5'
+              }`}
+            >
               <Megaphone className="w-4 h-4" /> Marketing
-            </a>
-            <a href="#community" className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-medium opacity-70 hover:opacity-100 hover:bg-[#111110]/5 transition">
+            </Link>
+
+            <Link 
+              href="/dashboard/community" 
+              className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-medium transition ${
+                pathname === '/dashboard/community' 
+                  ? 'bg-[#111110] text-[#F7F5F0] shadow-sm' 
+                  : 'opacity-70 hover:opacity-100 hover:bg-[#111110]/5'
+              }`}
+            >
               <Users className="w-4 h-4" /> Community
-            </a>
-            <a href="#banking" className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-medium opacity-70 hover:opacity-100 hover:bg-[#111110]/5 transition">
+            </Link>
+
+            <Link 
+              href="/dashboard/banking" 
+              className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-medium transition ${
+                pathname === '/dashboard/banking' 
+                  ? 'bg-[#111110] text-[#F7F5F0] shadow-sm' 
+                  : 'opacity-70 hover:opacity-100 hover:bg-[#111110]/5'
+              }`}
+            >
               <Wallet className="w-4 h-4" /> Banking & Payouts
-            </a>
-            <a href="#page" className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-medium opacity-70 hover:opacity-100 hover:bg-[#111110]/5 transition">
+            </Link>
+
+            <Link 
+              href="/dashboard/page" 
+              className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-medium transition ${
+                pathname === '/dashboard/page' 
+                  ? 'bg-[#111110] text-[#F7F5F0] shadow-sm' 
+                  : 'opacity-70 hover:opacity-100 hover:bg-[#111110]/5'
+              }`}
+            >
               <Globe className="w-4 h-4" /> My Page
-            </a>
+            </Link>
           </div>
         </div>
 
-        <div className="p-6 border-t border-[#111110]/10 space-y-4">
-          <div className="flex items-center justify-between">
+        {/* Bloc Profil & Settings en bas du menu latéral */}
+        <div className="p-4 border-t border-[#111110]/10 space-y-2 bg-white/30">
+          <div className="flex items-center justify-between px-2 py-1.5">
             <div className="truncate pr-2">
               <p className="text-xs font-bold truncate">{user.email}</p>
-              <p className="text-[10px] font-mono opacity-50">Compte Pro Illimité</p>
+              <p className="text-[10px] font-mono opacity-50">TYKS Pro Illimité</p>
             </div>
-            <button onClick={handleLogout} className="p-2 rounded-xl hover:bg-[#111110]/5 transition text-red-600" title="Se déconnecter">
-              <LogOut className="w-4 h-4" />
+          </div>
+
+          <div className="grid grid-cols-2 gap-1 pt-1">
+            <Link 
+              href="/dashboard/settings" 
+              className={`flex items-center justify-center gap-2 px-3 py-2 rounded-xl text-xs font-medium border border-[#111110]/10 transition ${
+                pathname === '/dashboard/settings' 
+                  ? 'bg-[#111110] text-[#F7F5F0]' 
+                  : 'bg-white/60 hover:bg-white text-[#111110]'
+              }`}
+            >
+              <Settings className="w-3.5 h-3.5" />
+              <span>Réglages</span>
+            </Link>
+            <button 
+              onClick={handleLogout} 
+              className="flex items-center justify-center gap-2 px-3 py-2 rounded-xl text-xs font-medium border border-red-500/20 bg-white/60 hover:bg-red-500 hover:text-white text-red-600 transition"
+              title="Se déconnecter"
+            >
+              <LogOut className="w-3.5 h-3.5" />
+              <span>Quitter</span>
             </button>
           </div>
         </div>
       </aside>
 
       {/* Contenu Principal */}
-      <main className="flex-1 min-w-0">
-        <div className="max-w-7xl mx-auto px-6 py-10 space-y-8">
+      <main className="flex-1 min-w-0 overflow-y-auto">
+        <div className="max-w-7xl mx-auto px-8 py-10 space-y-8">
           
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 border-b border-[#111110]/10">
             <div className="space-y-1">
@@ -390,7 +469,7 @@ export default function OrganizerDashboard() {
           </div>
 
           {/* Liste des événements */}
-          <div className="space-y-6" id="events">
+          <div className="space-y-6">
             {filteredEvents.length === 0 ? (
               <div className="rounded-3xl border border-[#111110]/15 bg-white/70 p-16 text-center space-y-3 backdrop-blur-md">
                 <Calendar className="mx-auto h-6 w-6 opacity-40" />
