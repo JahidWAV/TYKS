@@ -4,7 +4,8 @@ import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { 
   ArrowUpRight, Plus, Loader2, Calendar, MapPin, Trash2, Edit3, 
-  Euro, Ticket, Search, RefreshCw, ShieldCheck 
+  Euro, Ticket, Search, RefreshCw, ShieldCheck, LayoutDashboard, 
+  BarChart3, Users, Megaphone, Globe, Wallet, Settings, LogOut, Sparkles
 } from 'lucide-react';
 import type { IortiEvent } from '@/types/event';
 import { supabaseBrowser } from '@/lib/supabase-browser';
@@ -142,6 +143,11 @@ export default function OrganizerDashboard() {
     }
   };
 
+  const handleLogout = async () => {
+    await supabaseBrowser.auth.signOut();
+    setUser(null);
+  };
+
   const handleDeleteEvent = async (eventId: string) => {
     if (!confirm('Attention : Cette action est irréversible. Voulez-vous vraiment supprimer cet événement ?')) return;
 
@@ -219,219 +225,270 @@ export default function OrganizerDashboard() {
     : 0;
 
   return (
-    <div className="min-h-screen bg-[#F7F5F0] text-[#111110] selection:bg-[#111110] selection:text-[#F7F5F0]">
-      <div className="mx-auto max-w-7xl px-6 py-10 space-y-8">
-        
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 border-b border-[#111110]/10">
+    <div className="min-h-screen bg-[#F7F5F0] text-[#111110] selection:bg-[#111110] selection:text-[#F7F5F0] flex">
+      
+      {/* Menu Latéral Pro (Sidebar) */}
+      <aside className="w-64 border-r border-[#111110]/10 bg-white/40 backdrop-blur-md flex flex-col justify-between hidden lg:flex sticky top-0 h-screen">
+        <div className="p-6 space-y-8">
+          <div className="flex items-center gap-2.5">
+            <span className="h-7 w-7 rounded-xl bg-[#111110] text-[#F7F5F0] flex items-center justify-center font-bold text-xs">I</span>
+            <span className="font-display font-bold text-base tracking-tight">Iorti Pro</span>
+          </div>
+
           <div className="space-y-1">
-            <div className="flex items-center gap-2">
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-mono bg-emerald-500/10 text-emerald-700 font-semibold border border-emerald-500/20">
-                <ShieldCheck className="w-3 h-3" /> Accès Illimité (Sans Abonnement)
-              </span>
-            </div>
-            <h1 className="font-display text-2xl md:text-3xl font-bold tracking-tight">Tableau de bord Opérationnel</h1>
-            <p className="text-xs font-mono opacity-60 uppercase tracking-wider">Suivi de vos ventes en temps réel</p>
+            <p className="text-[10px] font-mono uppercase tracking-wider opacity-40 px-3 pb-2">Navigation</p>
+            <a href="#overview" className="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-[#111110] text-[#F7F5F0] text-xs font-medium shadow-sm">
+              <LayoutDashboard className="w-4 h-4" /> Overview
+            </a>
+            <a href="#events" className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-medium opacity-70 hover:opacity-100 hover:bg-[#111110]/5 transition">
+              <Calendar className="w-4 h-4" /> Events
+            </a>
+            <a href="#analytics" className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-medium opacity-70 hover:opacity-100 hover:bg-[#111110]/5 transition">
+              <BarChart3 className="w-4 h-4" /> Analytics
+            </a>
+            <a href="#marketing" className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-medium opacity-70 hover:opacity-100 hover:bg-[#111110]/5 transition">
+              <Megaphone className="w-4 h-4" /> Marketing
+            </a>
+            <a href="#community" className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-medium opacity-70 hover:opacity-100 hover:bg-[#111110]/5 transition">
+              <Users className="w-4 h-4" /> Community
+            </a>
+            <a href="#banking" className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-medium opacity-70 hover:opacity-100 hover:bg-[#111110]/5 transition">
+              <Wallet className="w-4 h-4" /> Banking & Payouts
+            </a>
+            <a href="#page" className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-medium opacity-70 hover:opacity-100 hover:bg-[#111110]/5 transition">
+              <Globe className="w-4 h-4" /> My Page
+            </a>
           </div>
+        </div>
 
-          <div className="flex items-center gap-3">
-            <button
-              onClick={() => loadDashboard(user.id, true)}
-              disabled={refreshing}
-              className="inline-flex items-center gap-2 rounded-xl border border-[#111110]/15 bg-white/70 px-4 py-2.5 text-xs font-semibold transition hover:bg-white disabled:opacity-50"
-            >
-              <RefreshCw className={`h-3.5 w-3.5 ${refreshing ? 'animate-spin' : ''}`} />
-              <span className="hidden sm:inline">Actualiser</span>
+        <div className="p-6 border-t border-[#111110]/10 space-y-4">
+          <div className="flex items-center justify-between">
+            <div className="truncate pr-2">
+              <p className="text-xs font-bold truncate">{user.email}</p>
+              <p className="text-[10px] font-mono opacity-50">Compte Pro Illimité</p>
+            </div>
+            <button onClick={handleLogout} className="p-2 rounded-xl hover:bg-[#111110]/5 transition text-red-600" title="Se déconnecter">
+              <LogOut className="w-4 h-4" />
             </button>
-            <Link
-              href="/new"
-              className="inline-flex items-center justify-center gap-2 rounded-full bg-[#111110] px-5 py-2.5 text-xs font-semibold text-[#F7F5F0] transition-transform hover:scale-[1.02] shadow-sm"
-            >
-              <Plus className="h-4 w-4" />
-              Créer un événement illimité
-            </Link>
           </div>
         </div>
+      </aside>
 
-        {/* Statistiques globales (sans notions de quotas ni plafonds) */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="p-6 rounded-3xl border border-[#111110]/15 bg-white/70 backdrop-blur-md shadow-sm space-y-3">
-            <div className="flex items-center justify-between">
-              <p className="text-xs font-mono opacity-60 uppercase tracking-wide">Chiffre d&apos;affaires généré</p>
-              <Euro className="w-4 h-4 opacity-70" />
+      {/* Contenu Principal */}
+      <main className="flex-1 min-w-0">
+        <div className="max-w-7xl mx-auto px-6 py-10 space-y-8">
+          
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 border-b border-[#111110]/10">
+            <div className="space-y-1">
+              <div className="flex items-center gap-2">
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-mono bg-emerald-500/10 text-emerald-700 font-semibold border border-emerald-500/20">
+                  <ShieldCheck className="w-3 h-3" /> Accès Illimité (Sans Abonnement)
+                </span>
+              </div>
+              <h1 className="font-display text-2xl md:text-3xl font-bold tracking-tight">Sales Overview</h1>
+              <p className="text-xs font-mono opacity-60 uppercase tracking-wider">Analysez et optimisez vos ventes en temps réel</p>
             </div>
-            <p className="font-display text-2xl md:text-3xl font-bold tracking-tight">
-              {stats.totalRevenue.toLocaleString('fr-FR')} €
-            </p>
-            <p className="text-[11px] opacity-60 font-mono">Volume brut encaissé</p>
-          </div>
 
-          <div className="p-6 rounded-3xl border border-[#111110]/15 bg-white/70 backdrop-blur-md shadow-sm space-y-3">
-            <div className="flex items-center justify-between">
-              <p className="text-xs font-mono opacity-60 uppercase tracking-wide">Billets vendus</p>
-              <Ticket className="w-4 h-4 opacity-70" />
-            </div>
-            <p className="font-display text-2xl md:text-3xl font-bold tracking-tight">
-              {stats.totalTicketsSold}
-            </p>
-            <p className="text-[11px] opacity-60 font-mono">Taux de remplissage : {fillRate}%</p>
-          </div>
-
-          <div className="p-6 rounded-3xl border border-[#111110]/15 bg-white/70 backdrop-blur-md shadow-sm space-y-3">
-            <div className="flex items-center justify-between">
-              <p className="text-xs font-mono opacity-60 uppercase tracking-wide">Événements publiés</p>
-              <Calendar className="w-4 h-4 opacity-70" />
-            </div>
-            <p className="font-display text-2xl md:text-3xl font-bold tracking-tight">
-              {stats.publishedEventsCount} <span className="text-xs font-normal opacity-50">({stats.totalEventsCount} au total)</span>
-            </p>
-            <p className="text-[11px] opacity-60 font-mono">Aucune limite de création</p>
-          </div>
-
-          <div className="p-6 rounded-3xl border border-[#111110]/15 bg-white/70 backdrop-blur-md shadow-sm space-y-3">
-            <div className="flex items-center justify-between">
-              <p className="text-xs font-mono opacity-60 uppercase tracking-wide">Modèle tarifaire</p>
-              <span className="h-2.5 w-2.5 rounded-full bg-emerald-500 animate-pulse" />
-            </div>
-            <p className="font-display text-base font-bold tracking-tight pt-1">
-              Commission sur ventes
-            </p>
-            <p className="text-[11px] opacity-60 font-mono">0 € d&apos;abonnement fixe</p>
-          </div>
-        </div>
-
-        {/* Barre de recherche et filtres */}
-        <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4 pt-4">
-          <div className="flex items-center gap-3 flex-1">
-            <div className="relative flex-1 max-w-md">
-              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 opacity-40" />
-              <input
-                type="text"
-                placeholder="Rechercher par titre ou lieu..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full rounded-2xl border border-[#111110]/15 bg-white/70 pl-10 pr-4 py-2.5 text-xs focus:outline-none focus:border-[#111110] transition"
-              />
-            </div>
-            <div className="flex items-center gap-1.5 overflow-x-auto py-1">
-              {['all', 'published', 'draft', 'cancelled'].map((status) => (
-                <button
-                  key={status}
-                  onClick={() => setStatusFilter(status)}
-                  className={`px-3.5 py-2 rounded-xl text-xs font-mono transition whitespace-nowrap border ${
-                    statusFilter === status 
-                      ? 'bg-[#111110] text-[#F7F5F0] border-[#111110]' 
-                      : 'bg-white/70 text-[#111110] border-[#111110]/15 hover:bg-white'
-                  }`}
-                >
-                  {status === 'all' ? 'Tous' : STATUS_LABEL[status] || status}
-                </button>
-              ))}
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => loadDashboard(user.id, true)}
+                disabled={refreshing}
+                className="inline-flex items-center gap-2 rounded-xl border border-[#111110]/15 bg-white/70 px-4 py-2.5 text-xs font-semibold transition hover:bg-white disabled:opacity-50"
+              >
+                <RefreshCw className={`h-3.5 w-3.5 ${refreshing ? 'animate-spin' : ''}`} />
+                <span className="hidden sm:inline">Actualiser</span>
+              </button>
+              <Link
+                href="/new"
+                className="inline-flex items-center justify-center gap-2 rounded-full bg-[#111110] px-5 py-2.5 text-xs font-semibold text-[#F7F5F0] transition-transform hover:scale-[1.02] shadow-sm"
+              >
+                <Plus className="h-4 w-4" />
+                Créer un événement illimité
+              </Link>
             </div>
           </div>
-          <span className="text-xs font-mono opacity-60 text-right">
-            {filteredEvents.length} événement(s)
-          </span>
-        </div>
 
-        {/* Liste des événements */}
-        <div className="space-y-6">
-          {filteredEvents.length === 0 ? (
-            <div className="rounded-3xl border border-[#111110]/15 bg-white/70 p-16 text-center space-y-3 backdrop-blur-md">
-              <Calendar className="mx-auto h-6 w-6 opacity-40" />
-              <p className="text-xs font-mono opacity-60">
-                {events.length === 0 
-                  ? "Vous n'avez pas encore créé d'événement. Lancez-vous, c'est illimité !" 
-                  : "Aucun événement ne correspond à vos filtres."}
+          {/* Statistiques globales */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="p-6 rounded-3xl border border-[#111110]/15 bg-white/70 backdrop-blur-md shadow-sm space-y-3">
+              <div className="flex items-center justify-between">
+                <p className="text-xs font-mono opacity-60 uppercase tracking-wide">Chiffre d&apos;affaires</p>
+                <Euro className="w-4 h-4 opacity-70" />
+              </div>
+              <p className="font-display text-2xl md:text-3xl font-bold tracking-tight">
+                {stats.totalRevenue.toLocaleString('fr-FR')} €
               </p>
-              {events.length === 0 && (
-                <div className="pt-2">
-                  <Link
-                    href="/new"
-                    className="inline-flex items-center gap-2 rounded-full bg-[#111110] px-5 py-2 text-xs font-semibold text-[#F7F5F0]"
-                  >
-                    Créer mon premier événement
-                  </Link>
-                </div>
-              )}
+              <p className="text-[11px] opacity-60 font-mono">Volume brut encaissé</p>
             </div>
-          ) : (
-            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-              {filteredEvents.map((evt: any) => {
-                const eventPrice = Number(evt.price || evt.ticket_price || 0);
-                return (
-                  <article
-                    key={evt.id}
-                    className="group flex flex-col rounded-3xl border border-[#111110]/15 bg-white/70 backdrop-blur-md transition-all hover:bg-white overflow-hidden shadow-sm hover:shadow-md"
+
+            <div className="p-6 rounded-3xl border border-[#111110]/15 bg-white/70 backdrop-blur-md shadow-sm space-y-3">
+              <div className="flex items-center justify-between">
+                <p className="text-xs font-mono opacity-60 uppercase tracking-wide">Billets vendus</p>
+                <Ticket className="w-4 h-4 opacity-70" />
+              </div>
+              <p className="font-display text-2xl md:text-3xl font-bold tracking-tight">
+                {stats.totalTicketsSold}
+              </p>
+              <p className="text-[11px] opacity-60 font-mono">Taux de remplissage : {fillRate}%</p>
+            </div>
+
+            <div className="p-6 rounded-3xl border border-[#111110]/15 bg-white/70 backdrop-blur-md shadow-sm space-y-3">
+              <div className="flex items-center justify-between">
+                <p className="text-xs font-mono opacity-60 uppercase tracking-wide">Événements publiés</p>
+                <Calendar className="w-4 h-4 opacity-70" />
+              </div>
+              <p className="font-display text-2xl md:text-3xl font-bold tracking-tight">
+                {stats.publishedEventsCount} <span className="text-xs font-normal opacity-50">({stats.totalEventsCount} total)</span>
+              </p>
+              <p className="text-[11px] opacity-60 font-mono">Création illimitée</p>
+            </div>
+
+            <div className="p-6 rounded-3xl border border-[#111110]/15 bg-white/70 backdrop-blur-md shadow-sm space-y-3">
+              <div className="flex items-center justify-between">
+                <p className="text-xs font-mono opacity-60 uppercase tracking-wide">Modèle tarifaire</p>
+                <span className="h-2.5 w-2.5 rounded-full bg-emerald-500 animate-pulse" />
+              </div>
+              <p className="font-display text-base font-bold tracking-tight pt-1">
+                Commission sur ventes
+              </p>
+              <p className="text-[11px] opacity-60 font-mono">0 € d&apos;abonnement fixe</p>
+            </div>
+          </div>
+
+          {/* Barre de recherche et filtres */}
+          <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4 pt-4">
+            <div className="flex items-center gap-3 flex-1">
+              <div className="relative flex-1 max-w-md">
+                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 opacity-40" />
+                <input
+                  type="text"
+                  placeholder="Rechercher par titre ou lieu..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full rounded-2xl border border-[#111110]/15 bg-white/70 pl-10 pr-4 py-2.5 text-xs focus:outline-none focus:border-[#111110] transition"
+                />
+              </div>
+              <div className="flex items-center gap-1.5 overflow-x-auto py-1">
+                {['all', 'published', 'draft', 'cancelled'].map((status) => (
+                  <button
+                    key={status}
+                    onClick={() => setStatusFilter(status)}
+                    className={`px-3.5 py-2 rounded-xl text-xs font-mono transition whitespace-nowrap border ${
+                      statusFilter === status 
+                        ? 'bg-[#111110] text-[#F7F5F0] border-[#111110]' 
+                        : 'bg-white/70 text-[#111110] border-[#111110]/15 hover:bg-white'
+                    }`}
                   >
-                    <div className="space-y-3 p-6 flex-1">
-                      <div className="flex items-center justify-between">
-                        <span className="font-mono text-[10px] opacity-60">
-                          {evt.starts_at ? new Date(evt.starts_at).toLocaleDateString('fr-FR', {
-                            day: '2-digit',
-                            month: 'short',
-                            year: 'numeric',
-                            hour: '2-digit',
-                            minute: '2-digit',
-                          }) : 'Date non définie'}
-                        </span>
-                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-mono font-semibold ${
-                          evt.status === 'published' 
-                            ? 'bg-emerald-500/10 text-emerald-700 border border-emerald-500/20' 
-                            : evt.status === 'cancelled'
-                            ? 'bg-red-500/10 text-red-700 border border-red-500/20'
-                            : 'bg-[#111110]/5 text-[#111110]'
-                        }`}>
-                          {STATUS_LABEL[evt.status] ?? evt.status}
-                        </span>
-                      </div>
+                    {status === 'all' ? 'Tous' : STATUS_LABEL[status] || status}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <span className="text-xs font-mono opacity-60 text-right">
+              {filteredEvents.length} événement(s)
+            </span>
+          </div>
 
-                      <h3 className="font-display text-base font-bold leading-snug">
-                        {evt.title}
-                      </h3>
-
-                      {evt.description && (
-                        <p className="line-clamp-2 text-xs leading-relaxed opacity-60">
-                          {evt.description}
-                        </p>
-                      )}
-
-                      {evt.location && (
-                        <div className="flex items-center gap-1.5 text-xs opacity-60 pt-1">
-                          <MapPin className="h-3.5 w-3.5 shrink-0" />
-                          <span className="truncate">{evt.location}</span>
+          {/* Liste des événements */}
+          <div className="space-y-6" id="events">
+            {filteredEvents.length === 0 ? (
+              <div className="rounded-3xl border border-[#111110]/15 bg-white/70 p-16 text-center space-y-3 backdrop-blur-md">
+                <Calendar className="mx-auto h-6 w-6 opacity-40" />
+                <p className="text-xs font-mono opacity-60">
+                  {events.length === 0 
+                    ? "Vous n'avez pas encore créé d'événement. Lancez-vous, c'est illimité !" 
+                    : "Aucun événement ne correspond à vos filtres."}
+                </p>
+                {events.length === 0 && (
+                  <div className="pt-2">
+                    <Link
+                      href="/new"
+                      className="inline-flex items-center gap-2 rounded-full bg-[#111110] px-5 py-2 text-xs font-semibold text-[#F7F5F0]"
+                    >
+                      Créer mon premier événement
+                    </Link>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                {filteredEvents.map((evt: any) => {
+                  const eventPrice = Number(evt.price || evt.ticket_price || 0);
+                  return (
+                    <article
+                      key={evt.id}
+                      className="group flex flex-col rounded-3xl border border-[#111110]/15 bg-white/70 backdrop-blur-md transition-all hover:bg-white overflow-hidden shadow-sm hover:shadow-md"
+                    >
+                      <div className="space-y-3 p-6 flex-1">
+                        <div className="flex items-center justify-between">
+                          <span className="font-mono text-[10px] opacity-60">
+                            {evt.starts_at ? new Date(evt.starts_at).toLocaleDateString('fr-FR', {
+                              day: '2-digit',
+                              month: 'short',
+                              year: 'numeric',
+                              hour: '2-digit',
+                              minute: '2-digit',
+                            }) : 'Date non définie'}
+                          </span>
+                          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-mono font-semibold ${
+                            evt.status === 'published' 
+                              ? 'bg-emerald-500/10 text-emerald-700 border border-emerald-500/20' 
+                              : evt.status === 'cancelled'
+                              ? 'bg-red-500/10 text-red-700 border border-red-500/20'
+                              : 'bg-[#111110]/5 text-[#111110]'
+                          }`}>
+                            {STATUS_LABEL[evt.status] ?? evt.status}
+                          </span>
                         </div>
-                      )}
-                    </div>
 
-                    <div className="flex items-center justify-between border-t border-[#111110]/10 px-6 py-3.5 bg-white/40">
-                      <span className="font-mono text-xs font-bold">
-                        {eventPrice > 0 ? `${eventPrice.toLocaleString('fr-FR')} €` : 'Gratuit'}
-                      </span>
-                      <div className="flex items-center gap-2">
-                        <Link
-                          href={`/events/${evt.slug || evt.id}/edit`}
-                          className="p-2 rounded-xl border border-[#111110]/15 bg-white text-[#111110] hover:bg-[#111110] hover:text-[#F7F5F0] transition-colors"
-                          title="Modifier"
-                        >
-                          <Edit3 className="h-3.5 w-3.5" />
-                        </Link>
-                        <button
-                          onClick={() => handleDeleteEvent(evt.id)}
-                          className="p-2 rounded-xl border border-red-500/20 bg-white text-red-600 hover:bg-red-500 hover:text-white transition-colors"
-                          title="Supprimer"
-                        >
-                          <Trash2 className="h-3.5 w-3.5" />
-                        </button>
+                        <h3 className="font-display text-base font-bold leading-snug">
+                          {evt.title}
+                        </h3>
+
+                        {evt.description && (
+                          <p className="line-clamp-2 text-xs leading-relaxed opacity-60">
+                            {evt.description}
+                          </p>
+                        )}
+
+                        {evt.location && (
+                          <div className="flex items-center gap-1.5 text-xs opacity-60 pt-1">
+                            <MapPin className="h-3.5 w-3.5 shrink-0" />
+                            <span className="truncate">{evt.location}</span>
+                          </div>
+                        )}
                       </div>
-                    </div>
-                  </article>
-                );
-              })}
-            </div>
-          )}
-        </div>
 
-      </div>
+                      <div className="flex items-center justify-between border-t border-[#111110]/10 px-6 py-3.5 bg-white/40">
+                        <span className="font-mono text-xs font-bold">
+                          {eventPrice > 0 ? `${eventPrice.toLocaleString('fr-FR')} €` : 'Gratuit'}
+                        </span>
+                        <div className="flex items-center gap-2">
+                          <Link
+                            href={`/events/${evt.slug || evt.id}/edit`}
+                            className="p-2 rounded-xl border border-[#111110]/15 bg-white text-[#111110] hover:bg-[#111110] hover:text-[#F7F5F0] transition-colors"
+                            title="Modifier"
+                          >
+                            <Edit3 className="h-3.5 w-3.5" />
+                          </Link>
+                          <button
+                            onClick={() => handleDeleteEvent(evt.id)}
+                            className="p-2 rounded-xl border border-red-500/20 bg-white text-red-600 hover:bg-red-500 hover:text-white transition-colors"
+                            title="Supprimer"
+                          >
+                            <Trash2 className="h-3.5 w-3.5" />
+                          </button>
+                        </div>
+                      </div>
+                    </article>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+
+        </div>
+      </main>
     </div>
   );
 }
