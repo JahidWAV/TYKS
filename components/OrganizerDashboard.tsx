@@ -192,7 +192,6 @@ export default function OrganizerDashboard() {
   const totalEvents = events.length;
   const publishedEvents = events.filter((e) => e.status === 'published').length;
 
-  // Simulation de stats globales pour l'exemple (à relier à vos tables de commandes si dispo)
   const totalRevenue = events.reduce((acc, curr) => acc + (Number(curr.price) || 0) * 12, 0); 
   const totalTicketsSold = events.reduce((acc, curr) => acc + 12, 0);
 
@@ -350,4 +349,3 @@ export default function OrganizerDashboard() {
     </div>
   );
 }
-```[cite: 3, 4]
