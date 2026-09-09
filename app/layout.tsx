@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { headers } from 'next/headers';
 import { Inter, Space_Grotesk, JetBrains_Mono } from 'next/font/google';
 import Navbar from '@/components/Navbar';
+import Footer from '@/components/Footer'; // 1. Importe ton footer ici
 import './globals.css';
 
 const fontBody = Inter({
@@ -49,6 +50,7 @@ export default async function RootLayout({
         <div className="grain" aria-hidden="true" />
         <Navbar isPro={isPro} />
         <main className="relative z-10 flex-1">{children}</main>
+        <Footer /> {/* 2. Place ton footer ici pour qu'il soit global */}
       </body>
     </html>
   );
