@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Loader2, User, Mail, Shield, Bell, Key, Check, Calendar, MapPin, Hash, Building2 } from "lucide-react";
+import { Loader2, User, Mail, Shield, Bell, Key, Check, Calendar, MapPin, Hash, Building2, ChevronRight, Lock } from "lucide-react";
 import { supabaseBrowser } from "@/lib/supabase-browser";
 
 export default function SettingsPage() {
@@ -28,17 +28,17 @@ export default function SettingsPage() {
   const [newsletter, setNewsletter] = useState(true);
   const [currency, setCurrency] = useState("EUR");
 
-  // Section active pour l'indicateur visuel du menu latéral
-  const [activeSection, setActiveSection] = useState("personal");
+  // Onglet actif pour le design par panneaux distincts
+  const [activeTab, setActiveTab] = useState("profile");
 
-  const menuItems = [
-    { id: "personal", title: "Informations personnelles", icon: User },
-    { id: "security", title: "Sécurité & Connexion", icon: Key },
-    { id: "notifications", title: "Notifications & Préférences", icon: Bell },
-    { id: "danger", title: "Zone de danger", icon: Shield },
+  const tabs = [
+    { id: "profile", title: "Profil & Adresse", icon: User, desc: "Identité et localisation" },
+    { id: "security", title: "Sécurité", icon: Key, desc: "Mot de passe et accès" },
+    { id: "preferences", title: "Préférences", icon: Bell, desc: "Notifications et devises" },
+    { id: "danger", title: "Danger", icon: Shield, desc: "Suppression du compte" },
   ];
 
-  // Calcul dynamique du pourcentage de complétion du profil (sur 6 champs clés)
+  // Calcul du pourcentage de complétion du profil
   const calculateCompletion = () => {
     const fields = [firstName, lastName, birthDate, address, postalCode, city];
     const filledFields = fields.filter((field) => field && field.trim() !== "").length;
@@ -79,8 +79,8 @@ export default function SettingsPage() {
     fetchUserData();
   }, [router]);
 
-  // Synchronisation globale vers Supabase Auth
-  const handleSaveAll = async (e: React.FormEvent) => {
+  // Synchronisation avec Supabase Auth
+  const handleSaveProfile = async (e: React.FormEvent) => {
     e.preventDefault();
     setSaving(true);
     setSuccessMessage("");
@@ -102,39 +102,11 @@ export default function SettingsPage() {
       });
 
       if (error) throw error;
-      setSuccessMessage("Modifications enregistrées et synchronisées avec Supabase.");
+      setSuccessMessage("Profil mis à jour et synchronisé avec Supabase.");
     } catch (err: any) {
-      setErrorMessage(err.message || "Une erreur est survenue lors de la synchronisation.");
+      setErrorMessage(err.message || "Erreur lors de la mise à jour.");
     } finally {
       setSaving(false);
-    }
-  };
-
-  // Gestion du scroll pour illuminer le bon onglet dans la barre latérale
-  useEffect(() => {
-    const handleScroll = () => {
-      const sections = menuItems.map(item => document.getElementById(item.id));
-      const scrollPosition = window.scrollY + 200;
-
-      sections.forEach((section, index) => {
-        if (section) {
-          const top = section.offsetTop;
-          const height = section.offsetHeight;
-          if (scrollPosition >= top && scrollPosition < top + height) {
-            setActiveSection(menuItems[index].id);
-          }
-        }
-      });
-    };
-
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
-  const scrollToSection = (id: string) => {
-    const element = document.getElementById(id);
-    if (element) {
-      element.scrollIntoView({ behavior: "smooth", block: "start" });
     }
   };
 
@@ -148,16 +120,15 @@ export default function SettingsPage() {
 
   return (
     <div className="min-h-screen bg-[#F7F5F0] text-[#111110] selection:bg-[#111110] selection:text-[#F7F5F0]">
-      <main className="mx-auto max-w-6xl px-6 py-12 md:px-12 space-y-10">
+      <div className="mx-auto max-w-5xl px-6 py-12 md:px-12 space-y-10">
         
-        {/* En-tête principal */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-[#111110]/10 pb-8">
+        {/* En-tête épuré avec Jauge globale */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-6 border-b border-[#111110]/10">
           <div className="space-y-1">
-            <h1 className="font-display text-3xl font-bold tracking-tight">Paramètres du compte</h1>
-            <p className="text-xs font-mono opacity-60 uppercase tracking-wider">Gérez vos données personnelles et préférences</p>
+            <h1 className="font-display text-2xl md:text-3xl font-bold tracking-tight">Paramètres</h1>
+            <p className="text-xs font-mono opacity-60 uppercase tracking-wider">Espace personnel & Synchronisation Supabase</p>
           </div>
 
-          {/* Jauge de complétion du profil vers 100% */}
           <div className="flex items-center gap-4 bg-white/80 border border-[#111110]/15 rounded-2xl p-4 shadow-sm backdrop-blur-md">
             <div className="relative flex items-center justify-center">
               <div className="w-12 h-12 rounded-full border-4 border-[#111110]/10 flex items-center justify-center font-mono text-xs font-bold">
@@ -165,9 +136,16 @@ export default function SettingsPage() {
               </div>
             </div>
             <div className="space-y-0.5">
-              <p className="text-xs font-bold font-mono uppercase tracking-wide">Profil complété</p>
+              <div className="flex items-center gap-2">
+                <p className="text-xs font-bold font-mono uppercase tracking-wide">Complétion</p>
+                {profileCompletion < 100 && (
+                  <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[9px] font-mono bg-amber-500/10 text-amber-600 font-semibold">
+                    Incomplet
+                  </span>
+                )}
+              </div>
               <p className="text-[11px] opacity-60">
-                {profileCompletion === 100 ? "Objectif 100% atteint !" : "Remplissez vos infos pour atteindre 100%"}
+                {profileCompletion === 100 ? "Profil à 100%, parfait !" : "Remplissez vos champs manquants"}
               </p>
             </div>
           </div>
@@ -186,62 +164,56 @@ export default function SettingsPage() {
           </div>
         )}
 
-        {/* Formulaire unique englobant toute la page */}
-        <form onSubmit={handleSaveAll}>
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-            
-            {/* Barre latérale fixe (navigation rapide par ancres) */}
-            <aside className="lg:col-span-4 sticky top-10 space-y-4">
-              <div className="rounded-3xl border border-[#111110]/15 bg-white/60 p-3 backdrop-blur-md space-y-1.5 shadow-sm">
-                {menuItems.map((item) => {
-                  const Icon = item.icon;
-                  const isActive = activeSection === item.id;
-                  return (
-                    <button
-                      key={item.id}
-                      type="button"
-                      onClick={() => scrollToSection(item.id)}
-                      className={`w-full flex items-center gap-3.5 px-4 py-3 rounded-2xl transition-all text-left border ${
-                        isActive
-                          ? "bg-[#111110] text-[#F7F5F0] border-[#111110] shadow-md"
-                          : "bg-transparent border-transparent text-[#111110] hover:bg-white/80 opacity-75 hover:opacity-100"
-                      }`}
-                    >
-                      <Icon className={`w-4 h-4 shrink-0 ${isActive ? "text-[#F7F5F0]" : "opacity-60"}`} />
-                      <span className="text-xs font-bold font-mono tracking-wide truncate">{item.title}</span>
-                    </button>
-                  );
-                })}
-              </div>
-
-              {/* Bouton de sauvegarde global sticky */}
-              <div className="rounded-3xl border border-[#111110]/15 bg-white/60 p-5 backdrop-blur-md space-y-4 shadow-sm">
-                <div className="space-y-1">
-                  <p className="text-xs font-bold font-mono uppercase tracking-wide">Sauvegarde</p>
-                  <p className="text-[11px] opacity-60">Synchronisez vos modifications en un clic.</p>
-                </div>
+        {/* NOUVEAU DESIGN : Disposition en cartes d'onglets horizontaux en haut + Panneau de contenu unique et fluide en dessous */}
+        <div className="space-y-6">
+          
+          {/* Barre d'onglets supérieure responsive */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            {tabs.map((tab) => {
+              const Icon = tab.icon;
+              const isActive = activeTab === tab.id;
+              return (
                 <button
-                  type="submit"
-                  disabled={saving}
-                  className="w-full inline-flex items-center justify-center gap-2 rounded-2xl bg-[#111110] px-6 py-3 text-xs font-semibold text-[#F7F5F0] transition-transform hover:scale-[1.02] disabled:opacity-50 shadow-md"
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`flex items-center gap-3 p-4 rounded-2xl border transition-all text-left ${
+                    isActive
+                      ? "bg-[#111110] text-[#F7F5F0] border-[#111110] shadow-md scale-[1.01]"
+                      : "bg-white/60 text-[#111110] border-[#111110]/15 hover:bg-white opacity-80 hover:opacity-100"
+                  }`}
                 >
-                  {saving && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
-                  Enregistrer les modifications
+                  <Icon className={`w-4 h-4 shrink-0 ${isActive ? "text-[#F7F5F0]" : "opacity-60"}`} />
+                  <div className="overflow-hidden">
+                    <p className="text-xs font-bold font-mono truncate">{tab.title}</p>
+                    <p className={`text-[10px] truncate ${isActive ? "text-[#F7F5F0]/70" : "opacity-50"}`}>{tab.desc}</p>
+                  </div>
                 </button>
-              </div>
-            </aside>
+              );
+            })}
+          </div>
 
-            {/* Contenu principal divisé en sections fluides */}
-            <div className="lg:col-span-8 space-y-8">
-              
-              {/* 1. INFORMATIONS PERSONNELLES */}
-              <section id="personal" className="rounded-3xl border border-[#111110]/15 bg-white/50 p-6 md:p-8 backdrop-blur-md space-y-6 shadow-sm">
-                <div className="flex items-center gap-3 border-b border-[#111110]/10 pb-4">
-                  <User className="h-4 w-4 opacity-60" />
-                  <h2 className="text-sm font-bold uppercase tracking-wider font-mono">Informations personnelles</h2>
+          {/* Contenu de la vue active (Panneau unifié sans décalage bizarre) */}
+          <div className="rounded-3xl border border-[#111110]/15 bg-white/70 p-6 md:p-8 backdrop-blur-md shadow-sm transition-all">
+            
+            {/* ONGLET 1 : PROFIL & ADRESSE */}
+            {activeTab === "profile" && (
+              <form onSubmit={handleSaveProfile} className="space-y-6">
+                <div className="flex items-center justify-between border-b border-[#111110]/10 pb-4">
+                  <div className="space-y-0.5">
+                    <h2 className="text-sm font-bold uppercase tracking-wider font-mono">Informations personnelles & Adresse</h2>
+                    <p className="text-xs opacity-60">Ces données sont directement synchronisées avec votre compte Supabase.</p>
+                  </div>
+                  <button
+                    type="submit"
+                    disabled={saving}
+                    className="inline-flex items-center gap-2 rounded-full bg-[#111110] px-5 py-2 text-xs font-semibold text-[#F7F5F0] transition-transform hover:scale-[1.02] disabled:opacity-50"
+                  >
+                    {saving && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
+                    Enregistrer
+                  </button>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5 pt-2">
                   <div className="space-y-1.5">
                     <label className="text-xs font-mono opacity-60">Prénom</label>
                     <input
@@ -343,22 +315,24 @@ export default function SettingsPage() {
                     />
                   </div>
                 </div>
-              </section>
+              </form>
+            )}
 
-              {/* 2. SÉCURITÉ ET CONNEXION */}
-              <section id="security" className="rounded-3xl border border-[#111110]/15 bg-white/50 p-6 md:p-8 backdrop-blur-md space-y-6 shadow-sm">
-                <div className="flex items-center gap-3 border-b border-[#111110]/10 pb-4">
-                  <Key className="h-4 w-4 opacity-60" />
+            {/* ONGLET 2 : SÉCURITÉ */}
+            {activeTab === "security" && (
+              <div className="space-y-6">
+                <div className="border-b border-[#111110]/10 pb-4">
                   <h2 className="text-sm font-bold uppercase tracking-wider font-mono">Sécurité et Connexion</h2>
+                  <p className="text-xs opacity-60">Gérez la méthode d&apos;authentification de votre compte.</p>
                 </div>
 
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-5 rounded-2xl border border-[#111110]/10 bg-[#F7F5F0]/50">
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-5 rounded-2xl border border-[#111110]/10 bg-white/50">
                   <div className="space-y-1">
-                    <p className="text-xs font-bold uppercase tracking-wide font-mono">Méthode d&apos;authentification</p>
+                    <p className="text-xs font-bold uppercase tracking-wide font-mono">Fournisseur d&apos;accès</p>
                     <p className="text-xs opacity-70">
                       {isGoogleProvider 
-                        ? "Votre compte est synchronisé et sécurisé via Google." 
-                        : "Votre compte utilise une connexion e-mail classique."}
+                        ? "Votre compte est lié à Google. La sécurité est gérée directement via votre profil Google." 
+                        : "Votre compte utilise une authentification classique par e-mail et mot de passe."}
                     </p>
                   </div>
                   <div className="shrink-0">
@@ -374,8 +348,7 @@ export default function SettingsPage() {
                       </span>
                     ) : (
                       <button 
-                        type="button"
-                        onClick={() => alert("Fonctionnalité de réinitialisation")}
+                        onClick={() => alert("Réinitialisation du mot de passe")}
                         className="px-4 py-2 rounded-xl border border-[#111110]/20 bg-[#111110] text-[#F7F5F0] text-xs font-semibold hover:opacity-95 transition-opacity"
                       >
                         Modifier le mot de passe
@@ -383,17 +356,19 @@ export default function SettingsPage() {
                     )}
                   </div>
                 </div>
-              </section>
+              </div>
+            )}
 
-              {/* 3. NOTIFICATIONS ET PRÉFÉRENCES */}
-              <section id="notifications" className="rounded-3xl border border-[#111110]/15 bg-white/50 p-6 md:p-8 backdrop-blur-md space-y-6 shadow-sm">
-                <div className="flex items-center gap-3 border-b border-[#111110]/10 pb-4">
-                  <Bell className="h-4 w-4 opacity-60" />
+            {/* ONGLET 3 : PRÉFÉRENCES */}
+            {activeTab === "preferences" && (
+              <div className="space-y-6">
+                <div className="border-b border-[#111110]/10 pb-4">
                   <h2 className="text-sm font-bold uppercase tracking-wider font-mono">Notifications et Préférences</h2>
+                  <p className="text-xs opacity-60">Paramétrez vos alertes et options d&apos;affichage.</p>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                  <div className="flex items-center justify-between p-4 rounded-2xl border border-[#111110]/10 bg-[#F7F5F0]/50">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="flex items-center justify-between p-4 rounded-2xl border border-[#111110]/10 bg-white/50">
                     <div className="space-y-0.5">
                       <p className="text-xs font-bold">Rappels par e-mail</p>
                       <p className="text-[11px] opacity-60 font-mono">Billets et horaires</p>
@@ -406,7 +381,7 @@ export default function SettingsPage() {
                     />
                   </div>
 
-                  <div className="flex items-center justify-between p-4 rounded-2xl border border-[#111110]/10 bg-[#F7F5F0]/50">
+                  <div className="flex items-center justify-between p-4 rounded-2xl border border-[#111110]/10 bg-white/50">
                     <div className="space-y-0.5">
                       <p className="text-xs font-bold">Alertes SMS</p>
                       <p className="text-[11px] opacity-60 font-mono">Accès rapides</p>
@@ -419,7 +394,7 @@ export default function SettingsPage() {
                     />
                   </div>
 
-                  <div className="flex items-center justify-between p-4 rounded-2xl border border-[#111110]/10 bg-[#F7F5F0]/50">
+                  <div className="flex items-center justify-between p-4 rounded-2xl border border-[#111110]/10 bg-white/50">
                     <div className="space-y-0.5">
                       <p className="text-xs font-bold">Newsletter culturelle</p>
                       <p className="text-[11px] opacity-60 font-mono">Sélection hebdomadaire</p>
@@ -432,7 +407,7 @@ export default function SettingsPage() {
                     />
                   </div>
 
-                  <div className="flex items-center justify-between p-4 rounded-2xl border border-[#111110]/10 bg-[#F7F5F0]/50">
+                  <div className="flex items-center justify-between p-4 rounded-2xl border border-[#111110]/10 bg-white/50">
                     <div className="space-y-0.5">
                       <p className="text-xs font-bold">Devise par défaut</p>
                       <p className="text-[11px] opacity-60 font-mono">Affichage billetterie</p>
@@ -448,35 +423,37 @@ export default function SettingsPage() {
                     </select>
                   </div>
                 </div>
-              </section>
+              </div>
+            )}
 
-              {/* 4. ZONE DE DANGER */}
-              <section id="danger" className="rounded-3xl border border-red-500/20 bg-red-500/5 p-6 md:p-8 backdrop-blur-md space-y-6 shadow-sm">
-                <div className="flex items-center gap-3 border-b border-red-500/10 pb-4">
-                  <Shield className="h-4 w-4 text-red-500 opacity-80" />
+            {/* ONGLET 4 : ZONE DE DANGER */}
+            {activeTab === "danger" && (
+              <div className="space-y-6">
+                <div className="border-b border-red-500/10 pb-4">
                   <h2 className="text-sm font-bold uppercase tracking-wider font-mono text-red-600">Zone de danger</h2>
+                  <p className="text-xs opacity-60">Actions irréversibles concernant votre compte.</p>
                 </div>
 
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-5 rounded-2xl border border-red-500/20 bg-red-500/5">
                   <div className="space-y-1">
                     <p className="text-xs font-bold">Suppression du compte</p>
-                    <p className="text-[11px] opacity-60 font-mono">Supprimer définitivement vos données de Supabase</p>
+                    <p className="text-[11px] opacity-60 font-mono">Supprime définitivement vos données de Supabase</p>
                   </div>
                   <button 
-                    type="button"
                     onClick={() => alert("Veuillez contacter le support.")}
                     className="px-4 py-2 rounded-full border border-red-500/30 text-red-600 text-xs font-semibold hover:bg-red-500/10 transition-colors shrink-0"
                   >
                     Supprimer mon compte
                   </button>
                 </div>
-              </section>
-
-            </div>
+              </div>
+            )}
 
           </div>
-        </form>
-      </main>
+
+        </div>
+
+      </div>
     </div>
   );
 }
