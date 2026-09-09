@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { LogOut, Loader2, Menu, X, Search, Calendar, MapPin, ArrowUpRight } from "lucide-react";
+import { LogOut, Loader2, Menu, X, Search, Calendar, MapPin, ArrowUpRight, User as UserIcon } from "lucide-react";
 import CustomAuthModal from "@/components/CustomAuthModal";
 import { supabaseBrowser } from "@/lib/supabase-browser";
 
@@ -63,7 +63,7 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
       try {
         const { data, error } = await supabaseBrowser
           .from("events")
-          .select("id, title, location, starts_at, price")
+          .select("id, slug, title, location, starts_at, price")
           .ilike("title", `%${searchQuery}%`)
           .limit(5);
 
@@ -98,8 +98,8 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
           ? 'bg-[#111110] border-[#F7F5F0]/10 text-[#F7F5F0]' 
           : 'bg-[#F7F5F0] border-[#111110]/10 text-[#111110]'
       }`}>
-        {/* Utilisation d'une grille à 3 colonnes égales pour garantir un centrage parfait absolu du bloc recherche */}
-        <div className="mx-auto grid grid-cols-[auto_1fr_auto] items-center max-w-7xl px-6 py-4 md:px-12 gap-4">
+        {/* Grille à 3 colonnes symétriques (1fr - auto - 1fr) pour garantir un centrage mathématique absolu et éviter tout décalage */}
+        <div className="mx-auto grid grid-cols-[1fr_auto_1fr] items-center max-w-7xl px-6 py-4 md:px-12 gap-4">
 
           {/* Logo */}
           <Link href={isPro ? "/" : "/"} className="group justify-self-start">
@@ -108,7 +108,7 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
             </span>
           </Link>
 
-          {/* BARRE DE RECHERCHE CENTRÉE */}
+          {/* BARRE DE RECHERCHE STRICTEMENT CENTRÉE */}
           {!isPro ? (
             <div className="relative hidden md:block w-full max-w-md justify-self-center" ref={searchRef}>
               <div className="relative flex items-center w-full">
@@ -159,7 +159,7 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
                             onClick={() => {
                               setShowDropdown(false);
                               setSearchQuery("");
-                              router.push(`/events/${evt.id}`);
+                              router.push(`/events/${evt.slug || evt.id}`);
                             }}
                             className={`w-full text-left px-5 py-3.5 transition-all flex items-center justify-between group ${
                               isDarkMode ? 'hover:bg-[#F7F5F0]/5' : 'hover:bg-[#111110]/5'
@@ -205,15 +205,19 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
           )}
 
           {/* Desktop right side */}
-          <div className="hidden items-center gap-4 sm:flex justify-self-end">
+          <div className="hidden items-center gap-3 sm:flex justify-self-end">
             {loadingUser ? (
-              <div className={`flex h-10 w-32 items-center justify-center rounded-full border ${isDarkMode ? 'border-[#F7F5F0]/20 bg-[#111110]' : 'border-[#111110]/20 bg-[#F7F5F0]'}`}>
+              <div className={`flex h-10 w-28 items-center justify-center rounded-full border ${isDarkMode ? 'border-[#F7F5F0]/20 bg-[#111110]' : 'border-[#111110]/20 bg-[#F7F5F0]'}`}>
                 <Loader2 className="h-4 w-4 animate-spin opacity-60" />
               </div>
             ) : user ? (
               <>
-                <div className="flex flex-col items-end leading-tight">
-                  <span className="text-xs font-medium opacity-80">{user.email}</span>
+                {/* Icône de profil propre au lieu de l'adresse email brute */}
+                <div className={`inline-flex items-center gap-2 px-3.5 py-2 rounded-full border text-xs font-mono ${
+                  isDarkMode ? 'border-[#F7F5F0]/20 bg-[#F7F5F0]/5 text-[#F7F5F0]' : 'border-[#111110]/20 bg-[#111110]/5 text-[#111110]'
+                }`} title={user.email}>
+                  <UserIcon className="w-3.5 h-3.5 opacity-70" />
+                  <span className="max-w-[120px] truncate">{user.email.split('@')[0]}</span>
                 </div>
                 <button
                   onClick={handleLogout}
@@ -274,7 +278,7 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
                         onClick={() => {
                           setMobileOpen(false);
                           setSearchQuery("");
-                          router.push(`/events/${evt.id}`);
+                          router.push(`/events/${evt.slug || evt.id}`);
                         }}
                         className="p-3 text-xs flex justify-between items-center cursor-pointer"
                       >
@@ -293,7 +297,12 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
               </div>
             ) : user ? (
               <div className="flex flex-col gap-3 pt-2">
-                <span className="text-xs font-medium opacity-80">{user.email}</span>
+                <div className={`flex items-center gap-2 px-3.5 py-2.5 rounded-full border text-xs font-mono ${
+                  isDarkMode ? 'border-[#F7F5F0]/20 bg-[#F7F5F0]/5 text-[#F7F5F0]' : 'border-[#111110]/20 bg-[#111110]/5 text-[#111110]'
+                }`}>
+                  <UserIcon className="w-3.5 h-3.5 opacity-70" />
+                  <span className="truncate">{user.email}</span>
+                </div>
                 <button
                   onClick={handleLogout}
                   className={`inline-flex items-center justify-center gap-2 rounded-full border px-4 py-2.5 text-xs font-medium ${isDarkMode ? 'border-[#F7F5F0]/20' : 'border-[#111110]/20'}`}
