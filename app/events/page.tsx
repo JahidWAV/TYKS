@@ -2,10 +2,11 @@ import { supabaseServer } from '@/lib/supabase-server';
 import Link from 'next/link';
 
 export default async function EventsPage() {
-  // Récupération de la liste des événements publics avec le client admin
+  // Récupération uniquement des événements publiés
   const { data: events, error } = await supabaseServer
     .from('events')
     .select('*')
+    .eq('status', 'published') // Filtrer les brouillons
     .order('created_at', { ascending: false });
 
   return (
@@ -24,7 +25,7 @@ export default async function EventsPage() {
             {events.map((event) => (
               <Link 
                 key={event.id} 
-                href={`/events/${event.id}`}
+                href={`/events/${event.slug}`} // Utilisation du slug propre
                 className="block p-6 bg-zinc-900 border border-zinc-800 rounded-lg hover:border-zinc-700 transition"
               >
                 <h2 className="text-xl font-semibold mb-2">{event.title}</h2>
