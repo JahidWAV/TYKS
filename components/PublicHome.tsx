@@ -79,8 +79,8 @@ interface PublicHomeProps {
 
 export default function PublicHome({ isDarkMode = false }: PublicHomeProps) {
   return (
-    <div className="flex-1 flex flex-col">
-      <main className="mx-auto max-w-7xl px-6 md:px-12 w-full">
+    <div className={`min-h-screen transition-colors duration-300 ${isDarkMode ? 'bg-[#111110] text-[#F7F5F0]' : 'bg-[#F7F5F0] text-[#111110]'}`}>
+      <main className="mx-auto max-w-7xl px-6 md:px-12">
 
         {/* ─── HERO ─── */}
         <section className="py-24 md:py-36 grid lg:grid-cols-[1.2fr_0.8fr] gap-16 items-end">
@@ -130,7 +130,7 @@ export default function PublicHome({ isDarkMode = false }: PublicHomeProps) {
           </div>
         </section>
 
-        {/* ─── PROCHAINS ÉVÉNEMENTS (NOUVELLE CATÉGORIE) ─── */}
+        {/* ─── PROCHAINS ÉVÉNEMENTS ─── */}
         <section className={`py-24 border-t ${isDarkMode ? 'border-[#F7F5F0]/10' : 'border-[#111110]/10'}`}>
           <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-4">
             <div>
