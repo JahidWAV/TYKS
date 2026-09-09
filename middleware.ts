@@ -59,25 +59,34 @@ export async function middleware(request: NextRequest) {
   const url = request.nextUrl
   const hostname = request.headers.get('host') || ''
 
-  // Distinction des sous-domaines
   const isDashboard = hostname.startsWith('dashboard.')
   const isMarketingPro = hostname.startsWith('pro.')
 
-  // 1. Si on est sur dashboard.tyks.app : tout le site est protégé (sauf auth/callback)
+  // 1. Gestion du Dashboard (`dashboard.tyks.app`)
   if (isDashboard) {
     const isAuthRoute = url.pathname.startsWith('/auth')
     
     if ((error || !user) && !isAuthRoute) {
-      // S'il n'est pas connecté sur le dashboard, on le renvoie vers la landing pro (ou vers la page de login)
       const loginUrl = new URL('https://pro.tyks.app', request.url)
       return NextResponse.redirect(loginUrl)
     }
+
+    // Réécriture interne vers le dossier (dashboard)
+    url.pathname = `/dashboard${url.pathname}`
+    return NextResponse.rewrite(url)
   }
 
-  // 2. Si on est sur pro.tyks.app (Landing page marketing), pas besoin de bloquer l'accès public,
-  // la Navbar s'affichera grâce au layout marketing.
+  // 2. Gestion de la Landing Pro (`pro.tyks.app`)
+  if (isMarketingPro) {
+    // Réécriture interne vers le dossier (pro)
+    url.pathname = `/pro${url.pathname}`
+    return NextResponse.rewrite(url)
+  }
 
-  return response
+  // 3. Site Public par défaut (`tyks.app`)
+  // Réécriture interne vers le dossier (public)
+  url.pathname = `/public${url.pathname}`
+  return NextResponse.rewrite(url)
 }
 
 export const config = {
