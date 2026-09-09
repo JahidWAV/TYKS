@@ -18,6 +18,7 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
   const [mobileOpen, setMobileOpen] = useState(false);
   const [isAuthOpen, setIsAuthOpen] = useState(false);
   const [user, setUser] = useState<any>(null);
+  const [firstName, setFirstName] = useState<string>("");
   const [loadingUser, setLoadingUser] = useState(true);
 
   // États pour le menu utilisateur
@@ -32,16 +33,44 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
   const searchRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const getSession = async () => {
+    const fetchUserData = async () => {
       const { data: { session } } = await supabaseBrowser.auth.getSession();
-      setUser(session?.user ?? null);
+      const currentUser = session?.user ?? null;
+      setUser(currentUser);
+
+      if (currentUser) {
+        // Récupération du prénom dans la table profiles
+        const { data: profile } = await supabaseBrowser
+          .from("profiles")
+          .select("first_name")
+          .eq("id", currentUser.id)
+          .single();
+
+        if (profile?.first_name) {
+          setFirstName(profile.first_name);
+        }
+      }
       setLoadingUser(false);
     };
 
-    getSession();
+    fetchUserData();
 
-    const { data: { subscription } } = supabaseBrowser.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
+    const { data: { subscription } } = supabaseBrowser.auth.onAuthStateChange(async (_event, session) => {
+      const currentUser = session?.user ?? null;
+      setUser(currentUser);
+      if (currentUser) {
+        const { data: profile } = await supabaseBrowser
+          .from("profiles")
+          .select("first_name")
+          .eq("id", currentUser.id)
+          .single();
+
+        if (profile?.first_name) {
+          setFirstName(profile.first_name);
+        }
+      } else {
+        setFirstName("");
+      }
     });
 
     return () => subscription.unsubscribe();
@@ -51,6 +80,7 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
     setUserMenuOpen(false);
     await supabaseBrowser.auth.signOut();
     setUser(null);
+    setFirstName("");
     router.refresh();
   };
 
@@ -232,7 +262,9 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
                   <div className={`w-5 h-5 rounded-full flex items-center justify-center ${isDarkMode ? 'bg-[#F7F5F0] text-[#111110]' : 'bg-[#111110] text-[#F7F5F0]'}`}>
                     <UserIcon className="w-3 h-3" />
                   </div>
-                  <span className="font-mono max-w-[110px] truncate">{user.email.split('@')[0]}</span>
+                  <span className="font-mono max-w-[110px] truncate">
+                    {firstName || user.email.split('@')[0]}
+                  </span>
                   <ChevronDown className={`w-3.5 h-3.5 opacity-60 transition-transform ${userMenuOpen ? 'rotate-180' : ''}`} />
                 </button>
 
@@ -337,7 +369,7 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
                   isDarkMode ? 'border-[#F7F5F0]/20 bg-[#F7F5F0]/5 text-[#F7F5F0]' : 'border-[#111110]/20 bg-[#111110]/5 text-[#111110]'
                 }`}>
                   <UserIcon className="w-3.5 h-3.5 opacity-70" />
-                  <span className="truncate">{user.email}</span>
+                  <span className="truncate">{firstName || user.email}</span>
                 </div>
                 <Link
                   href="/settings"
