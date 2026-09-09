@@ -3,20 +3,22 @@
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { LogOut, Loader2, Menu, X, Search, Calendar, MapPin, ArrowUpRight, Sun, Moon } from "lucide-react";
+import { LogOut, Loader2, Menu, X, Search, Calendar, MapPin, ArrowUpRight } from "lucide-react";
 import CustomAuthModal from "@/components/CustomAuthModal";
 import { supabaseBrowser } from "@/lib/supabase-browser";
 
-export default function Navbar({ isPro = false }: { isPro?: boolean }) {
+interface NavbarProps {
+  isPro?: boolean;
+  isDarkMode?: boolean;
+}
+
+export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProps) {
   const router = useRouter();
 
   const [mobileOpen, setMobileOpen] = useState(false);
   const [isAuthOpen, setIsAuthOpen] = useState(false);
   const [user, setUser] = useState<any>(null);
   const [loadingUser, setLoadingUser] = useState(true);
-  
-  // État du mode sombre / clair
-  const [isDarkMode, setIsDarkMode] = useState(false);
 
   // États pour la recherche
   const [searchQuery, setSearchQuery] = useState("");
@@ -90,11 +92,11 @@ export default function Navbar({ isPro = false }: { isPro?: boolean }) {
   }, []);
 
   return (
-    <div className={`transition-colors duration-300 ${isDarkMode ? 'bg-[#111110] text-[#F7F5F0]' : 'bg-[#F7F5F0] text-[#111110]'}`}>
-      <header className={`sticky top-0 z-50 backdrop-blur-xl border-b transition-colors duration-300 ${
+    <>
+      <header className={`sticky top-0 z-50 backdrop-blur-md border-b transition-colors duration-300 ${
         isDarkMode 
-          ? 'bg-[#111110]/70 border-[#F7F5F0]/10' 
-          : 'bg-[#F7F5F0]/70 border-[#111110]/10'
+          ? 'bg-[#111110]/60 border-[#F7F5F0]/10 text-[#F7F5F0]' 
+          : 'bg-[#F7F5F0]/60 border-[#111110]/10 text-[#111110]'
       }`}>
         <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 md:px-12 gap-4">
 
@@ -121,8 +123,8 @@ export default function Navbar({ isPro = false }: { isPro?: boolean }) {
                   placeholder="Rechercher un événement, un lieu..."
                   className={`w-full rounded-full border px-4 py-2.5 pl-11 pr-10 text-xs focus:outline-none transition-all shadow-sm ${
                     isDarkMode 
-                      ? 'bg-[#111110]/50 border-[#F7F5F0]/15 text-[#F7F5F0] placeholder:text-[#F7F5F0]/30 focus:border-[#F7F5F0]/50' 
-                      : 'bg-[#F7F5F0]/50 border-[#111110]/15 text-[#111110] placeholder:text-[#111110]/30 focus:border-[#111110]/50'
+                      ? 'bg-[#111110]/40 border-[#F7F5F0]/15 text-[#F7F5F0] placeholder:text-[#F7F5F0]/30 focus:border-[#F7F5F0]/50' 
+                      : 'bg-[#F7F5F0]/40 border-[#111110]/15 text-[#111110] placeholder:text-[#111110]/30 focus:border-[#111110]/50'
                   }`}
                 />
 
@@ -141,7 +143,7 @@ export default function Navbar({ isPro = false }: { isPro?: boolean }) {
 
               {showDropdown && searchQuery.trim().length > 0 && (
                 <div className={`absolute top-full left-0 right-0 mt-3 rounded-2xl shadow-2xl overflow-hidden z-50 backdrop-blur-2xl border ${
-                  isDarkMode ? 'bg-[#111110] border-[#F7F5F0]/15 divide-y divide-[#F7F5F0]/10' : 'bg-[#F7F5F0] border-[#111110]/15 divide-y divide-[#111110]/10'
+                  isDarkMode ? 'bg-[#111110] border-[#F7F5F0]/15 divide-y divide-[#F7F5F0]/10 text-[#F7F5F0]' : 'bg-[#F7F5F0] border-[#111110]/15 divide-y divide-[#111110]/10 text-[#111110]'
                 }`}>
                   {results.length > 0 ? (
                     <div className="py-2">
@@ -201,18 +203,6 @@ export default function Navbar({ isPro = false }: { isPro?: boolean }) {
 
           {/* Desktop right side */}
           <div className="hidden items-center gap-4 sm:flex shrink-0 ml-auto">
-            
-            {/* Bouton Dark / Light Mode */}
-            <button
-              onClick={() => setIsDarkMode(!isDarkMode)}
-              className={`p-2.5 rounded-full border transition-transform hover:scale-105 ${
-                isDarkMode ? 'border-[#F7F5F0]/20 text-[#F7F5F0]' : 'border-[#111110]/20 text-[#111110]'
-              }`}
-              aria-label="Changer le thème"
-            >
-              {isDarkMode ? <Sun className="w-3.5 h-3.5" /> : <Moon className="w-3.5 h-3.5" />}
-            </button>
-
             {loadingUser ? (
               <div className={`flex h-10 w-32 items-center justify-center rounded-full border ${isDarkMode ? 'border-[#F7F5F0]/20 bg-[#111110]' : 'border-[#111110]/20 bg-[#F7F5F0]'}`}>
                 <Loader2 className="h-4 w-4 animate-spin opacity-60" />
@@ -244,16 +234,8 @@ export default function Navbar({ isPro = false }: { isPro?: boolean }) {
             )}
           </div>
 
-          {/* Mobile toggle & Theme switcher mobile */}
+          {/* Mobile toggle */}
           <div className="flex items-center gap-2 sm:hidden">
-            <button
-              onClick={() => setIsDarkMode(!isDarkMode)}
-              className={`p-2 rounded-full border ${isDarkMode ? 'border-[#F7F5F0]/20 text-[#F7F5F0]' : 'border-[#111110]/20 text-[#111110]'}`}
-              aria-label="Changer le thème"
-            >
-              {isDarkMode ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
-            </button>
-            
             <button
               className={`inline-flex items-center justify-center rounded-full border p-2 shrink-0 ${isDarkMode ? 'border-[#F7F5F0]/20 text-[#F7F5F0]' : 'border-[#111110]/20 text-[#111110]'}`}
               onClick={() => setMobileOpen((open) => !open)}
@@ -310,32 +292,3 @@ export default function Navbar({ isPro = false }: { isPro?: boolean }) {
               <div className="flex flex-col gap-3 pt-2">
                 <span className="text-xs font-medium opacity-80">{user.email}</span>
                 <button
-                  onClick={handleLogout}
-                  className={`inline-flex items-center justify-center gap-2 rounded-full border px-4 py-2.5 text-xs font-medium ${isDarkMode ? 'border-[#F7F5F0]/20' : 'border-[#111110]/20'}`}
-                >
-                  <LogOut className="h-3.5 w-3.5" />
-                  Déconnexion
-                </button>
-              </div>
-            ) : (
-              <button
-                onClick={() => {
-                  setMobileOpen(false);
-                  setIsAuthOpen(true);
-                }}
-                className={`inline-flex w-full items-center justify-center rounded-full px-5 py-2.5 text-xs font-semibold ${isDarkMode ? 'bg-[#F7F5F0] text-[#111110]' : 'bg-[#111110] text-[#F7F5F0]'}`}
-              >
-                {isPro ? "Connexion Pro" : "Connexion"}
-              </button>
-            )}
-          </div>
-        )}
-      </header>
-
-      <CustomAuthModal
-        isOpen={isAuthOpen}
-        onClose={() => setIsAuthOpen(false)}
-      />
-    </div>
-  );
-}
