@@ -53,7 +53,7 @@ export default function NewEventPage() {
         throw new Error(data.error || "Erreur lors de la création de l'événement.");
       }
 
-      router.push('/organisateur');
+      router.push('/');
       router.refresh();
     } catch (err: any) {
       setError(err.message || "Une erreur est survenue.");
@@ -67,7 +67,7 @@ export default function NewEventPage() {
       <div className="max-w-3xl mx-auto px-6">
         <div className="mb-6">
           <Link
-            href="/organisateur"
+            href="/"
             className="inline-flex items-center gap-2 text-xs text-bone-faint hover:text-bone transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
