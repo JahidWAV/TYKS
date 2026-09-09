@@ -26,30 +26,28 @@ export async function middleware(request: NextRequest) {
     }
   )
 
-  const { data: { user }, error } = await supabase.auth.getUser()
+  // On récupère l'utilisateur (optionnel pour l'affichage, géré ensuite côté page/composant)
+  await supabase.auth.getUser()
+
   const url = request.nextUrl
   const hostname = request.headers.get('host') || ''
 
   const isDashboard = hostname.startsWith('dashboard.')
   const isMarketingPro = hostname.startsWith('pro.')
 
-  // 1. Dashboard (dashboard.tyks.app) -> réécrit vers le dossier physique /dashboard
+  // 1. Dashboard (`dashboard.tyks.app`) -> Réécriture vers le dossier physique /dashboard sans bloquer
   if (isDashboard) {
-    const isAuthRoute = url.pathname.startsWith('/auth')
-    if ((error || !user) && !isAuthRoute) {
-      return NextResponse.redirect(new URL('https://pro.tyks.app', request.url))
-    }
     url.pathname = `/dashboard${url.pathname}`
     return NextResponse.rewrite(url)
   }
 
-  // 2. Landing Pro (pro.tyks.app) -> réécrit vers le dossier physique /pro
+  // 2. Landing Pro (`pro.tyks.app`) -> Réécriture vers le dossier physique /pro
   if (isMarketingPro) {
     url.pathname = `/pro${url.pathname}`
     return NextResponse.rewrite(url)
   }
 
-  // 3. Site Public (tyks.app) -> réécrit vers le dossier physique /public
+  // 3. Site Public (`tyks.app`) -> Réécriture vers le dossier physique /public
   url.pathname = `/public${url.pathname}`
   return NextResponse.rewrite(url)
 }
