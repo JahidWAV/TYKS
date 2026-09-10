@@ -71,27 +71,28 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           <Link href="/" className="flex items-center justify-between group pt-1">
             <div className="flex items-center gap-2.5">
               <svg 
-                className="w-7 h-7 transition-transform group-hover:scale-105" 
-                viewBox="0 0 32 32" 
-                fill="none" 
-                xmlns="http://www.w3.org/2000/svg"
+                width="32" 
+                height="32" 
+                viewBox="0 0 512 512" 
+                xmlns="http://www.w3.org/2000/svg" 
+                className="w-7 h-7 transition-transform group-hover:scale-105"
               >
+                <rect width="512" height="512" fill="transparent" />
                 <path 
-                  d="M6 4C4.89543 4 4 4.89543 4 6V12C5.10457 12 6 12.8954 6 14C6 15.1046 5.10457 16 4 16V26C4 27.1046 4.89543 28 6 28H26C27.1046 28 28 27.1046 28 26V16C26.8954 16 26 15.1046 26 14C26 12.8954 26.8954 12 28 12V6C28 4.89543 27.1046 4 26 4H6Z" 
-                  fill="currentColor" 
-                  fillOpacity="0.1" 
-                  stroke="currentColor" 
-                  strokeWidth="2"
+                  d="M160 160 H352 A20 20 0 0 1 372 180 V220 A20 20 0 0 0 372 260 V300 A20 20 0 0 1 352 320 H160 A20 20 0 0 1 140 300 V260 A20 20 0 0 0 140 220 V180 A20 20 0 0 1 160 160 Z" 
+                  fill="none" 
+                  stroke="#111110" 
+                  strokeWidth="16" 
+                  strokeLinejoin="round"
                 />
-                <circle cx="4" cy="14" r="2" fill="#F7F5F0" />
-                <circle cx="28" cy="14" r="2" fill="#F7F5F0" />
-                <circle cx="12" cy="13" r="1.5" fill="currentColor" />
-                <circle cx="20" cy="13" r="1.5" fill="currentColor" />
+                <circle cx="215" cy="220" r="12" fill="#111110" />
+                <circle cx="295" cy="220" r="12" fill="#111110" />
                 <path 
-                  d="M13 18C13 18 14.5 19.5 16 19.5C17.5 19.5 19 18 19 18" 
-                  stroke="currentColor" 
-                  strokeWidth="1.5" 
-                  strokeLinecap="round" 
+                  d="M210 255 Q256 285 302 255" 
+                  fill="none" 
+                  stroke="#111110" 
+                  strokeWidth="14" 
+                  strokeLinecap="round"
                 />
               </svg>
               <span className="font-display font-bold text-sm tracking-tight">
