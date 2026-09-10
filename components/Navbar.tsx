@@ -139,12 +139,12 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
       }`}>
         <div className="mx-auto grid grid-cols-[1fr_auto_1fr] items-center max-w-7xl px-6 py-4 md:px-12 gap-6">
 
-          {/* Logo tyks.svg bien visible */}
+          {/* Logo tyks.svg triplé en taille */}
           <Link href={isPro ? "/" : "/"} className="group justify-self-start flex items-center">
             <img
               src="/tyks.svg"
               alt="TYKS"
-              className="w-14 h-14 object-contain transition-transform group-hover:scale-105"
+              className="w-28 h-28 object-contain transition-transform group-hover:scale-105"
             />
           </Link>
 
