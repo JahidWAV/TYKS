@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { 
   LayoutDashboard, Calendar, BarChart3, Megaphone, 
-  Users, Wallet, Globe, Settings, LogOut, Loader2, ChevronDown, Cpu 
+  Users, Wallet, Globe, Settings, LogOut, Loader2 
 } from 'lucide-react';
 import { supabaseBrowser } from '@/lib/supabase-browser';
 
@@ -60,14 +60,14 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   return (
     <div className="min-h-screen bg-[#F7F5F0] text-[#111110] flex selection:bg-[#111110] selection:text-[#F7F5F0]">
       
-      {/* Sidebar globale avec effet hover */}
+      {/* Sidebar globale */}
       <aside 
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
-        className="flex sticky top-0 h-screen shrink-0 select-none z-25"
+        className="relative flex sticky top-0 h-screen shrink-0 select-none z-30"
       >
-        {/* 1. Colonne fixe des icônes à gauche */}
-        <div className="w-16 border-r border-[#111110]/10 bg-[#F7F5F0] flex flex-col items-center justify-between py-4 z-10">
+        {/* 1. Colonne fixe des icônes (Toujours visible, largeur w-16) */}
+        <div className="w-16 border-r border-[#111110]/10 bg-[#F7F5F0] flex flex-col items-center justify-between py-6 z-20">
           
           {/* Logo / Icône fixe en haut */}
           <div className="flex items-center justify-center">
@@ -80,7 +80,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             </Link>
           </div>
 
-          {/* Icônes de navigation centrales */}
+          {/* Icônes de navigation */}
           <div className="space-y-2 w-full px-2">
             {navItems.map((item) => {
               const Icon = item.icon;
@@ -104,7 +104,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           </div>
 
           {/* Bas de sidebar (Réglages & Déconnexion) */}
-          <div className="space-y-2 w-full px-2 border-t border-[#111110]/10 pt-3 bg-[#F7F5F0]">
+          <div className="space-y-2 w-full px-2 border-t border-[#111110]/10 pt-4 bg-[#F7F5F0]">
             <Link 
               href="/settings" 
               title="Réglages"
@@ -127,23 +127,20 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           </div>
         </div>
 
-        {/* 2. Panneau contextuel coulissant (S'ouvre au survol) */}
-        <div className={`bg-[#F7F5F0] border-r border-[#111110]/10 flex flex-col justify-between py-4 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] overflow-hidden ${
-          isHovered ? 'w-56 opacity-100' : 'w-0 opacity-0 pointer-events-none'
+        {/* 2. Panneau flottant en ABSOLU (Se superpose sans tout décaler) */}
+        <div className={`absolute top-0 left-16 h-full bg-[#F7F5F0] border-r border-[#111110]/15 shadow-2xl flex flex-col justify-between py-6 transition-all duration-200 ease-out overflow-hidden z-40 ${
+          isHovered ? 'w-56 opacity-100 pointer-events-auto' : 'w-0 opacity-0 pointer-events-none'
         }`}>
           
-          {/* En-tête du panneau (Similaire au breadcrumb Supabase) */}
-          <div className="px-4 flex items-center justify-between whitespace-nowrap h-10">
-            <div className="flex items-center gap-2">
-              <span className="text-xs font-semibold tracking-tight">TYKS Workspace</span>
-              <ChevronDown className="w-3.5 h-3.5 opacity-50" />
-            </div>
+          {/* En-tête du panneau avec le logo texte */}
+          <div className="px-5 flex items-center h-10 whitespace-nowrap">
+            <img src="/tyks.svg" alt="TYKS" className="h-4 w-auto object-contain" />
           </div>
 
-          {/* Liste des liens de navigation du panneau */}
+          {/* Liens de navigation avec texte */}
           <div className="space-y-1 w-full px-3 flex-1 pt-2">
             <p className="text-[10px] font-mono uppercase tracking-wider opacity-40 px-3 pb-2">
-              Navigation
+              Workspace
             </p>
             {navItems.map((item) => {
               const isActive = pathname === item.href;
@@ -165,7 +162,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           </div>
 
           {/* Bas du panneau secondaire */}
-          <div className="px-3 space-y-1 border-t border-[#111110]/10 pt-3">
+          <div className="px-3 space-y-1 border-t border-[#111110]/10 pt-4">
             <Link 
               href="/settings" 
               className={`flex items-center h-10 px-3 rounded-xl text-xs font-medium whitespace-nowrap transition ${
@@ -187,11 +184,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         </div>
       </aside>
 
-      {/* Contenu principal avec sa barre du haut intégrée */}
+      {/* Contenu principal et sa barre du haut */}
       <div className="flex-1 min-w-0 flex flex-col h-screen overflow-hidden">
-        
-        {/* Barre supérieure du dashboard (reliée au design system) */}
-        <header className="h-14 border-b border-[#111110]/10 bg-[#F7F5F0] px-6 flex items-center justify-between shrink-0 z-20">
+        <header className="h-14 border-b border-[#111110]/10 bg-[#F7F5F0] px-6 flex items-center justify-between shrink-0 z-10">
           <div className="flex items-center gap-3 text-xs font-medium opacity-70">
             <span>Projet</span>
             <span>/</span>
@@ -208,7 +203,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           </div>
         </header>
 
-        {/* Zone de contenu scrollable */}
         <main className="flex-1 overflow-y-auto p-8">
           {children}
         </main>
