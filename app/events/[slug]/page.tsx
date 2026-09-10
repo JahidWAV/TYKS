@@ -6,9 +6,64 @@ import { supabaseBrowser } from '@/lib/supabase-browser';
 import { Calendar, MapPin, ArrowLeft, ArrowUpRight, Clock, Ticket, Minus, Plus, Users, Loader2, Sparkles, X } from 'lucide-react';
 import Link from 'next/link';
 import { loadStripe } from '@stripe/stripe-js';
-import { EmbeddedCheckoutProvider, EmbeddedCheckout } from '@stripe/react-stripe-js';
+import { Elements, PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js';
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
+
+// Formulaire de paiement customisé aux couleurs de TYKS
+function CustomCheckoutForm({ slug }: { slug: string }) {
+  const stripe = useStripe();
+  const elements = useElements();
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!stripe || !elements) return;
+
+    setIsProcessing(true);
+    setErrorMessage(null);
+
+    const { error } = await stripe.confirmPayment({
+      elements,
+      confirmParams: {
+        return_url: `${window.location.origin}/events/success?slug=${slug}`,
+      },
+    });
+
+    if (error) {
+      setErrorMessage(error.message || "Une erreur est survenue lors du paiement.");
+      setIsProcessing(false);
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-6 pt-2">
+      <PaymentElement options={{ layout: 'tabs' }} />
+      
+      {errorMessage && (
+        <p className="text-xs font-mono text-red-400 bg-red-500/10 p-3 rounded-xl border border-red-500/20">
+          {errorMessage}
+        </p>
+      )}
+
+      <button
+        type="submit"
+        disabled={isProcessing || !stripe || !elements}
+        className="w-full rounded-full bg-[#F7F5F0] text-[#111110] py-4 px-6 text-xs font-mono uppercase tracking-widest transition-all duration-300 hover:bg-white hover:scale-[1.01] active:scale-[0.98] flex items-center justify-center gap-2 cursor-pointer font-bold disabled:opacity-50 shadow-lg"
+      >
+        {isProcessing ? (
+          <Loader2 className="w-4 h-4 animate-spin text-[#111110]" />
+        ) : (
+          <>
+            <span>Payer et valider ma place</span>
+            <ArrowUpRight className="w-4 h-4" />
+          </>
+        )}
+      </button>
+    </form>
+  );
+}
 
 export default function PublicEventPage() {
   const params = useParams();
@@ -91,8 +146,8 @@ export default function PublicEventPage() {
       });
       const data = await res.json();
       
-      if (data.url) {
-        // Cas gratuit
+      if (data.free && data.url) {
+        // Cas gratuit directement redirigé vers la page de succès
         window.location.href = data.url;
       } else if (data.clientSecret) {
         setClientSecret(data.clientSecret);
@@ -211,7 +266,7 @@ export default function PublicEventPage() {
 
       </div>
 
-      {/* Modale de Billetterie White Label Embarquée */}
+      {/* Modale de Billetterie Custom (White Label) */}
       {isCheckoutOpen && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200">
           <div className="relative w-full max-w-lg rounded-3xl bg-[#111110] text-[#F7F5F0] p-6 md:p-8 space-y-6 shadow-2xl border border-[#F7F5F0]/15 max-h-[90vh] overflow-y-auto">
@@ -280,7 +335,7 @@ export default function PublicEventPage() {
                   </div>
                 )}
 
-                {/* Total et Bouton */}
+                {/* Total et Bouton d'initialisation */}
                 <div className="space-y-4 pt-4 border-t border-[#F7F5F0]/15">
                   <div className="flex items-baseline justify-between">
                     <span className="text-xs font-mono text-[#F7F5F0]/50 uppercase tracking-wider">Total</span>
@@ -295,7 +350,7 @@ export default function PublicEventPage() {
                     className="w-full rounded-full bg-[#F7F5F0] text-[#111110] py-4 px-6 text-xs font-mono uppercase tracking-widest transition-all duration-300 hover:bg-white hover:scale-[1.01] active:scale-[0.98] flex items-center justify-center gap-2 cursor-pointer shadow-xl font-bold disabled:opacity-50"
                   >
                     {isInitializingPayment ? (
-                      <Loader2 className="w-4 h-4 animate-spin" />
+                      <Loader2 className="w-4 h-4 animate-spin text-[#111110]" />
                     ) : (
                       <>
                         <span>{basePrice === 0 ? 'Valider ma place' : 'Procéder au paiement'}</span>
@@ -306,14 +361,40 @@ export default function PublicEventPage() {
                 </div>
               </>
             ) : (
-              /* Tunnel de paiement Stripe 100% Embarqué (White Label) */
-              <div className="pt-2">
-                <EmbeddedCheckoutProvider
+              /* Tunnel Stripe Custom 100% Intégré */
+              <div className="space-y-4">
+                <div className="flex items-center justify-between border-b border-[#F7F5F0]/10 pb-3">
+                  <div>
+                    <span className="text-[10px] font-mono uppercase tracking-widest text-[#F7F5F0]/50 block">Sécurisé par Stripe</span>
+                    <h4 className="font-display text-lg font-bold">{totalPrice.toFixed(2)} € • {quantity} place(s)</h4>
+                  </div>
+                  <button 
+                    onClick={() => setClientSecret(null)}
+                    className="text-xs font-mono underline text-[#F7F5F0]/60 hover:text-[#F7F5F0] cursor-pointer"
+                  >
+                    Modifier
+                  </button>
+                </div>
+
+                <Elements
                   stripe={stripePromise}
-                  options={{ clientSecret }}
+                  options={{
+                    clientSecret,
+                    appearance: {
+                      theme: 'night',
+                      variables: {
+                        colorPrimary: '#F7F5F0',
+                        colorBackground: '#111110',
+                        colorText: '#F7F5F0',
+                        colorDanger: '#ef4444',
+                        fontFamily: 'monospace, sans-serif',
+                        borderRadius: '12px',
+                      },
+                    },
+                  }}
                 >
-                  <EmbeddedCheckout className="bg-[#111110]" />
-                </EmbeddedCheckoutProvider>
+                  <CustomCheckoutForm slug={event.slug} />
+                </Elements>
               </div>
             )}
 
