@@ -2,11 +2,11 @@ import Link from 'next/link';
 import { supabaseServer } from '@/lib/supabase-server';
 
 export default async function EventsPage() {
-  // Récupère tous les événements sans filtre strict, ou filtre selon ton schéma exact
   const { data: events, error } = await supabaseServer
     .from('events')
     .select('*')
-    .order('date', { ascending: true });
+    .eq('status', 'published') // Ajuste si ton statut s'appelle autrement, ou retire cette ligne si tu veux tout afficher
+    .order('starts_at', { ascending: true });
 
   if (error) {
     console.error('Erreur lors du chargement des événements :', error);
@@ -23,7 +23,7 @@ export default async function EventsPage() {
           {events.map((event: any) => (
             <Link key={event.id} href={`/events/${event.slug}`} className="p-6 border rounded-2xl block hover:border-black transition-colors">
               <h2 className="font-bold text-xl">{event.title}</h2>
-              <p className="text-sm opacity-60 mt-1">{event.venue}</p>
+              <p className="text-sm opacity-60 mt-1">{event.location}</p>
               <span className="inline-block mt-4 text-xs font-mono opacity-40">Slug: {event.slug}</span>
             </Link>
           ))}
