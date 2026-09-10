@@ -74,21 +74,23 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         {/* En-tête & Navigation */}
         <div className="py-6 px-3 space-y-6 overflow-y-auto overflow-x-hidden">
           
-          {/* Logo dynamique épuré */}
-          <div className="flex items-center pt-1 px-1">
-            <Link href="/" className="flex items-center gap-3 w-full overflow-hidden">
-              <div className="w-9 h-9 flex items-center justify-center shrink-0">
+          {/* Logo fixe / Icône parfaitement centrée */}
+          <div className="flex items-center pt-1">
+            <Link href="/" className="flex items-center gap-3 w-full group">
+              {/* Conteneur de largeur fixe (w-10 / w-12) pour un centrage impeccable identique aux liens de navigation */}
+              <div className="w-10 h-9 flex items-center justify-center shrink-0">
                 <img 
-                  src={isHovered ? "/logo.svg" : "/icon.svg"} 
-                  alt="TYKS Pro" 
-                  className="w-8 h-8 object-contain transition-transform"
+                  src="/icon.svg" 
+                  alt="TYKS" 
+                  className="w-7 h-7 object-contain transition-transform group-hover:scale-105"
                 />
               </div>
               
-              <div className={`flex flex-col justify-center whitespace-nowrap transition-opacity duration-200 ${
+              {/* Texte de marque qui s'affiche au survol */}
+              <div className={`flex items-center whitespace-nowrap transition-opacity duration-200 ${
                 isHovered ? 'opacity-100' : 'opacity-0 pointer-events-none'
               }`}>
-                <img src="/tyks.svg" alt="TYKS" className="h-4 w-auto object-left object-contain" />
+                <img src="/tyks.svg" alt="TYKS" className="h-4 w-auto object-contain" />
               </div>
             </Link>
           </div>
