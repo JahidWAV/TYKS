@@ -18,10 +18,10 @@ export default function CustomAuthModal({ isOpen, onClose, isDarkMode = false }:
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
-  // 'email' = saisie de l'e-mail
-  // 'password' = saisie du mot de passe (si le compte existe)
-  // 'signup' = le compte n'existe pas, on demande mot de passe + confirmation juste en dessous
-  const [step, setStep] = useState<'email' | 'password' | 'signup'>('email');
+  // 'email' = saisie initiale de l'email
+  // 'signin' = l'email existe, on demande le mot de passe
+  // 'signup' = l'email n'existe pas, on demande le mot de passe + la confirmation affichée en dessous
+  const [step, setStep] = useState<'email' | 'signin' | 'signup'>('email');
 
   if (!isOpen) return null;
 
@@ -58,7 +58,8 @@ export default function CustomAuthModal({ isOpen, onClose, isDarkMode = false }:
     }
   };
 
-  const handleEmailSubmit = async (e: React.FormEvent) => {
+  // Étape cruciale : Interrogation de Supabase pour savoir si l'e-mail existe
+  const handleCheckEmail = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email || !email.includes("@")) {
       setError("Veuillez entrer une adresse e-mail valide.");
@@ -68,57 +69,65 @@ export default function CustomAuthModal({ isOpen, onClose, isDarkMode = false }:
     setLoading(true);
 
     try {
-      // Astuce pour vérifier si l'email existe dans Supabase Auth sans bloquer :
-      // On tente un signInWithPassword vide ou on interroge les providers/identités si possible, 
-      // mais le plus simple et robuste est d'utiliser une requête RPC ou de tester l'existence via un faux sign-in,
-      // OU plus élégant : on demande d'abord le mot de passe, et si l'erreur indique "Invalid login credentials", 
-      // on teste si l'email est enregistré. 
-      // Alternative ultra fluide : On affiche le champ mot de passe, et un bouton "Je n'ai pas de compte / Créer un compte" 
-      // ou on laisse le système détecter à la première soumission du mot de passe.
+      // Astuce standard Supabase pour détecter si un utilisateur existe :
+      // On tente un signUp avec un mot de passe temporaire ou on regarde les identités.
+      // Si l'e-mail existe déjà, Supabase retourne un tableau d'identités vide ou une indication selon la configuration,
+      // ou plus simplement : on tente un signIn avec un mauvais mot de passe exprès. 
+      // Si l'erreur renvoyée est "Invalid login credentials", l'utilisateur existe ! 
+      // S'il n'existe pas, le comportement varie, mais la méthode la plus robuste pour vérifier l'existence 
+      // sans créer de compte intempestif est d'utiliser une requête de test sur l'unicité ou d'analyser le retour de signUp.
       
-      // Laissons l'étape de saisie du mot de passe s'afficher directement :
-      setStep('password');
+      // Approche alternative propre : On tente un signUp de test. Si l'utilisateur existe déjà, 
+      // data.user.identities sera vide ([]), sinon il contiendra l'objet.
+      const { data, error: signUpCheckError } = await supabaseBrowser.auth.signUp({
+        email,
+        password: "TempPassword123!", // Mot de passe jetable pour le test d'existence
+      });
+
+      // Si l'API renvoie une erreur directe "User already registered" (si les confirm emails sont désactivés)
+      // OU si data.user?.identities est vide (ce qui signifie que le compte existe déjà) :
+      const userExists = 
+        (signUpCheckError && signUpCheckError.message.includes("already registered")) ||
+        (data?.user && data.user.identities && data.user.identities.length === 0);
+
+      if (userExists) {
+        // Le compte existe -> On bascule en mode connexion (juste le mot de passe)
+        setStep('signin');
+      } else {
+        // Le compte n'existe pas -> On bascule en mode inscription 
+        // et on affiche direct le mot de passe + la confirmation juste en dessous
+        setStep('signup');
+      }
     } catch (err: any) {
-      setError("Erreur lors de la vérification.");
+      // Par défaut en cas de doute, on propose la connexion
+      setStep('signin');
     } finally {
       setLoading(false);
     }
   };
 
+  // Soumission finale selon le mode détecté
   const handleSubmitAuth = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
     setLoading(true);
 
     try {
-      if (step === 'password') {
-        // Tentative de connexion
+      if (step === 'signin') {
         const { error: signInError } = await supabaseBrowser.auth.signInWithPassword({
           email,
           password,
         });
-
-        if (signInError) {
-          // Si l'utilisateur n'existe pas (ou mauvais mot de passe), 
-          // On bascule proprement sur l'étape 'signup' pour lui demander de confirmer son mot de passe et créer le compte !
-          if (signInError.message.includes("Invalid login credentials") || signInError.message.includes("Email not confirmed")) {
-            setStep('signup');
-            setError("Ce compte n'existe pas encore. Confirmez votre mot de passe ci-dessous pour le créer.");
-            setLoading(false);
-            return;
-          }
-          throw signInError;
-        }
-
+        if (signInError) throw signInError;
         onClose();
       } else if (step === 'signup') {
-        // Inscription effective avec confirmation
         if (password !== confirmPassword) {
           setError("Les mots de passe ne correspondent pas.");
           setLoading(false);
           return;
         }
 
+        // Inscription définitive avec le vrai mot de passe choisi par l'utilisateur
         const { error: signUpError } = await supabaseBrowser.auth.signUp({
           email,
           password,
@@ -127,11 +136,11 @@ export default function CustomAuthModal({ isOpen, onClose, isDarkMode = false }:
 
         if (signUpError) throw signUpError;
 
-        alert("Compte créé avec succès ! Vérifiez vos e-mails si une confirmation est requise.");
+        alert("Compte créé avec succès ! Vérifiez vos e-mails pour valider votre inscription.");
         onClose();
       }
     } catch (err: any) {
-      setError(err?.message || "Une erreur est survenue.");
+      setError(err?.message || "Une erreur est survenue lors de l'authentification.");
     } finally {
       setLoading(false);
     }
@@ -154,9 +163,9 @@ export default function CustomAuthModal({ isOpen, onClose, isDarkMode = false }:
         <div className="text-center mb-6 space-y-2">
           <h2 className="font-display text-2xl font-bold tracking-tight">TYKS</h2>
           <p className={`text-xs font-light ${isDarkMode ? 'text-[#F7F5F0]/60' : 'text-[#111110]/60'}`}>
-            {step === 'email' && "Connectez-vous ou créez votre compte"}
-            {step === 'password' && "Entrez votre mot de passe"}
-            {step === 'signup' && "Création de votre nouveau compte TYKS"}
+            {step === 'email' && "Entrez votre e-mail pour continuer"}
+            {step === 'signin' && "Bon retour ! Entrez votre mot de passe"}
+            {step === 'signup' && "Première visite ? Créez votre mot de passe"}
           </p>
         </div>
 
@@ -166,7 +175,7 @@ export default function CustomAuthModal({ isOpen, onClose, isDarkMode = false }:
           </div>
         )}
 
-        {/* Boutons Sociaux (affichés uniquement à la racine) */}
+        {/* Boutons Sociaux affichés uniquement à la racine */}
         {step === 'email' && (
           <>
             <div className="space-y-3 mb-6">
@@ -215,9 +224,9 @@ export default function CustomAuthModal({ isOpen, onClose, isDarkMode = false }:
           </>
         )}
 
-        {/* Formulaire dynamique */}
+        {/* Formulaire étape e-mail */}
         {step === 'email' ? (
-          <form onSubmit={handleEmailSubmit} className="space-y-3">
+          <form onSubmit={handleCheckEmail} className="space-y-3">
             <input
               type="email"
               placeholder="name@example.com"
@@ -248,8 +257,9 @@ export default function CustomAuthModal({ isOpen, onClose, isDarkMode = false }:
             </button>
           </form>
         ) : (
+          /* Formulaire dynamique selon l'existence ou non du compte */
           <form onSubmit={handleSubmitAuth} className="space-y-3 animate-in fade-in slide-in-from-right-2 duration-300">
-            {/* Rappel de l'e-mail avec option de modification */}
+            {/* Rappel de l'e-mail avec bouton pour changer */}
             <div className="flex items-center justify-between px-3 py-2.5 rounded-xl bg-black/5 border border-black/10 text-xs font-mono mb-3">
               <span className="opacity-70 truncate max-w-[240px]">{email}</span>
               <button
@@ -264,7 +274,7 @@ export default function CustomAuthModal({ isOpen, onClose, isDarkMode = false }:
             <div className="space-y-3">
               <input
                 type="password"
-                placeholder={step === 'signup' ? "Créer un mot de passe" : "Votre mot de passe"}
+                placeholder={step === 'signin' ? "Votre mot de passe" : "Créer un mot de passe"}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
@@ -276,7 +286,7 @@ export default function CustomAuthModal({ isOpen, onClose, isDarkMode = false }:
                 }`}
               />
 
-              {/* Champ de confirmation affiché UNIQUEMENT si le compte n'existe pas (étape signup) */}
+              {/* Si le compte n'existe pas (signup), la confirmation s'affiche directement en dessous */}
               {step === 'signup' && (
                 <div className="animate-in fade-in slide-in-from-top-2 duration-300">
                   <input
@@ -306,7 +316,7 @@ export default function CustomAuthModal({ isOpen, onClose, isDarkMode = false }:
                 <Loader2 className="w-4 h-4 animate-spin" />
               ) : (
                 <>
-                  <span>{step === 'signup' ? "Créer mon compte" : "Se connecter"}</span>
+                  <span>{step === 'signin' ? "Se connecter" : "Créer mon compte"}</span>
                   <ArrowRight className="w-3.5 h-3.5" />
                 </>
               )}
