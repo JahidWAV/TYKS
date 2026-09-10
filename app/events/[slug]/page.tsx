@@ -33,11 +33,9 @@ function CustomCheckoutForm({ slug, eventTitle, quantity, totalPrice, onSuccess 
       setIsProcessing(false);
     } else if (paymentIntent && paymentIntent.status === 'succeeded') {
       
-      // Récupération de l'e-mail directement depuis le compte Supabase de l'utilisateur connecté
       const { data: { user } } = await supabaseBrowser.auth.getUser();
       const clientEmail = user?.email;
 
-      // Déclenchement de l'envoi d'e-mail de confirmation via Resend
       try {
         await fetch('/api/send-ticket', {
           method: 'POST',
@@ -99,7 +97,6 @@ export default function PublicEventPage() {
   const [isInitializingPayment, setIsInitializingPayment] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
 
-  // États pour la modale d'authentification "Shotgun-style"
   const [user, setUser] = useState<any>(null);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [authEmail, setAuthEmail] = useState('');
@@ -126,7 +123,6 @@ export default function PublicEventPage() {
 
     fetchEvent();
 
-    // Vérification de l'utilisateur connecté
     supabaseBrowser.auth.getUser().then(({ data: { user } }) => {
       if (user) setUser(user);
     });
@@ -140,7 +136,6 @@ export default function PublicEventPage() {
     };
   }, [slug]);
 
-  // Dès que l'utilisateur se connecte, on ferme l'auth, on rouvre le panier et on lance le paiement
   useEffect(() => {
     if (user && showAuthModal) {
       setShowAuthModal(false);
@@ -204,7 +199,6 @@ export default function PublicEventPage() {
     : '';
 
   const handleInitCheckout = async () => {
-    // Si l'utilisateur n'est pas connecté, on ferme la modale de quantité et on ouvre l'auth proprement
     if (!user) {
       setIsCheckoutOpen(false);
       setShowAuthModal(true);
@@ -239,86 +233,88 @@ export default function PublicEventPage() {
   };
 
   return (
-    <main className="min-h-screen bg-[#F7F5F0] text-[#111110] px-6 md:px-12 py-8 md:py-12 selection:bg-[#111110] selection:text-[#F7F5F0]">
-      <div className="max-w-6xl mx-auto w-full space-y-12">
-        
-        <div className="flex items-center justify-between border-b border-[#111110]/10 pb-4">
-          <Link
-            href="/events"
-            className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-[#111110]/60 hover:text-[#111110] transition-colors group"
-          >
-            <ArrowLeft className="w-3.5 h-3.5 transition-transform group-hover:-translate-x-1" />
-            <span>Agenda</span>
-          </Link>
-          <span className="text-xs font-mono uppercase tracking-widest text-[#111110]/60">
-            {event.organizations?.name || 'Organisateur Indépendant'}
-          </span>
-        </div>
+    <>
+      <main className="min-h-screen bg-[#F7F5F0] text-[#111110] px-6 md:px-12 py-8 md:py-12 selection:bg-[#111110] selection:text-[#F7F5F0]">
+        <div className="max-w-6xl mx-auto w-full space-y-12">
+          
+          <div className="flex items-center justify-between border-b border-[#111110]/10 pb-4">
+            <Link
+              href="/events"
+              className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-[#111110]/60 hover:text-[#111110] transition-colors group"
+            >
+              <ArrowLeft className="w-3.5 h-3.5 transition-transform group-hover:-translate-x-1" />
+              <span>Agenda</span>
+            </Link>
+            <span className="text-xs font-mono uppercase tracking-widest text-[#111110]/60">
+              {event.organizations?.name || 'Organisateur Indépendant'}
+            </span>
+          </div>
 
-        <div className="grid lg:grid-cols-[1fr_1.2fr] gap-12 lg:gap-16 items-start">
-          <div className="space-y-8">
-            <div className="space-y-3">
-              <span className="text-xs font-mono text-[#111110]/50 uppercase tracking-widest">
-                Par {event.organizations?.name || 'Organisateur'}
-              </span>
-              <h1 className="font-display text-4xl md:text-5xl font-bold tracking-tight leading-[1.05]">
-                {event.title}
-              </h1>
-            </div>
+          <div className="grid lg:grid-cols-[1fr_1.2fr] gap-12 lg:gap-16 items-start">
+            <div className="space-y-8">
+              <div className="space-y-3">
+                <span className="text-xs font-mono text-[#111110]/50 uppercase tracking-widest">
+                  Par {event.organizations?.name || 'Organisateur'}
+                </span>
+                <h1 className="font-display text-4xl md:text-5xl font-bold tracking-tight leading-[1.05]">
+                  {event.title}
+                </h1>
+              </div>
 
-            <div className="space-y-2.5 font-mono text-xs text-[#111110]/80 bg-white/60 p-5 rounded-2xl border border-[#111110]/10 shadow-sm">
-              <div className="flex items-center gap-3">
-                <Calendar className="w-4 h-4 text-[#111110]/40 shrink-0" />
-                <span>{formattedDate}</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <Clock className="w-4 h-4 text-[#111110]/40 shrink-0" />
-                <span>Portes à {formattedTime || '20:00'}</span>
-              </div>
-              {event.location && (
+              <div className="space-y-2.5 font-mono text-xs text-[#111110]/80 bg-white/60 p-5 rounded-2xl border border-[#111110]/10 shadow-sm">
                 <div className="flex items-center gap-3">
-                  <MapPin className="w-4 h-4 text-[#111110]/40 shrink-0" />
-                  <span className="truncate">{event.location}</span>
+                  <Calendar className="w-4 h-4 text-[#111110]/40 shrink-0" />
+                  <span>{formattedDate}</span>
                 </div>
-              )}
+                <div className="flex items-center gap-3">
+                  <Clock className="w-4 h-4 text-[#111110]/40 shrink-0" />
+                  <span>Portes à {formattedTime || '20:00'}</span>
+                </div>
+                {event.location && (
+                  <div className="flex items-center gap-3">
+                    <MapPin className="w-4 h-4 text-[#111110]/40 shrink-0" />
+                    <span className="truncate">{event.location}</span>
+                  </div>
+                )}
+              </div>
+
+              <div>
+                <button
+                  onClick={() => {
+                    setClientSecret(null);
+                    setIsSuccess(false);
+                    setIsCheckoutOpen(true);
+                  }}
+                  className="w-full sm:w-auto rounded-full bg-[#111110] text-[#F7F5F0] py-4 px-8 text-xs font-mono uppercase tracking-widest transition-all duration-300 hover:bg-[#222220] hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-3 cursor-pointer shadow-lg"
+                >
+                  <Ticket className="w-4 h-4 text-emerald-400" />
+                  <span>{basePrice === 0 ? 'Prendre une place (Gratuit)' : `Prendre une place • ${basePrice.toFixed(2)} €`}</span>
+                  <ArrowUpRight className="w-4 h-4 text-[#F7F5F0]/60" />
+                </button>
+              </div>
             </div>
 
-            <div>
-              <button
-                onClick={() => {
-                  setClientSecret(null);
-                  setIsSuccess(false);
-                  setIsCheckoutOpen(true);
-                }}
-                className="w-full sm:w-auto rounded-full bg-[#111110] text-[#F7F5F0] py-4 px-8 text-xs font-mono uppercase tracking-widest transition-all duration-300 hover:bg-[#222220] hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-3 cursor-pointer shadow-lg"
-              >
-                <Ticket className="w-4 h-4 text-emerald-400" />
-                <span>{basePrice === 0 ? 'Prendre une place (Gratuit)' : `Prendre une place • ${basePrice.toFixed(2)} €`}</span>
-                <ArrowUpRight className="w-4 h-4 text-[#F7F5F0]/60" />
-              </button>
-            </div>
-          </div>
-
-          <div className="lg:sticky lg:top-8">
-            <div className="relative w-full aspect-[16/9] rounded-3xl overflow-hidden border border-[#111110]/15 bg-[#111110]/5 shadow-sm">
-              {event.image_url ? (
-                <img src={event.image_url} alt={event.title} className="w-full h-full object-cover" />
-              ) : (
-                <div className="w-full h-full bg-gradient-to-br from-[#111110] to-[#222220] text-[#F7F5F0] p-8 flex flex-col justify-between">
-                  <span className="text-xs font-mono uppercase tracking-widest text-[#F7F5F0]/50">
-                    {event.organizations?.name || 'Production'}
-                  </span>
-                  <Sparkles className="w-6 h-6 text-[#F7F5F0]/40" />
-                </div>
-              )}
+            <div className="lg:sticky lg:top-8">
+              <div className="relative w-full aspect-[16/9] rounded-3xl overflow-hidden border border-[#111110]/15 bg-[#111110]/5 shadow-sm">
+                {event.image_url ? (
+                  <img src={event.image_url} alt={event.title} className="w-full h-full object-cover" />
+                ) : (
+                  <div className="w-full h-full bg-gradient-to-br from-[#111110] to-[#222220] text-[#F7F5F0] p-8 flex flex-col justify-between">
+                    <span className="text-xs font-mono uppercase tracking-widest text-[#F7F5F0]/50">
+                      {event.organizations?.name || 'Production'}
+                    </span>
+                    <Sparkles className="w-6 h-6 text-[#F7F5F0]/40" />
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      </main>
 
-      {/* Modale d'authentification rapide (Shotgun style) */}
+      {/* Modale d'authentification rapide (Sortie du main) */}
       {showAuthModal && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in duration-200">
+        <div className="fixed inset-0 z-[999] bg-black/80 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in duration-200">
           <div className="bg-[#111110] border border-[#F7F5F0]/15 rounded-3xl p-8 max-w-md w-full space-y-6 relative shadow-2xl text-[#F7F5F0]">
             <button 
               onClick={() => setShowAuthModal(false)}
@@ -380,9 +376,9 @@ export default function PublicEventPage() {
         </div>
       )}
 
-      {/* Modale de Paiement Stripe */}
+      {/* Modale de Paiement Stripe (Sortie du main) */}
       {isCheckoutOpen && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200">
+        <div className="fixed inset-0 z-[999] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200">
           <div className="relative w-full max-w-lg rounded-3xl bg-[#111110] text-[#F7F5F0] p-6 md:p-8 space-y-6 shadow-2xl border border-[#F7F5F0]/15 max-h-[90vh] overflow-y-auto">
             
             <button
@@ -523,6 +519,6 @@ export default function PublicEventPage() {
           </div>
         </div>
       )}
-    </main>
+    </>
   );
 }
