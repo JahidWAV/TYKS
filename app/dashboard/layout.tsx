@@ -58,78 +58,77 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   }
 
   return (
-    <div className="min-h-screen bg-[#F7F5F0] text-[#111110] flex selection:bg-[#111110] selection:text-[#F7F5F0]">
+    <div className="min-h-screen bg-[#F7F5F0] text-[#111110] flex selection:bg-[#111110] selection:text-[#F7F5F0] overflow-x-hidden">
       
-      {/* Sidebar globale */}
-      <aside 
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
-        className="relative flex sticky top-0 h-screen shrink-0 select-none z-30"
-      >
-        {/* 1. Colonne fixe des icônes (Toujours visible, largeur w-16) */}
-        <div className="w-16 border-r border-[#111110]/10 bg-[#F7F5F0] flex flex-col items-center justify-between py-6 z-20">
-          
-          {/* Logo / Icône fixe en haut */}
-          <div className="flex items-center justify-center">
-            <Link href="/" className="w-10 h-10 flex items-center justify-center group">
-              <img 
-                src="/icon.svg" 
-                alt="TYKS" 
-                className="w-7 h-7 object-contain transition-transform group-hover:scale-105"
-              />
-            </Link>
-          </div>
-
-          {/* Icônes de navigation */}
-          <div className="space-y-2 w-full px-2">
-            {navItems.map((item) => {
-              const Icon = item.icon;
-              const isActive = pathname === item.href;
-
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  title={item.label}
-                  className={`w-12 h-10 mx-auto flex items-center justify-center rounded-xl transition-all group ${
-                    isActive
-                      ? 'bg-[#111110] text-[#F7F5F0] shadow-sm'
-                      : 'opacity-70 hover:opacity-100 hover:bg-[#111110]/5 text-[#111110]'
-                  }`}
-                >
-                  <Icon className={`w-5 h-5 transition-transform group-hover:scale-105 ${isActive ? 'text-[#F7F5F0]' : 'opacity-70'}`} />
-                </Link>
-              );
-            })}
-          </div>
-
-          {/* Bas de sidebar (Réglages & Déconnexion) */}
-          <div className="space-y-2 w-full px-2 border-t border-[#111110]/10 pt-4 bg-[#F7F5F0]">
-            <Link 
-              href="/settings" 
-              title="Réglages"
-              className={`w-12 h-10 mx-auto flex items-center justify-center rounded-xl transition ${
-                pathname === '/settings'
-                  ? 'bg-[#111110] text-[#F7F5F0]'
-                  : 'opacity-70 hover:opacity-100 hover:bg-[#111110]/5 text-[#111110]'
-              }`}
-            >
-              <Settings className="w-5 h-5 opacity-70" />
-            </Link>
-
-            <button
-              onClick={handleLogout}
-              title="Se déconnecter"
-              className="w-12 h-10 mx-auto flex items-center justify-center rounded-xl text-red-600 hover:bg-red-500/10 transition-colors"
-            >
-              <LogOut className="w-5 h-5 opacity-70" />
-            </button>
-          </div>
+      {/* Barre d'icônes fixe à gauche (Largeur fixe w-16, reste toujours ancrée) */}
+      <aside className="fixed top-0 left-0 h-screen w-16 border-r border-[#111110]/10 bg-[#F7F5F0] flex flex-col items-center justify-between py-6 z-40 select-none">
+        
+        {/* Logo / Icône */}
+        <div className="flex items-center justify-center">
+          <Link href="/" className="w-10 h-10 flex items-center justify-center group">
+            <img 
+              src="/icon.svg" 
+              alt="TYKS" 
+              className="w-7 h-7 object-contain transition-transform group-hover:scale-105"
+            />
+          </Link>
         </div>
 
-        {/* 2. Panneau flottant en ABSOLU (Se superpose sans tout décaler) */}
-        <div className={`absolute top-0 left-16 h-full bg-[#F7F5F0] border-r border-[#111110]/15 shadow-2xl flex flex-col justify-between py-6 transition-all duration-200 ease-out overflow-hidden z-40 ${
-          isHovered ? 'w-56 opacity-100 pointer-events-auto' : 'w-0 opacity-0 pointer-events-none'
+        {/* Liens icônes centraux */}
+        <div className="space-y-2 w-full px-2">
+          {navItems.map((item) => {
+            const Icon = item.icon;
+            const isActive = pathname === item.href;
+
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                title={item.label}
+                className={`w-12 h-10 mx-auto flex items-center justify-center rounded-xl transition-all group ${
+                  isActive
+                    ? 'bg-[#111110] text-[#F7F5F0] shadow-sm'
+                    : 'opacity-70 hover:opacity-100 hover:bg-[#111110]/5 text-[#111110]'
+                }`}
+              >
+                <Icon className={`w-5 h-5 transition-transform group-hover:scale-105 ${isActive ? 'text-[#F7F5F0]' : 'opacity-70'}`} />
+              </Link>
+            );
+          })}
+        </div>
+
+        {/* Bas de sidebar (Réglages & Déconnexion) */}
+        <div className="space-y-2 w-full px-2 border-t border-[#111110]/10 pt-4 bg-[#F7F5F0]">
+          <Link 
+            href="/settings" 
+            title="Réglages"
+            className={`w-12 h-10 mx-auto flex items-center justify-center rounded-xl transition ${
+              pathname === '/settings'
+                ? 'bg-[#111110] text-[#F7F5F0]'
+                : 'opacity-70 hover:opacity-100 hover:bg-[#111110]/5 text-[#111110]'
+            }`}
+          >
+            <Settings className="w-5 h-5 opacity-70" />
+          </Link>
+
+          <button
+            onClick={handleLogout}
+            title="Se déconnecter"
+            className="w-12 h-10 mx-auto flex items-center justify-center rounded-xl text-red-600 hover:bg-red-500/10 transition-colors"
+          >
+            <LogOut className="w-5 h-5 opacity-70" />
+          </button>
+        </div>
+      </aside>
+
+      {/* Panneau coulissant flottant (Apparaît par-dessus au survol de la zone de gauche) */}
+      <div 
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+        className="fixed top-0 left-16 h-screen w-48 z-50 flex"
+      >
+        <div className={`h-full w-full bg-[#F7F5F0] border-r border-[#111110]/15 shadow-2xl flex flex-col justify-between py-6 transition-all duration-200 ease-out overflow-hidden select-none ${
+          isHovered ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-3 pointer-events-none'
         }`}>
           
           {/* En-tête du panneau avec le logo texte */}
@@ -137,7 +136,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             <img src="/tyks.svg" alt="TYKS" className="h-4 w-auto object-contain" />
           </div>
 
-          {/* Liens de navigation avec texte */}
+          {/* Navigation textuelle */}
           <div className="space-y-1 w-full px-3 flex-1 pt-2">
             <p className="text-[10px] font-mono uppercase tracking-wider opacity-40 px-3 pb-2">
               Workspace
@@ -161,7 +160,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             })}
           </div>
 
-          {/* Bas du panneau secondaire */}
+          {/* Bas du panneau */}
           <div className="px-3 space-y-1 border-t border-[#111110]/10 pt-4">
             <Link 
               href="/settings" 
@@ -182,11 +181,13 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             </button>
           </div>
         </div>
-      </aside>
+      </div>
 
-      {/* Contenu principal et sa barre du haut */}
-      <div className="flex-1 min-w-0 flex flex-col h-screen overflow-hidden">
-        <header className="h-14 border-b border-[#111110]/10 bg-[#F7F5F0] px-6 flex items-center justify-between shrink-0 z-10">
+      {/* Contenu principal avec une marge fixe à gauche pour ne jamais passer sous la barre d'icônes */}
+      <div className="flex-1 ml-16 min-w-0 flex flex-col h-screen overflow-hidden">
+        
+        {/* Barre supérieure du dashboard */}
+        <header className="h-14 border-b border-[#111110]/10 bg-[#F7F5F0] px-6 flex items-center justify-between shrink-0 z-20">
           <div className="flex items-center gap-3 text-xs font-medium opacity-70">
             <span>Projet</span>
             <span>/</span>
@@ -203,6 +204,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           </div>
         </header>
 
+        {/* Zone de contenu scrollable */}
         <main className="flex-1 overflow-y-auto p-8">
           {children}
         </main>
