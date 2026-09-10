@@ -3,8 +3,8 @@ import { supabaseServer } from '@/lib/supabase-server';
 import Stripe from 'stripe';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
-  apiVersion: '2025-02-27.acacia' as any,
-  typescript: true,
+  // Retire simplement la ligne apiVersion pour utiliser la version par défaut de ton SDK, ou mets une version stable supportée :
+  apiVersion: '2024-12-18.acacia' as any, 
 });
 
 export async function POST(req: Request) {
