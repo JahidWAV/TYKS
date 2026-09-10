@@ -244,7 +244,32 @@ export default function PublicEventPage() {
                 </p>
               </div>
 
-              <button className="w-full rounded-full bg-[#F7F5F0] text-[#111110] py-4 px-6 text-xs font-mono uppercase tracking-widest transition-all duration-300 hover:bg-white hover:scale-[1.01] active:scale-[0.98] flex items-center justify-center gap-2 cursor-pointer shadow-xl font-bold">
+              <button 
+                onClick={async () => {
+                  try {
+                    const res = await fetch('/api/checkout', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({
+                        eventId: event.id,
+                        quantity,
+                        unitPrice,
+                        includeSupport,
+                      }),
+                    });
+                    const data = await res.json();
+                    if (data.url) {
+                      window.location.href = data.url;
+                    } else {
+                      alert(data.error || "Erreur lors du paiement");
+                    }
+                  } catch (err) {
+                    console.error(err);
+                    alert("Erreur réseau");
+                  }
+                }}
+                className="w-full rounded-full bg-[#F7F5F0] text-[#111110] py-4 px-6 text-xs font-mono uppercase tracking-widest transition-all duration-300 hover:bg-white hover:scale-[1.01] active:scale-[0.98] flex items-center justify-center gap-2 cursor-pointer shadow-xl font-bold"
+              >
                 <span>{basePrice === 0 ? 'Valider ma place' : 'Procéder au paiement'}</span>
                 <ArrowUpRight className="w-4 h-4" />
               </button>
