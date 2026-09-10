@@ -9,7 +9,7 @@ import {
 } from 'lucide-react';
 import type { IortiEvent } from '@/types/event';
 import { supabaseBrowser } from '@/lib/supabase-browser';
-import { CustomAuthModal } from '@/components/CustomAuthModal';
+import CustomAuthModal from '@/components/CustomAuthModal';
 
 const STATUS_LABEL: Record<string, string> = {
   draft: 'Brouillon',
