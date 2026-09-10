@@ -70,9 +70,30 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           {/* Logo / Brand */}
           <Link href="/" className="flex items-center justify-between group pt-1">
             <div className="flex items-center gap-2.5">
-              <span className="h-7 w-7 rounded-lg bg-[#111110] text-[#F7F5F0] flex items-center justify-center font-bold text-xs tracking-wider transition-transform group-hover:scale-105">
-                T
-              </span>
+              <svg 
+                className="w-7 h-7" 
+                viewBox="0 0 32 32" 
+                fill="none" 
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path 
+                  d="M6 4C4.89543 4 4 4.89543 4 6V12C5.10457 12 6 12.8954 6 14C6 15.1046 5.10457 16 4 16V26C4 27.1046 4.89543 28 6 28H26C27.1046 28 28 27.1046 28 26V16C26.8954 16 26 15.1046 26 14C26 12.8954 26.8954 12 28 12V6C28 4.89543 27.1046 4 26 4H6Z" 
+                  fill="currentColor" 
+                  fillOpacity="0.1" 
+                  stroke="currentColor" 
+                  strokeWidth="2"
+                />
+                <circle cx="4" cy="14" r="2" fill="#F7F5F0" />
+                <circle cx="28" cy="14" r="2" fill="#F7F5F0" />
+                <circle cx="12" cy="13" r="1.5" fill="currentColor" />
+                <circle cx="20" cy="13" r="1.5" fill="currentColor" />
+                <path 
+                  d="M13 18C13 18 14.5 19.5 16 19.5C17.5 19.5 19 18 19 18" 
+                  stroke="currentColor" 
+                  strokeWidth="1.5" 
+                  strokeLinecap="round" 
+                />
+              </svg>
               <span className="font-display font-bold text-sm tracking-tight">
                 TYKS Pro
               </span>
@@ -138,3 +159,4 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     </div>
   );
 }
+```[cite: 5]
