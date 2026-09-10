@@ -20,7 +20,7 @@ export async function middleware(request: NextRequest) {
         remove(name: string, options: CookieOptions) {
           request.cookies.set({ name, value: '', ...options })
           response = NextResponse.next({ request: { headers: request.headers } })
-          response.cookies.set({ name, value, ...options })
+          response.cookies.set({ name, value: '', ...options })
         },
       },
     }
@@ -40,7 +40,6 @@ export async function middleware(request: NextRequest) {
   const isMarketingPro = hostname.startsWith('pro.')
 
   // 1. Dashboard (`dashboard.tyks.app`) -> Réécriture prioritaire vers le dossier physique /dashboard[cite: 4]
-  // Cela garantit que /events/cc-g945 ou /events/cc-g945/edit sur le dashboard pointent bien vers /dashboard/events/...
   if (isDashboard) {
     url.pathname = `/dashboard${url.pathname}`
     return NextResponse.rewrite(url)
