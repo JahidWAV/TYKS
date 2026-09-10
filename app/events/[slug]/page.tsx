@@ -99,6 +99,13 @@ export default function PublicEventPage() {
   const [isInitializingPayment, setIsInitializingPayment] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
 
+  // États pour la modale d'authentification "Shotgun-style"
+  const [user, setUser] = useState<any>(null);
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const [authEmail, setAuthEmail] = useState('');
+  const [authLoading, setAuthLoading] = useState(false);
+  const [authSent, setAuthSent] = useState(false);
+
   useEffect(() => {
     if (!slug) return;
     const fetchEvent = async () => {
@@ -118,7 +125,58 @@ export default function PublicEventPage() {
     };
 
     fetchEvent();
+
+    // Vérification de l'utilisateur connecté
+    supabaseBrowser.auth.getUser().then(({ data: { user } }) => {
+      if (user) setUser(user);
+    });
+
+    const { data: { subscription } } = supabaseBrowser.auth.onAuthStateChange((_, session) => {
+      setUser(session?.user || null);
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
   }, [slug]);
+
+  const handleBuyClick = () => {
+    if (!user) {
+      setShowAuthModal(true);
+    } else {
+      setClientSecret(null);
+      setIsSuccess(false);
+      setIsCheckoutOpen(true);
+    }
+  };
+
+  const handleMagicLinkLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setAuthLoading(true);
+
+    const { error } = await supabaseBrowser.auth.signInWithOtp({
+      email: authEmail,
+      options: {
+        emailRedirectTo: window.location.href,
+      },
+    });
+
+    setAuthLoading(false);
+    if (!error) {
+      setAuthSent(true);
+    } else {
+      alert("Erreur lors de l'envoi du lien de connexion.");
+    }
+  };
+
+  const handleGoogleLogin = async () => {
+    await supabaseBrowser.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: window.location.href,
+      },
+    });
+  };
 
   if (loading) {
     return (
@@ -221,11 +279,7 @@ export default function PublicEventPage() {
 
             <div>
               <button
-                onClick={() => {
-                  setClientSecret(null);
-                  setIsSuccess(false);
-                  setIsCheckoutOpen(true);
-                }}
+                onClick={handleBuyClick}
                 className="w-full sm:w-auto rounded-full bg-[#111110] text-[#F7F5F0] py-4 px-8 text-xs font-mono uppercase tracking-widest transition-all duration-300 hover:bg-[#222220] hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-3 cursor-pointer shadow-lg"
               >
                 <Ticket className="w-4 h-4 text-emerald-400" />
@@ -252,6 +306,71 @@ export default function PublicEventPage() {
         </div>
       </div>
 
+      {/* Modale d'authentification rapide (Shotgun style) */}
+      {showAuthModal && (
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in duration-200">
+          <div className="bg-[#111110] border border-[#F7F5F0]/15 rounded-3xl p-8 max-w-md w-full space-y-6 relative shadow-2xl text-[#F7F5F0]">
+            <button 
+              onClick={() => setShowAuthModal(false)}
+              className="absolute top-6 right-6 w-8 h-8 rounded-full bg-[#F7F5F0]/10 flex items-center justify-center text-[#F7F5F0]/70 hover:text-[#F7F5F0] hover:bg-[#F7F5F0]/20 transition-all cursor-pointer"
+            >
+              <X className="w-4 h-4" />
+            </button>
+
+            <div className="space-y-2">
+              <span className="text-[10px] font-mono uppercase tracking-widest text-[#F7F5F0]/50 block">Sécurité & Billetterie</span>
+              <h3 className="font-display text-2xl font-bold tracking-tight">Connexion rapide</h3>
+              <p className="text-xs font-mono text-[#F7F5F0]/60 leading-relaxed">
+                Connectez-vous instantanément pour récupérer vos billets et accéder au paiement.
+              </p>
+            </div>
+
+            {!authSent ? (
+              <div className="space-y-4 pt-2">
+                <button
+                  onClick={handleGoogleLogin}
+                  className="w-full bg-[#F7F5F0]/10 hover:bg-[#F7F5F0]/20 text-[#F7F5F0] py-3.5 px-4 rounded-full text-xs font-mono uppercase tracking-widest transition-all flex items-center justify-center gap-3 border border-[#F7F5F0]/15 cursor-pointer font-bold"
+                >
+                  <span>Continuer avec Google</span>
+                </button>
+
+                <div className="relative flex py-2 items-center">
+                  <div className="flex-grow border-t border-[#F7F5F0]/10"></div>
+                  <span className="flex-shrink mx-4 text-[#F7F5F0]/40 text-[10px] font-mono uppercase">ou par e-mail</span>
+                  <div className="flex-grow border-t border-[#F7F5F0]/10"></div>
+                </div>
+
+                <form onSubmit={handleMagicLinkLogin} className="space-y-4">
+                  <input
+                    type="email"
+                    required
+                    placeholder="votre@email.com"
+                    value={authEmail}
+                    onChange={(e) => setAuthEmail(e.target.value)}
+                    className="w-full bg-[#F7F5F0]/5 border border-[#F7F5F0]/15 rounded-xl px-4 py-3 text-sm font-mono text-[#F7F5F0] focus:outline-none focus:border-[#F7F5F0] transition-colors"
+                  />
+                  <button
+                    type="submit"
+                    disabled={authLoading}
+                    className="w-full bg-[#F7F5F0] text-[#111110] py-4 rounded-full text-xs font-mono uppercase tracking-widest font-bold hover:bg-white transition-all disabled:opacity-50 cursor-pointer shadow-lg flex items-center justify-center gap-2"
+                  >
+                    {authLoading ? <Loader2 className="w-4 h-4 animate-spin text-[#111110]" /> : <span>Recevoir mon lien magique</span>}
+                  </button>
+                </form>
+              </div>
+            ) : (
+              <div className="bg-[#F7F5F0]/5 border border-[#F7F5F0]/15 rounded-2xl p-6 text-center space-y-3">
+                <p className="text-sm font-mono font-bold text-[#F7F5F0]">Lien de connexion envoyé !</p>
+                <p className="text-xs font-mono text-[#F7F5F0]/60 leading-relaxed">
+                  Vérifiez vos e-mails pour valider votre connexion et accéder automatiquement à vos billets.
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Modale de Paiement Stripe */}
       {isCheckoutOpen && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200">
           <div className="relative w-full max-w-lg rounded-3xl bg-[#111110] text-[#F7F5F0] p-6 md:p-8 space-y-6 shadow-2xl border border-[#F7F5F0]/15 max-h-[90vh] overflow-y-auto">
