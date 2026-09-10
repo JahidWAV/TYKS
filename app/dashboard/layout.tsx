@@ -133,6 +133,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     return <main className="min-h-screen w-full">{children}</main>;
   }
 
+  // Largeur unique, partagée par l'aside ET la marge du contenu : plus jamais de désynchronisation
+  const SIDEBAR_WIDTH = isOpen ? 'w-64' : 'w-16';
+  const CONTENT_MARGIN = isOpen ? 'ml-64' : 'ml-16';
+
   return (
     <div className="min-h-screen bg-[#F7F5F0] text-[#111110] flex selection:bg-[#111110] selection:text-[#F7F5F0] overflow-x-hidden">
 
@@ -238,12 +242,12 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         </div>
       </header>
 
-      {/* 1. Barre d'icônes fixe à gauche (w-16), sous la barre horizontale */}
-      <aside className={`fixed top-14 left-0 h-[calc(100vh-3.5rem)] w-16 bg-[#F7F5F0] flex flex-col items-center py-6 z-40 select-none ${
-        isOpen ? '' : 'border-r border-[#111110]/10'
+      {/* 1. Sidebar unique (icônes + labels dans le même bloc) : plus de désynchronisation entre deux colonnes séparées */}
+      <aside className={`fixed top-14 left-0 h-[calc(100vh-3.5rem)] ${SIDEBAR_WIDTH} border-r border-[#111110]/10 bg-[#F7F5F0] flex flex-col py-6 z-40 select-none overflow-hidden ${
+        mounted ? 'transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]' : ''
       }`}>
 
-        <div className="flex-1 w-full flex flex-col items-center justify-center gap-2">
+        <div className="flex-1 w-full flex flex-col justify-center gap-2 px-3">
           {navItems.map((item) => {
             const Icon = item.icon;
             const isActive = pathname === item.href;
@@ -252,75 +256,46 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               <Link
                 key={item.href}
                 href={item.href}
-                title={item.label}
-                className={`w-10 h-10 flex items-center justify-center rounded-xl transition-all group ${
+                title={isOpen ? undefined : item.label}
+                className={`flex items-center h-10 rounded-xl transition-colors group ${
+                  isOpen ? 'px-2.5 gap-3' : 'justify-center'
+                } ${
                   isActive
                     ? 'bg-[#111110] text-[#F7F5F0] shadow-sm'
                     : 'opacity-70 hover:opacity-100 hover:bg-[#111110]/5 text-[#111110]'
                 }`}
               >
-                <Icon className={`w-5 h-5 transition-transform group-hover:scale-105 ${isActive ? 'text-[#F7F5F0]' : 'opacity-70'}`} />
+                <Icon className={`w-5 h-5 shrink-0 transition-transform group-hover:scale-105 ${isActive ? 'text-[#F7F5F0]' : ''}`} />
+                <span
+                  className={`text-xs font-medium whitespace-nowrap overflow-hidden transition-all duration-300 ${
+                    isOpen ? 'max-w-[160px] opacity-100' : 'max-w-0 opacity-0'
+                  }`}
+                >
+                  {item.label}
+                </span>
               </Link>
             );
           })}
         </div>
 
-        {/* Interrupteur pour ouvrir/fermer le menu et afficher les titres des pages */}
-        <div className="w-full flex flex-col items-center gap-2 border-t border-[#111110]/10 pt-4">
+        {/* Interrupteur pour ouvrir/fermer le menu : même taille de case que le logo (w-9 h-9) */}
+        <div className={`w-full flex items-center border-t border-[#111110]/10 pt-4 px-3 ${isOpen ? '' : 'justify-center'}`}>
           <button
             onClick={() => setIsOpen(prev => !prev)}
             title={isOpen ? 'Réduire le menu' : 'Déployer le menu'}
             aria-label={isOpen ? 'Réduire le menu' : 'Déployer le menu'}
             aria-pressed={isOpen}
-            className="w-9 h-9 flex items-center justify-center rounded-xl opacity-60 hover:opacity-100 hover:bg-[#111110]/5 transition-all"
+            className="w-9 h-9 flex items-center justify-center rounded-xl opacity-60 hover:opacity-100 hover:bg-[#111110]/5 transition-all shrink-0"
           >
             <ChevronRight className={`w-4 h-4 transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${isOpen ? 'rotate-180' : ''}`} />
           </button>
         </div>
       </aside>
 
-      {/* 2. Panneau textuel contextuel, ouvert/fermé via l'interrupteur (état mémorisé) */}
+      {/* 2. Contenu principal, sous la barre horizontale */}
       <div 
-        className={`fixed top-14 left-16 h-[calc(100vh-3.5rem)] bg-[#F7F5F0] flex flex-col items-center py-6 z-30 overflow-hidden select-none ${
-          isOpen ? 'border-r border-[#111110]/10' : ''
-        } ${
+        className={`flex-1 min-w-0 flex flex-col h-screen pt-14 overflow-hidden ${CONTENT_MARGIN} ${
           mounted ? 'transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]' : ''
-        } ${
-          isOpen ? 'w-56 opacity-100 shadow-xl' : 'w-0 opacity-0 pointer-events-none'
-        }`}
-      >
-        <div className="flex-1 w-full px-3 flex flex-col justify-center gap-2">
-          {navItems.map((item) => {
-            const isActive = pathname === item.href;
-
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={`flex items-center h-10 px-3 rounded-xl text-xs font-medium whitespace-nowrap transition-all ${
-                  isActive
-                    ? 'bg-[#111110] text-[#F7F5F0] font-semibold shadow-sm'
-                    : 'opacity-70 hover:opacity-100 hover:bg-[#111110]/5 text-[#111110]'
-                }`}
-              >
-                {item.label}
-              </Link>
-            );
-          })}
-        </div>
-
-        {/* Espace réservé invisible, de même hauteur que l'interrupteur de la barre d'icônes, pour garder l'alignement vertical */}
-        <div className="w-full flex flex-col items-center gap-2 border-t border-transparent pt-4 opacity-0 pointer-events-none" aria-hidden="true">
-          <div className="w-9 h-9" />
-        </div>
-      </div>
-
-      {/* 3. Contenu principal, sous la barre horizontale */}
-      <div 
-        className={`flex-1 min-w-0 flex flex-col h-screen pt-14 overflow-hidden ${
-          mounted ? 'transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]' : ''
-        } ${
-          isOpen ? 'ml-72' : 'ml-16'
         }`}
       >
         <main className="flex-1 overflow-y-auto p-8">
