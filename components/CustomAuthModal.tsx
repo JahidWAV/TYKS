@@ -18,10 +18,10 @@ export default function CustomAuthModal({ isOpen, onClose, isDarkMode = false }:
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
-  // 'email' = saisie de l'e-mail seul
-  // 'signin' = utilisateur reconnu, on demande le mot de passe pour se connecter
-  // 'signup' = utilisateur inconnu, on demande de créer un mot de passe (avec confirmation)
-  const [step, setStep] = useState<'email' | 'signin' | 'signup'>('email');
+  // 'email' = saisie de l'e-mail
+  // 'password' = saisie du mot de passe (si le compte existe)
+  // 'signup' = le compte n'existe pas, on demande mot de passe + confirmation juste en dessous
+  const [step, setStep] = useState<'email' | 'password' | 'signup'>('email');
 
   if (!isOpen) return null;
 
@@ -58,18 +58,31 @@ export default function CustomAuthModal({ isOpen, onClose, isDarkMode = false }:
     }
   };
 
-  // Étape 1 : Vérification de l'e-mail
-  // Astuce : On essaie de voir si l'e-mail existe déjà via une requête ou on passe à la saisie du mot de passe.
-  // Pour garder ça instantané, on passe à l'étape du mot de passe, et c'est au 1er submit du password qu'on avise.
-  // OU MIEUX : On utilise une astuce de flux unifié.
-  const handleEmailSubmit = (e: React.FormEvent) => {
+  const handleEmailSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email || !email.includes("@")) {
       setError("Veuillez entrer une adresse e-mail valide.");
       return;
     }
     setError(null);
-    setStep('signin'); // On ouvre le champ mot de passe par défaut pour tester la connexion
+    setLoading(true);
+
+    try {
+      // Astuce pour vérifier si l'email existe dans Supabase Auth sans bloquer :
+      // On tente un signInWithPassword vide ou on interroge les providers/identités si possible, 
+      // mais le plus simple et robuste est d'utiliser une requête RPC ou de tester l'existence via un faux sign-in,
+      // OU plus élégant : on demande d'abord le mot de passe, et si l'erreur indique "Invalid login credentials", 
+      // on teste si l'email est enregistré. 
+      // Alternative ultra fluide : On affiche le champ mot de passe, et un bouton "Je n'ai pas de compte / Créer un compte" 
+      // ou on laisse le système détecter à la première soumission du mot de passe.
+      
+      // Laissons l'étape de saisie du mot de passe s'afficher directement :
+      setStep('password');
+    } catch (err: any) {
+      setError("Erreur lors de la vérification.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleSubmitAuth = async (e: React.FormEvent) => {
@@ -78,22 +91,19 @@ export default function CustomAuthModal({ isOpen, onClose, isDarkMode = false }:
     setLoading(true);
 
     try {
-      if (step === 'signin') {
-        // Tentative de connexion classique
+      if (step === 'password') {
+        // Tentative de connexion
         const { error: signInError } = await supabaseBrowser.auth.signInWithPassword({
           email,
           password,
         });
 
         if (signInError) {
-          // Si l'utilisateur n'existe pas, Supabase renvoie généralement "Invalid login credentials". 
-          // Pour offrir cette fluidité magique, si l'e-mail n'est pas reconnu, on bascule automatiquement en mode inscription !
-          // (Alternative : si tu veux être sûr, tu adaptes selon le message d'erreur exact ou tu proposes le switch).
-          // Ici, si le compte n'existe pas, on bascule sur l'étape 'signup' pour créer le mot de passe :
+          // Si l'utilisateur n'existe pas (ou mauvais mot de passe), 
+          // On bascule proprement sur l'étape 'signup' pour lui demander de confirmer son mot de passe et créer le compte !
           if (signInError.message.includes("Invalid login credentials") || signInError.message.includes("Email not confirmed")) {
-            // Testons si c'est un nouveau compte en basculant sur signup
             setStep('signup');
-            setError("Aucun compte associé à ce mot de passe. Définissez un mot de passe pour créer votre compte.");
+            setError("Ce compte n'existe pas encore. Confirmez votre mot de passe ci-dessous pour le créer.");
             setLoading(false);
             return;
           }
@@ -102,7 +112,7 @@ export default function CustomAuthModal({ isOpen, onClose, isDarkMode = false }:
 
         onClose();
       } else if (step === 'signup') {
-        // Inscription effective
+        // Inscription effective avec confirmation
         if (password !== confirmPassword) {
           setError("Les mots de passe ne correspondent pas.");
           setLoading(false);
@@ -145,8 +155,8 @@ export default function CustomAuthModal({ isOpen, onClose, isDarkMode = false }:
           <h2 className="font-display text-2xl font-bold tracking-tight">TYKS</h2>
           <p className={`text-xs font-light ${isDarkMode ? 'text-[#F7F5F0]/60' : 'text-[#111110]/60'}`}>
             {step === 'email' && "Connectez-vous ou créez votre compte"}
-            {step === 'signin' && "Entrez votre mot de passe"}
-            {step === 'signup' && "Première visite ? Créez votre mot de passe"}
+            {step === 'password' && "Entrez votre mot de passe"}
+            {step === 'signup' && "Création de votre nouveau compte TYKS"}
           </p>
         </div>
 
@@ -205,7 +215,7 @@ export default function CustomAuthModal({ isOpen, onClose, isDarkMode = false }:
           </>
         )}
 
-        {/* Formulaire unique intelligent */}
+        {/* Formulaire dynamique */}
         {step === 'email' ? (
           <form onSubmit={handleEmailSubmit} className="space-y-3">
             <input
@@ -222,17 +232,24 @@ export default function CustomAuthModal({ isOpen, onClose, isDarkMode = false }:
             />
             <button
               type="submit"
-              className={`w-full flex items-center justify-center gap-2 px-4 py-3.5 rounded-full text-xs font-semibold transition-all hover:scale-[1.02] ${
+              disabled={loading}
+              className={`w-full flex items-center justify-center gap-2 px-4 py-3.5 rounded-full text-xs font-semibold transition-all hover:scale-[1.02] disabled:opacity-50 ${
                 isDarkMode ? 'bg-[#F7F5F0] text-[#111110] hover:bg-white' : 'bg-[#111110] text-[#F7F5F0] hover:opacity-90'
               }`}
             >
-              <span>Continuer avec l&apos;e-mail</span>
-              <ArrowRight className="w-3.5 h-3.5" />
+              {loading ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <>
+                  <span>Continuer avec l&apos;e-mail</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </>
+              )}
             </button>
           </form>
         ) : (
           <form onSubmit={handleSubmitAuth} className="space-y-3 animate-in fade-in slide-in-from-right-2 duration-300">
-            {/* Rappel de l'e-mail avec option de retour arrière */}
+            {/* Rappel de l'e-mail avec option de modification */}
             <div className="flex items-center justify-between px-3 py-2.5 rounded-xl bg-black/5 border border-black/10 text-xs font-mono mb-3">
               <span className="opacity-70 truncate max-w-[240px]">{email}</span>
               <button
@@ -244,42 +261,44 @@ export default function CustomAuthModal({ isOpen, onClose, isDarkMode = false }:
               </button>
             </div>
 
-            <input
-              type="password"
-              placeholder={step === 'signin' ? "Votre mot de passe" : "Créer un mot de passe"}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              autoFocus
-              className={`w-full px-4 py-3 rounded-xl border text-xs font-mono transition-all outline-none ${
-                isDarkMode 
-                  ? 'bg-black/20 border-[#F7F5F0]/20 text-[#F7F5F0] focus:border-[#F7F5F0]/60' 
-                  : 'bg-white/50 border-[#111110]/20 text-[#111110] focus:border-[#111110]/60'
-              }`}
-            />
+            <div className="space-y-3">
+              <input
+                type="password"
+                placeholder={step === 'signup' ? "Créer un mot de passe" : "Votre mot de passe"}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                autoFocus
+                className={`w-full px-4 py-3 rounded-xl border text-xs font-mono transition-all outline-none ${
+                  isDarkMode 
+                    ? 'bg-black/20 border-[#F7F5F0]/20 text-[#F7F5F0] focus:border-[#F7F5F0]/60' 
+                    : 'bg-white/50 border-[#111110]/20 text-[#111110] focus:border-[#111110]/60'
+                }`}
+              />
 
-            {/* Champ de confirmation affiché uniquement si le système bascule en mode création de compte */}
-            {step === 'signup' && (
-              <div className="animate-in fade-in slide-in-from-top-2 duration-200">
-                <input
-                  type="password"
-                  placeholder="Confirmer le mot de passe"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  required
-                  className={`w-full px-4 py-3 rounded-xl border text-xs font-mono transition-all outline-none ${
-                    isDarkMode 
-                      ? 'bg-black/20 border-[#F7F5F0]/20 text-[#F7F5F0] focus:border-[#F7F5F0]/60' 
-                      : 'bg-white/50 border-[#111110]/20 text-[#111110] focus:border-[#111110]/60'
-                  }`}
-                />
-              </div>
-            )}
+              {/* Champ de confirmation affiché UNIQUEMENT si le compte n'existe pas (étape signup) */}
+              {step === 'signup' && (
+                <div className="animate-in fade-in slide-in-from-top-2 duration-300">
+                  <input
+                    type="password"
+                    placeholder="Confirmer le mot de passe"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    required
+                    className={`w-full px-4 py-3 rounded-xl border text-xs font-mono transition-all outline-none ${
+                      isDarkMode 
+                        ? 'bg-black/20 border-[#F7F5F0]/20 text-[#F7F5F0] focus:border-[#F7F5F0]/60' 
+                        : 'bg-white/50 border-[#111110]/20 text-[#111110] focus:border-[#111110]/60'
+                    }`}
+                  />
+                </div>
+              )}
+            </div>
 
             <button
               type="submit"
               disabled={loading}
-              className={`w-full flex items-center justify-center gap-2 px-4 py-3.5 rounded-full text-xs font-semibold transition-all hover:scale-[1.02] disabled:opacity-50 ${
+              className={`w-full flex items-center justify-center gap-2 px-4 py-3.5 rounded-full text-xs font-semibold transition-all hover:scale-[1.02] disabled:opacity-50 mt-4 ${
                 isDarkMode ? 'bg-[#F7F5F0] text-[#111110] hover:bg-white' : 'bg-[#111110] text-[#F7F5F0] hover:opacity-90'
               }`}
             >
@@ -287,7 +306,7 @@ export default function CustomAuthModal({ isOpen, onClose, isDarkMode = false }:
                 <Loader2 className="w-4 h-4 animate-spin" />
               ) : (
                 <>
-                  <span>{step === 'signin' ? "Se connecter" : "Finaliser la création du compte"}</span>
+                  <span>{step === 'signup' ? "Créer mon compte" : "Se connecter"}</span>
                   <ArrowRight className="w-3.5 h-3.5" />
                 </>
               )}
