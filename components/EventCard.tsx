@@ -8,7 +8,7 @@ export default function EventCard({ event }: { event: IortiEvent }) {
 
   return (
     <Link
-      href={`/evenements/${event.id}`}
+      href={`/events/${event.slug}`}
       className="group p-6 bg-onyx-raised/60 hover:bg-onyx-raised border border-onyx-line rounded-2xl transition-all duration-200 flex flex-col justify-between space-y-6 block"
     >
       <div className="space-y-3">
