@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Loader2, Euro, ShieldCheck, Building2, CreditCard, History, AlertCircle } from 'lucide-react';
+import { Loader2, Euro, Building2, CreditCard, History, AlertCircle } from 'lucide-react';
 import { supabaseBrowser } from '@/lib/supabase-browser';
 
 export default function BankingDashboardPage() {
@@ -78,7 +78,7 @@ export default function BankingDashboardPage() {
 
       const data = await res.json();
       if (data.url) {
-        window.location.href = data.url; // Redirection directe vers le flux Stripe sécurisé
+        window.location.href = data.url;
       } else {
         alert(data.error || "Erreur lors de la configuration du compte Stripe.");
         setConnectingStripe(false);
@@ -99,18 +99,8 @@ export default function BankingDashboardPage() {
 
   return (
     <div className="max-w-7xl mx-auto px-8 py-10 space-y-8">
-      {/* En-tête */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 border-b border-[#111110]/10">
-        <div className="space-y-1">
-          <div className="flex items-center gap-2">
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-mono bg-emerald-500/10 text-emerald-700 font-semibold border border-emerald-500/20">
-              <ShieldCheck className="w-3 h-3" /> Sécurisé par Stripe Connect
-            </span>
-          </div>
-          <h1 className="font-display text-2xl md:text-3xl font-bold tracking-tight">Banking & Revenus</h1>
-          <p className="text-xs font-mono opacity-60 uppercase tracking-wider">Suivi de vos versements et de votre solde net</p>
-        </div>
-
+      {/* Bouton d'action aligné à droite */}
+      <div className="flex items-center justify-end">
         <button
           onClick={handleStripeRedirect}
           disabled={connectingStripe}
