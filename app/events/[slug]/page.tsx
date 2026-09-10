@@ -5,6 +5,10 @@ import { notFound, useParams } from 'next/navigation';
 import { supabaseBrowser } from '@/lib/supabase-browser';
 import { Calendar, MapPin, ArrowLeft, ArrowUpRight, Clock, Ticket, Minus, Plus, Users, Loader2, Sparkles, X } from 'lucide-react';
 import Link from 'next/link';
+import { loadStripe } from '@stripe/stripe-js';
+import { EmbeddedCheckoutProvider, EmbeddedCheckout } from '@stripe/react-stripe-js';
+
+const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 
 export default function PublicEventPage() {
   const params = useParams();
@@ -15,6 +19,8 @@ export default function PublicEventPage() {
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
   const [quantity, setQuantity] = useState<number>(1);
   const [includeSupport, setIncludeSupport] = useState<boolean>(false);
+  const [clientSecret, setClientSecret] = useState<string | null>(null);
+  const [isInitializingPayment, setIsInitializingPayment] = useState(false);
 
   useEffect(() => {
     if (!slug) return;
@@ -70,6 +76,37 @@ export default function PublicEventPage() {
       })
     : '';
 
+  const handleInitCheckout = async () => {
+    setIsInitializingPayment(true);
+    try {
+      const res = await fetch('/api/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          eventId: event.id,
+          quantity,
+          unitPrice,
+          includeSupport,
+        }),
+      });
+      const data = await res.json();
+      
+      if (data.url) {
+        // Cas gratuit
+        window.location.href = data.url;
+      } else if (data.clientSecret) {
+        setClientSecret(data.clientSecret);
+      } else {
+        alert(data.error || "Erreur lors de l'initialisation du paiement");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Erreur réseau");
+    } finally {
+      setIsInitializingPayment(false);
+    }
+  };
+
   return (
     <main className="min-h-screen bg-[#F7F5F0] text-[#111110] px-6 md:px-12 py-8 md:py-12 selection:bg-[#111110] selection:text-[#F7F5F0]">
       <div className="max-w-6xl mx-auto w-full space-y-12">
@@ -121,10 +158,13 @@ export default function PublicEventPage() {
               )}
             </div>
 
-            {/* Bouton d'action principal (DA unifiée) */}
+            {/* Bouton d'action principal */}
             <div>
               <button
-                onClick={() => setIsCheckoutOpen(true)}
+                onClick={() => {
+                  setClientSecret(null);
+                  setIsCheckoutOpen(true);
+                }}
                 className="w-full sm:w-auto rounded-full bg-[#111110] text-[#F7F5F0] py-4 px-8 text-xs font-mono uppercase tracking-widest transition-all duration-300 hover:bg-[#222220] hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-3 cursor-pointer shadow-lg"
               >
                 <Ticket className="w-4 h-4 text-emerald-400" />
@@ -147,7 +187,7 @@ export default function PublicEventPage() {
 
           </div>
 
-          {/* Colonne Droite : Affiche 16:9 immaculée */}
+          {/* Colonne Droite : Affiche 16:9 */}
           <div className="lg:sticky lg:top-8">
             <div className="relative w-full aspect-[16/9] rounded-3xl overflow-hidden border border-[#111110]/15 bg-[#111110]/5 shadow-sm">
               {event.image_url ? (
@@ -171,109 +211,111 @@ export default function PublicEventPage() {
 
       </div>
 
-      {/* Modale de Billetterie épurée */}
+      {/* Modale de Billetterie White Label Embarquée */}
       {isCheckoutOpen && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200">
-          <div className="relative w-full max-w-md rounded-3xl bg-[#111110] text-[#F7F5F0] p-6 md:p-8 space-y-6 shadow-2xl border border-[#F7F5F0]/15 animate-in zoom-in-95 duration-200">
+          <div className="relative w-full max-w-lg rounded-3xl bg-[#111110] text-[#F7F5F0] p-6 md:p-8 space-y-6 shadow-2xl border border-[#F7F5F0]/15 max-h-[90vh] overflow-y-auto">
             
             {/* Bouton fermer */}
             <button
-              onClick={() => setIsCheckoutOpen(false)}
-              className="absolute top-6 right-6 w-8 h-8 rounded-full bg-[#F7F5F0]/10 flex items-center justify-center text-[#F7F5F0]/70 hover:text-[#F7F5F0] hover:bg-[#F7F5F0]/20 transition-all cursor-pointer"
+              onClick={() => {
+                setIsCheckoutOpen(false);
+                setClientSecret(null);
+              }}
+              className="absolute top-6 right-6 w-8 h-8 rounded-full bg-[#F7F5F0]/10 flex items-center justify-center text-[#F7F5F0]/70 hover:text-[#F7F5F0] hover:bg-[#F7F5F0]/20 transition-all cursor-pointer z-10"
             >
               <X className="w-4 h-4" />
             </button>
 
-            {/* En-tête modale */}
-            <div className="space-y-1">
-              <span className="text-[10px] font-mono uppercase tracking-widest text-[#F7F5F0]/50 block">Billetterie</span>
-              <h3 className="font-display text-xl font-bold tracking-tight line-clamp-1">{event.title}</h3>
-            </div>
+            {!clientSecret ? (
+              <>
+                {/* En-tête modale */}
+                <div className="space-y-1">
+                  <span className="text-[10px] font-mono uppercase tracking-widest text-[#F7F5F0]/50 block">Billetterie</span>
+                  <h3 className="font-display text-xl font-bold tracking-tight line-clamp-1">{event.title}</h3>
+                </div>
 
-            {/* Quantité */}
-            <div className="space-y-2 pt-2">
-              <div className="flex justify-between items-center text-xs font-mono text-[#F7F5F0]/60">
-                <span>Quantité</span>
-                <span className="text-[#F7F5F0] font-bold flex items-center gap-1">
-                  <Users className="w-3.5 h-3.5" /> {quantity}
-                </span>
-              </div>
-              <div className="flex items-center justify-between bg-[#F7F5F0]/5 border border-[#F7F5F0]/15 rounded-2xl p-1.5">
-                <button
-                  onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                  disabled={quantity <= 1}
-                  className="w-10 h-10 rounded-xl bg-[#F7F5F0]/10 flex items-center justify-center text-[#F7F5F0] hover:bg-[#F7F5F0]/20 disabled:opacity-30 transition-all cursor-pointer"
-                >
-                  <Minus className="w-4 h-4" />
-                </button>
-                <span className="font-mono text-xl font-bold">{quantity}</span>
-                <button
-                  onClick={() => setQuantity(Math.min(10, quantity + 1))}
-                  disabled={quantity >= 10}
-                  className="w-10 h-10 rounded-xl bg-[#F7F5F0]/10 flex items-center justify-center text-[#F7F5F0] hover:bg-[#F7F5F0]/20 disabled:opacity-30 transition-all cursor-pointer"
-                >
-                  <Plus className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
-
-            {/* Option solidaire optionnelle */}
-            {basePrice > 0 && (
-              <div className="bg-[#F7F5F0]/5 border border-[#F7F5F0]/10 rounded-2xl p-3.5">
-                <label className="flex items-start gap-3 cursor-pointer select-none">
-                  <input
-                    type="checkbox"
-                    checked={includeSupport}
-                    onChange={(e) => setIncludeSupport(e.target.checked)}
-                    className="mt-0.5 rounded border-[#F7F5F0]/20 bg-transparent text-[#111110] focus:ring-0 cursor-pointer"
-                  />
-                  <div className="space-y-0.5 text-xs">
-                    <p className="font-semibold text-[#F7F5F0]">Option solidaire (+2 € / billet)</p>
-                    <p className="text-[#F7F5F0]/50 text-[11px]">Soutien direct au lieu.</p>
+                {/* Quantité */}
+                <div className="space-y-2 pt-2">
+                  <div className="flex justify-between items-center text-xs font-mono text-[#F7F5F0]/60">
+                    <span>Quantité</span>
+                    <span className="text-[#F7F5F0] font-bold flex items-center gap-1">
+                      <Users className="w-3.5 h-3.5" /> {quantity}
+                    </span>
                   </div>
-                </label>
+                  <div className="flex items-center justify-between bg-[#F7F5F0]/5 border border-[#F7F5F0]/15 rounded-2xl p-1.5">
+                    <button
+                      onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                      disabled={quantity <= 1}
+                      className="w-10 h-10 rounded-xl bg-[#F7F5F0]/10 flex items-center justify-center text-[#F7F5F0] hover:bg-[#F7F5F0]/20 disabled:opacity-30 transition-all cursor-pointer"
+                    >
+                      <Minus className="w-4 h-4" />
+                    </button>
+                    <span className="font-mono text-xl font-bold">{quantity}</span>
+                    <button
+                      onClick={() => setQuantity(Math.min(10, quantity + 1))}
+                      disabled={quantity >= 10}
+                      className="w-10 h-10 rounded-xl bg-[#F7F5F0]/10 flex items-center justify-center text-[#F7F5F0] hover:bg-[#F7F5F0]/20 disabled:opacity-30 transition-all cursor-pointer"
+                    >
+                      <Plus className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+
+                {/* Option solidaire optionnelle */}
+                {basePrice > 0 && (
+                  <div className="bg-[#F7F5F0]/5 border border-[#F7F5F0]/10 rounded-2xl p-3.5">
+                    <label className="flex items-start gap-3 cursor-pointer select-none">
+                      <input
+                        type="checkbox"
+                        checked={includeSupport}
+                        onChange={(e) => setIncludeSupport(e.target.checked)}
+                        className="mt-0.5 rounded border-[#F7F5F0]/20 bg-transparent text-[#111110] focus:ring-0 cursor-pointer"
+                      />
+                      <div className="space-y-0.5 text-xs">
+                        <p className="font-semibold text-[#F7F5F0]">Option solidaire (+2 € / billet)</p>
+                        <p className="text-[#F7F5F0]/50 text-[11px]">Soutien direct au lieu.</p>
+                      </div>
+                    </label>
+                  </div>
+                )}
+
+                {/* Total et Bouton */}
+                <div className="space-y-4 pt-4 border-t border-[#F7F5F0]/15">
+                  <div className="flex items-baseline justify-between">
+                    <span className="text-xs font-mono text-[#F7F5F0]/50 uppercase tracking-wider">Total</span>
+                    <p className="font-display text-3xl font-bold tracking-tight">
+                      {basePrice === 0 ? 'Gratuit' : `${totalPrice.toFixed(2)} €`}
+                    </p>
+                  </div>
+
+                  <button 
+                    onClick={handleInitCheckout}
+                    disabled={isInitializingPayment}
+                    className="w-full rounded-full bg-[#F7F5F0] text-[#111110] py-4 px-6 text-xs font-mono uppercase tracking-widest transition-all duration-300 hover:bg-white hover:scale-[1.01] active:scale-[0.98] flex items-center justify-center gap-2 cursor-pointer shadow-xl font-bold disabled:opacity-50"
+                  >
+                    {isInitializingPayment ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : (
+                      <>
+                        <span>{basePrice === 0 ? 'Valider ma place' : 'Procéder au paiement'}</span>
+                        <ArrowUpRight className="w-4 h-4" />
+                      </>
+                    )}
+                  </button>
+                </div>
+              </>
+            ) : (
+              /* Tunnel de paiement Stripe 100% Embarqué (White Label) */
+              <div className="pt-2">
+                <EmbeddedCheckoutProvider
+                  stripe={stripePromise}
+                  options={{ clientSecret }}
+                >
+                  <EmbeddedCheckout className="bg-[#111110]" />
+                </EmbeddedCheckoutProvider>
               </div>
             )}
-
-            {/* Total et Paiement */}
-            <div className="space-y-4 pt-4 border-t border-[#F7F5F0]/15">
-              <div className="flex items-baseline justify-between">
-                <span className="text-xs font-mono text-[#F7F5F0]/50 uppercase tracking-wider">Total</span>
-                <p className="font-display text-3xl font-bold tracking-tight">
-                  {basePrice === 0 ? 'Gratuit' : `${totalPrice.toFixed(2)} €`}
-                </p>
-              </div>
-
-              <button 
-                onClick={async () => {
-                  try {
-                    const res = await fetch('/api/checkout', {
-                      method: 'POST',
-                      headers: { 'Content-Type': 'application/json' },
-                      body: JSON.stringify({
-                        eventId: event.id,
-                        quantity,
-                        unitPrice,
-                        includeSupport,
-                      }),
-                    });
-                    const data = await res.json();
-                    if (data.url) {
-                      window.location.href = data.url;
-                    } else {
-                      alert(data.error || "Erreur lors du paiement");
-                    }
-                  } catch (err) {
-                    console.error(err);
-                    alert("Erreur réseau");
-                  }
-                }}
-                className="w-full rounded-full bg-[#F7F5F0] text-[#111110] py-4 px-6 text-xs font-mono uppercase tracking-widest transition-all duration-300 hover:bg-white hover:scale-[1.01] active:scale-[0.98] flex items-center justify-center gap-2 cursor-pointer shadow-xl font-bold"
-              >
-                <span>{basePrice === 0 ? 'Valider ma place' : 'Procéder au paiement'}</span>
-                <ArrowUpRight className="w-4 h-4" />
-              </button>
-            </div>
 
           </div>
         </div>
