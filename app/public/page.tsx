@@ -2,26 +2,23 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { ArrowUpRight, Sun, Moon } from 'lucide-react';
+import { ArrowUpRight, Smartphone, Apple, Play } from 'lucide-react';
 
-const EVENTS = [
+const MANIFESTO = [
   {
-    title: 'Nuit Électro — Session I',
-    venue: 'Le Sous-Sol, Lyon',
-    date: '12.03',
-    price: '18,00 €',
+    num: '01',
+    title: 'Transparence totale',
+    text: 'Le prix affiché est le prix payé. Pas de frais de service cachés au moment de régler.',
   },
   {
-    title: 'Open Air Botanique',
-    venue: 'Les Docks, Marseille',
-    date: '21.03',
-    price: '22,00 €',
+    num: '02',
+    title: 'Souveraineté des salles',
+    text: 'Les lieux et les collectifs gardent la main sur leur billetterie et leurs données.',
   },
   {
-    title: 'Club Infini',
-    venue: 'La Chapelle, Paris',
-    date: '27.03',
-    price: '15,00 €',
+    num: '03',
+    title: 'Simplicité d’usage',
+    text: 'Un achat en un geste, un pass numérique instantané et sans artifice.',
   },
 ];
 
@@ -56,24 +53,6 @@ const UPCOMING_EVENTS = [
   },
 ];
 
-const MANIFESTO = [
-  {
-    num: '01',
-    title: 'Transparence totale',
-    text: 'Le prix affiché est le prix payé. Pas de frais de service cachés au moment de régler.',
-  },
-  {
-    num: '02',
-    title: 'Souveraineté des salles',
-    text: 'Les lieux et les collectifs gardent la main sur leur billetterie et leurs données.',
-  },
-  {
-    num: '03',
-    title: 'Simplicité d’usage',
-    text: 'Un achat en un geste, un pass numérique instantané et sans artifice.',
-  },
-];
-
 export default function PublicHome() {
   const [isDarkMode, setIsDarkMode] = useState(false);
 
@@ -82,7 +61,7 @@ export default function PublicHome() {
       <main className="mx-auto max-w-7xl px-6 md:px-12 flex-1 w-full">
 
         {/* ─── HERO ─── */}
-        <section className="py-24 md:py-36 grid lg:grid-cols-[1.2fr_0.8fr] gap-16 items-end">
+        <section className="py-24 md:py-36 grid lg:grid-cols-[1.2fr_0.8fr] gap-16 items-center">
           <div className="space-y-8">
             <span className={`inline-block text-xs font-mono uppercase tracking-widest pb-1 border-b ${isDarkMode ? 'text-[#F7F5F0]/50 border-[#F7F5F0]/20' : 'text-[#111110]/50 border-[#111110]/20'}`}>
               Billetterie indépendante — Édition 2026
@@ -99,32 +78,48 @@ export default function PublicHome() {
             </p>
           </div>
 
-          <div className={`border-t lg:border-t-0 lg:border-l pt-8 lg:pt-0 lg:pl-12 flex flex-col justify-between h-full ${isDarkMode ? 'border-[#F7F5F0]/10' : 'border-[#111110]/10'}`}>
-            <div className="space-y-6">
-              <p className={`text-xs font-mono uppercase tracking-widest ${isDarkMode ? 'text-[#F7F5F0]/40' : 'text-[#111110]/40'}`}>Prochains rendez-vous</p>
-              <div className="space-y-4">
-                {EVENTS.map((ev, i) => (
-                  <div key={i} className={`group flex items-center justify-between py-3 border-b cursor-pointer ${isDarkMode ? 'border-[#F7F5F0]/10' : 'border-[#111110]/10'}`}>
-                    <div>
-                      <p className="font-display font-semibold text-lg group-hover:italic transition-all">{ev.title}</p>
-                      <p className={`text-xs ${isDarkMode ? 'text-[#F7F5F0]/50' : 'text-[#111110]/50'}`}>{ev.venue} · {ev.date}</p>
-                    </div>
-                    <div className="text-right">
-                      <span className="text-sm font-mono">{ev.price}</span>
-                      <ArrowUpRight className="w-4 h-4 inline-block ml-2 opacity-0 group-hover:opacity-100 transition-opacity" />
-                    </div>
-                  </div>
-                ))}
+          {/* COLONNE DE DROITE : Animation App Mobile / Bientôt disponible */}
+          <div className={`border-t lg:border-t-0 lg:border-l pt-8 lg:pt-0 lg:pl-12 flex flex-col justify-center h-full ${isDarkMode ? 'border-[#F7F5F0]/10' : 'border-[#111110]/10'}`}>
+            <div className={`rounded-3xl p-8 border relative overflow-hidden transition-all ${isDarkMode ? 'bg-[#F7F5F0]/[0.03] border-[#F7F5F0]/15' : 'bg-white/60 border-[#111110]/10'} shadow-sm`}>
+              
+              {/* Badge discret animé */}
+              <div className="flex items-center justify-between mb-6">
+                <span className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-emerald-500 font-semibold">
+                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                  Bientôt disponible
+                </span>
+                <Smartphone className={`w-5 h-5 ${isDarkMode ? 'text-[#F7F5F0]/40' : 'text-[#111110]/40'}`} />
               </div>
-            </div>
 
-            <div className="mt-12">
-              <Link 
-                href="/evenements"
-                className={`inline-flex items-center gap-2 text-sm font-medium underline underline-offset-4 ${isDarkMode ? 'decoration-[#F7F5F0]/30 hover:decoration-[#F7F5F0]' : 'decoration-[#111110]/30 hover:decoration-[#111110]'}`}
-              >
-                Voir tout le catalogue des événements &rarr;
-              </Link>
+              {/* Contenu de l'annonce */}
+              <div className="space-y-3 mb-8">
+                <h3 className="font-display text-2xl md:text-3xl font-bold tracking-tight">
+                  L'application arrive dans votre poche.
+                </h3>
+                <p className={`text-xs md:text-sm font-light leading-relaxed ${isDarkMode ? 'text-[#F7F5F0]/60' : 'text-[#111110]/60'}`}>
+                  Retrouvez tous vos billets, accédez aux soirées en un flash et profitez d'une expérience fluide sur iOS et Android.
+                </p>
+              </div>
+
+              {/* Boutons plateformes en mode "Coming Soon" */}
+              <div className="grid grid-cols-2 gap-3">
+                <div className={`flex items-center gap-3 p-3 rounded-2xl border ${isDarkMode ? 'bg-[#111110] border-[#F7F5F0]/10 text-[#F7F5F0]' : 'bg-[#111110] text-[#F7F5F0] border-transparent'} opacity-80 cursor-default select-none`}>
+                  <Apple className="w-5 h-5 shrink-0" />
+                  <div className="text-left leading-tight">
+                    <span className="block text-[9px] uppercase font-mono opacity-50">Bientôt sur</span>
+                    <span className="text-xs font-bold font-mono">iOS App Store</span>
+                  </div>
+                </div>
+
+                <div className={`flex items-center gap-3 p-3 rounded-2xl border ${isDarkMode ? 'bg-[#111110] border-[#F7F5F0]/10 text-[#F7F5F0]' : 'bg-[#111110] text-[#F7F5F0] border-transparent'} opacity-80 cursor-default select-none`}>
+                  <Play className="w-4 h-4 shrink-0 fill-current" />
+                  <div className="text-left leading-tight">
+                    <span className="block text-[9px] uppercase font-mono opacity-50">Bientôt sur</span>
+                    <span className="text-xs font-bold font-mono">Google Play</span>
+                  </div>
+                </div>
+              </div>
+
             </div>
           </div>
         </section>
@@ -208,3 +203,4 @@ export default function PublicHome() {
     </div>
   );
 }
+```[cite: 2]
