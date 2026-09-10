@@ -47,7 +47,7 @@ export default async function RootLayout({
       lang="fr"
       className={`${fontBody.variable} ${fontDisplay.variable} ${fontMono.variable}`}
     >
-      <body className="relative min-h-screen bg-onyx bg-night-glow text-bone flex flex-col selection:bg-bone/20 selection:text-bone font-sans">
+      <body className="min-h-screen bg-onyx bg-night-glow text-bone flex flex-col selection:bg-bone/20 selection:text-bone font-sans">
         <div className="grain" aria-hidden="true" />
         
         {/* La Navbar s'affiche sur tyks.app et pro.tyks.app, mais masquée sur dashboard.tyks.app */}
