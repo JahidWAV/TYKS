@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { 
   LayoutDashboard, Calendar, BarChart3, Megaphone, 
-  Users, Wallet, Globe, Settings, LogOut, Loader2 
+  Users, Wallet, Globe, LogOut, Loader2, User, ChevronRight 
 } from 'lucide-react';
 import { supabaseBrowser } from '@/lib/supabase-browser';
 
@@ -45,6 +45,21 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     { label: 'My Page', href: '/page', icon: Globe },
   ];
 
+  // Génération dynamique du fil d'Ariane en fonction de l'URL
+  const getBreadcrumbs = () => {
+    if (pathname === '/') return ['Dashboard'];
+    const segments = pathname.split('/').filter(Boolean);
+    
+    // Convertit les segments d'URL en libellés propres
+    return segments.map(seg => {
+      const match = navItems.find(item => item.href === `/${seg}`);
+      if (match) return match.label;
+      return seg.charAt(0).toUpperCase() + seg.slice(1).replace(/-/g, ' ');
+    });
+  };
+
+  const breadcrumbs = getBreadcrumbs();
+
   if (user === undefined) {
     return (
       <div className="min-h-screen bg-[#F7F5F0] text-[#111110] flex items-center justify-center">
@@ -60,10 +75,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   return (
     <div className="min-h-screen bg-[#F7F5F0] text-[#111110] flex selection:bg-[#111110] selection:text-[#F7F5F0] overflow-x-hidden">
       
-      {/* 1. Barre d'icônes ultra-fine toujours fixe à gauche (w-16) */}
+      {/* 1. Barre d'icônes fixe à gauche (w-16) sans l'engrenage */}
       <aside className="fixed top-0 left-0 h-screen w-16 border-r border-[#111110]/10 bg-[#F7F5F0] flex flex-col items-center justify-between py-6 z-40 select-none">
         
-        {/* Logo / Icône */}
+        {/* Logo icône du haut */}
         <div className="flex items-center justify-center">
           <Link href="/" className="w-10 h-10 flex items-center justify-center group">
             <img 
@@ -97,20 +112,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           })}
         </div>
 
-        {/* Bas de sidebar (Réglages & Déconnexion) */}
+        {/* Bas de sidebar (Uniquement la déconnexion, réglages retirés) */}
         <div className="space-y-2 w-full px-2 border-t border-[#111110]/10 pt-4 bg-[#F7F5F0]">
-          <Link 
-            href="/settings" 
-            title="Réglages"
-            className={`w-12 h-10 mx-auto flex items-center justify-center rounded-xl transition ${
-              pathname === '/settings'
-                ? 'bg-[#111110] text-[#F7F5F0]'
-                : 'opacity-70 hover:opacity-100 hover:bg-[#111110]/5 text-[#111110]'
-            }`}
-          >
-            <Settings className="w-5 h-5 opacity-70" />
-          </Link>
-
           <button
             onClick={handleLogout}
             title="Se déconnecter"
@@ -121,21 +124,21 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         </div>
       </aside>
 
-      {/* 2. Panneau textuel contextuel qui s'ouvre au survol (positionné à left-16) */}
+      {/* 2. Panneau textuel contextuel au survol (aligné en hauteur avec le header) */}
       <div 
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
-        className={`fixed top-0 left-16 h-screen bg-[#F7F5F0] border-r border-[#111110]/10 flex flex-col justify-between py-6 z-30 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] overflow-hidden select-none ${
+        className={`fixed top-0 left-16 h-screen bg-[#F7F5F0] border-r border-[#111110]/10 flex flex-col justify-between z-30 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] overflow-hidden select-none ${
           isHovered ? 'w-56 opacity-100 shadow-xl' : 'w-0 opacity-0 pointer-events-none'
         }`}
       >
-        {/* En-tête du panneau avec le logo texte */}
-        <div className="px-5 flex items-center h-10 whitespace-nowrap">
+        {/* En-tête du panneau exactement à la hauteur du header (h-14) */}
+        <div className="h-14 px-6 flex items-center border-b border-[#111110]/10 shrink-0 whitespace-nowrap">
           <img src="/tyks.svg" alt="TYKS" className="h-4 w-auto object-contain" />
         </div>
 
         {/* Navigation textuelle */}
-        <div className="space-y-1 w-full px-3 flex-1 pt-2">
+        <div className="space-y-1 w-full px-3 flex-1 pt-4">
           <p className="text-[10px] font-mono uppercase tracking-wider opacity-40 px-3 pb-2">
             Workspace
           </p>
@@ -158,8 +161,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           })}
         </div>
 
-        {/* Bas du panneau */}
-        <div className="px-3 space-y-1 border-t border-[#111110]/10 pt-4">
+        {/* Bas du panneau (Réglages et Déconnexion) */}
+        <div className="px-3 space-y-1 border-t border-[#111110]/10 py-4">
           <Link 
             href="/settings" 
             className={`flex items-center h-10 px-3 rounded-xl text-xs font-medium whitespace-nowrap transition ${
@@ -180,28 +183,33 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         </div>
       </div>
 
-      {/* 3. Contenu principal : décale dynamiquement sa marge gauche (ml-16 ou ml-72) selon l'état du survol */}
+      {/* 3. Contenu principal et Header dynamique */}
       <div 
         className={`flex-1 min-w-0 flex flex-col h-screen overflow-hidden transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${
           isHovered ? 'ml-72' : 'ml-16'
         }`}
       >
-        {/* Barre supérieure du dashboard */}
+        {/* Header avec Fil d'Ariane dynamique et Avatar Profil */}
         <header className="h-14 border-b border-[#111110]/10 bg-[#F7F5F0] px-6 flex items-center justify-between shrink-0 z-20">
-          <div className="flex items-center gap-3 text-xs font-medium opacity-70">
-            <span>Projet</span>
-            <span>/</span>
-            <span className="text-[#111110] font-semibold flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
-              Production
-            </span>
+          <div className="flex items-center gap-2 text-xs font-medium opacity-70">
+            {breadcrumbs.map((crumb, index) => (
+              <div key={index} className="flex items-center gap-2">
+                {index > 0 && <ChevronRight className="w-3.5 h-3.5 opacity-40" />}
+                <span className={index === breadcrumbs.length - 1 ? "text-[#111110] font-semibold" : ""}>
+                  {crumb}
+                </span>
+              </div>
+            ))}
           </div>
 
-          <div className="flex items-center gap-3">
-            <span className="text-[11px] font-mono px-2.5 py-1 rounded-md bg-[#111110]/5 opacity-80">
-              v2.0-stable
-            </span>
-          </div>
+          {/* Icône de profil à la place de v2.0-stable */}
+          <Link 
+            href="/settings"
+            className="w-8 h-8 rounded-full bg-[#111110]/5 border border-[#111110]/10 flex items-center justify-center hover:bg-[#111110]/10 transition"
+            title="Profil & Paramètres"
+          >
+            <User className="w-4 h-4 opacity-70" />
+          </Link>
         </header>
 
         {/* Zone de contenu scrollable */}
