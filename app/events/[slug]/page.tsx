@@ -1,6 +1,5 @@
 import { notFound } from 'next/navigation';
-import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
-import { cookies } from 'headers';
+import { supabaseServer } from '@/lib/supabase-server';
 
 interface EventPageProps {
   params: {
@@ -10,10 +9,9 @@ interface EventPageProps {
 
 export default async function PublicEventPage({ params }: EventPageProps) {
   const { slug } = params;
-  const supabase = createServerComponentClient({ cookies });
 
-  // Récupération de l'événement par son slug dans Supabase
-  const { data: event, error } = await supabase
+  // Récupération de l'événement par son slug avec ton client Supabase standard
+  const { data: event, error } = await supabaseServer
     .from('events')
     .select('*')
     .eq('slug', slug)
@@ -30,7 +28,7 @@ export default async function PublicEventPage({ params }: EventPageProps) {
         <div className="space-y-4">
           <h1 className="text-4xl font-extrabold tracking-tight">{event.title}</h1>
           <p className="text-neutral-400 text-lg">
-            {new Date(event.date).toLocaleDateString('fr-FR', {
+            {event.starts_at && new Date(event.starts_at).toLocaleDateString('fr-FR', {
               weekday: 'long',
               year: 'numeric',
               month: 'long',
@@ -53,7 +51,6 @@ export default async function PublicEventPage({ params }: EventPageProps) {
             <h3 className="text-lg font-medium">Réservez votre place</h3>
             <p className="text-sm text-neutral-400">Sécurisé via Stripe</p>
           </div>
-          {/* Remplace ce bouton par ton composant de paiement ou ton formulaire de billetterie */}
           <button className="bg-white text-black font-semibold px-6 py-3 rounded-lg hover:bg-neutral-200 transition-colors">
             Acheter un billet
           </button>
