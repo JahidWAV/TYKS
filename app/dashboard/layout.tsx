@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { 
   LayoutDashboard, Calendar, BarChart3, Megaphone, 
-  Users, Wallet, Globe, Settings, LogOut, Sparkles 
+  Users, Wallet, Globe, Settings, LogOut 
 } from 'lucide-react';
 import { supabaseBrowser } from '@/lib/supabase-browser';
 
@@ -20,12 +20,12 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   const navItems = [
     { label: 'Overview', href: '/dashboard', icon: LayoutDashboard },
-    { label: 'Events', href: '/dashboard/events', icon: Calendar },
-    { label: 'Analytics', href: '/dashboard/analytics', icon: BarChart3 },
-    { label: 'Marketing', href: '/dashboard/marketing', icon: Megaphone },
-    { label: 'Community', href: '/dashboard/community', icon: Users },
-    { label: 'Banking & Payouts', href: '/dashboard/banking', icon: Wallet },
-    { label: 'My Page', href: '/dashboard/page', icon: Globe },
+    { label: 'Events', href: '/events', icon: Calendar },
+    { label: 'Analytics', href: '/analytics', icon: BarChart3 },
+    { label: 'Marketing', href: '/marketing', icon: Megaphone },
+    { label: 'Community', href: '/community', icon: Users },
+    { label: 'Banking & Payouts', href: '/banking', icon: Wallet },
+    { label: 'My Page', href: '/page', icon: Globe },
   ];
 
   return (
@@ -50,19 +50,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             </div>
           </Link>
 
-          {/* Raccourci Création Rapide */}
-          <div className="pt-1">
-            <Link
-              href="/new"
-              className="flex items-center justify-center gap-2 w-full py-2.5 px-4 rounded-2xl bg-[#111110] text-[#F7F5F0] text-xs font-semibold shadow-sm hover:opacity-95 transition-all"
-            >
-              <Sparkles className="w-3.5 h-3.5" />
-              <span>Créer un événement</span>
-            </Link>
-          </div>
-
           {/* Liens de navigation */}
-          <div className="space-y-1">
+          <div className="space-y-1 pt-2">
             <p className="text-[10px] font-mono uppercase tracking-wider opacity-40 px-3 pb-2">Menu Principal</p>
             {navItems.map((item) => {
               const Icon = item.icon;
@@ -89,9 +78,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         {/* Pied de sidebar : Réglages & Déconnexion */}
         <div className="p-4 border-t border-[#111110]/10 space-y-2 bg-white/40 backdrop-blur-md">
           <Link 
-            href="/dashboard/settings" 
+            href="/settings" 
             className={`flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-medium transition ${
-              pathname === '/dashboard/settings'
+              pathname === '/settings'
                 ? 'bg-[#111110] text-[#F7F5F0]'
                 : 'border border-[#111110]/10 bg-white/60 hover:bg-white text-[#111110]'
             }`}
