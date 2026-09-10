@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { supabaseBrowser } from "@/lib/supabase-browser";
-import { X, Loader2, ArrowRight } from "lucide-react";
+import { X, Loader2, ArrowRight, ArrowLeft } from "lucide-react";
 
 interface CustomAuthModalProps {
   isOpen: boolean;
@@ -13,13 +13,13 @@ interface CustomAuthModalProps {
 export default function CustomAuthModal({ isOpen, onClose, isDarkMode = false }: CustomAuthModalProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  
-  // États pour le tunnel e-mail progressif
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  
-  const [step, setStep] = useState<'email' | 'password' | 'signup'>('email');
+
+  // Mode actif : 'email' (saisie e-mail), 'signin' (connexion), 'signup' (inscription)
+  const [step, setStep] = useState<'email' | 'signin' | 'signup'>('email');
 
   if (!isOpen) return null;
 
@@ -31,10 +31,7 @@ export default function CustomAuthModal({ isOpen, onClose, isDarkMode = false }:
         provider: "google",
         options: {
           redirectTo: `${window.location.origin}/auth/callback`,
-          queryParams: {
-            access_type: 'offline',
-            prompt: 'consent',
-          },
+          queryParams: { access_type: 'offline', prompt: 'consent' },
         },
       });
       if (error) throw error;
@@ -50,9 +47,7 @@ export default function CustomAuthModal({ isOpen, onClose, isDarkMode = false }:
       setError(null);
       const { error } = await supabaseBrowser.auth.signInWithOAuth({
         provider: "apple",
-        options: {
-          redirectTo: `${window.location.origin}/auth/callback`,
-        },
+        options: { redirectTo: `${window.location.origin}/auth/callback` },
       });
       if (error) throw error;
     } catch (err: any) {
@@ -61,85 +56,48 @@ export default function CustomAuthModal({ isOpen, onClose, isDarkMode = false }:
     }
   };
 
-  // Gestion de la soumission de l'e-mail / mot de passe
-  const handleEmailSubmit = async (e: React.FormEvent) => {
+  const handleEmailStepSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setError(null);
-
     if (!email || !email.includes("@")) {
       setError("Veuillez entrer une adresse e-mail valide.");
       return;
     }
+    setError(null);
+    setStep('signin'); // Par défaut, on propose la connexion après l'e-mail
+  };
 
-    // Étape 1 : Valider l'e-mail et afficher le champ mot de passe
-    if (step === 'email') {
-      if (!email.trim()) return;
-      setStep('password');
-      return;
-    }
+  const handleAuthSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+    setLoading(true);
 
-    // Étape 2 : Tentative de connexion avec le mot de passe
-    if (step === 'password') {
-      if (!password) {
-        setError("Veuillez entrer votre mot de passe.");
-        return;
-      }
-
-      setLoading(true);
-      try {
+    try {
+      if (step === 'signin') {
         const { error: signInError } = await supabaseBrowser.auth.signInWithPassword({
           email,
           password,
         });
-
-        if (signInError) {
-          // Si l'utilisateur n'existe pas ou mauvais mot de passe, on bascule vers l'inscription / confirmation
-          if (signInError.message.includes("Invalid login credentials")) {
-            // On bascule vers l'étape de création de compte avec confirmation de mot de passe
-            setStep('signup');
-            setError("Aucun compte associé ou mot de passe incorrect. Confirmez votre mot de passe pour créer votre compte.");
-            setLoading(false);
-            return;
-          }
-          throw signInError;
-        }
-
+        if (signInError) throw signInError;
         onClose();
-      } catch (err: any) {
-        setError(err?.message || "Erreur lors de l'authentification.");
-      } finally {
-        setLoading(false);
-      }
-      return;
-    }
-
-    // Étape 3 : Inscription finale (première connexion avec confirmation du mot de passe)
-    if (step === 'signup') {
-      if (password !== confirmPassword) {
-        setError("Les mots de passe ne correspondent pas.");
-        return;
-      }
-
-      setLoading(true);
-      try {
+      } else if (step === 'signup') {
+        if (password !== confirmPassword) {
+          setError("Les mots de passe ne correspondent pas.");
+          setLoading(false);
+          return;
+        }
         const { error: signUpError } = await supabaseBrowser.auth.signUp({
           email,
           password,
-          options: {
-            emailRedirectTo: `${window.location.origin}/auth/callback`,
-          },
+          options: { emailRedirectTo: `${window.location.origin}/auth/callback` },
         });
-
         if (signUpError) throw signUpError;
-
-        setError(null);
-        alert("Compte créé avec succès ! Vérifiez vos e-mails si une confirmation est requise.");
+        alert("Compte créé avec succès ! Vérifiez vos e-mails pour valider votre inscription.");
         onClose();
-      } catch (err: any) {
-        setError(err?.message || "Erreur lors de la création du compte.");
-      } finally {
-        setLoading(false);
       }
+    } catch (err: any) {
+      setError(err?.message || "Une erreur est survenue.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -160,7 +118,9 @@ export default function CustomAuthModal({ isOpen, onClose, isDarkMode = false }:
         <div className="text-center mb-6 space-y-2">
           <h2 className="font-display text-2xl font-bold tracking-tight">TYKS</h2>
           <p className={`text-xs font-light ${isDarkMode ? 'text-[#F7F5F0]/60' : 'text-[#111110]/60'}`}>
-            Connectez-vous pour accéder à votre espace
+            {step === 'email' && "Connectez-vous pour accéder à votre espace"}
+            {step === 'signin' && "Entrez votre mot de passe"}
+            {step === 'signup' && "Créez votre compte en quelques secondes"}
           </p>
         </div>
 
@@ -170,149 +130,160 @@ export default function CustomAuthModal({ isOpen, onClose, isDarkMode = false }:
           </div>
         )}
 
-        {/* Boutons Sociaux */}
-        <div className="space-y-3 mb-6">
-          <button
-            onClick={handleLoginWithGoogle}
-            disabled={loading}
-            className={`w-full flex items-center justify-center gap-3 px-4 py-3.5 rounded-full border text-xs font-semibold transition-all hover:scale-[1.02] disabled:opacity-50 ${
-              isDarkMode 
-                ? 'border-[#F7F5F0]/20 bg-[#F7F5F0]/5 hover:bg-[#F7F5F0]/10 text-[#F7F5F0]' 
-                : 'border-[#111110]/20 bg-[#111110]/5 hover:bg-[#111110]/10 text-[#111110]'
-            }`}
-          >
-            <svg className="w-4 h-4" viewBox="0 0 24 24">
-              <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
-              <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
-              <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" />
-              <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" />
-            </svg>
-            Continuer avec Google
-          </button>
+        {/* Boutons Sociaux (affichés uniquement à la racine ou sur l'étape e-mail pour épurer) */}
+        {step === 'email' && (
+          <>
+            <div className="space-y-3 mb-6">
+              <button
+                onClick={handleLoginWithGoogle}
+                disabled={loading}
+                className={`w-full flex items-center justify-center gap-3 px-4 py-3.5 rounded-full border text-xs font-semibold transition-all hover:scale-[1.02] disabled:opacity-50 ${
+                  isDarkMode 
+                    ? 'border-[#F7F5F0]/20 bg-[#F7F5F0]/5 hover:bg-[#F7F5F0]/10 text-[#F7F5F0]' 
+                    : 'border-[#111110]/20 bg-[#111110]/5 hover:bg-[#111110]/10 text-[#111110]'
+                }`}
+              >
+                <svg className="w-4 h-4" viewBox="0 0 24 24">
+                  <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+                  <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+                  <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" />
+                  <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" />
+                </svg>
+                Continuer avec Google
+              </button>
 
-          <button
-            onClick={handleLoginWithApple}
-            disabled={loading}
-            className={`w-full flex items-center justify-center gap-3 px-4 py-3.5 rounded-full border text-xs font-semibold transition-all hover:scale-[1.02] disabled:opacity-50 ${
-              isDarkMode 
-                ? 'border-[#F7F5F0]/20 bg-[#F7F5F0]/5 hover:bg-[#F7F5F0]/10 text-[#F7F5F0]' 
-                : 'border-[#111110]/20 bg-[#111110]/5 hover:bg-[#111110]/10 text-[#111110]'
-            }`}
-          >
-            <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
-              <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 6.01c.65-.79 1.09-1.89.97-2.99-.96.04-2.13.64-2.82 1.43-.6.68-1.13 1.78-.99 2.85 1.08.08 2.19-.53 2.84-1.29z"/>
-            </svg>
-            Continuer avec Apple
-          </button>
-        </div>
+              <button
+                onClick={handleLoginWithApple}
+                disabled={loading}
+                className={`w-full flex items-center justify-center gap-3 px-4 py-3.5 rounded-full border text-xs font-semibold transition-all hover:scale-[1.02] disabled:opacity-50 ${
+                  isDarkMode 
+                    ? 'border-[#F7F5F0]/20 bg-[#F7F5F0]/5 hover:bg-[#F7F5F0]/10 text-[#F7F5F0]' 
+                    : 'border-[#111110]/20 bg-[#111110]/5 hover:bg-[#111110]/10 text-[#111110]'
+                }`}
+              >
+                <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
+                  <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 6.01c.65-.79 1.09-1.89.97-2.99-.96.04-2.13.64-2.82 1.43-.6.68-1.13 1.78-.99 2.85 1.08.08 2.19-.53 2.84-1.29z"/>
+                </svg>
+                Continuer avec Apple
+              </button>
+            </div>
 
-        <div className="relative flex items-center justify-center mb-6">
-          <div className={`absolute inset-0 flex items-center ${isDarkMode ? 'opacity-15' : 'opacity-20'}`}>
-            <div className={`w-full border-t ${isDarkMode ? 'border-[#F7F5F0]' : 'border-[#111110]'}`} />
-          </div>
-          <span className={`relative px-3 text-[10px] uppercase font-mono tracking-widest ${isDarkMode ? 'bg-[#111110] text-[#F7F5F0]/50' : 'bg-[#F7F5F0] text-[#111110]/50'}`}>
-            ou par e-mail
-          </span>
-        </div>
+            <div className="relative flex items-center justify-center mb-6">
+              <div className={`absolute inset-0 flex items-center ${isDarkMode ? 'opacity-15' : 'opacity-20'}`}>
+                <div className={`w-full border-t ${isDarkMode ? 'border-[#F7F5F0]' : 'border-[#111110]'}`} />
+              </div>
+              <span className={`relative px-3 text-[10px] uppercase font-mono tracking-widest ${isDarkMode ? 'bg-[#111110] text-[#F7F5F0]/50' : 'bg-[#F7F5F0] text-[#111110]/50'}`}>
+                ou par e-mail
+              </span>
+            </div>
+          </>
+        )}
 
-        {/* Tunnel E-mail Progressif */}
-        <form onSubmit={handleEmailSubmit} className="space-y-3">
-          <div>
+        {/* Formulaire E-mail / Mot de passe */}
+        {step === 'email' ? (
+          <form onSubmit={handleEmailStepSubmit} className="space-y-3">
             <input
               type="email"
               placeholder="name@example.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              disabled={step !== 'email'}
               required
               className={`w-full px-4 py-3 rounded-xl border text-xs font-mono transition-all outline-none ${
                 isDarkMode 
                   ? 'bg-black/20 border-[#F7F5F0]/20 text-[#F7F5F0] focus:border-[#F7F5F0]/60' 
                   : 'bg-white/50 border-[#111110]/20 text-[#111110] focus:border-[#111110]/60'
-              } ${step !== 'email' ? 'opacity-70 cursor-not-allowed' : ''}`}
+              }`}
             />
-          </div>
-
-          {/* Champ mot de passe (débloqué à l'étape 2 et 3) */}
-          {step !== 'email' && (
-            <div className="animate-in fade-in slide-in-from-top-2 duration-300">
-              <input
-                type="password"
-                placeholder="Mot de passe"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                autoFocus
-                className={`w-full px-4 py-3 rounded-xl border text-xs font-mono transition-all outline-none ${
-                  isDarkMode 
-                    ? 'bg-black/20 border-[#F7F5F0]/20 text-[#F7F5F0] focus:border-[#F7F5F0]/60' 
-                    : 'bg-white/50 border-[#111110]/20 text-[#111110] focus:border-[#111110]/60'
-                }`}
-              />
-            </div>
-          )}
-
-          {/* Champ confirmation de mot de passe (débloqué uniquement en cas de création de compte) */}
-          {step === 'signup' && (
-            <div className="animate-in fade-in slide-in-from-top-2 duration-300">
-              <input
-                type="password"
-                placeholder="Confirmer le mot de passe"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                required
-                className={`w-full px-4 py-3 rounded-xl border text-xs font-mono transition-all outline-none ${
-                  isDarkMode 
-                    ? 'bg-black/20 border-[#F7F5F0]/20 text-[#F7F5F0] focus:border-[#F7F5F0]/60' 
-                    : 'bg-white/50 border-[#111110]/20 text-[#111110] focus:border-[#111110]/60'
-                }`}
-              />
-            </div>
-          )}
-
-          <button
-            type="submit"
-            disabled={loading}
-            className={`w-full flex items-center justify-center gap-2 px-4 py-3.5 rounded-full text-xs font-semibold transition-all hover:scale-[1.02] disabled:opacity-50 ${
-              isDarkMode 
-                ? 'bg-[#F7F5F0] text-[#111110] hover:bg-white' 
-                : 'bg-[#111110] text-[#F7F5F0] hover:opacity-90'
-            }`}
-          >
-            {loading ? (
-              <Loader2 className="w-4 h-4 animate-spin" />
-            ) : (
-              <>
-                <span>
-                  {step === 'email' && "Continuer avec l'e-mail"}
-                  {step === 'password' && "Se connecter"}
-                  {step === 'signup' && "Créer mon compte"}
-                </span>
-                <ArrowRight className="w-3.5 h-3.5" />
-              </>
-            )}
-          </button>
-
-          {step !== 'email' && (
             <button
-              type="button"
-              onClick={() => {
-                setStep('email');
-                setPassword('');
-                setConfirmPassword('');
-                setError(null);
-              }}
-              className={`w-full text-center text-[10px] font-mono opacity-60 hover:opacity-100 transition-opacity pt-1`}
+              type="submit"
+              className={`w-full flex items-center justify-center gap-2 px-4 py-3.5 rounded-full text-xs font-semibold transition-all hover:scale-[1.02] ${
+                isDarkMode ? 'bg-[#F7F5F0] text-[#111110] hover:bg-white' : 'bg-[#111110] text-[#F7F5F0] hover:opacity-90'
+              }`}
             >
-              Modifier l&apos;adresse e-mail
+              <span>Continuer</span>
+              <ArrowRight className="w-3.5 h-3.5" />
             </button>
-          )}
-        </form>
+          </form>
+        ) : (
+          <form onSubmit={handleAuthSubmit} className="space-y-3 animate-in fade-in slide-in-from-right-2 duration-300">
+            {/* Rappel de l'e-mail avec option de retour */}
+            <div className="flex items-center justify-between px-3 py-2 rounded-xl bg-black/5 border border-black/10 text-xs font-mono mb-2">
+              <span className="opacity-70 truncate max-w-[240px]">{email}</span>
+              <button
+                type="button"
+                onClick={() => { setStep('email'); setPassword(''); setConfirmPassword(''); }}
+                className="text-[10px] underline opacity-60 hover:opacity-100"
+              >
+                Modifier
+              </button>
+            </div>
 
-        {loading && step === 'email' && (
-          <div className="absolute inset-0 bg-black/20 backdrop-blur-[2px] rounded-2xl flex items-center justify-center">
-            <Loader2 className="w-6 h-6 animate-spin opacity-80" />
-          </div>
+            {/* Sélecteur fluide Connexion / Inscription */}
+            <div className="grid grid-cols-2 p-1 rounded-xl bg-black/5 border border-black/10 mb-4 text-xs font-mono">
+              <button
+                type="button"
+                onClick={() => setStep('signin')}
+                className={`py-1.5 rounded-lg transition-all ${step === 'signin' ? (isDarkMode ? 'bg-[#F7F5F0] text-[#111110] font-bold' : 'bg-[#111110] text-[#F7F5F0] font-bold') : 'opacity-60'}`}
+              >
+                Connexion
+              </button>
+              <button
+                type="button"
+                onClick={() => setStep('signup')}
+                className={`py-1.5 rounded-lg transition-all ${step === 'signup' ? (isDarkMode ? 'bg-[#F7F5F0] text-[#111110] font-bold' : 'bg-[#111110] text-[#F7F5F0] font-bold') : 'opacity-60'}`}
+              >
+                Inscription
+              </button>
+            </div>
+
+            <input
+              type="password"
+              placeholder="Mot de passe"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              autoFocus
+              className={`w-full px-4 py-3 rounded-xl border text-xs font-mono transition-all outline-none ${
+                isDarkMode 
+                  ? 'bg-black/20 border-[#F7F5F0]/20 text-[#F7F5F0] focus:border-[#F7F5F0]/60' 
+                  : 'bg-white/50 border-[#111110]/20 text-[#111110] focus:border-[#111110]/60'
+              }`}
+            />
+
+            {step === 'signup' && (
+              <div className="animate-in fade-in slide-in-from-top-2 duration-200">
+                <input
+                  type="password"
+                  placeholder="Confirmer le mot de passe"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  required
+                  className={`w-full px-4 py-3 rounded-xl border text-xs font-mono transition-all outline-none ${
+                    isDarkMode 
+                      ? 'bg-black/20 border-[#F7F5F0]/20 text-[#F7F5F0] focus:border-[#F7F5F0]/60' 
+                      : 'bg-white/50 border-[#111110]/20 text-[#111110] focus:border-[#111110]/60'
+                  }`}
+                />
+              </div>
+            )}
+
+            <button
+              type="submit"
+              disabled={loading}
+              className={`w-full flex items-center justify-center gap-2 px-4 py-3.5 rounded-full text-xs font-semibold transition-all hover:scale-[1.02] disabled:opacity-50 ${
+                isDarkMode ? 'bg-[#F7F5F0] text-[#111110] hover:bg-white' : 'bg-[#111110] text-[#F7F5F0] hover:opacity-90'
+              }`}
+            >
+              {loading ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <>
+                  <span>{step === 'signin' ? "Se connecter" : "Créer mon compte"}</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </>
+              )}
+            </button>
+          </form>
         )}
       </div>
     </div>
