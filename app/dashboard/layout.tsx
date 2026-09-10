@@ -1,11 +1,11 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { 
   LayoutDashboard, Calendar, BarChart3, Megaphone, 
-  Users, Wallet, Globe, LogOut, Loader2, User, ChevronRight 
+  Users, Wallet, Globe, LogOut, Loader2, User, ChevronRight, Shield, Sliders 
 } from 'lucide-react';
 import { supabaseBrowser } from '@/lib/supabase-browser';
 
@@ -14,6 +14,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const router = useRouter();
   const [user, setUser] = useState<any>(undefined);
   const [isHovered, setIsHovered] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
+  const profileMenuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     async function checkAuth() {
@@ -27,6 +29,17 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     });
 
     return () => subscription.unsubscribe();
+  }, []);
+
+  // Fermer le menu profil si on clique en dehors
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (profileMenuRef.current && !profileMenuRef.current.contains(event.target as Node)) {
+        setProfileOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
   const handleLogout = async () => {
@@ -45,12 +58,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     { label: 'My Page', href: '/page', icon: Globe },
   ];
 
-  // Génération dynamique du fil d'Ariane en fonction de l'URL
+  // Génération dynamique du fil d'Ariane
   const getBreadcrumbs = () => {
     if (pathname === '/') return ['Dashboard'];
     const segments = pathname.split('/').filter(Boolean);
     
-    // Convertit les segments d'URL en libellés propres
     return segments.map(seg => {
       const match = navItems.find(item => item.href === `/${seg}`);
       if (match) return match.label;
@@ -75,7 +87,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   return (
     <div className="min-h-screen bg-[#F7F5F0] text-[#111110] flex selection:bg-[#111110] selection:text-[#F7F5F0] overflow-x-hidden">
       
-      {/* 1. Barre d'icônes fixe à gauche (w-16) sans l'engrenage */}
+      {/* 1. Barre d'icônes fixe à gauche (w-16) */}
       <aside className="fixed top-0 left-0 h-screen w-16 border-r border-[#111110]/10 bg-[#F7F5F0] flex flex-col items-center justify-between py-6 z-40 select-none">
         
         {/* Logo icône du haut */}
@@ -112,7 +124,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           })}
         </div>
 
-        {/* Bas de sidebar (Uniquement la déconnexion, réglages retirés) */}
+        {/* Bas de sidebar */}
         <div className="space-y-2 w-full px-2 border-t border-[#111110]/10 pt-4 bg-[#F7F5F0]">
           <button
             onClick={handleLogout}
@@ -124,7 +136,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         </div>
       </aside>
 
-      {/* 2. Panneau textuel contextuel au survol (aligné en hauteur avec le header) */}
+      {/* 2. Panneau textuel contextuel au survol */}
       <div 
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
@@ -132,8 +144,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           isHovered ? 'w-56 opacity-100 shadow-xl' : 'w-0 opacity-0 pointer-events-none'
         }`}
       >
-        {/* En-tête du panneau exactement à la hauteur du header (h-14) */}
-        <div className="h-14 px-6 flex items-center border-b border-[#111110]/10 shrink-0 whitespace-nowrap">
+        {/* En-tête parfaitement aligné en hauteur (h-14) avec le header principal */}
+        <div className="h-14 px-5 flex items-center border-b border-[#111110]/10 shrink-0 whitespace-nowrap">
           <img src="/tyks.svg" alt="TYKS" className="h-4 w-auto object-contain" />
         </div>
 
@@ -161,7 +173,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           })}
         </div>
 
-        {/* Bas du panneau (Réglages et Déconnexion) */}
+        {/* Bas du panneau */}
         <div className="px-3 space-y-1 border-t border-[#111110]/10 py-4">
           <Link 
             href="/settings" 
@@ -189,27 +201,81 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           isHovered ? 'ml-72' : 'ml-16'
         }`}
       >
-        {/* Header avec Fil d'Ariane dynamique et Avatar Profil */}
+        {/* Header avec fil d'ariane typographié et menu profil */}
         <header className="h-14 border-b border-[#111110]/10 bg-[#F7F5F0] px-6 flex items-center justify-between shrink-0 z-20">
-          <div className="flex items-center gap-2 text-xs font-medium opacity-70">
+          
+          {/* Fil d'ariane centré verticalement, police grossie et lisible */}
+          <div className="flex items-center gap-2.5 text-sm tracking-tight font-medium text-[#111110]/60">
             {breadcrumbs.map((crumb, index) => (
-              <div key={index} className="flex items-center gap-2">
-                {index > 0 && <ChevronRight className="w-3.5 h-3.5 opacity-40" />}
-                <span className={index === breadcrumbs.length - 1 ? "text-[#111110] font-semibold" : ""}>
+              <div key={index} className="flex items-center gap-2.5">
+                {index > 0 && <ChevronRight className="w-4 h-4 opacity-30" />}
+                <span className={index === breadcrumbs.length - 1 ? "text-[#111110] font-bold text-base" : ""}>
                   {crumb}
                 </span>
               </div>
             ))}
           </div>
 
-          {/* Icône de profil à la place de v2.0-stable */}
-          <Link 
-            href="/settings"
-            className="w-8 h-8 rounded-full bg-[#111110]/5 border border-[#111110]/10 flex items-center justify-center hover:bg-[#111110]/10 transition"
-            title="Profil & Paramètres"
-          >
-            <User className="w-4 h-4 opacity-70" />
-          </Link>
+          {/* Icône de profil avec menu déroulant */}
+          <div className="relative" ref={profileMenuRef}>
+            <button 
+              onClick={() => setProfileOpen(!profileOpen)}
+              className="w-9 h-9 rounded-full bg-[#111110]/5 border border-[#111110]/10 flex items-center justify-center hover:bg-[#111110]/10 transition"
+              title="Mon profil"
+            >
+              <User className="w-4 h-4 opacity-70" />
+            </button>
+
+            {/* Menu déroulant profil */}
+            {profileOpen && (
+              <div className="absolute right-0 mt-2 w-52 bg-[#F7F5F0] border border-[#111110]/10 rounded-2xl shadow-xl py-2 z-50 animate-in fade-in slide-in-from-top-2 duration-150">
+                <div className="px-4 py-2 border-b border-[#111110]/10 mb-1">
+                  <p className="text-xs font-semibold truncate">{user.email}</p>
+                  <p className="text-[10px] opacity-50 uppercase tracking-wider">Compte personnel</p>
+                </div>
+
+                <Link 
+                  href="/settings" 
+                  onClick={() => setProfileOpen(false)}
+                  className="flex items-center gap-2.5 px-4 py-2 text-xs font-medium opacity-70 hover:opacity-100 hover:bg-[#111110]/5 transition"
+                >
+                  <User className="w-4 h-4" />
+                  Profil
+                </Link>
+
+                <Link 
+                  href="/settings/security" 
+                  onClick={() => setProfileOpen(false)}
+                  className="flex items-center gap-2.5 px-4 py-2 text-xs font-medium opacity-70 hover:opacity-100 hover:bg-[#111110]/5 transition"
+                >
+                  <Shield className="w-4 h-4" />
+                  Sécurité
+                </Link>
+
+                <Link 
+                  href="/settings/preferences" 
+                  onClick={() => setProfileOpen(false)}
+                  className="flex items-center gap-2.5 px-4 py-2 text-xs font-medium opacity-70 hover:opacity-100 hover:bg-[#111110]/5 transition"
+                >
+                  <Sliders className="w-4 h-4" />
+                  Préférences
+                </Link>
+
+                <div className="border-t border-[#111110]/10 my-1 pt-1">
+                  <button
+                    onClick={() => {
+                      setProfileOpen(false);
+                      handleLogout();
+                    }}
+                    className="w-full flex items-center gap-2.5 px-4 py-2 text-xs font-medium text-red-600 hover:bg-red-500/10 transition-colors"
+                  >
+                    <LogOut className="w-4 h-4" />
+                    Se déconnecter
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
         </header>
 
         {/* Zone de contenu scrollable */}
