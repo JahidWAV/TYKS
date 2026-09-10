@@ -84,19 +84,94 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   return (
     <div className="min-h-screen bg-[#F7F5F0] text-[#111110] flex selection:bg-[#111110] selection:text-[#F7F5F0] overflow-x-hidden">
-      
-      {/* 1. Barre d'icônes fixe à gauche (w-16) */}
-      <aside className="fixed top-0 left-0 h-screen w-16 border-r border-[#111110]/10 bg-[#F7F5F0] flex flex-col items-center justify-between py-6 z-40 select-none">
-        
-        <div className="flex items-center justify-center">
-          <Link href="/" className="w-10 h-10 flex items-center justify-center group">
-            <img 
-              src="/icon.svg" 
-              alt="TYKS" 
-              className="w-7 h-7 object-contain transition-transform group-hover:scale-105"
+
+      {/* 0. Barre horizontale fixe en haut : logo + fil d'ariane + profil */}
+      <header className="fixed top-0 left-0 right-0 h-14 border-b border-[#111110]/10 bg-[#F7F5F0] px-4 flex items-center justify-between shrink-0 z-50 select-none">
+        <div className="flex items-center gap-3">
+          <Link href="/" className="w-9 h-9 flex items-center justify-center shrink-0 group">
+            <img
+              src="/icon.svg"
+              alt="TYKS"
+              className="w-6 h-6 object-contain transition-transform group-hover:scale-105"
             />
           </Link>
+
+          <div className="w-px h-5 bg-[#111110]/10" />
+
+          <div className="flex items-center gap-2.5 text-sm tracking-tight font-medium text-[#111110]/60">
+            {breadcrumbs.map((crumb, index) => (
+              <div key={index} className="flex items-center gap-2.5">
+                {index > 0 && <ChevronRight className="w-4 h-4 opacity-30" />}
+                <span className={`flex items-center ${index === breadcrumbs.length - 1 ? "text-[#111110] font-bold text-base" : ""}`}>
+                  {crumb}
+                </span>
+              </div>
+            ))}
+          </div>
         </div>
+
+        <div className="relative" ref={profileMenuRef}>
+          <button 
+            onClick={() => setProfileOpen(!profileOpen)}
+            className="w-9 h-9 rounded-full bg-[#111110]/5 border border-[#111110]/10 flex items-center justify-center hover:bg-[#111110]/10 transition"
+            title="Mon profil"
+          >
+            <User className="w-4 h-4 opacity-70" />
+          </button>
+
+          {profileOpen && (
+            <div className="absolute right-0 mt-2 w-52 bg-[#F7F5F0] border border-[#111110]/10 rounded-2xl shadow-xl py-2 z-50 animate-in fade-in slide-in-from-top-2 duration-150">
+              <div className="px-4 py-2 border-b border-[#111110]/10 mb-1">
+                <p className="text-xs font-semibold truncate">{user.email}</p>
+                <p className="text-[10px] opacity-50 uppercase tracking-wider">Compte personnel</p>
+              </div>
+
+              <Link 
+                href="/settings" 
+                onClick={() => setProfileOpen(false)}
+                className="flex items-center gap-2.5 px-4 py-2 text-xs font-medium opacity-70 hover:opacity-100 hover:bg-[#111110]/5 transition"
+              >
+                <User className="w-4 h-4" />
+                Profil
+              </Link>
+
+              <Link 
+                href="/settings/security" 
+                onClick={() => setProfileOpen(false)}
+                className="flex items-center gap-2.5 px-4 py-2 text-xs font-medium opacity-70 hover:opacity-100 hover:bg-[#111110]/5 transition"
+              >
+                <Shield className="w-4 h-4" />
+                Sécurité
+              </Link>
+
+              <Link 
+                href="/settings/preferences" 
+                onClick={() => setProfileOpen(false)}
+                className="flex items-center gap-2.5 px-4 py-2 text-xs font-medium opacity-70 hover:opacity-100 hover:bg-[#111110]/5 transition"
+              >
+                <Sliders className="w-4 h-4" />
+                Préférences
+              </Link>
+
+              <div className="border-t border-[#111110]/10 my-1 pt-1">
+                <button
+                  onClick={() => {
+                    setProfileOpen(false);
+                    handleLogout();
+                  }}
+                  className="w-full flex items-center gap-2.5 px-4 py-2 text-xs font-medium text-red-600 hover:bg-red-500/10 transition-colors"
+                >
+                  <LogOut className="w-4 h-4" />
+                  Se déconnecter
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      </header>
+
+      {/* 1. Barre d'icônes fixe à gauche (w-16), sous la barre horizontale */}
+      <aside className="fixed top-14 left-0 h-[calc(100vh-3.5rem)] w-16 border-r border-[#111110]/10 bg-[#F7F5F0] flex flex-col items-center justify-between py-6 z-40 select-none">
 
         <div className="space-y-2 w-full px-2">
           {navItems.map((item) => {
@@ -135,16 +210,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       <div 
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
-        className={`fixed top-0 left-16 h-screen bg-[#F7F5F0] border-r border-[#111110]/10 flex flex-col justify-between z-30 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] overflow-hidden select-none ${
+        className={`fixed top-14 left-16 h-[calc(100vh-3.5rem)] bg-[#F7F5F0] border-r border-[#111110]/10 flex flex-col justify-between z-30 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] overflow-hidden select-none ${
           isHovered ? 'w-56 opacity-100 shadow-xl' : 'w-0 opacity-0 pointer-events-none'
         }`}
       >
-        {/* En-tête : h-14 strict, flex w-full et line-height alignée */}
-        <div className="h-14 w-full px-6 flex items-center border-b border-[#111110]/10 shrink-0 whitespace-nowrap">
-          <img src="/tyks.svg" alt="TYKS" className="h-4 w-auto object-contain my-auto" />
-        </div>
-
-        <div className="space-y-1 w-full px-3 flex-1 pt-4">
+        <div className="space-y-1 w-full px-3 flex-1 pt-6">
           <p className="text-[10px] font-mono uppercase tracking-wider opacity-40 px-3 pb-2">
             Espace de travail
           </p>
@@ -188,86 +258,12 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         </div>
       </div>
 
-      {/* 3. Contenu principal et Header */}
+      {/* 3. Contenu principal, sous la barre horizontale */}
       <div 
-        className={`flex-1 min-w-0 flex flex-col h-screen overflow-hidden transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+        className={`flex-1 min-w-0 flex flex-col h-screen pt-14 overflow-hidden transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${
           isHovered ? 'ml-72' : 'ml-16'
         }`}
       >
-        {/* Header : h-14 strict avec items-center pour un alignement géométrique exact */}
-        <header className="h-14 w-full border-b border-[#111110]/10 bg-[#F7F5F0] px-6 flex items-center justify-between shrink-0 z-20">
-          
-          <div className="flex items-center gap-2.5 text-sm tracking-tight font-medium text-[#111110]/60 my-auto">
-            {breadcrumbs.map((crumb, index) => (
-              <div key={index} className="flex items-center gap-2.5 my-auto">
-                {index > 0 && <ChevronRight className="w-4 h-4 opacity-30 my-auto" />}
-                <span className={`flex items-center my-auto ${index === breadcrumbs.length - 1 ? "text-[#111110] font-bold text-base" : ""}`}>
-                  {crumb}
-                </span>
-              </div>
-            ))}
-          </div>
-
-          <div className="relative my-auto" ref={profileMenuRef}>
-            <button 
-              onClick={() => setProfileOpen(!profileOpen)}
-              className="w-9 h-9 rounded-full bg-[#111110]/5 border border-[#111110]/10 flex items-center justify-center hover:bg-[#111110]/10 transition my-auto"
-              title="Mon profil"
-            >
-              <User className="w-4 h-4 opacity-70" />
-            </button>
-
-            {profileOpen && (
-              <div className="absolute right-0 mt-2 w-52 bg-[#F7F5F0] border border-[#111110]/10 rounded-2xl shadow-xl py-2 z-50 animate-in fade-in slide-in-from-top-2 duration-150">
-                <div className="px-4 py-2 border-b border-[#111110]/10 mb-1">
-                  <p className="text-xs font-semibold truncate">{user.email}</p>
-                  <p className="text-[10px] opacity-50 uppercase tracking-wider">Compte personnel</p>
-                </div>
-
-                <Link 
-                  href="/settings" 
-                  onClick={() => setProfileOpen(false)}
-                  className="flex items-center gap-2.5 px-4 py-2 text-xs font-medium opacity-70 hover:opacity-100 hover:bg-[#111110]/5 transition"
-                >
-                  <User className="w-4 h-4" />
-                  Profil
-                </Link>
-
-                <Link 
-                  href="/settings/security" 
-                  onClick={() => setProfileOpen(false)}
-                  className="flex items-center gap-2.5 px-4 py-2 text-xs font-medium opacity-70 hover:opacity-100 hover:bg-[#111110]/5 transition"
-                >
-                  <Shield className="w-4 h-4" />
-                  Sécurité
-                </Link>
-
-                <Link 
-                  href="/settings/preferences" 
-                  onClick={() => setProfileOpen(false)}
-                  className="flex items-center gap-2.5 px-4 py-2 text-xs font-medium opacity-70 hover:opacity-100 hover:bg-[#111110]/5 transition"
-                >
-                  <Sliders className="w-4 h-4" />
-                  Préférences
-                </Link>
-
-                <div className="border-t border-[#111110]/10 my-1 pt-1">
-                  <button
-                    onClick={() => {
-                      setProfileOpen(false);
-                      handleLogout();
-                    }}
-                    className="w-full flex items-center gap-2.5 px-4 py-2 text-xs font-medium text-red-600 hover:bg-red-500/10 transition-colors"
-                  >
-                    <LogOut className="w-4 h-4" />
-                    Se déconnecter
-                  </button>
-                </div>
-              </div>
-            )}
-          </div>
-        </header>
-
         <main className="flex-1 overflow-y-auto p-8">
           {children}
         </main>
