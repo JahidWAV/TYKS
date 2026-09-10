@@ -122,7 +122,9 @@ export default function BankingDashboardPage() {
       
       {showEmbeddedStripe && stripeConnectInstance && (
         <div className="fixed inset-0 z-50 bg-[#111110]/40 backdrop-blur-sm flex items-center justify-center p-4 md:p-8 animate-in fade-in duration-200">
-          <div className="bg-[#F7F5F0] border border-[#111110]/15 w-full max-w-4xl h-[85vh] rounded-3xl shadow-2xl flex flex-col overflow-hidden">
+          <div className="bg-[#F7F5F0] border border-[#111110]/15 w-full max-w-3xl h-[80vh] rounded-3xl shadow-2xl flex flex-col overflow-hidden">
+            
+            {/* Barre de titre de la modale */}
             <div className="px-6 py-4 border-b border-[#111110]/10 flex items-center justify-between bg-white/50 shrink-0">
               <div className="flex items-center gap-2">
                 <span className="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
@@ -130,12 +132,14 @@ export default function BankingDashboardPage() {
               </div>
               <button 
                 onClick={() => setShowEmbeddedStripe(false)}
-                className="w-8 h-8 rounded-full bg-[#111110]/5 flex items-center justify-center hover:bg-[#111110]/10 transition"
+                className="w-8 h-8 rounded-full bg-[#111110]/5 flex items-center justify-center hover:bg-[#111110]/10 transition cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
-            <div className="flex-1 overflow-y-auto p-6">
+
+            {/* Conteneur contraint pour forcer Stripe à rester dans la boîte */}
+            <div className="flex-1 w-full h-full overflow-y-auto p-2 bg-white">
               <ConnectComponentsProvider connectInstance={stripeConnectInstance}>
                 <ConnectAccountOnboarding 
                   onExit={() => {
@@ -145,6 +149,7 @@ export default function BankingDashboardPage() {
                 />
               </ConnectComponentsProvider>
             </div>
+
           </div>
         </div>
       )}
