@@ -139,8 +139,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       {/* 0. Barre horizontale fixe en haut : logo + fil d'ariane + profil */}
       <header className="fixed top-0 left-0 right-0 h-14 border-b border-[#111110]/10 bg-[#F7F5F0] flex items-center justify-between shrink-0 z-50 select-none">
         <div className="flex items-center h-full">
-          {/* Colonne de largeur identique à la barre d'icônes (w-16) pour un centrage parfait entre logo et icônes */}
-          <div className="w-16 h-full flex items-center justify-center shrink-0">
+          {/* Colonne de largeur identique à la barre d'icônes (w-16), avec la même bordure droite : la ligne verticale continue sans rupture jusque dans le menu latéral */}
+          <div className="w-16 h-full flex items-center justify-center shrink-0 border-r border-[#111110]/10">
             <Link href="/" className="w-9 h-9 flex items-center justify-center group">
               <img
                 src="/icon.svg"
@@ -149,8 +149,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               />
             </Link>
           </div>
-
-          <div className="w-px h-5 bg-[#111110]/10" />
 
           <div className="flex items-center gap-2.5 text-sm tracking-tight font-medium text-[#111110]/60 pl-4">
             {breadcrumbs.map((crumb, index) => (
