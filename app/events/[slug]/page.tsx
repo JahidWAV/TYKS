@@ -33,8 +33,9 @@ function CustomCheckoutForm({ slug, eventTitle, quantity, totalPrice, onSuccess 
       setIsProcessing(false);
     } else if (paymentIntent && paymentIntent.status === 'succeeded') {
       
-      
-const clientEmail = paymentIntent.receipt_email || (paymentIntent as any).metadata?.email;
+      // Récupération de l'e-mail directement depuis le compte Supabase de l'utilisateur connecté
+      const { data: { user } } = await supabaseBrowser.auth.getUser();
+      const clientEmail = user?.email;
 
       // Déclenchement de l'envoi d'e-mail de confirmation via Resend
       try {
