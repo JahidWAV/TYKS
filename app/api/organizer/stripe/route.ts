@@ -2,12 +2,13 @@ import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 import { supabaseServer } from "@/lib/supabase-server";
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: "2025-02-28.acacia" as any,
-});
-
 export async function POST(req: NextRequest) {
   try {
+    // Initialisation de Stripe ici pour éviter le crash lors du build statique de Next.js
+    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+      apiVersion: "2025-02-28.acacia" as any,
+    });
+
     const authHeader = req.headers.get("authorization");
     if (!authHeader) {
       return NextResponse.json({ error: "Non authentifié." }, { status: 401 });
@@ -20,7 +21,6 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Non authentifié ou session expirée." }, { status: 401 });
     }
 
-    // 1. Récupérer l'organisation liée à l'utilisateur
     const { data: member } = await supabaseServer
       .from("organization_members")
       .select("organization_id")
@@ -33,7 +33,6 @@ export async function POST(req: NextRequest) {
 
     const orgId = member.organization_id;
 
-    // 2. Vérifier si l'organisation a déjà un compte Stripe Connect
     const { data: org } = await supabaseServer
       .from("organizations")
       .select("stripe_account_id")
@@ -42,7 +41,6 @@ export async function POST(req: NextRequest) {
 
     let stripeAccountId = org?.stripe_account_id;
 
-    // 3. Si non, on crée un compte Stripe Express
     if (!stripeAccountId) {
       const account = await stripe.accounts.create({
         type: "express",
@@ -53,7 +51,6 @@ export async function POST(req: NextRequest) {
       });
       stripeAccountId = account.id;
 
-      // Sauvegarde de l'ID Stripe dans Supabase
       await supabaseServer
         .from("organizations")
         .update({ stripe_account_id: stripeAccountId })
@@ -62,7 +59,6 @@ export async function POST(req: NextRequest) {
 
     const origin = req.headers.get("origin") || "https://tyks.app";
 
-    // 4. Générer le lien d'onboarding Stripe
     const accountLink = await stripe.accountLinks.create({
       account: stripeAccountId,
       refresh_url: `${origin}/dashboard/banking?refresh=true`,
