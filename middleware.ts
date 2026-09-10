@@ -26,16 +26,20 @@ export async function middleware(request: NextRequest) {
     }
   )
 
-  // On récupère l'utilisateur (optionnel pour l'affichage, géré ensuite côté page/composant)
   await supabase.auth.getUser()
 
   const url = request.nextUrl
   const hostname = request.headers.get('host') || ''
 
+  // Laisser passer directement toutes les requêtes vers les routes API
+  if (url.pathname.startsWith('/api')) {
+    return NextResponse.next()
+  }
+
   const isDashboard = hostname.startsWith('dashboard.')
   const isMarketingPro = hostname.startsWith('pro.')
 
-  // 1. Dashboard (`dashboard.tyks.app`) -> Réécriture vers le dossier physique /dashboard sans bloquer
+  // 1. Dashboard (`dashboard.tyks.app`) -> Réécriture vers le dossier physique /dashboard
   if (isDashboard) {
     url.pathname = `/dashboard${url.pathname}`
     return NextResponse.rewrite(url)
