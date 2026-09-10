@@ -75,13 +75,13 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           {/* Logo agrandi et bien mis en valeur */}
           <div className="flex items-center pt-1">
             <Link href="/" className="flex items-center gap-3 w-full">
-              <div className="w-15 h-15 flex items-center justify-center shrink-0">
+              <div className="w-20 h-20 flex items-center justify-center shrink-0">
                 <svg 
                   width="40" 
                   height="40" 
                   viewBox="0 0 512 512" 
                   xmlns="http://www.w3.org/2000/svg" 
-                  className="w-15 h-15 transition-transform hover:scale-105"
+                  className="w-20 h-20 transition-transform hover:scale-105"
                 >
                   <rect width="512" height="512" fill="transparent" />
                   <path 
