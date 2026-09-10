@@ -1,13 +1,8 @@
 import { supabaseServer } from '@/lib/supabase-server';
 import Link from 'next/link';
-import { ArrowUpRight, Plus, MapPin, Settings } from 'lucide-react';
+import { Plus, MapPin, Settings } from 'lucide-react';
 
 export default async function AdminEventsPage() {
-  // 1. Récupérer l'utilisateur connecté et son organisation
-  const { data: { user } } = await supabaseServer.auth.getUser();
-
-  // Optionnel : récupérer l'organisation liée à l'user (selon ton schéma lib/organizer.ts ou tables)
-  // Pour l'instant, on liste les événements de l'organisateur ou de sa structure
   const { data: events, error } = await supabaseServer
     .from('events')
     .select('*, organizations(name)')
@@ -27,8 +22,10 @@ export default async function AdminEventsPage() {
               Gestion des événements.
             </h1>
           </div>
+
+          {/* Correction ici : href="/new" au lieu de "/dashboard/new" */}
           <Link
-            href="/dashboard/new"
+            href="/new"
             className="inline-flex items-center gap-2 rounded-full bg-[#111110] px-6 py-3 text-xs font-semibold text-[#F7F5F0] transition-transform hover:scale-[1.02]"
           >
             <Plus className="w-4 h-4" />
@@ -48,7 +45,7 @@ export default async function AdminEventsPage() {
               Vous n'avez créé aucun événement.
             </p>
             <Link
-              href="/dashboard/new"
+              href="/new"
               className="inline-flex items-center gap-2 text-xs font-semibold underline"
             >
               Créer votre premier événement
@@ -110,7 +107,6 @@ export default async function AdminEventsPage() {
                     <span className="text-sm font-mono font-bold">
                       {priceFormatted}
                     </span>
-                    {/* Lien critique : pointe vers l'édition dans le dashboard admin-events */}
                     <Link
                       href={`/admin-events/${event.slug}/edit`}
                       className="inline-flex items-center gap-1.5 text-xs font-semibold bg-[#111110]/5 hover:bg-[#111110] hover:text-white px-4 py-2 rounded-full transition-colors"
