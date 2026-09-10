@@ -71,7 +71,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           <Link href="/" className="flex items-center justify-between group pt-1">
             <div className="flex items-center gap-2.5">
               <svg 
-                className="w-7 h-7" 
+                className="w-7 h-7 transition-transform group-hover:scale-105" 
                 viewBox="0 0 32 32" 
                 fill="none" 
                 xmlns="http://www.w3.org/2000/svg"
@@ -159,4 +159,3 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     </div>
   );
 }
-```[cite: 5]
