@@ -144,7 +144,7 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
             <img
               src="/tyks.svg"
               alt="TYKS"
-              className="w-9 h-9 object-contain transition-transform group-hover:scale-105"
+              className="w-25 h-25 object-contain transition-transform group-hover:scale-105"
             />
           </Link>
 
