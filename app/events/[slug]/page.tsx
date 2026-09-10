@@ -72,9 +72,9 @@ export default function PublicEventPage() {
 
   return (
     <main className="min-h-screen bg-[#F7F5F0] text-[#111110] px-6 md:px-12 py-8 md:py-12 selection:bg-[#111110] selection:text-[#F7F5F0]">
-      <div className="max-w-6xl mx-auto w-full space-y-8">
+      <div className="max-w-6xl mx-auto w-full space-y-10">
         
-        {/* Topbar navigation & Organisateur */}
+        {/* Fil d'ariane / Topbar */}
         <div className="flex items-center justify-between border-b border-[#111110]/10 pb-4">
           <Link
             href="/events"
@@ -88,88 +88,42 @@ export default function PublicEventPage() {
           </span>
         </div>
 
-        {/* Grille principale */}
-        <div className="grid lg:grid-cols-[1fr_380px] gap-8 lg:gap-12 items-start">
+        {/* SECTION HÉRO : Infos + Bouton à gauche / Affiche à droite (Style Shotgun inversé harmonieux) */}
+        <div className="grid lg:grid-cols-[1fr_1.1fr] gap-10 lg:gap-14 items-start">
           
-          {/* Colonne de gauche : Affiche portrait + Titre + Description */}
+          {/* COLONNE DE GAUCHE : Titre, Infos pratiques & Widget d'achat */}
           <div className="space-y-6">
             
-            {/* Affiche format portrait pur (Shotgun style) */}
-            <div className="relative w-full aspect-[3/4] rounded-3xl overflow-hidden border border-[#111110]/15 bg-[#111110]/5 shadow-sm">
-              {event.image_url ? (
-                <img 
-                  src={event.image_url} 
-                  alt={event.title}
-                  className="w-full h-full object-cover"
-                />
-              ) : (
-                <div className="w-full h-full bg-gradient-to-br from-[#111110] to-[#222220] text-[#F7F5F0] p-8 flex flex-col justify-between">
-                  <span className="text-xs font-mono uppercase tracking-widest text-[#F7F5F0]/50">
-                    {event.organizations?.name || 'Production'}
-                  </span>
-                  <Sparkles className="w-6 h-6 text-[#F7F5F0]/40" />
+            {/* Titre & Organisateur */}
+            <div className="space-y-2">
+              <span className="text-xs font-mono text-[#111110]/50 uppercase tracking-widest">
+                Par {event.organizations?.name || 'Organisateur'}
+              </span>
+              <h1 className="font-display text-3xl md:text-5xl font-bold tracking-tight leading-[1.05]">
+                {event.title}
+              </h1>
+            </div>
+
+            {/* Infos pratiques épurées (Date, Heure, Lieu) */}
+            <div className="space-y-3 pt-2 font-mono text-xs text-[#111110]/80">
+              <div className="flex items-center gap-3">
+                <Calendar className="w-4 h-4 text-[#111110]/40 shrink-0" />
+                <span className="capitalize">{formattedDate}</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <Clock className="w-4 h-4 text-[#111110]/40 shrink-0" />
+                <span>Portes à {formattedTime || '20:00'}</span>
+              </div>
+              {event.location && (
+                <div className="flex items-center gap-3">
+                  <MapPin className="w-4 h-4 text-[#111110]/40 shrink-0" />
+                  <span className="truncate">{event.location}</span>
                 </div>
               )}
             </div>
 
-            {/* Titre et Description de l'événement */}
-            <div className="space-y-4 pt-2">
-              <h1 className="font-display text-3xl md:text-4xl font-bold tracking-tight">
-                {event.title}
-              </h1>
-
-              <div className="space-y-2 pt-2">
-                <h3 className="text-xs font-mono uppercase tracking-widest text-[#111110]/40">À propos de l'événement</h3>
-                {event.description ? (
-                  <div className="text-sm md:text-base text-[#111110]/85 font-light leading-relaxed whitespace-pre-line bg-white/50 p-6 rounded-2xl border border-[#111110]/5">
-                    {event.description}
-                  </div>
-                ) : (
-                  <p className="text-xs text-[#111110]/40 italic font-light">Aucune description détaillée communiquée.</p>
-                )}
-              </div>
-            </div>
-
-          </div>
-
-          {/* Colonne de droite : Infos Pratiques + Widget Billetterie */}
-          <div className="space-y-6 lg:sticky lg:top-6">
-            
-            {/* Module Informations Pratiques */}
-            <div className="bg-white/60 border border-[#111110]/10 rounded-2xl p-5 space-y-3.5 shadow-sm">
-              <h3 className="text-[11px] font-mono uppercase tracking-widest text-[#111110]/40">Informations pratiques</h3>
-              
-              <div className="space-y-2.5 font-mono text-xs">
-                <div className="flex items-start gap-3">
-                  <Calendar className="w-4 h-4 text-[#111110]/40 shrink-0 mt-0.5" />
-                  <div>
-                    <span className="block text-[#111110]/50 text-[10px] uppercase">Date</span>
-                    <span className="font-semibold capitalize">{formattedDate}</span>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-3">
-                  <Clock className="w-4 h-4 text-[#111110]/40 shrink-0 mt-0.5" />
-                  <div>
-                    <span className="block text-[#111110]/50 text-[10px] uppercase">Horaires</span>
-                    <span className="font-semibold">Portes à {formattedTime || '20:00'}</span>
-                  </div>
-                </div>
-
-                {event.location && (
-                  <div className="flex items-start gap-3 pt-2 border-t border-[#111110]/5">
-                    <MapPin className="w-4 h-4 text-[#111110]/40 shrink-0 mt-0.5" />
-                    <div>
-                      <span className="block text-[#111110]/50 text-[10px] uppercase">Lieu</span>
-                      <span className="font-semibold text-xs leading-snug">{event.location}</span>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* Carte de paiement compacte */}
-            <div className="rounded-3xl bg-[#111110] text-[#F7F5F0] p-5 md:p-6 space-y-5 shadow-xl border border-[#111110]">
+            {/* Bloc de Billetterie / Achat direct */}
+            <div className="rounded-3xl bg-[#111110] text-[#F7F5F0] p-6 space-y-5 shadow-xl border border-[#111110]">
               <div className="flex items-center justify-between pb-3 border-b border-[#F7F5F0]/15">
                 <div className="flex items-center gap-2">
                   <Ticket className="w-4 h-4 text-[#F7F5F0]/60" />
@@ -249,6 +203,38 @@ export default function PublicEventPage() {
               </div>
             </div>
 
+          </div>
+
+          {/* COLONNE DE DROITE : Affiche grand format style Shotgun */}
+          <div className="space-y-6 lg:sticky lg:top-6">
+            <div className="relative w-full aspect-[4/3] rounded-3xl overflow-hidden border border-[#111110]/15 bg-[#111110]/5 shadow-sm">
+              {event.image_url ? (
+                <img 
+                  src={event.image_url} 
+                  alt={event.title}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div className="w-full h-full bg-gradient-to-br from-[#111110] to-[#222220] text-[#F7F5F0] p-8 flex flex-col justify-between">
+                  <span className="text-xs font-mono uppercase tracking-widest text-[#F7F5F0]/50">
+                    {event.organizations?.name || 'Production'}
+                  </span>
+                  <Sparkles className="w-6 h-6 text-[#F7F5F0]/40" />
+                </div>
+              )}
+            </div>
+
+            {/* Description détaillée en dessous de l'affiche */}
+            <div className="space-y-3 pt-2">
+              <h3 className="text-xs font-mono uppercase tracking-widest text-[#111110]/40">À propos de l'événement</h3>
+              {event.description ? (
+                <div className="text-sm md:text-base text-[#111110]/85 font-light leading-relaxed whitespace-pre-line bg-white/50 p-6 rounded-2xl border border-[#111110]/5">
+                  {event.description}
+                </div>
+              ) : (
+                <p className="text-xs text-[#111110]/40 italic font-light">Aucune description détaillée communiquée.</p>
+              )}
+            </div>
           </div>
 
         </div>
