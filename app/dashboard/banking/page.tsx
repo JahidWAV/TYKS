@@ -6,6 +6,7 @@ import { supabaseBrowser } from '@/lib/supabase-browser';
 
 export default function BankingDashboardPage() {
   const [loading, setLoading] = useState(true);
+  const [connectingStripe, setConnectingStripe] = useState(false);
   const [balance, setBalance] = useState({ available: 0, pending: 0 });
   const [payouts, setPayouts] = useState<any[]>([]);
   const [hasBankAccount, setHasBankAccount] = useState(false);
@@ -60,6 +61,37 @@ export default function BankingDashboardPage() {
     loadBankingData();
   }, []);
 
+  const handleStripeRedirect = async () => {
+    try {
+      setConnectingStripe(true);
+      const { data: { session } } = await supabaseBrowser.auth.getSession();
+      if (!session?.access_token) {
+        alert("Session expirée, veuillez vous reconnecter.");
+        setConnectingStripe(false);
+        return;
+      }
+
+      const res = await fetch('/api/organizer/stripe', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${session.access_token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      const data = await res.json();
+      if (data.url) {
+        window.location.href = data.url; // Redirection vers l'onboarding Stripe
+      } else {
+        alert(data.error || "Erreur lors de la configuration du compte Stripe.");
+        setConnectingStripe(false);
+      }
+    } catch (err) {
+      console.error('Erreur de redirection Stripe :', err);
+      setConnectingStripe(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-[60vh] flex items-center justify-center">
@@ -83,10 +115,15 @@ export default function BankingDashboardPage() {
         </div>
 
         <button
-          onClick={() => alert("Redirection vers le portail de configuration bancaire...")}
-          className="inline-flex items-center gap-2 rounded-full bg-[#111110] px-5 py-2.5 text-xs font-semibold text-[#F7F5F0] transition hover:opacity-95 shadow-sm"
+          onClick={handleStripeRedirect}
+          disabled={connectingStripe}
+          className="inline-flex items-center gap-2 rounded-full bg-[#111110] px-5 py-2.5 text-xs font-semibold text-[#F7F5F0] transition hover:opacity-95 shadow-sm disabled:opacity-50"
         >
-          <Building2 className="h-4 w-4" />
+          {connectingStripe ? (
+            <Loader2 className="h-4 w-4 animate-spin" />
+          ) : (
+            <Building2 className="h-4 w-4" />
+          )}
           {hasBankAccount ? "Gérer mon compte bancaire" : "Configurer mon compte bancaire"}
         </button>
       </div>
