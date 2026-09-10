@@ -4,10 +4,8 @@ import { supabaseServer } from "@/lib/supabase-server";
 
 export async function POST(req: NextRequest) {
   try {
-    // Initialisation de Stripe ici pour éviter le crash lors du build statique de Next.js
-    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-      apiVersion: "2025-02-28.acacia" as any,
-    });
+    // Initialisation de Stripe sans apiVersion explicite pour utiliser la version par défaut du SDK
+    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
     const authHeader = req.headers.get("authorization");
     if (!authHeader) {
