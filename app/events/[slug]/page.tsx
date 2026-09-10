@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { notFound, useParams } from 'next/navigation';
 import { supabaseBrowser } from '@/lib/supabase-browser';
-import { Calendar, MapPin, ArrowLeft, ArrowUpRight, Clock, Ticket, ShieldCheck, Minus, Plus, Users, Loader2, Sparkles, X } from 'lucide-react';
+import { Calendar, MapPin, ArrowLeft, ArrowUpRight, Clock, Ticket, Minus, Plus, Users, Loader2, Sparkles, X } from 'lucide-react';
 import Link from 'next/link';
 
 export default function PublicEventPage() {
@@ -40,7 +40,7 @@ export default function PublicEventPage() {
   if (loading) {
     return (
       <main className="min-h-screen bg-[#F7F5F0] flex items-center justify-center">
-        <Loader2 className="w-6 h-6 animate-spin text-[#111110]/60" />
+        <Loader2 className="w-5 h-5 animate-spin text-[#111110]/50" />
       </main>
     );
   }
@@ -57,7 +57,6 @@ export default function PublicEventPage() {
   const startDate = event.starts_at ? new Date(event.starts_at) : null;
   const formattedDate = startDate
     ? startDate.toLocaleDateString('fr-FR', {
-        weekday: 'long',
         day: 'numeric',
         month: 'long',
         year: 'numeric',
@@ -73,9 +72,9 @@ export default function PublicEventPage() {
 
   return (
     <main className="min-h-screen bg-[#F7F5F0] text-[#111110] px-6 md:px-12 py-8 md:py-12 selection:bg-[#111110] selection:text-[#F7F5F0]">
-      <div className="max-w-6xl mx-auto w-full space-y-10">
+      <div className="max-w-6xl mx-auto w-full space-y-12">
         
-        {/* Topbar / Fil d'ariane */}
+        {/* Navigation & Orga */}
         <div className="flex items-center justify-between border-b border-[#111110]/10 pb-4">
           <Link
             href="/events"
@@ -89,26 +88,26 @@ export default function PublicEventPage() {
           </span>
         </div>
 
-        {/* SECTION HÉRO : Infos à gauche / Affiche 16:9 à droite */}
-        <div className="grid lg:grid-cols-[1fr_1.2fr] gap-10 lg:gap-14 items-start">
+        {/* Section principale : Infos à gauche, Affiche 16:9 à droite */}
+        <div className="grid lg:grid-cols-[1fr_1.2fr] gap-12 lg:gap-16 items-start">
           
-          {/* COLONNE DE GAUCHE : Titre, Infos et CTA "Prendre une place" */}
+          {/* Colonne Gauche : Titre, Infos, CTA & Description */}
           <div className="space-y-8">
             
             <div className="space-y-3">
               <span className="text-xs font-mono text-[#111110]/50 uppercase tracking-widest">
                 Par {event.organizations?.name || 'Organisateur'}
               </span>
-              <h1 className="font-display text-3xl md:text-5xl font-bold tracking-tight leading-[1.05]">
+              <h1 className="font-display text-4xl md:text-5xl font-bold tracking-tight leading-[1.05]">
                 {event.title}
               </h1>
             </div>
 
-            {/* Infos pratiques */}
-            <div className="space-y-3 font-mono text-xs text-[#111110]/80 bg-white/50 p-5 rounded-2xl border border-[#111110]/5">
+            {/* Infos Pratiques */}
+            <div className="space-y-2.5 font-mono text-xs text-[#111110]/80 bg-white/60 p-5 rounded-2xl border border-[#111110]/10 shadow-sm">
               <div className="flex items-center gap-3">
                 <Calendar className="w-4 h-4 text-[#111110]/40 shrink-0" />
-                <span className="capitalize">{formattedDate}</span>
+                <span>{formattedDate}</span>
               </div>
               <div className="flex items-center gap-3">
                 <Clock className="w-4 h-4 text-[#111110]/40 shrink-0" />
@@ -122,23 +121,23 @@ export default function PublicEventPage() {
               )}
             </div>
 
-            {/* Bouton déclencheur principal (Style Shotgun) */}
-            <div className="pt-2">
+            {/* Bouton d'action principal (DA unifiée) */}
+            <div>
               <button
                 onClick={() => setIsCheckoutOpen(true)}
-                className="w-full md:w-auto rounded-full bg-[#111110] text-[#F7F5F0] py-4 px-8 text-xs font-bold uppercase tracking-wider transition-all duration-300 hover:bg-[#222220] hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-3 cursor-pointer shadow-xl"
+                className="w-full sm:w-auto rounded-full bg-[#111110] text-[#F7F5F0] py-4 px-8 text-xs font-mono uppercase tracking-widest transition-all duration-300 hover:bg-[#222220] hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-3 cursor-pointer shadow-lg"
               >
                 <Ticket className="w-4 h-4 text-emerald-400" />
-                <span>{basePrice === 0 ? 'Prendre une place (Gratuit)' : `Prendre une place à ${basePrice.toFixed(2)} €`}</span>
+                <span>{basePrice === 0 ? 'Prendre une place (Gratuit)' : `Prendre une place • ${basePrice.toFixed(2)} €`}</span>
                 <ArrowUpRight className="w-4 h-4 text-[#F7F5F0]/60" />
               </button>
             </div>
 
-            {/* Description détaillée */}
-            <div className="space-y-3 pt-4">
-              <h3 className="text-xs font-mono uppercase tracking-widest text-[#111110]/40">À propos de l'événement</h3>
+            {/* Description de l'événement */}
+            <div className="space-y-3 pt-4 border-t border-[#111110]/10">
+              <h3 className="text-xs font-mono uppercase tracking-widest text-[#111110]/40">À propos</h3>
               {event.description ? (
-                <div className="text-sm md:text-base text-[#111110]/85 font-light leading-relaxed whitespace-pre-line bg-white/50 p-6 rounded-2xl border border-[#111110]/5">
+                <div className="text-sm md:text-base text-[#111110]/85 font-light leading-relaxed whitespace-pre-line bg-white/40 p-6 rounded-2xl border border-[#111110]/5">
                   {event.description}
                 </div>
               ) : (
@@ -148,8 +147,8 @@ export default function PublicEventPage() {
 
           </div>
 
-          {/* COLONNE DE DROITE : Affiche format 16/9 harmonieux */}
-          <div className="lg:sticky lg:top-6">
+          {/* Colonne Droite : Affiche 16:9 immaculée */}
+          <div className="lg:sticky lg:top-8">
             <div className="relative w-full aspect-[16/9] rounded-3xl overflow-hidden border border-[#111110]/15 bg-[#111110]/5 shadow-sm">
               {event.image_url ? (
                 <img 
@@ -172,12 +171,12 @@ export default function PublicEventPage() {
 
       </div>
 
-      {/* POP-UP / MODALE DE PAIEMENT (S'ouvre au clic sur "Prendre une place") */}
+      {/* Modale de Billetterie épurée */}
       {isCheckoutOpen && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200">
-          <div className="relative w-full max-w-md rounded-3xl bg-[#111110] text-[#F7F5F0] p-6 md:p-8 space-y-6 shadow-2xl border border-[#111110]/20 animate-in zoom-in-95 duration-200">
+          <div className="relative w-full max-w-md rounded-3xl bg-[#111110] text-[#F7F5F0] p-6 md:p-8 space-y-6 shadow-2xl border border-[#F7F5F0]/15 animate-in zoom-in-95 duration-200">
             
-            {/* Bouton de fermeture */}
+            {/* Bouton fermer */}
             <button
               onClick={() => setIsCheckoutOpen(false)}
               className="absolute top-6 right-6 w-8 h-8 rounded-full bg-[#F7F5F0]/10 flex items-center justify-center text-[#F7F5F0]/70 hover:text-[#F7F5F0] hover:bg-[#F7F5F0]/20 transition-all cursor-pointer"
@@ -185,30 +184,25 @@ export default function PublicEventPage() {
               <X className="w-4 h-4" />
             </button>
 
-            <div className="flex items-center gap-2 pb-2 border-b border-[#F7F5F0]/15">
-              <Ticket className="w-4 h-4 text-[#F7F5F0]/60" />
-              <span className="text-xs font-mono uppercase tracking-widest text-[#F7F5F0]/70">Billetterie Live</span>
+            {/* En-tête modale */}
+            <div className="space-y-1">
+              <span className="text-[10px] font-mono uppercase tracking-widest text-[#F7F5F0]/50 block">Billetterie</span>
+              <h3 className="font-display text-xl font-bold tracking-tight line-clamp-1">{event.title}</h3>
             </div>
 
-            {/* Titre événement dans la modale */}
-            <div>
-              <h3 className="font-display text-xl font-bold tracking-tight">{event.title}</h3>
-              <p className="text-xs font-mono text-[#F7F5F0]/50 capitalize mt-0.5">{formattedDate}</p>
-            </div>
-
-            {/* Sélecteur de quantité */}
-            <div className="space-y-2">
-              <div className="flex justify-between items-center text-xs font-mono">
-                <span className="text-[#F7F5F0]/60">Nombre de places</span>
+            {/* Quantité */}
+            <div className="space-y-2 pt-2">
+              <div className="flex justify-between items-center text-xs font-mono text-[#F7F5F0]/60">
+                <span>Quantité</span>
                 <span className="text-[#F7F5F0] font-bold flex items-center gap-1">
                   <Users className="w-3.5 h-3.5" /> {quantity}
                 </span>
               </div>
-              <div className="flex items-center justify-between bg-[#F7F5F0]/5 border border-[#F7F5F0]/15 rounded-2xl p-2">
+              <div className="flex items-center justify-between bg-[#F7F5F0]/5 border border-[#F7F5F0]/15 rounded-2xl p-1.5">
                 <button
                   onClick={() => setQuantity(Math.max(1, quantity - 1))}
                   disabled={quantity <= 1}
-                  className="w-10 h-10 rounded-xl bg-[#F7F5F0]/10 flex items-center justify-center text-[#F7F5F0] hover:bg-[#F7F5F0]/20 disabled:opacity-35 transition-all cursor-pointer"
+                  className="w-10 h-10 rounded-xl bg-[#F7F5F0]/10 flex items-center justify-center text-[#F7F5F0] hover:bg-[#F7F5F0]/20 disabled:opacity-30 transition-all cursor-pointer"
                 >
                   <Minus className="w-4 h-4" />
                 </button>
@@ -216,14 +210,14 @@ export default function PublicEventPage() {
                 <button
                   onClick={() => setQuantity(Math.min(10, quantity + 1))}
                   disabled={quantity >= 10}
-                  className="w-10 h-10 rounded-xl bg-[#F7F5F0]/10 flex items-center justify-center text-[#F7F5F0] hover:bg-[#F7F5F0]/20 disabled:opacity-35 transition-all cursor-pointer"
+                  className="w-10 h-10 rounded-xl bg-[#F7F5F0]/10 flex items-center justify-center text-[#F7F5F0] hover:bg-[#F7F5F0]/20 disabled:opacity-30 transition-all cursor-pointer"
                 >
                   <Plus className="w-4 h-4" />
                 </button>
               </div>
             </div>
 
-            {/* Option de soutien solidaire */}
+            {/* Option solidaire optionnelle */}
             {basePrice > 0 && (
               <div className="bg-[#F7F5F0]/5 border border-[#F7F5F0]/10 rounded-2xl p-3.5">
                 <label className="flex items-start gap-3 cursor-pointer select-none">
@@ -235,33 +229,25 @@ export default function PublicEventPage() {
                   />
                   <div className="space-y-0.5 text-xs">
                     <p className="font-semibold text-[#F7F5F0]">Option solidaire (+2 € / billet)</p>
-                    <p className="text-[#F7F5F0]/50 text-[11px]">Soutien direct au lieu et aux artistes.</p>
+                    <p className="text-[#F7F5F0]/50 text-[11px]">Soutien direct au lieu.</p>
                   </div>
                 </label>
               </div>
             )}
 
-            {/* Prix & Action finale */}
+            {/* Total et Paiement */}
             <div className="space-y-4 pt-4 border-t border-[#F7F5F0]/15">
               <div className="flex items-baseline justify-between">
-                <div>
-                  <span className="text-[11px] font-mono text-[#F7F5F0]/50 block">Total</span>
-                  <span className="font-mono text-xs text-emerald-400">0% commission</span>
-                </div>
+                <span className="text-xs font-mono text-[#F7F5F0]/50 uppercase tracking-wider">Total</span>
                 <p className="font-display text-3xl font-bold tracking-tight">
                   {basePrice === 0 ? 'Gratuit' : `${totalPrice.toFixed(2)} €`}
                 </p>
               </div>
 
-              <button className="w-full rounded-full bg-[#F7F5F0] text-[#111110] py-4 px-6 text-xs font-bold uppercase tracking-wider transition-all duration-300 hover:bg-white hover:scale-[1.01] active:scale-[0.98] flex items-center justify-center gap-2 cursor-pointer shadow-xl">
-                <span>{basePrice === 0 ? 'Valider mes places' : `Procéder au paiement (${totalPrice.toFixed(2)} €)`}</span>
+              <button className="w-full rounded-full bg-[#F7F5F0] text-[#111110] py-4 px-6 text-xs font-mono uppercase tracking-widest transition-all duration-300 hover:bg-white hover:scale-[1.01] active:scale-[0.98] flex items-center justify-center gap-2 cursor-pointer shadow-xl font-bold">
+                <span>{basePrice === 0 ? 'Valider ma place' : 'Procéder au paiement'}</span>
                 <ArrowUpRight className="w-4 h-4" />
               </button>
-
-              <div className="flex justify-between items-center text-[10px] text-[#F7F5F0]/40 font-mono pt-1">
-                <span className="flex items-center gap-1"><ShieldCheck className="w-3.5 h-3.5 text-emerald-400" /> Accès garanti</span>
-                <span>QR Code instantané</span>
-              </div>
             </div>
 
           </div>
