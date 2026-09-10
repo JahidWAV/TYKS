@@ -60,7 +60,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   return (
     <div className="min-h-screen bg-[#F7F5F0] text-[#111110] flex selection:bg-[#111110] selection:text-[#F7F5F0]">
       
-      {/* Sidebar avec transition fluide style Supabase (w-16 repliée / w-64 dépliée) */}
+      {/* Sidebar avec transition fluide */}
       <aside 
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
@@ -72,16 +72,16 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         {/* En-tête & Navigation */}
         <div className="py-6 px-3 space-y-8 overflow-y-auto overflow-x-hidden">
           
-          {/* Logo & Brand */}
+          {/* Logo agrandi et bien mis en valeur */}
           <div className="flex items-center pt-1">
             <Link href="/" className="flex items-center gap-3 w-full">
               <div className="w-10 h-10 flex items-center justify-center shrink-0">
                 <svg 
-                  width="32" 
-                  height="32" 
+                  width="40" 
+                  height="40" 
                   viewBox="0 0 512 512" 
                   xmlns="http://www.w3.org/2000/svg" 
-                  className="w-8 h-8 transition-transform hover:scale-105"
+                  className="w-10 h-10 transition-transform hover:scale-105"
                 >
                   <rect width="512" height="512" fill="transparent" />
                   <path 
@@ -114,7 +114,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             </Link>
           </div>
 
-          {/* Liens de navigation */}
+          {/* Liens de navigation avec icônes agrandies (w-5 h-5) */}
           <div className="space-y-1">
             <div className={`transition-opacity duration-200 ${
               isHovered ? 'opacity-100 pb-2' : 'opacity-0 pointer-events-none h-0'
@@ -139,8 +139,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                       : 'opacity-70 hover:opacity-100 hover:bg-[#111110]/5 text-[#111110]'
                   }`}
                 >
-                  <div className="w-10 h-4 flex items-center justify-center shrink-0">
-                    <Icon className={`w-4 h-4 transition-transform group-hover:scale-105 ${isActive ? 'text-[#F7F5F0]' : 'opacity-70'}`} />
+                  <div className="w-10 h-5 flex items-center justify-center shrink-0">
+                    <Icon className={`w-5 h-5 transition-transform group-hover:scale-105 ${isActive ? 'text-[#F7F5F0]' : 'opacity-70'}`} />
                   </div>
                   <span className={`whitespace-nowrap transition-opacity duration-200 ${
                     isHovered ? 'opacity-100' : 'opacity-0 pointer-events-none'
@@ -164,8 +164,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 : 'opacity-70 hover:opacity-100 hover:bg-[#111110]/5 text-[#111110]'
             }`}
           >
-            <div className="w-10 h-4 flex items-center justify-center shrink-0">
-              <Settings className="w-4 h-4 opacity-70" />
+            <div className="w-10 h-5 flex items-center justify-center shrink-0">
+              <Settings className="w-5 h-5 opacity-70" />
             </div>
             <span className={`whitespace-nowrap transition-opacity duration-200 ${
               isHovered ? 'opacity-100' : 'opacity-0 pointer-events-none'
@@ -179,8 +179,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             title={!isHovered ? "Se déconnecter" : undefined}
             className="w-full flex items-center gap-3 py-2.5 rounded-xl text-xs font-medium text-red-600 hover:bg-red-500/10 transition-colors"
           >
-            <div className="w-10 h-4 flex items-center justify-center shrink-0">
-              <LogOut className="w-4 h-4 opacity-70" />
+            <div className="w-10 h-5 flex items-center justify-center shrink-0">
+              <LogOut className="w-5 h-5 opacity-70" />
             </div>
             <span className={`whitespace-nowrap transition-opacity duration-200 ${
               isHovered ? 'opacity-100' : 'opacity-0 pointer-events-none'
