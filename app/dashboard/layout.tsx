@@ -279,26 +279,13 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
       {/* 2. Panneau textuel contextuel, ouvert/fermé via l'interrupteur (état mémorisé) */}
       <div 
-        className={`fixed top-14 left-16 h-[calc(100vh-3.5rem)] bg-[#F7F5F0] border-r border-[#111110]/10 flex flex-col justify-between z-30 overflow-hidden select-none ${
+        className={`fixed top-14 left-16 h-[calc(100vh-3.5rem)] bg-[#F7F5F0] border-r border-[#111110]/10 flex flex-col z-30 overflow-hidden select-none ${
           mounted ? 'transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]' : ''
         } ${
           isOpen ? 'w-56 opacity-100 shadow-xl' : 'w-0 opacity-0 pointer-events-none'
         }`}
       >
-        <div className="space-y-1 w-full px-3 flex-1 pt-6">
-          <div className="flex items-center justify-between px-3 pb-2">
-            <p className="text-[10px] font-mono uppercase tracking-wider opacity-40 whitespace-nowrap">
-              Espace de travail
-            </p>
-            <button
-              onClick={() => setIsOpen(false)}
-              title="Réduire le menu"
-              aria-label="Réduire le menu"
-              className="opacity-40 hover:opacity-100 transition shrink-0"
-            >
-              <ChevronRight className="w-3.5 h-3.5 rotate-180" />
-            </button>
-          </div>
+        <div className="space-y-2 w-full px-3 flex-1 pt-6">
           {navItems.map((item) => {
             const isActive = pathname === item.href;
 
@@ -316,26 +303,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               </Link>
             );
           })}
-        </div>
-
-        <div className="px-3 space-y-1 border-t border-[#111110]/10 py-4">
-          <Link 
-            href="/settings" 
-            className={`flex items-center h-10 px-3 rounded-xl text-xs font-medium whitespace-nowrap transition ${
-              pathname === '/settings'
-                ? 'bg-[#111110] text-[#F7F5F0]'
-                : 'opacity-70 hover:opacity-100 hover:bg-[#111110]/5 text-[#111110]'
-            }`}
-          >
-            Réglages
-          </Link>
-
-          <button
-            onClick={handleLogout}
-            className="w-full flex items-center h-10 px-3 rounded-xl text-xs font-medium text-red-600 hover:bg-red-500/10 transition-colors"
-          >
-            Se déconnecter
-          </button>
         </div>
       </div>
 
