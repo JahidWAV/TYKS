@@ -3,15 +3,15 @@
 import { useState, useEffect } from 'react';
 import { notFound, useParams } from 'next/navigation';
 import { supabaseBrowser } from '@/lib/supabase-browser';
-import { Calendar, MapPin, ArrowLeft, ArrowUpRight, Clock, Ticket, Minus, Plus, Users, Loader2, Sparkles, X } from 'lucide-react';
+import { Calendar, MapPin, ArrowLeft, ArrowUpRight, Clock, Ticket, Minus, Plus, Users, Loader2, Sparkles, X, CheckCircle2 } from 'lucide-react';
 import Link from 'next/link';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements, PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js';
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 
-// Formulaire de paiement customisé aux couleurs de TYKS
-function CustomCheckoutForm({ slug }: { slug: string }) {
+// Formulaire de paiement interne avec succès géré en state
+function CustomCheckoutForm({ slug, onSuccess }: { slug: string; onSuccess: () => void }) {
   const stripe = useStripe();
   const elements = useElements();
   const [isProcessing, setIsProcessing] = useState(false);
@@ -24,16 +24,18 @@ function CustomCheckoutForm({ slug }: { slug: string }) {
     setIsProcessing(true);
     setErrorMessage(null);
 
-    const { error } = await stripe.confirmPayment({
+    // On confirme le paiement sans forcer de redirection URL globale
+    const { error, paymentIntent } = await stripe.confirmPayment({
       elements,
-      confirmParams: {
-        return_url: `${window.location.origin}/events/success?slug=${slug}`,
-      },
+      redirect: 'if_required', // Empêche la redirection forcée de Stripe
     });
 
     if (error) {
       setErrorMessage(error.message || "Une erreur est survenue lors du paiement.");
       setIsProcessing(false);
+    } else if (paymentIntent && paymentIntent.status === 'succeeded') {
+      setIsProcessing(false);
+      onSuccess(); // Déclenche l'affichage instantané de l'écran de succès dans la modale
     }
   };
 
@@ -76,6 +78,7 @@ export default function PublicEventPage() {
   const [includeSupport, setIncludeSupport] = useState<boolean>(false);
   const [clientSecret, setClientSecret] = useState<string | null>(null);
   const [isInitializingPayment, setIsInitializingPayment] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false); // État pour afficher le succès dans la modale
 
   useEffect(() => {
     if (!slug) return;
@@ -147,8 +150,7 @@ export default function PublicEventPage() {
       const data = await res.json();
       
       if (data.free && data.url) {
-        // Cas gratuit directement redirigé vers la page de succès
-        window.location.href = data.url;
+        setIsSuccess(true);
       } else if (data.clientSecret) {
         setClientSecret(data.clientSecret);
       } else {
@@ -183,9 +185,7 @@ export default function PublicEventPage() {
         {/* Section principale : Infos à gauche, Affiche 16:9 à droite */}
         <div className="grid lg:grid-cols-[1fr_1.2fr] gap-12 lg:gap-16 items-start">
           
-          {/* Colonne Gauche : Titre, Infos, CTA & Description */}
           <div className="space-y-8">
-            
             <div className="space-y-3">
               <span className="text-xs font-mono text-[#111110]/50 uppercase tracking-widest">
                 Par {event.organizations?.name || 'Organisateur'}
@@ -218,6 +218,7 @@ export default function PublicEventPage() {
               <button
                 onClick={() => {
                   setClientSecret(null);
+                  setIsSuccess(false);
                   setIsCheckoutOpen(true);
                 }}
                 className="w-full sm:w-auto rounded-full bg-[#111110] text-[#F7F5F0] py-4 px-8 text-xs font-mono uppercase tracking-widest transition-all duration-300 hover:bg-[#222220] hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-3 cursor-pointer shadow-lg"
@@ -228,7 +229,6 @@ export default function PublicEventPage() {
               </button>
             </div>
 
-            {/* Description de l'événement */}
             <div className="space-y-3 pt-4 border-t border-[#111110]/10">
               <h3 className="text-xs font-mono uppercase tracking-widest text-[#111110]/40">À propos</h3>
               {event.description ? (
@@ -239,18 +239,12 @@ export default function PublicEventPage() {
                 <p className="text-xs text-[#111110]/40 italic font-light">Aucune description détaillée communiquée.</p>
               )}
             </div>
-
           </div>
 
-          {/* Colonne Droite : Affiche 16:9 */}
           <div className="lg:sticky lg:top-8">
             <div className="relative w-full aspect-[16/9] rounded-3xl overflow-hidden border border-[#111110]/15 bg-[#111110]/5 shadow-sm">
               {event.image_url ? (
-                <img 
-                  src={event.image_url} 
-                  alt={event.title}
-                  className="w-full h-full object-cover"
-                />
+                <img src={event.image_url} alt={event.title} className="w-full h-full object-cover" />
               ) : (
                 <div className="w-full h-full bg-gradient-to-br from-[#111110] to-[#222220] text-[#F7F5F0] p-8 flex flex-col justify-between">
                   <span className="text-xs font-mono uppercase tracking-widest text-[#F7F5F0]/50">
@@ -266,31 +260,55 @@ export default function PublicEventPage() {
 
       </div>
 
-      {/* Modale de Billetterie Custom (White Label) */}
+      {/* Modale de Billetterie White Label Embarquée */}
       {isCheckoutOpen && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200">
           <div className="relative w-full max-w-lg rounded-3xl bg-[#111110] text-[#F7F5F0] p-6 md:p-8 space-y-6 shadow-2xl border border-[#F7F5F0]/15 max-h-[90vh] overflow-y-auto">
             
-            {/* Bouton fermer */}
             <button
               onClick={() => {
                 setIsCheckoutOpen(false);
                 setClientSecret(null);
+                setIsSuccess(false);
               }}
               className="absolute top-6 right-6 w-8 h-8 rounded-full bg-[#F7F5F0]/10 flex items-center justify-center text-[#F7F5F0]/70 hover:text-[#F7F5F0] hover:bg-[#F7F5F0]/20 transition-all cursor-pointer z-10"
             >
               <X className="w-4 h-4" />
             </button>
 
-            {!clientSecret ? (
+            {isSuccess ? (
+              /* Écran de succès instantané dans la modale */
+              <div className="py-6 space-y-6 text-center">
+                <div className="flex justify-center">
+                  <div className="w-16 h-16 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 shadow-inner">
+                    <CheckCircle2 className="w-8 h-8" />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <span className="text-[10px] font-mono uppercase tracking-widest text-emerald-400">Paiement validé</span>
+                  <h3 className="font-display text-2xl font-bold tracking-tight">Vos places sont réservées !</h3>
+                  <p className="text-xs text-[#F7F5F0]/60 font-mono leading-relaxed pt-1">
+                    Merci pour votre achat. Un e-mail de confirmation vient de vous être envoyé.
+                  </p>
+                </div>
+                <button
+                  onClick={() => {
+                    setIsCheckoutOpen(false);
+                    setClientSecret(null);
+                    setIsSuccess(false);
+                  }}
+                  className="w-full rounded-full bg-[#F7F5F0] text-[#111110] py-4 px-6 text-xs font-mono uppercase tracking-widest font-bold shadow-lg hover:bg-white transition-all cursor-pointer"
+                >
+                  Fermer
+                </button>
+              </div>
+            ) : !clientSecret ? (
               <>
-                {/* En-tête modale */}
                 <div className="space-y-1">
                   <span className="text-[10px] font-mono uppercase tracking-widest text-[#F7F5F0]/50 block">Billetterie</span>
                   <h3 className="font-display text-xl font-bold tracking-tight line-clamp-1">{event.title}</h3>
                 </div>
 
-                {/* Quantité */}
                 <div className="space-y-2 pt-2">
                   <div className="flex justify-between items-center text-xs font-mono text-[#F7F5F0]/60">
                     <span>Quantité</span>
@@ -317,7 +335,6 @@ export default function PublicEventPage() {
                   </div>
                 </div>
 
-                {/* Option solidaire optionnelle */}
                 {basePrice > 0 && (
                   <div className="bg-[#F7F5F0]/5 border border-[#F7F5F0]/10 rounded-2xl p-3.5">
                     <label className="flex items-start gap-3 cursor-pointer select-none">
@@ -335,7 +352,6 @@ export default function PublicEventPage() {
                   </div>
                 )}
 
-                {/* Total et Bouton d'initialisation */}
                 <div className="space-y-4 pt-4 border-t border-[#F7F5F0]/15">
                   <div className="flex items-baseline justify-between">
                     <span className="text-xs font-mono text-[#F7F5F0]/50 uppercase tracking-wider">Total</span>
@@ -345,7 +361,7 @@ export default function PublicEventPage() {
                   </div>
 
                   <button 
-                    onClick={handleInitCheckout}
+                    onClick={basePrice === 0 ? () => setIsSuccess(true) : handleInitCheckout}
                     disabled={isInitializingPayment}
                     className="w-full rounded-full bg-[#F7F5F0] text-[#111110] py-4 px-6 text-xs font-mono uppercase tracking-widest transition-all duration-300 hover:bg-white hover:scale-[1.01] active:scale-[0.98] flex items-center justify-center gap-2 cursor-pointer shadow-xl font-bold disabled:opacity-50"
                   >
@@ -361,7 +377,6 @@ export default function PublicEventPage() {
                 </div>
               </>
             ) : (
-              /* Tunnel Stripe Custom 100% Intégré */
               <div className="space-y-4">
                 <div className="flex items-center justify-between border-b border-[#F7F5F0]/10 pb-3">
                   <div>
@@ -377,25 +392,25 @@ export default function PublicEventPage() {
                 </div>
 
                 <Elements
-  stripe={stripePromise}
-  options={{
-    clientSecret,
-    locale: 'fr', // <--- C'est ici qu'on force la langue française
-    appearance: {
-      theme: 'night',
-      variables: {
-        colorPrimary: '#F7F5F0',
-        colorBackground: '#111110',
-        colorText: '#F7F5F0',
-        colorDanger: '#ef4444',
-        fontFamily: 'monospace, sans-serif',
-        borderRadius: '12px',
-      },
-    },
-  }}
->
-  <CustomCheckoutForm slug={event.slug} />
-</Elements>
+                  stripe={stripePromise}
+                  options={{
+                    clientSecret,
+                    locale: 'fr',
+                    appearance: {
+                      theme: 'night',
+                      variables: {
+                        colorPrimary: '#F7F5F0',
+                        colorBackground: '#111110',
+                        colorText: '#F7F5F0',
+                        colorDanger: '#ef4444',
+                        fontFamily: 'monospace, sans-serif',
+                        borderRadius: '12px',
+                      },
+                    },
+                  }}
+                >
+                  <CustomCheckoutForm slug={event.slug} onSuccess={() => setIsSuccess(true)} />
+                </Elements>
               </div>
             )}
 
