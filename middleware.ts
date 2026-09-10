@@ -36,22 +36,27 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next()
   }
 
+  // Laisser passer les pages d'événements publics directement sans réécriture /public
+  if (url.pathname.startsWith('/events')) {
+    return NextResponse.next()
+  }
+
   const isDashboard = hostname.startsWith('dashboard.')
   const isMarketingPro = hostname.startsWith('pro.')
 
-  // 1. Dashboard (`dashboard.tyks.app`) -> Réécriture vers le dossier physique /dashboard
+  // 1. Dashboard (`dashboard.tyks.app`) -> Réécriture vers le dossier physique /dashboard[cite: 4]
   if (isDashboard) {
     url.pathname = `/dashboard${url.pathname}`
     return NextResponse.rewrite(url)
   }
 
-  // 2. Landing Pro (`pro.tyks.app`) -> Réécriture vers le dossier physique /pro
+  // 2. Landing Pro (`pro.tyks.app`) -> Réécriture vers le dossier physique /pro[cite: 4]
   if (isMarketingPro) {
     url.pathname = `/pro${url.pathname}`
     return NextResponse.rewrite(url)
   }
 
-  // 3. Site Public (`tyks.app`) -> Réécriture vers le dossier physique /public
+  // 3. Site Public (`tyks.app`) -> Réécriture vers le dossier physique /public[cite: 4]
   url.pathname = `/public${url.pathname}`
   return NextResponse.rewrite(url)
 }
