@@ -39,24 +39,24 @@ export async function middleware(request: NextRequest) {
   const isDashboard = hostname.startsWith('dashboard.')
   const isMarketingPro = hostname.startsWith('pro.')
 
-  // 1. Dashboard (`dashboard.tyks.app`) -> Réécriture prioritaire vers le dossier physique /dashboard[cite: 4]
+  // 1. Dashboard (`dashboard.tyks.app`) -> Réécriture stricte vers le dossier /dashboard[cite: 4]
   if (isDashboard) {
     url.pathname = `/dashboard${url.pathname}`
     return NextResponse.rewrite(url)
   }
 
-  // 2. Landing Pro (`pro.tyks.app`) -> Réécriture vers le dossier physique /pro[cite: 4]
+  // 2. Landing Pro (`pro.tyks.app`) -> Réécriture vers le dossier /pro[cite: 4]
   if (isMarketingPro) {
     url.pathname = `/pro${url.pathname}`
     return NextResponse.rewrite(url)
   }
 
-  // 3. Site Public (`tyks.app`) : Si on est sur le domaine principal et qu'on va sur /events, on laisse passer directement
+  // 3. Site Public (`tyks.app`) : Laisser passer les événements publics directement
   if (url.pathname.startsWith('/events')) {
     return NextResponse.next()
   }
 
-  // 4. Site Public (`tyks.app`) par défaut -> Réécriture vers le dossier physique /public[cite: 4]
+  // 4. Site Public (`tyks.app`) par défaut -> Réécriture vers le dossier /public[cite: 4]
   url.pathname = `/public${url.pathname}`
   return NextResponse.rewrite(url)
 }
