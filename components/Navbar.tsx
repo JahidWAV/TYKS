@@ -139,8 +139,33 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
       }`}>
         <div className="mx-auto grid grid-cols-[1fr_auto_1fr] items-center max-w-7xl px-6 py-4 md:px-12 gap-6">
 
-          {/* Logo */}
-          <Link href={isPro ? "/" : "/"} className="group justify-self-start">
+          {/* Logo avec le petit bonhomme ticket SVG */}
+          <Link href={isPro ? "/" : "/"} className="group justify-self-start flex items-center gap-2.5">
+            <svg 
+              width="32" 
+              height="32" 
+              viewBox="0 0 512 512" 
+              xmlns="http://www.w3.org/2000/svg" 
+              className="w-7 h-7 transition-transform group-hover:scale-105"
+            >
+              <rect width="512" height="512" fill="transparent" />
+              <path 
+                d="M160 160 H352 A20 20 0 0 1 372 180 V220 A20 20 0 0 0 372 260 V300 A20 20 0 0 1 352 320 H160 A20 20 0 0 1 140 300 V260 A20 20 0 0 0 140 220 V180 A20 20 0 0 1 160 160 Z" 
+                fill="none" 
+                stroke={isDarkMode ? "#F7F5F0" : "#111110"} 
+                strokeWidth="16" 
+                strokeLinejoin="round"
+              />
+              <circle cx="215" cy="220" r="12" fill={isDarkMode ? "#F7F5F0" : "#111110"} />
+              <circle cx="295" cy="220" r="12" fill={isDarkMode ? "#F7F5F0" : "#111110"} />
+              <path 
+                d="M210 255 Q256 285 302 255" 
+                fill="none" 
+                stroke={isDarkMode ? "#F7F5F0" : "#111110"} 
+                strokeWidth="14" 
+                strokeLinecap="round"
+              />
+            </svg>
             <span className="font-display text-xl font-bold tracking-tighter">
               TYKS{isPro && <span className="opacity-60"> Pro</span>}
             </span>
