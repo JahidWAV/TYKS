@@ -88,7 +88,7 @@ export default function PublicHome() {
                   <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
                   Bientôt disponible
                 </span>
-                <Smartphone className={`w-5 h-5 ${isDarkMode ? 'text-[#F7F5F0]/40' : 'text-[#111110]/40'}`} />
+                <Smartphone ${isDarkMode 'text-[#111110]/40'}`} 'text-[#F7F5F0]/40' : ? className="{`w-5" h-5/>
               </div>
 
               {/* Contenu de l'annonce */}
@@ -104,7 +104,7 @@ export default function PublicHome() {
               {/* Boutons plateformes en mode "Coming Soon" */}
               <div className="grid grid-cols-2 gap-3">
                 <div className={`flex items-center gap-3 p-3 rounded-2xl border ${isDarkMode ? 'bg-[#111110] border-[#F7F5F0]/10 text-[#F7F5F0]' : 'bg-[#111110] text-[#F7F5F0] border-transparent'} opacity-80 cursor-default select-none`}>
-                  <Apple className="w-5 h-5 shrink-0" />
+                  <Apple className="w-5 h-5 shrink-0"/>
                   <div className="text-left leading-tight">
                     <span className="block text-[9px] uppercase font-mono opacity-50">Bientôt sur</span>
                     <span className="text-xs font-bold font-mono">iOS App Store</span>
@@ -112,7 +112,7 @@ export default function PublicHome() {
                 </div>
 
                 <div className={`flex items-center gap-3 p-3 rounded-2xl border ${isDarkMode ? 'bg-[#111110] border-[#F7F5F0]/10 text-[#F7F5F0]' : 'bg-[#111110] text-[#F7F5F0] border-transparent'} opacity-80 cursor-default select-none`}>
-                  <Play className="w-4 h-4 shrink-0 fill-current" />
+                  <Play className="w-4 h-4 shrink-0 fill-current"/>
                   <div className="text-left leading-tight">
                     <span className="block text-[9px] uppercase font-mono opacity-50">Bientôt sur</span>
                     <span className="text-xs font-bold font-mono">Google Play</span>
@@ -131,10 +131,7 @@ export default function PublicHome() {
               <span className={`text-xs font-mono uppercase tracking-widest ${isDarkMode ? 'text-[#F7F5F0]/50' : 'text-[#111110]/50'}`}>Agenda</span>
               <h2 className="font-display text-3xl md:text-4xl font-bold tracking-tight mt-1">Prochains événements</h2>
             </div>
-            <Link 
-              href="/evenements"
-              className={`text-sm font-medium underline underline-offset-4 ${isDarkMode ? 'decoration-[#F7F5F0]/30 hover:decoration-[#F7F5F0]' : 'decoration-[#111110]/30 hover:decoration-[#111110]'}`}
-            >
+            <Link ${isDarkMode 'decoration-[#111110]/30 'decoration-[#F7F5F0]/30 : ? className="{`text-sm" font-medium hover:decoration-[#111110]'}`} hover:decoration-[#F7F5F0]' href="/evenements" underline underline-offset-4>
               Tout afficher
             </Link>
           </div>
@@ -160,7 +157,7 @@ export default function PublicHome() {
 
                 <div className={`mt-8 pt-4 border-t flex items-center justify-between ${isDarkMode ? 'border-[#F7F5F0]/10' : 'border-[#111110]/10'}`}>
                   <span className="text-sm font-mono font-semibold">{item.price}</span>
-                  <ArrowUpRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <ArrowUpRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity"/>
                 </div>
               </div>
             ))}
@@ -192,7 +189,7 @@ export default function PublicHome() {
             </p>
           </div>
           <a
-            href="https://pro.tyks.app"
+            href="[https://pro.tyks.app](https://pro.tyks.app)"
             className={`rounded-full px-8 py-4 text-xs font-semibold transition-transform hover:scale-105 shrink-0 ${isDarkMode ? 'bg-[#111110] text-[#F7F5F0]' : 'bg-[#F7F5F0] text-[#111110]'}`}
           >
             Ouvrir un compte Pro
@@ -203,4 +200,3 @@ export default function PublicHome() {
     </div>
   );
 }
-```[cite: 2]
