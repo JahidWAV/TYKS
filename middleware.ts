@@ -39,13 +39,8 @@ export async function middleware(request: NextRequest) {
   const isDashboard = hostname.startsWith('dashboard.')
   const isMarketingPro = hostname.startsWith('pro.')
 
-  // 1. Dashboard (`dashboard.tyks.app`)
+  // 1. Dashboard (`dashboard.tyks.app`) -> Réécriture vers le dossier /dashboard
   if (isDashboard) {
-    // Interdire l'accès direct aux routes /events sur le dashboard et renvoyer vers l'accueil du dashboard
-    if (url.pathname.startsWith('/events')) {
-      return NextResponse.redirect(new URL('/', request.url))
-    }
-
     url.pathname = `/dashboard${url.pathname}`
     return NextResponse.rewrite(url)
   }
