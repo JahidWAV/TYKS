@@ -140,10 +140,11 @@ export default function PublicEventPage() {
     };
   }, [slug]);
 
-  // Enchaînement automatique du paiement dès que l'utilisateur se connecte via la modale
+  // Dès que l'utilisateur se connecte, on ferme l'auth, on rouvre le panier et on lance le paiement
   useEffect(() => {
     if (user && showAuthModal) {
       setShowAuthModal(false);
+      setIsCheckoutOpen(true);
       handleInitCheckout();
     }
   }, [user]);
@@ -203,8 +204,9 @@ export default function PublicEventPage() {
     : '';
 
   const handleInitCheckout = async () => {
-    // Si l'utilisateur n'est pas connecté au moment de lancer le paiement, on intercepte et on ouvre la modale d'auth
+    // Si l'utilisateur n'est pas connecté, on ferme la modale de quantité et on ouvre l'auth proprement
     if (!user) {
+      setIsCheckoutOpen(false);
       setShowAuthModal(true);
       return;
     }
