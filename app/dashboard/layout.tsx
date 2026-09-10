@@ -47,7 +47,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     router.refresh();
   };
 
-  // Termes entièrement en français
   const navItems = [
     { label: "Vue d'ensemble", href: '/', icon: LayoutDashboard },
     { label: 'Événements', href: '/admin-events', icon: Calendar },
@@ -140,9 +139,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           isHovered ? 'w-56 opacity-100 shadow-xl' : 'w-0 opacity-0 pointer-events-none'
         }`}
       >
-        {/* En-tête rigoureusement aligné en hauteur (h-14) et flex items-center */}
-        <div className="h-14 px-5 flex items-center border-b border-[#111110]/10 shrink-0 whitespace-nowrap">
-          <img src="/tyks.svg" alt="TYKS" className="h-4 w-auto object-contain block" />
+        {/* En-tête : h-14 strict, flex w-full et line-height alignée */}
+        <div className="h-14 w-full px-6 flex items-center border-b border-[#111110]/10 shrink-0 whitespace-nowrap">
+          <img src="/tyks.svg" alt="TYKS" className="h-4 w-auto object-contain my-auto" />
         </div>
 
         <div className="space-y-1 w-full px-3 flex-1 pt-4">
@@ -182,7 +181,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
           <button
             onClick={handleLogout}
-            className="w-full flex items-center h-10 px-3 rounded-xl text-xs font-medium text-red-600 hover:bg-red-500/10 whitespace-nowrap transition-colors"
+            className="w-full flex items-center h-10 px-3 rounded-xl text-xs font-medium text-red-600 hover:bg-red-500/10 transition-colors"
           >
             Se déconnecter
           </button>
@@ -195,24 +194,24 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           isHovered ? 'ml-72' : 'ml-16'
         }`}
       >
-        {/* Header avec centrage vertical parfait aligné sur h-14 */}
-        <header className="h-14 border-b border-[#111110]/10 bg-[#F7F5F0] px-6 flex items-center justify-between shrink-0 z-20">
+        {/* Header : h-14 strict avec items-center pour un alignement géométrique exact */}
+        <header className="h-14 w-full border-b border-[#111110]/10 bg-[#F7F5F0] px-6 flex items-center justify-between shrink-0 z-20">
           
-          <div className="flex items-center gap-2.5 text-sm tracking-tight font-medium text-[#111110]/60 h-full">
+          <div className="flex items-center gap-2.5 text-sm tracking-tight font-medium text-[#111110]/60 my-auto">
             {breadcrumbs.map((crumb, index) => (
-              <div key={index} className="flex items-center gap-2.5 h-full">
-                {index > 0 && <ChevronRight className="w-4 h-4 opacity-30" />}
-                <span className={`flex items-center ${index === breadcrumbs.length - 1 ? "text-[#111110] font-bold text-base" : ""}`}>
+              <div key={index} className="flex items-center gap-2.5 my-auto">
+                {index > 0 && <ChevronRight className="w-4 h-4 opacity-30 my-auto" />}
+                <span className={`flex items-center my-auto ${index === breadcrumbs.length - 1 ? "text-[#111110] font-bold text-base" : ""}`}>
                   {crumb}
                 </span>
               </div>
             ))}
           </div>
 
-          <div className="relative" ref={profileMenuRef}>
+          <div className="relative my-auto" ref={profileMenuRef}>
             <button 
               onClick={() => setProfileOpen(!profileOpen)}
-              className="w-9 h-9 rounded-full bg-[#111110]/5 border border-[#111110]/10 flex items-center justify-center hover:bg-[#111110]/10 transition"
+              className="w-9 h-9 rounded-full bg-[#111110]/5 border border-[#111110]/10 flex items-center justify-center hover:bg-[#111110]/10 transition my-auto"
               title="Mon profil"
             >
               <User className="w-4 h-4 opacity-70" />
