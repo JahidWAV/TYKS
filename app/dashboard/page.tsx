@@ -448,7 +448,7 @@ export default function OrganizerDashboard() {
                     </span>
                     <div className="flex items-center gap-2">
                       <Link
-                        href={`/events/${evt.slug || evt.id}/edit`}
+                        href={`/admin-events/${evt.slug || evt.id}/edit`}
                         className="p-2 rounded-xl border border-[#111110]/15 bg-white text-[#111110] hover:bg-[#111110] hover:text-[#F7F5F0] transition-colors"
                         title="Modifier"
                       >
