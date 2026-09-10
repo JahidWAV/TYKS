@@ -145,7 +145,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               <img
                 src="/icon.svg"
                 alt="TYKS"
-                className="w-6 h-6 object-contain transition-transform group-hover:scale-105"
+                className="w-10 h-10 object-contain transition-transform group-hover:scale-105"
               />
             </Link>
           </div>
