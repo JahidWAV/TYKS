@@ -74,10 +74,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     { label: "Vue d'ensemble", href: '/', icon: LayoutDashboard },
     { label: 'Événements', href: '/admin-events', icon: Calendar },
     { label: 'Analytique', href: '/analytics', icon: BarChart3 },
-    { label: 'Marketing', href: '/marketing', icon: Megaphone },
-    { label: 'Communauté', href: '/community', icon: Users },
     { label: 'Finances & Paiements', href: '/banking', icon: Wallet },
-    { label: 'Ma Page', href: '/page', icon: Globe },
   ];
 
   const getBreadcrumbs = () => {
