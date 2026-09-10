@@ -88,7 +88,6 @@ export default function BankingDashboardPage() {
           fetchClientSecret: async () => data.clientSecret,
           locale: 'fr-FR',
           appearance: {
-            theme: 'light',
             variables: {
               colorPrimary: '#111110',
               colorBackground: '#F7F5F0',
