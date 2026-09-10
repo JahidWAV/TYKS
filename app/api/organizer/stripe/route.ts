@@ -54,12 +54,12 @@ export async function POST(req: NextRequest) {
         .eq("id", orgId);
     }
 
-    const origin = req.headers.get("origin") || "https://tyks.app";
+    const origin = req.headers.get("origin") || "https://dashboard.tyks.app";
 
     const accountLink = await stripe.accountLinks.create({
       account: stripeAccountId,
-      refresh_url: `${origin}/dashboard/banking?refresh=true`,
-      return_url: `${origin}/dashboard/banking?success=true`,
+      refresh_url: `${origin}/banking?refresh=true`,
+      return_url: `${origin}/banking?success=true`,
       type: "account_onboarding",
     });
 
