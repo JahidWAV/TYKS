@@ -60,7 +60,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   return (
     <div className="min-h-screen bg-[#F7F5F0] text-[#111110] flex selection:bg-[#111110] selection:text-[#F7F5F0]">
       
-      {/* Sidebar avec transition fluide */}
+      {/* Sidebar fluide au survol */}
       <aside 
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
@@ -72,49 +72,28 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         {/* En-tête & Navigation */}
         <div className="py-6 px-3 space-y-8 overflow-y-auto overflow-x-hidden">
           
-          {/* Logo agrandi et bien mis en valeur */}
+          {/* Logo / Brand basé sur les fichiers public */}
           <div className="flex items-center pt-1">
             <Link href="/" className="flex items-center gap-3 w-full">
-              <div className="w-15 h-15 flex items-center justify-center shrink-0">
-                <svg 
-                  width="40" 
-                  height="40" 
-                  viewBox="0 0 512 512" 
-                  xmlns="http://www.w3.org/2000/svg" 
-                  className="w-15 h-15 transition-transform hover:scale-105"
-                >
-                  <rect width="512" height="512" fill="transparent" />
-                  <path 
-                    d="M160 160 H352 A20 20 0 0 1 372 180 V220 A20 20 0 0 0 372 260 V300 A20 20 0 0 1 352 320 H160 A20 20 0 0 1 140 300 V260 A20 20 0 0 0 140 220 V180 A20 20 0 0 1 160 160 Z" 
-                    fill="none" 
-                    stroke="#111110" 
-                    strokeWidth="16" 
-                    strokeLinejoin="round"
-                  />
-                  <circle cx="215" cy="220" r="12" fill="#111110" />
-                  <circle cx="295" cy="220" r="12" fill="#111110" />
-                  <path 
-                    d="M210 255 Q256 285 302 255" 
-                    fill="none" 
-                    stroke="#111110" 
-                    strokeWidth="14" 
-                    strokeLinecap="round"
-                  />
-                </svg>
+              <div className="w-10 h-10 flex items-center justify-center shrink-0">
+                {/* Affiche l'icône seule quand c'est fermé, ou le logo combiné/textuel quand c'est ouvert */}
+                <img 
+                  src={isHovered ? "/logo.svg" : "/icon.svg"} 
+                  alt="TYKS Pro" 
+                  className="w-8 h-8 object-contain transition-transform hover:scale-105"
+                />
               </div>
               
               <div className={`flex flex-col whitespace-nowrap transition-opacity duration-200 ${
                 isHovered ? 'opacity-100' : 'opacity-0 pointer-events-none'
               }`}>
-                <span className="font-display font-bold text-base tracking-tight leading-none">
-                  TYKS Pro
-                </span>
+                <img src="/tyks.svg" alt="TYKS" className="h-5 w-auto object-left object-contain" />
                 <span className="text-[10px] font-mono opacity-50 mt-1">Workspace v2.0</span>
               </div>
             </Link>
           </div>
 
-          {/* Liens de navigation avec icônes agrandies (w-5 h-5) */}
+          {/* Liens de navigation */}
           <div className="space-y-1">
             <div className={`transition-opacity duration-200 ${
               isHovered ? 'opacity-100 pb-2' : 'opacity-0 pointer-events-none h-0'
