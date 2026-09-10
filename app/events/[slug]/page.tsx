@@ -140,15 +140,13 @@ export default function PublicEventPage() {
     };
   }, [slug]);
 
-  const handleBuyClick = () => {
-    if (!user) {
-      setShowAuthModal(true);
-    } else {
-      setClientSecret(null);
-      setIsSuccess(false);
-      setIsCheckoutOpen(true);
+  // Enchaînement automatique du paiement dès que l'utilisateur se connecte via la modale
+  useEffect(() => {
+    if (user && showAuthModal) {
+      setShowAuthModal(false);
+      handleInitCheckout();
     }
-  };
+  }, [user]);
 
   const handleMagicLinkLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -205,6 +203,12 @@ export default function PublicEventPage() {
     : '';
 
   const handleInitCheckout = async () => {
+    // Si l'utilisateur n'est pas connecté au moment de lancer le paiement, on intercepte et on ouvre la modale d'auth
+    if (!user) {
+      setShowAuthModal(true);
+      return;
+    }
+
     setIsInitializingPayment(true);
     try {
       const res = await fetch('/api/checkout', {
@@ -279,7 +283,11 @@ export default function PublicEventPage() {
 
             <div>
               <button
-                onClick={handleBuyClick}
+                onClick={() => {
+                  setClientSecret(null);
+                  setIsSuccess(false);
+                  setIsCheckoutOpen(true);
+                }}
                 className="w-full sm:w-auto rounded-full bg-[#111110] text-[#F7F5F0] py-4 px-8 text-xs font-mono uppercase tracking-widest transition-all duration-300 hover:bg-[#222220] hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-3 cursor-pointer shadow-lg"
               >
                 <Ticket className="w-4 h-4 text-emerald-400" />
@@ -319,9 +327,9 @@ export default function PublicEventPage() {
 
             <div className="space-y-2">
               <span className="text-[10px] font-mono uppercase tracking-widest text-[#F7F5F0]/50 block">Sécurité & Billetterie</span>
-              <h3 className="font-display text-2xl font-bold tracking-tight">Connexion rapide</h3>
+              <h3 className="font-display text-2xl font-bold tracking-tight">Connexion requise</h3>
               <p className="text-xs font-mono text-[#F7F5F0]/60 leading-relaxed">
-                Connectez-vous instantanément pour récupérer vos billets et accéder au paiement.
+                Connectez-vous pour finaliser votre commande et récupérer vos billets en toute sécurité.
               </p>
             </div>
 
@@ -362,7 +370,7 @@ export default function PublicEventPage() {
               <div className="bg-[#F7F5F0]/5 border border-[#F7F5F0]/15 rounded-2xl p-6 text-center space-y-3">
                 <p className="text-sm font-mono font-bold text-[#F7F5F0]">Lien de connexion envoyé !</p>
                 <p className="text-xs font-mono text-[#F7F5F0]/60 leading-relaxed">
-                  Vérifiez vos e-mails pour valider votre connexion et accéder automatiquement à vos billets.
+                  Vérifiez vos e-mails. Votre session s'activera automatiquement dès que vous cliquerez sur le lien.
                 </p>
               </div>
             )}
