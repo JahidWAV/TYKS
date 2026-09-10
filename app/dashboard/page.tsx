@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 import type { IortiEvent } from '@/types/event';
 import { supabaseBrowser } from '@/lib/supabase-browser';
+import { CustomAuthModal } from '@/components/CustomAuthModal';
 
 const STATUS_LABEL: Record<string, string> = {
   draft: 'Brouillon',
@@ -40,8 +41,8 @@ export default function OrganizerDashboard() {
   
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
-  const [authLoading, setAuthLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
   useEffect(() => {
     async function getSession() {
@@ -128,22 +129,6 @@ export default function OrganizerDashboard() {
     }
   }, [ready, user, loadDashboard]);
 
-  const handleGoogleLogin = async () => {
-    try {
-      setAuthLoading(true);
-      const { error } = await supabaseBrowser.auth.signInWithOAuth({
-        provider: 'google',
-        options: {
-          redirectTo: `${window.location.origin}/auth/callback`,
-        },
-      });
-      if (error) throw error;
-    } catch (err) {
-      console.error('Erreur de connexion :', err);
-      setAuthLoading(false);
-    }
-  };
-
   const handleDeleteEvent = async (eventId: string) => {
     if (!confirm('Attention : Cette action est irréversible. Voulez-vous vraiment supprimer cet événement ?')) return;
 
@@ -190,15 +175,10 @@ export default function OrganizerDashboard() {
             </p>
             <div>
               <button
-                onClick={handleGoogleLogin}
-                disabled={authLoading}
-                className="inline-flex items-center gap-3 rounded-full bg-[#111110] px-8 py-3.5 text-xs font-semibold text-[#F7F5F0] transition hover:opacity-95 disabled:opacity-50 shadow-sm"
+                onClick={() => setIsAuthModalOpen(true)}
+                className="inline-flex items-center gap-3 rounded-full bg-[#111110] px-8 py-3.5 text-xs font-semibold text-[#F7F5F0] transition hover:opacity-95 shadow-sm"
               >
-                {authLoading ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                ) : (
-                  <ArrowUpRight className="h-4 w-4" />
-                )}
+                <ArrowUpRight className="h-4 w-4" />
                 Accéder à mon espace Pro
               </button>
             </div>
@@ -248,6 +228,12 @@ export default function OrganizerDashboard() {
             </div>
           </div>
         </div>
+
+        {/* Modale d'authentification personnalisée */}
+        <CustomAuthModal 
+          isOpen={isAuthModalOpen} 
+          onClose={() => setIsAuthModalOpen(false)} 
+        />
 
       </div>
     );
