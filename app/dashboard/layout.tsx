@@ -36,7 +36,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   const navItems = [
     { label: 'Overview', href: '/', icon: LayoutDashboard },
-    { label: 'Events', href: '/events', icon: Calendar },
+    { label: 'Events', href: '/admin-events', icon: Calendar },
     { label: 'Analytics', href: '/analytics', icon: BarChart3 },
     { label: 'Marketing', href: '/marketing', icon: Megaphone },
     { label: 'Community', href: '/community', icon: Users },
