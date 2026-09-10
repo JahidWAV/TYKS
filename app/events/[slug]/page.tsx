@@ -88,12 +88,14 @@ export default function PublicEventPage() {
           </span>
         </div>
 
-        {/* SECTION HÉRO : Affiche format portrait classique (Shotgun style) + Colonne de droite compacte */}
-        <div className="grid lg:grid-cols-[1fr_380px] gap-8 lg:gap-10 items-start">
+        {/* Grille principale */}
+        <div className="grid lg:grid-cols-[1fr_380px] gap-8 lg:gap-12 items-start">
           
-          {/* Affiche format portrait classique (Shotgun style) */}
+          {/* Colonne de gauche : Affiche portrait + Titre + Description */}
           <div className="space-y-6">
-            <div className="relative w-full aspect-[3/4] max-h-[600px] rounded-3xl overflow-hidden border border-[#111110]/15 bg-[#111110]/5 shadow-sm">
+            
+            {/* Affiche format portrait pur (Shotgun style) */}
+            <div className="relative w-full aspect-[3/4] rounded-3xl overflow-hidden border border-[#111110]/15 bg-[#111110]/5 shadow-sm">
               {event.image_url ? (
                 <img 
                   src={event.image_url} 
@@ -102,43 +104,38 @@ export default function PublicEventPage() {
                 />
               ) : (
                 <div className="w-full h-full bg-gradient-to-br from-[#111110] to-[#222220] text-[#F7F5F0] p-8 flex flex-col justify-between">
-                  <div className="flex justify-between items-start">
-                    <span className="text-xs font-mono uppercase tracking-widest text-[#F7F5F0]/50">
-                      {event.organizations?.name || 'Production'}
-                    </span>
-                    <Sparkles className="w-5 h-5 text-[#F7F5F0]/40" />
-                  </div>
-                  <h2 className="font-display text-4xl md:text-5xl font-bold tracking-tight">
-                    {event.title}
-                  </h2>
+                  <span className="text-xs font-mono uppercase tracking-widest text-[#F7F5F0]/50">
+                    {event.organizations?.name || 'Production'}
+                  </span>
+                  <Sparkles className="w-6 h-6 text-[#F7F5F0]/40" />
                 </div>
               )}
             </div>
 
-            {/* Description détaillée en dessous de l'affiche */}
-            <div className="space-y-3 pt-4">
-              <h3 className="text-xs font-mono uppercase tracking-widest text-[#111110]/40">À propos de l'événement</h3>
-              {event.description ? (
-                <div className="text-sm md:text-base text-[#111110]/85 font-light leading-relaxed whitespace-pre-line bg-white/50 p-6 rounded-2xl border border-[#111110]/5">
-                  {event.description}
-                </div>
-              ) : (
-                <p className="text-xs text-[#111110]/40 italic font-light">Aucune description détaillée communiquée.</p>
-              )}
-            </div>
-          </div>
-
-          {/* Colonne de droite : Infos Pratiques + Widget compact */}
-          <div className="space-y-6 lg:sticky lg:top-6">
-            
-            {/* Titre principal mobile / desktop haut de carte */}
-            <div className="space-y-2">
-              <h1 className="font-display text-2xl md:text-3xl font-bold tracking-tight leading-tight">
+            {/* Titre et Description de l'événement */}
+            <div className="space-y-4 pt-2">
+              <h1 className="font-display text-3xl md:text-4xl font-bold tracking-tight">
                 {event.title}
               </h1>
+
+              <div className="space-y-2 pt-2">
+                <h3 className="text-xs font-mono uppercase tracking-widest text-[#111110]/40">À propos de l'événement</h3>
+                {event.description ? (
+                  <div className="text-sm md:text-base text-[#111110]/85 font-light leading-relaxed whitespace-pre-line bg-white/50 p-6 rounded-2xl border border-[#111110]/5">
+                    {event.description}
+                  </div>
+                ) : (
+                  <p className="text-xs text-[#111110]/40 italic font-light">Aucune description détaillée communiquée.</p>
+                )}
+              </div>
             </div>
 
-            {/* Module Informations Pratiques compact */}
+          </div>
+
+          {/* Colonne de droite : Infos Pratiques + Widget Billetterie */}
+          <div className="space-y-6 lg:sticky lg:top-6">
+            
+            {/* Module Informations Pratiques */}
             <div className="bg-white/60 border border-[#111110]/10 rounded-2xl p-5 space-y-3.5 shadow-sm">
               <h3 className="text-[11px] font-mono uppercase tracking-widest text-[#111110]/40">Informations pratiques</h3>
               
@@ -171,7 +168,7 @@ export default function PublicEventPage() {
               </div>
             </div>
 
-            {/* Carte de paiement ultra-compacte en longueur et largeur */}
+            {/* Carte de paiement compacte */}
             <div className="rounded-3xl bg-[#111110] text-[#F7F5F0] p-5 md:p-6 space-y-5 shadow-xl border border-[#111110]">
               <div className="flex items-center justify-between pb-3 border-b border-[#F7F5F0]/15">
                 <div className="flex items-center gap-2">
@@ -183,7 +180,7 @@ export default function PublicEventPage() {
                 </span>
               </div>
 
-              {/* Sélecteur de quantité compact */}
+              {/* Sélecteur de quantité */}
               <div className="space-y-2">
                 <div className="flex justify-between items-center text-[11px] font-mono">
                   <span className="text-[#F7F5F0]/60">Places</span>
@@ -210,7 +207,7 @@ export default function PublicEventPage() {
                 </div>
               </div>
 
-              {/* Option de soutien solidaire compacte */}
+              {/* Option solidaire */}
               {basePrice > 0 && (
                 <div className="bg-[#F7F5F0]/5 border border-[#F7F5F0]/10 rounded-xl p-3 space-y-1">
                   <label className="flex items-start gap-2.5 cursor-pointer select-none">
