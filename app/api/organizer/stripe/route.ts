@@ -4,7 +4,6 @@ import { supabaseServer } from "@/lib/supabase-server";
 
 export async function POST(req: NextRequest) {
   try {
-    // Initialisation de Stripe sans apiVersion explicite pour utiliser la version par défaut du SDK
     const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
     const authHeader = req.headers.get("authorization");
@@ -39,6 +38,7 @@ export async function POST(req: NextRequest) {
 
     let stripeAccountId = org?.stripe_account_id;
 
+    // Si le compte Stripe n'existe pas encore, on le crée en mode Express
     if (!stripeAccountId) {
       const account = await stripe.accounts.create({
         type: "express",
@@ -55,17 +55,23 @@ export async function POST(req: NextRequest) {
         .eq("id", orgId);
     }
 
-    const origin = req.headers.get("origin") || "https://tyks.app";
-
-    const accountLink = await stripe.accountLinks.create({
+    // Création de l'Account Session pour les composants embarqués de Stripe Connect
+    const accountSession = await stripe.accountSessions.create({
       account: stripeAccountId,
-      refresh_url: `${origin}/dashboard/banking?refresh=true`,
-      return_url: `${origin}/dashboard/banking?success=true`,
-      type: "account_onboarding",
+      components: {
+        account_onboarding: {
+          enabled: true,
+        },
+      },
     });
 
-    return NextResponse.json({ url: accountLink.url }, { status: 200 });
+    return NextResponse.json({
+      clientSecret: accountSession.client_secret,
+      publishableKey: process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY,
+    }, { status: 200 });
+
   } catch (err: any) {
+    console.error("Erreur Stripe Session:", err);
     return NextResponse.json(
       { error: err?.message || "Erreur interne du serveur." },
       { status: 500 }
