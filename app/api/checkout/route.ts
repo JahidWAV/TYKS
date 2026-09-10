@@ -1,11 +1,16 @@
 import { NextResponse } from 'next/server';
 import { supabaseServer } from '@/lib/supabase-server';
+import Stripe from 'stripe';
+
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
+  apiVersion: '2025-02-27.acacia' as any,
+  typescript: true,
+});
 
 export async function POST(req: Request) {
   try {
     const { eventId, quantity, unitPrice, includeSupport } = await req.json();
 
-    // 1. Vérifier l'événement en base avec le client admin sécurisé
     const { data: event, error } = await supabaseServer
       .from('events')
       .select('*')
@@ -16,27 +21,43 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Événement introuvable' }, { status: 404 });
     }
 
-    const totalAmount = unitPrice * quantity;
+    const unitAmountCents = Math.round(unitPrice * 100);
 
-    // 2. Si l'événement est gratuit (0€)
-    if (totalAmount === 0) {
-      // Optionnel : Enregistrer directement le billet gratuit dans une table `tickets` si elle existe
-      return NextResponse.json({ success: true, message: 'Réservation validée (gratuit)' });
+    if (unitAmountCents === 0) {
+      return NextResponse.json({ 
+        success: true, 
+        url: `/events/success?slug=${event.slug}` 
+      });
     }
 
-    // 3. Si payant : Intégration Stripe (ou autre passerelle)
-    // const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: '2023-08-16' });
-    // const session = await stripe.checkout.sessions.create({ ... });
-    // return NextResponse.json({ url: session.url });
-
-    // En mode simulation pour valider le flux UI immédiatement :
-    return NextResponse.json({ 
-      success: true, 
-      url: `/events/success?event=${event.slug}&qty=${quantity}` 
+    const session = await stripe.checkout.sessions.create({
+      payment_method_types: ['card'],
+      line_items: [
+        {
+          price_data: {
+            currency: 'eur',
+            product_data: {
+              name: event.title,
+              description: `Billet(s) pour ${event.title}`,
+            },
+            unit_amount: unitAmountCents,
+          },
+          quantity: quantity,
+        },
+      ],
+      mode: 'payment',
+      success_url: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/events/success?session_id={CHECKOUT_SESSION_ID}&slug=${event.slug}`,
+      cancel_url: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/events/${event.slug}`,
+      metadata: {
+        eventId: event.id,
+        quantity: quantity.toString(),
+        includeSupport: includeSupport ? 'true' : 'false',
+      },
     });
 
+    return NextResponse.json({ url: session.url });
   } catch (err: any) {
-    console.error('Erreur API Checkout:', err);
+    console.error('Erreur Checkout Stripe:', err);
     return NextResponse.json({ error: err.message }, { status: 500 });
   }
 }
