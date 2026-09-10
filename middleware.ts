@@ -36,15 +36,10 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next()
   }
 
-  // Laisser passer les pages d'événements publics directement sans réécriture /public
-  if (url.pathname.startsWith('/events')) {
-    return NextResponse.next()
-  }
-
   const isDashboard = hostname.startsWith('dashboard.')
   const isMarketingPro = hostname.startsWith('pro.')
 
-  // 1. Dashboard (`dashboard.tyks.app`) -> Réécriture vers le dossier physique /dashboard[cite: 4]
+  // 1. Dashboard (`dashboard.tyks.app`) -> Réécriture vers le dossier physique /dashboard
   if (isDashboard) {
     url.pathname = `/dashboard${url.pathname}`
     return NextResponse.rewrite(url)
@@ -56,7 +51,12 @@ export async function middleware(request: NextRequest) {
     return NextResponse.rewrite(url)
   }
 
-  // 3. Site Public (`tyks.app`) -> Réécriture vers le dossier physique /public[cite: 4]
+  // 3. Site Public (`tyks.app`) : Si on tape /events sur le domaine principal, on laisse passer directement
+  if (url.pathname.startsWith('/events')) {
+    return NextResponse.next()
+  }
+
+  // 4. Site Public (`tyks.app`) par défaut -> Réécriture vers le dossier physique /public[cite: 4]
   url.pathname = `/public${url.pathname}`
   return NextResponse.rewrite(url)
 }
