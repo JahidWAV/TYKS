@@ -33,8 +33,8 @@ function CustomCheckoutForm({ slug, eventTitle, quantity, totalPrice, onSuccess 
       setIsProcessing(false);
     } else if (paymentIntent && paymentIntent.status === 'succeeded') {
       
-      // Récupération de l'e-mail saisi dans le PaymentElement ou les métadonnées
-      const clientEmail = paymentIntent.receipt_email || paymentIntent.metadata?.email;
+      
+const clientEmail = paymentIntent.receipt_email || (paymentIntent as any).metadata?.email;
 
       // Déclenchement de l'envoi d'e-mail de confirmation via Resend
       try {
