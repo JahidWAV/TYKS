@@ -4,6 +4,7 @@ export interface IortiEvent {
   id: string;
   organization_id: string;
   title: string;
+  slug: string;
   description: string | null;
   tag: string | null;
   location: string;
@@ -19,6 +20,7 @@ export interface IortiEvent {
 
 export interface EventInput {
   title: string;
+  slug?: string;
   description?: string;
   tag?: string;
   location: string;
