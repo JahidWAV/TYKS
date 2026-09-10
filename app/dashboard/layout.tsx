@@ -13,8 +13,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const pathname = usePathname();
   const router = useRouter();
   const [user, setUser] = useState<any>(undefined);
-  
-  // 1. État pour gérer l'ouverture au survol de la sidebar
   const [isHovered, setIsHovered] = useState(false);
 
   useEffect(() => {
@@ -62,53 +60,51 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   return (
     <div className="min-h-screen bg-[#F7F5F0] text-[#111110] flex selection:bg-[#111110] selection:text-[#F7F5F0]">
       
-      {/* 
-        2. Sidebar affinée (w-16 repliée / w-64 dépliée) avec une transition ultra-fluide 
-           en courbe de Bézier personnalisée pour un effet "smooth" et professionnel.
-      */}
+      {/* Sidebar avec transition fluide style Supabase (w-16 repliée / w-64 dépliée) */}
       <aside 
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
-        className={`border-r border-[#111110]/10 bg-[#F7F5F0] flex flex-col justify-between sticky top-0 h-screen shrink-0 select-none z-25 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+        className={`border-r border-[#111110]/10 bg-[#F7F5F0] flex flex-col justify-between sticky top-0 h-screen shrink-0 select-none z-25 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] overflow-hidden ${
           isHovered ? 'w-64' : 'w-16'
         }`}
       >
         
         {/* En-tête & Navigation */}
-        <div className={`py-6 space-y-8 overflow-y-auto overflow-x-hidden ${isHovered ? 'px-6' : 'px-3.5'}`}>
+        <div className="py-6 px-3 space-y-8 overflow-y-auto overflow-x-hidden">
           
-          {/* Logo élégant et parfaitement centré en mode réduit */}
-          <div className="flex items-center justify-between group pt-1">
-            <Link href="/" className={`flex items-center gap-3 ${!isHovered ? 'justify-center w-full' : ''}`}>
-              <svg 
-                width="32" 
-                height="32" 
-                viewBox="0 0 512 512" 
-                xmlns="http://www.w3.org/2000/svg" 
-                className="w-8 h-8 transition-transform group-hover:scale-105 shrink-0"
-              >
-                <rect width="512" height="512" fill="transparent" />
-                <path 
-                  d="M160 160 H352 A20 20 0 0 1 372 180 V220 A20 20 0 0 0 372 260 V300 A20 20 0 0 1 352 320 H160 A20 20 0 0 1 140 300 V260 A20 20 0 0 0 140 220 V180 A20 20 0 0 1 160 160 Z" 
-                  fill="none" 
-                  stroke="#111110" 
-                  strokeWidth="16" 
-                  strokeLinejoin="round"
-                />
-                <circle cx="215" cy="220" r="12" fill="#111110" />
-                <circle cx="295" cy="220" r="12" fill="#111110" />
-                <path 
-                  d="M210 255 Q256 285 302 255" 
-                  fill="none" 
-                  stroke="#111110" 
-                  strokeWidth="14" 
-                  strokeLinecap="round"
-                />
-              </svg>
+          {/* Logo & Brand */}
+          <div className="flex items-center pt-1">
+            <Link href="/" className="flex items-center gap-3 w-full">
+              <div className="w-10 h-10 flex items-center justify-center shrink-0">
+                <svg 
+                  width="32" 
+                  height="32" 
+                  viewBox="0 0 512 512" 
+                  xmlns="http://www.w3.org/2000/svg" 
+                  className="w-8 h-8 transition-transform hover:scale-105"
+                >
+                  <rect width="512" height="512" fill="transparent" />
+                  <path 
+                    d="M160 160 H352 A20 20 0 0 1 372 180 V220 A20 20 0 0 0 372 260 V300 A20 20 0 0 1 352 320 H160 A20 20 0 0 1 140 300 V260 A20 20 0 0 0 140 220 V180 A20 20 0 0 1 160 160 Z" 
+                    fill="none" 
+                    stroke="#111110" 
+                    strokeWidth="16" 
+                    strokeLinejoin="round"
+                  />
+                  <circle cx="215" cy="220" r="12" fill="#111110" />
+                  <circle cx="295" cy="220" r="12" fill="#111110" />
+                  <path 
+                    d="M210 255 Q256 285 302 255" 
+                    fill="none" 
+                    stroke="#111110" 
+                    strokeWidth="14" 
+                    strokeLinecap="round"
+                  />
+                </svg>
+              </div>
               
-              {/* Le texte apparaît en fondu progressif grâce au masquage et aux transitions */}
-              <div className={`flex flex-col whitespace-nowrap transition-all duration-200 ${
-                isHovered ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-2 pointer-events-none w-0 overflow-hidden'
+              <div className={`flex flex-col whitespace-nowrap transition-opacity duration-200 ${
+                isHovered ? 'opacity-100' : 'opacity-0 pointer-events-none'
               }`}>
                 <span className="font-display font-bold text-base tracking-tight leading-none">
                   TYKS Pro
@@ -118,10 +114,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             </Link>
           </div>
 
-          {/* Liens de navigation avec gestion propre des largeurs et opacités */}
+          {/* Liens de navigation */}
           <div className="space-y-1">
-            <div className={`transition-all duration-200 overflow-hidden ${
-              isHovered ? 'opacity-100 max-h-10 pb-2' : 'opacity-0 max-h-0 pointer-events-none'
+            <div className={`transition-opacity duration-200 ${
+              isHovered ? 'opacity-100 pb-2' : 'opacity-0 pointer-events-none h-0'
             }`}>
               <p className="text-[10px] font-mono uppercase tracking-wider opacity-40 px-3 whitespace-nowrap">
                 Workspace
@@ -136,18 +132,18 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 <Link
                   key={item.href}
                   href={item.href}
-                  title={!isHovered ? item.label : undefined} // Infobulle native propre au survol lorsque réduit
+                  title={!isHovered ? item.label : undefined}
                   className={`flex items-center gap-3 py-2.5 rounded-xl text-xs font-medium transition-all group ${
-                    !isHovered ? 'justify-center px-0' : 'px-3'
-                  } ${
                     isActive
                       ? 'bg-[#111110] text-[#F7F5F0] font-semibold shadow-sm'
                       : 'opacity-70 hover:opacity-100 hover:bg-[#111110]/5 text-[#111110]'
                   }`}
                 >
-                  <Icon className={`w-4 h-4 transition-transform group-hover:scale-105 shrink-0 ${isActive ? 'text-[#F7F5F0]' : 'opacity-70'}`} />
-                  <span className={`whitespace-nowrap transition-all duration-200 ${
-                    isHovered ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-2 pointer-events-none w-0 overflow-hidden'
+                  <div className="w-10 h-4 flex items-center justify-center shrink-0">
+                    <Icon className={`w-4 h-4 transition-transform group-hover:scale-105 ${isActive ? 'text-[#F7F5F0]' : 'opacity-70'}`} />
+                  </div>
+                  <span className={`whitespace-nowrap transition-opacity duration-200 ${
+                    isHovered ? 'opacity-100' : 'opacity-0 pointer-events-none'
                   }`}>
                     {item.label}
                   </span>
@@ -157,22 +153,22 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           </div>
         </div>
 
-        {/* Pied de sidebar : Réglages & Déconnexion avec la même fluidité */}
-        <div className={`p-3 border-t border-[#111110]/10 space-y-1 bg-[#F7F5F0]/50 ${isHovered ? 'px-4' : 'px-2'}`}>
+        {/* Pied de sidebar : Réglages & Déconnexion */}
+        <div className="p-3 border-t border-[#111110]/10 space-y-1 bg-[#F7F5F0]/50 overflow-x-hidden">
           <Link 
             href="/settings" 
             title={!isHovered ? "Réglages" : undefined}
-            className={`flex items-center gap-2.5 py-2.5 rounded-xl text-xs font-medium transition ${
-              !isHovered ? 'justify-center px-0' : 'px-3'
-            } ${
+            className={`flex items-center gap-3 py-2.5 rounded-xl text-xs font-medium transition ${
               pathname === '/settings'
                 ? 'bg-[#111110] text-[#F7F5F0]'
                 : 'opacity-70 hover:opacity-100 hover:bg-[#111110]/5 text-[#111110]'
             }`}
           >
-            <Settings className="w-4 h-4 opacity-70 shrink-0" />
-            <span className={`whitespace-nowrap transition-all duration-200 ${
-              isHovered ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-2 pointer-events-none w-0 overflow-hidden'
+            <div className="w-10 h-4 flex items-center justify-center shrink-0">
+              <Settings className="w-4 h-4 opacity-70" />
+            </div>
+            <span className={`whitespace-nowrap transition-opacity duration-200 ${
+              isHovered ? 'opacity-100' : 'opacity-0 pointer-events-none'
             }`}>
               Réglages
             </span>
@@ -181,13 +177,13 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           <button
             onClick={handleLogout}
             title={!isHovered ? "Se déconnecter" : undefined}
-            className={`w-full flex items-center gap-2.5 py-2.5 rounded-xl text-xs font-medium text-red-600 hover:bg-red-500/10 transition-colors ${
-              !isHovered ? 'justify-center px-0' : 'px-3'
-            }`}
+            className="w-full flex items-center gap-3 py-2.5 rounded-xl text-xs font-medium text-red-600 hover:bg-red-500/10 transition-colors"
           >
-            <LogOut className="w-4 h-4 opacity-70 shrink-0" />
-            <span className={`whitespace-nowrap transition-all duration-200 ${
-              isHovered ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-2 pointer-events-none w-0 overflow-hidden'
+            <div className="w-10 h-4 flex items-center justify-center shrink-0">
+              <LogOut className="w-4 h-4 opacity-70" />
+            </div>
+            <span className={`whitespace-nowrap transition-opacity duration-200 ${
+              isHovered ? 'opacity-100' : 'opacity-0 pointer-events-none'
             }`}>
               Se déconnecter
             </span>
