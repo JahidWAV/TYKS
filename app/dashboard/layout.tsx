@@ -60,7 +60,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   return (
     <div className="min-h-screen bg-[#F7F5F0] text-[#111110] flex selection:bg-[#111110] selection:text-[#F7F5F0] overflow-x-hidden">
       
-      {/* Barre d'icônes fixe à gauche (Largeur fixe w-16, reste toujours ancrée) */}
+      {/* 1. Barre d'icônes ultra-fine toujours fixe à gauche (w-16) */}
       <aside className="fixed top-0 left-0 h-screen w-16 border-r border-[#111110]/10 bg-[#F7F5F0] flex flex-col items-center justify-between py-6 z-40 select-none">
         
         {/* Logo / Icône */}
@@ -121,71 +121,71 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         </div>
       </aside>
 
-      {/* Panneau coulissant flottant (Apparaît par-dessus au survol de la zone de gauche) */}
+      {/* 2. Panneau textuel contextuel qui s'ouvre au survol (positionné à left-16) */}
       <div 
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
-        className="fixed top-0 left-16 h-screen w-48 z-50 flex"
+        className={`fixed top-0 left-16 h-screen bg-[#F7F5F0] border-r border-[#111110]/10 flex flex-col justify-between py-6 z-30 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] overflow-hidden select-none ${
+          isHovered ? 'w-56 opacity-100 shadow-xl' : 'w-0 opacity-0 pointer-events-none'
+        }`}
       >
-        <div className={`h-full w-full bg-[#F7F5F0] border-r border-[#111110]/15 shadow-2xl flex flex-col justify-between py-6 transition-all duration-200 ease-out overflow-hidden select-none ${
-          isHovered ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-3 pointer-events-none'
-        }`}>
-          
-          {/* En-tête du panneau avec le logo texte */}
-          <div className="px-5 flex items-center h-10 whitespace-nowrap">
-            <img src="/tyks.svg" alt="TYKS" className="h-4 w-auto object-contain" />
-          </div>
+        {/* En-tête du panneau avec le logo texte */}
+        <div className="px-5 flex items-center h-10 whitespace-nowrap">
+          <img src="/tyks.svg" alt="TYKS" className="h-4 w-auto object-contain" />
+        </div>
 
-          {/* Navigation textuelle */}
-          <div className="space-y-1 w-full px-3 flex-1 pt-2">
-            <p className="text-[10px] font-mono uppercase tracking-wider opacity-40 px-3 pb-2">
-              Workspace
-            </p>
-            {navItems.map((item) => {
-              const isActive = pathname === item.href;
+        {/* Navigation textuelle */}
+        <div className="space-y-1 w-full px-3 flex-1 pt-2">
+          <p className="text-[10px] font-mono uppercase tracking-wider opacity-40 px-3 pb-2">
+            Workspace
+          </p>
+          {navItems.map((item) => {
+            const isActive = pathname === item.href;
 
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className={`flex items-center h-10 px-3 rounded-xl text-xs font-medium whitespace-nowrap transition-all ${
-                    isActive
-                      ? 'bg-[#111110] text-[#F7F5F0] font-semibold shadow-sm'
-                      : 'opacity-70 hover:opacity-100 hover:bg-[#111110]/5 text-[#111110]'
-                  }`}
-                >
-                  {item.label}
-                </Link>
-              );
-            })}
-          </div>
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={`flex items-center h-10 px-3 rounded-xl text-xs font-medium whitespace-nowrap transition-all ${
+                  isActive
+                    ? 'bg-[#111110] text-[#F7F5F0] font-semibold shadow-sm'
+                    : 'opacity-70 hover:opacity-100 hover:bg-[#111110]/5 text-[#111110]'
+                }`}
+              >
+                {item.label}
+              </Link>
+            );
+          })}
+        </div>
 
-          {/* Bas du panneau */}
-          <div className="px-3 space-y-1 border-t border-[#111110]/10 pt-4">
-            <Link 
-              href="/settings" 
-              className={`flex items-center h-10 px-3 rounded-xl text-xs font-medium whitespace-nowrap transition ${
-                pathname === '/settings'
-                  ? 'bg-[#111110] text-[#F7F5F0]'
-                  : 'opacity-70 hover:opacity-100 hover:bg-[#111110]/5 text-[#111110]'
-              }`}
-            >
-              Réglages
-            </Link>
+        {/* Bas du panneau */}
+        <div className="px-3 space-y-1 border-t border-[#111110]/10 pt-4">
+          <Link 
+            href="/settings" 
+            className={`flex items-center h-10 px-3 rounded-xl text-xs font-medium whitespace-nowrap transition ${
+              pathname === '/settings'
+                ? 'bg-[#111110] text-[#F7F5F0]'
+                : 'opacity-70 hover:opacity-100 hover:bg-[#111110]/5 text-[#111110]'
+            }`}
+          >
+            Réglages
+          </Link>
 
-            <button
-              onClick={handleLogout}
-              className="w-full flex items-center h-10 px-3 rounded-xl text-xs font-medium text-red-600 hover:bg-red-500/10 whitespace-nowrap transition-colors"
-            >
-              Se déconnecter
-            </button>
-          </div>
+          <button
+            onClick={handleLogout}
+            className="w-full flex items-center h-10 px-3 rounded-xl text-xs font-medium text-red-600 hover:bg-red-500/10 whitespace-nowrap transition-colors"
+          >
+            Se déconnecter
+          </button>
         </div>
       </div>
 
-      {/* Contenu principal avec une marge fixe à gauche pour ne jamais passer sous la barre d'icônes */}
-      <div className="flex-1 ml-16 min-w-0 flex flex-col h-screen overflow-hidden">
-        
+      {/* 3. Contenu principal : décale dynamiquement sa marge gauche (ml-16 ou ml-72) selon l'état du survol */}
+      <div 
+        className={`flex-1 min-w-0 flex flex-col h-screen overflow-hidden transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+          isHovered ? 'ml-72' : 'ml-16'
+        }`}
+      >
         {/* Barre supérieure du dashboard */}
         <header className="h-14 border-b border-[#111110]/10 bg-[#F7F5F0] px-6 flex items-center justify-between shrink-0 z-20">
           <div className="flex items-center gap-3 text-xs font-medium opacity-70">
