@@ -10,10 +10,10 @@ export default function NotFound() {
   useEffect(() => {
     const hostname = window.location.hostname;
     if (hostname.startsWith('pro.')) {
-      setHomeUrl('https://pro.iorti.app');
+      setHomeUrl('https://pro.tyks.app');
       setHomeLabel("Retour à l'espace Pro");
     } else {
-      setHomeUrl('https://iorti.app');
+      setHomeUrl('https://tyks.app');
       setHomeLabel("Retour à l'accueil");
     }
   }, []);
