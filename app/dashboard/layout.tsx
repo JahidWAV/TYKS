@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { 
   LayoutDashboard, Calendar, BarChart3, Megaphone, 
-  Users, Wallet, Globe, Settings, LogOut, Loader2, PanelLeftClose, PanelLeftOpen 
+  Users, Wallet, Globe, Settings, LogOut, Loader2 
 } from 'lucide-react';
 import { supabaseBrowser } from '@/lib/supabase-browser';
 
@@ -14,8 +14,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const router = useRouter();
   const [user, setUser] = useState<any>(undefined);
   
-  // 1. État pour gérer l'ouverture/fermeture (réduction) du menu latéral
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  // 1. État pour suivre si la souris survole la sidebar (pour l'ouvrir/fermer dynamiquement)
+  const [isHovered, setIsHovered] = useState(false);
 
   useEffect(() => {
     async function checkAuth() {
@@ -62,17 +62,24 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   return (
     <div className="min-h-screen bg-[#F7F5F0] text-[#111110] flex selection:bg-[#111110] selection:text-[#F7F5F0]">
       
-      {/* 2. Barre latérale adaptative : largeur dynamique (w-20 si réduit, w-64 si ouvert) */}
-      <aside className={`border-r border-[#111110]/10 bg-[#F7F5F0] flex flex-col justify-between sticky top-0 h-screen shrink-0 select-none z-25 transition-all duration-300 ${
-        isCollapsed ? 'w-20' : 'w-64'
-      }`}>
+      {/* 
+        2. Barre latérale avec déclencheur au survol (onMouseEnter / onMouseLeave).
+           Elle passe dynamiquement de w-20 (réduite) à w-64 (ouverte) avec une transition fluide.
+      */}
+      <aside 
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+        className={`border-r border-[#111110]/10 bg-[#F7F5F0] flex flex-col justify-between sticky top-0 h-screen shrink-0 select-none z-25 transition-all duration-300 ease-in-out ${
+          isHovered ? 'w-64' : 'w-20'
+        }`}
+      >
         
         {/* En-tête & Navigation */}
-        <div className={`p-6 space-y-8 overflow-y-auto ${isCollapsed ? 'px-4' : 'px-6'}`}>
+        <div className={`p-6 space-y-8 overflow-y-auto overflow-x-hidden ${isHovered ? 'px-6' : 'px-4'}`}>
           
-          {/* Logo agrandi (passé de w-7 h-7 à w-10 h-10) et mis en valeur */}
+          {/* Logo mis en valeur, s'adapte en mode réduit ou étendu */}
           <div className="flex items-center justify-between group pt-1">
-            <Link href="/" className={`flex items-center gap-3 ${isCollapsed ? 'justify-center w-full' : ''}`}>
+            <Link href="/" className={`flex items-center gap-3 ${!isHovered ? 'justify-center w-full' : ''}`}>
               <svg 
                 width="40" 
                 height="40" 
@@ -98,8 +105,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                   strokeLinecap="round"
                 />
               </svg>
-              {!isCollapsed && (
-                <div className="flex flex-col">
+              {isHovered && (
+                <div className="flex flex-col whitespace-nowrap transition-opacity duration-200">
                   <span className="font-display font-bold text-base tracking-tight leading-none">
                     TYKS Pro
                   </span>
@@ -109,28 +116,12 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             </Link>
           </div>
 
-          {/* 3. Curseur / Bouton interactif pour basculer l'ouverture/fermeture du menu */}
-          <button 
-            onClick={() => setIsCollapsed(!isCollapsed)}
-            className={`flex items-center gap-2 w-full py-2 rounded-xl text-xs font-medium border border-[#111110]/10 bg-[#111110]/5 hover:bg-[#111110]/10 transition-colors ${
-              isCollapsed ? 'justify-center px-0' : 'px-3'
-            }`}
-            title={isCollapsed ? "Agrandir le menu" : "Réduire le menu"}
-          >
-            {isCollapsed ? (
-              <PanelLeftOpen className="w-4 h-4 opacity-70" />
-            ) : (
-              <>
-                <PanelLeftClose className="w-4 h-4 opacity-70" />
-                <span className="opacity-70">Réduire le menu</span>
-              </>
-            )}
-          </button>
-
-          {/* Liens de navigation : masquent le texte et centrent les icônes en mode réduit */}
+          {/* Liens de navigation : affichent ou masquent le texte selon l'état du survol */}
           <div className="space-y-1">
-            {!isCollapsed && (
-              <p className="text-[10px] font-mono uppercase tracking-wider opacity-40 px-3 pb-2">Workspace</p>
+            {isHovered && (
+              <p className="text-[10px] font-mono uppercase tracking-wider opacity-40 px-3 pb-2 whitespace-nowrap">
+                Workspace
+              </p>
             )}
             {navItems.map((item) => {
               const Icon = item.icon;
@@ -140,9 +131,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 <Link
                   key={item.href}
                   href={item.href}
-                  title={isCollapsed ? item.label : undefined} // Infobulle native au survol en mode réduit
+                  title={!isHovered ? item.label : undefined} // Infobulle native visible uniquement quand c'est réduit
                   className={`flex items-center gap-3 py-2.5 rounded-xl text-xs font-medium transition-all group ${
-                    isCollapsed ? 'justify-center px-2' : 'px-3'
+                    !isHovered ? 'justify-center px-2' : 'px-3'
                   } ${
                     isActive
                       ? 'bg-[#111110] text-[#F7F5F0] font-semibold shadow-sm'
@@ -150,20 +141,20 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                   }`}
                 >
                   <Icon className={`w-4 h-4 transition-transform group-hover:scale-105 shrink-0 ${isActive ? 'text-[#F7F5F0]' : 'opacity-70'}`} />
-                  {!isCollapsed && <span className="truncate">{item.label}</span>}
+                  {isHovered && <span className="truncate whitespace-nowrap">{item.label}</span>}
                 </Link>
               );
             })}
           </div>
         </div>
 
-        {/* Pied de sidebar : Réglages & Déconnexion adaptés au mode réduit */}
-        <div className={`p-4 border-t border-[#111110]/10 space-y-1 bg-[#F7F5F0]/50 ${isCollapsed ? 'px-2' : 'px-4'}`}>
+        {/* Pied de sidebar : Réglages & Déconnexion dynamiques */}
+        <div className={`p-4 border-t border-[#111110]/10 space-y-1 bg-[#F7F5F0]/50 ${isHovered ? 'px-4' : 'px-2'}`}>
           <Link 
             href="/settings" 
-            title={isCollapsed ? "Réglages" : undefined}
+            title={!isHovered ? "Réglages" : undefined}
             className={`flex items-center gap-2.5 py-2.5 rounded-xl text-xs font-medium transition ${
-              isCollapsed ? 'justify-center px-2' : 'px-3'
+              !isHovered ? 'justify-center px-2' : 'px-3'
             } ${
               pathname === '/settings'
                 ? 'bg-[#111110] text-[#F7F5F0]'
@@ -171,18 +162,18 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             }`}
           >
             <Settings className="w-4 h-4 opacity-70 shrink-0" />
-            {!isCollapsed && <span>Réglages</span>}
+            {isHovered && <span className="whitespace-nowrap">Réglages</span>}
           </Link>
 
           <button
             onClick={handleLogout}
-            title={isCollapsed ? "Se déconnecter" : undefined}
+            title={!isHovered ? "Se déconnecter" : undefined}
             className={`w-full flex items-center gap-2.5 py-2.5 rounded-xl text-xs font-medium text-red-600 hover:bg-red-500/10 transition-colors ${
-              isCollapsed ? 'justify-center px-2' : 'px-3'
+              !isHovered ? 'justify-center px-2' : 'px-3'
             }`}
           >
             <LogOut className="w-4 h-4 opacity-70 shrink-0" />
-            {!isCollapsed && <span>Se déconnecter</span>}
+            {isHovered && <span className="whitespace-nowrap">Se déconnecter</span>}
           </button>
         </div>
       </aside>
