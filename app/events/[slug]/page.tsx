@@ -10,8 +10,7 @@ import { Elements, PaymentElement, useStripe, useElements } from '@stripe/react-
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 
-// Formulaire de paiement interne avec succès géré en state
-function CustomCheckoutForm({ slug, onSuccess }: { slug: string; onSuccess: () => void }) {
+function CustomCheckoutForm({ slug, eventTitle, quantity, totalPrice, onSuccess }: { slug: string; eventTitle: string; quantity: number; totalPrice: number; onSuccess: () => void }) {
   const stripe = useStripe();
   const elements = useElements();
   const [isProcessing, setIsProcessing] = useState(false);
@@ -24,18 +23,37 @@ function CustomCheckoutForm({ slug, onSuccess }: { slug: string; onSuccess: () =
     setIsProcessing(true);
     setErrorMessage(null);
 
-    // On confirme le paiement sans forcer de redirection URL globale
     const { error, paymentIntent } = await stripe.confirmPayment({
       elements,
-      redirect: 'if_required', // Empêche la redirection forcée de Stripe
+      redirect: 'if_required',
     });
 
     if (error) {
       setErrorMessage(error.message || "Une erreur est survenue lors du paiement.");
       setIsProcessing(false);
     } else if (paymentIntent && paymentIntent.status === 'succeeded') {
+      
+      // Récupération de l'e-mail saisi dans le PaymentElement ou les métadonnées
+      const clientEmail = paymentIntent.receipt_email || paymentIntent.metadata?.email;
+
+      // Déclenchement de l'envoi d'e-mail de confirmation via Resend
+      try {
+        await fetch('/api/send-ticket', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email: clientEmail,
+            eventTitle,
+            quantity,
+            totalPrice: totalPrice.toFixed(2),
+          }),
+        });
+      } catch (err) {
+        console.error("Erreur lors de l'appel de l'API email", err);
+      }
+
       setIsProcessing(false);
-      onSuccess(); // Déclenche l'affichage instantané de l'écran de succès dans la modale
+      onSuccess();
     }
   };
 
@@ -78,7 +96,7 @@ export default function PublicEventPage() {
   const [includeSupport, setIncludeSupport] = useState<boolean>(false);
   const [clientSecret, setClientSecret] = useState<string | null>(null);
   const [isInitializingPayment, setIsInitializingPayment] = useState(false);
-  const [isSuccess, setIsSuccess] = useState(false); // État pour afficher le succès dans la modale
+  const [isSuccess, setIsSuccess] = useState(false);
 
   useEffect(() => {
     if (!slug) return;
@@ -120,18 +138,11 @@ export default function PublicEventPage() {
 
   const startDate = event.starts_at ? new Date(event.starts_at) : null;
   const formattedDate = startDate
-    ? startDate.toLocaleDateString('fr-FR', {
-        day: 'numeric',
-        month: 'long',
-        year: 'numeric',
-      })
+    ? startDate.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })
     : '';
 
   const formattedTime = startDate
-    ? startDate.toLocaleTimeString('fr-FR', {
-        hour: '2-digit',
-        minute: '2-digit',
-      })
+    ? startDate.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })
     : '';
 
   const handleInitCheckout = async () => {
@@ -149,9 +160,7 @@ export default function PublicEventPage() {
       });
       const data = await res.json();
       
-      if (data.free && data.url) {
-        setIsSuccess(true);
-      } else if (data.clientSecret) {
+      if (data.clientSecret) {
         setClientSecret(data.clientSecret);
       } else {
         alert(data.error || "Erreur lors de l'initialisation du paiement");
@@ -168,7 +177,6 @@ export default function PublicEventPage() {
     <main className="min-h-screen bg-[#F7F5F0] text-[#111110] px-6 md:px-12 py-8 md:py-12 selection:bg-[#111110] selection:text-[#F7F5F0]">
       <div className="max-w-6xl mx-auto w-full space-y-12">
         
-        {/* Navigation & Orga */}
         <div className="flex items-center justify-between border-b border-[#111110]/10 pb-4">
           <Link
             href="/events"
@@ -182,9 +190,7 @@ export default function PublicEventPage() {
           </span>
         </div>
 
-        {/* Section principale : Infos à gauche, Affiche 16:9 à droite */}
         <div className="grid lg:grid-cols-[1fr_1.2fr] gap-12 lg:gap-16 items-start">
-          
           <div className="space-y-8">
             <div className="space-y-3">
               <span className="text-xs font-mono text-[#111110]/50 uppercase tracking-widest">
@@ -195,7 +201,6 @@ export default function PublicEventPage() {
               </h1>
             </div>
 
-            {/* Infos Pratiques */}
             <div className="space-y-2.5 font-mono text-xs text-[#111110]/80 bg-white/60 p-5 rounded-2xl border border-[#111110]/10 shadow-sm">
               <div className="flex items-center gap-3">
                 <Calendar className="w-4 h-4 text-[#111110]/40 shrink-0" />
@@ -213,7 +218,6 @@ export default function PublicEventPage() {
               )}
             </div>
 
-            {/* Bouton d'action principal */}
             <div>
               <button
                 onClick={() => {
@@ -227,17 +231,6 @@ export default function PublicEventPage() {
                 <span>{basePrice === 0 ? 'Prendre une place (Gratuit)' : `Prendre une place • ${basePrice.toFixed(2)} €`}</span>
                 <ArrowUpRight className="w-4 h-4 text-[#F7F5F0]/60" />
               </button>
-            </div>
-
-            <div className="space-y-3 pt-4 border-t border-[#111110]/10">
-              <h3 className="text-xs font-mono uppercase tracking-widest text-[#111110]/40">À propos</h3>
-              {event.description ? (
-                <div className="text-sm md:text-base text-[#111110]/85 font-light leading-relaxed whitespace-pre-line bg-white/40 p-6 rounded-2xl border border-[#111110]/5">
-                  {event.description}
-                </div>
-              ) : (
-                <p className="text-xs text-[#111110]/40 italic font-light">Aucune description détaillée communiquée.</p>
-              )}
             </div>
           </div>
 
@@ -255,12 +248,9 @@ export default function PublicEventPage() {
               )}
             </div>
           </div>
-
         </div>
-
       </div>
 
-      {/* Modale de Billetterie White Label Embarquée */}
       {isCheckoutOpen && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200">
           <div className="relative w-full max-w-lg rounded-3xl bg-[#111110] text-[#F7F5F0] p-6 md:p-8 space-y-6 shadow-2xl border border-[#F7F5F0]/15 max-h-[90vh] overflow-y-auto">
@@ -277,7 +267,6 @@ export default function PublicEventPage() {
             </button>
 
             {isSuccess ? (
-              /* Écran de succès instantané dans la modale */
               <div className="py-6 space-y-6 text-center">
                 <div className="flex justify-center">
                   <div className="w-16 h-16 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 shadow-inner">
@@ -335,33 +324,14 @@ export default function PublicEventPage() {
                   </div>
                 </div>
 
-                {basePrice > 0 && (
-                  <div className="bg-[#F7F5F0]/5 border border-[#F7F5F0]/10 rounded-2xl p-3.5">
-                    <label className="flex items-start gap-3 cursor-pointer select-none">
-                      <input
-                        type="checkbox"
-                        checked={includeSupport}
-                        onChange={(e) => setIncludeSupport(e.target.checked)}
-                        className="mt-0.5 rounded border-[#F7F5F0]/20 bg-transparent text-[#111110] focus:ring-0 cursor-pointer"
-                      />
-                      <div className="space-y-0.5 text-xs">
-                        <p className="font-semibold text-[#F7F5F0]">Option solidaire (+2 € / billet)</p>
-                        <p className="text-[#F7F5F0]/50 text-[11px]">Soutien direct au lieu.</p>
-                      </div>
-                    </label>
-                  </div>
-                )}
-
                 <div className="space-y-4 pt-4 border-t border-[#F7F5F0]/15">
                   <div className="flex items-baseline justify-between">
                     <span className="text-xs font-mono text-[#F7F5F0]/50 uppercase tracking-wider">Total</span>
-                    <p className="font-display text-3xl font-bold tracking-tight">
-                      {basePrice === 0 ? 'Gratuit' : `${totalPrice.toFixed(2)} €`}
-                    </p>
+                    <p className="font-display text-3xl font-bold tracking-tight">{totalPrice.toFixed(2)} €</p>
                   </div>
 
                   <button 
-                    onClick={basePrice === 0 ? () => setIsSuccess(true) : handleInitCheckout}
+                    onClick={handleInitCheckout}
                     disabled={isInitializingPayment}
                     className="w-full rounded-full bg-[#F7F5F0] text-[#111110] py-4 px-6 text-xs font-mono uppercase tracking-widest transition-all duration-300 hover:bg-white hover:scale-[1.01] active:scale-[0.98] flex items-center justify-center gap-2 cursor-pointer shadow-xl font-bold disabled:opacity-50"
                   >
@@ -369,7 +339,7 @@ export default function PublicEventPage() {
                       <Loader2 className="w-4 h-4 animate-spin text-[#111110]" />
                     ) : (
                       <>
-                        <span>{basePrice === 0 ? 'Valider ma place' : 'Procéder au paiement'}</span>
+                        <span>Procéder au paiement</span>
                         <ArrowUpRight className="w-4 h-4" />
                       </>
                     )}
@@ -409,7 +379,13 @@ export default function PublicEventPage() {
                     },
                   }}
                 >
-                  <CustomCheckoutForm slug={event.slug} onSuccess={() => setIsSuccess(true)} />
+                  <CustomCheckoutForm 
+                    slug={event.slug} 
+                    eventTitle={event.title}
+                    quantity={quantity}
+                    totalPrice={totalPrice}
+                    onSuccess={() => setIsSuccess(true)} 
+                  />
                 </Elements>
               </div>
             )}
