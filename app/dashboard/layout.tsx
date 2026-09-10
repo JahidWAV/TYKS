@@ -13,6 +13,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const pathname = usePathname();
   const router = useRouter();
   const [user, setUser] = useState<any>(undefined);
+  
+  // État gérant l'ouverture de la sidebar au survol
   const [isHovered, setIsHovered] = useState(false);
 
   useEffect(() => {
@@ -60,7 +62,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   return (
     <div className="min-h-screen bg-[#F7F5F0] text-[#111110] flex selection:bg-[#111110] selection:text-[#F7F5F0]">
       
-      {/* Sidebar fluide au survol */}
+      {/* Barre latérale fine, fluide et interactive au survol */}
       <aside 
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
@@ -72,15 +74,14 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         {/* En-tête & Navigation */}
         <div className="py-6 px-3 space-y-8 overflow-y-auto overflow-x-hidden">
           
-          {/* Logo / Brand basé sur les fichiers public */}
+          {/* Logo dynamique basé sur les fichiers du repo (/public) */}
           <div className="flex items-center pt-1">
             <Link href="/" className="flex items-center gap-3 w-full">
               <div className="w-10 h-10 flex items-center justify-center shrink-0">
-                {/* Affiche l'icône seule quand c'est fermé, ou le logo combiné/textuel quand c'est ouvert */}
                 <img 
-                  src={isHovered ? "/logo.svg" : "public/icon.svg"} 
+                  src={isHovered ? "/logo.svg" : "/icon.svg"} 
                   alt="TYKS Pro" 
-                  className="w-8 h-8 object-contain transition-transform hover:scale-105"
+                  className="w-9 h-9 object-contain transition-transform hover:scale-105"
                 />
               </div>
               
@@ -93,7 +94,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             </Link>
           </div>
 
-          {/* Liens de navigation */}
+          {/* Liens de navigation avec icônes de taille confortable */}
           <div className="space-y-1">
             <div className={`transition-opacity duration-200 ${
               isHovered ? 'opacity-100 pb-2' : 'opacity-0 pointer-events-none h-0'
