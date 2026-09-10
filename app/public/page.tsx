@@ -24,32 +24,32 @@ const MANIFESTO = [
 
 const UPCOMING_EVENTS = [
   {
+    title: 'Nuit Électro — Session I',
+    venue: 'Le Sous-Sol, Lyon',
+    date: '12.03',
+    price: '18,00 €',
+    genre: 'Techno / Club',
+  },
+  {
+    title: 'Open Air Botanique',
+    venue: 'Les Docks, Marseille',
+    date: '21.03',
+    price: '22,00 €',
+    genre: 'House / Outdoor',
+  },
+  {
+    title: 'Club Infini',
+    venue: 'La Chapelle, Paris',
+    date: '27.03',
+    price: '15,00 €',
+    genre: 'Electro / Live',
+  },
+  {
     title: 'Subterranean Echoes',
     venue: 'Glitch Club, Bordeaux',
     date: '04.04',
     price: '16,00 €',
     genre: 'Live Modular',
-  },
-  {
-    title: 'Klubnacht Extended',
-    venue: 'Le Sucre, Lyon',
-    date: '11.04',
-    price: '20,00 €',
-    genre: 'Techno',
-  },
-  {
-    title: 'Ambient Sessions Vol. 4',
-    venue: 'L’Église, Nantes',
-    date: '18.04',
-    price: '14,00 €',
-    genre: 'Ambient / Drone',
-  },
-  {
-    title: 'Concrete Legacy',
-    venue: 'Péniche Alternat, Paris',
-    date: '25.04',
-    price: '19,00 €',
-    genre: 'House / Breaks',
   },
 ];
 
