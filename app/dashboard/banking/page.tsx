@@ -99,21 +99,48 @@ export default function BankingDashboardPage() {
 
   return (
     <div className="max-w-7xl mx-auto px-8 py-10 space-y-8">
-      {/* Bouton d'action aligné à droite */}
-      <div className="flex items-center justify-end">
-        <button
-          onClick={handleStripeRedirect}
-          disabled={connectingStripe}
-          className="inline-flex items-center gap-2 rounded-full bg-[#111110] px-5 py-2.5 text-xs font-semibold text-[#F7F5F0] transition hover:opacity-95 shadow-sm disabled:opacity-50"
-        >
-          {connectingStripe ? (
-            <Loader2 className="h-4 w-4 animate-spin" />
-          ) : (
-            <Building2 className="h-4 w-4" />
-          )}
-          {hasBankAccount ? "Gérer mon compte bancaire" : "Configurer mon compte bancaire"}
-        </button>
-      </div>
+      {/* Alerte si pas de compte bancaire lié avec bouton d'action intégré */}
+      {!hasBankAccount && (
+        <div className="p-6 rounded-3xl border border-amber-500/30 bg-amber-500/5 flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div className="flex items-start gap-3">
+            <AlertCircle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+            <div className="space-y-1">
+              <p className="text-xs font-bold text-amber-900">Compte bancaire non configuré</p>
+              <p className="text-xs text-amber-800/80">Associez vos coordonnées bancaires pour permettre les virements automatiques de vos ventes.</p>
+            </div>
+          </div>
+          <button
+            onClick={handleStripeRedirect}
+            disabled={connectingStripe}
+            className="inline-flex items-center justify-center gap-2 rounded-full bg-[#111110] px-5 py-2.5 text-xs font-semibold text-[#F7F5F0] transition hover:opacity-95 shadow-sm disabled:opacity-50 shrink-0"
+          >
+            {connectingStripe ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <Building2 className="h-4 w-4" />
+            )}
+            Configurer mon compte bancaire
+          </button>
+        </div>
+      )}
+
+      {/* Si le compte est déjà configuré, on affiche le bouton de gestion en haut à droite */}
+      {hasBankAccount && (
+        <div className="flex items-center justify-end">
+          <button
+            onClick={handleStripeRedirect}
+            disabled={connectingStripe}
+            className="inline-flex items-center gap-2 rounded-full bg-[#111110] px-5 py-2.5 text-xs font-semibold text-[#F7F5F0] transition hover:opacity-95 shadow-sm disabled:opacity-50"
+          >
+            {connectingStripe ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <Building2 className="h-4 w-4" />
+            )}
+            Gérer mon compte bancaire
+          </button>
+        </div>
+      )}
 
       {/* Cartes de soldes */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -139,17 +166,6 @@ export default function BankingDashboardPage() {
           <p className="text-xs opacity-60 font-mono">Fonds liés aux ventes en cours.</p>
         </div>
       </div>
-
-      {/* Alerte si pas de compte bancaire lié */}
-      {!hasBankAccount && (
-        <div className="p-5 rounded-2xl border border-amber-500/30 bg-amber-500/5 flex items-start gap-3">
-          <AlertCircle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
-          <div className="space-y-1">
-            <p className="text-xs font-bold text-amber-900">Compte bancaire non configuré</p>
-            <p className="text-xs text-amber-800/80">Associez vos coordonnées bancaires pour permettre les virements automatiques de vos ventes.</p>
-          </div>
-        </div>
-      )}
 
       {/* Historique des versements */}
       <div className="space-y-4 pt-4">
