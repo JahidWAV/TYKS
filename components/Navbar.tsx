@@ -132,14 +132,14 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
 
   return (
     <>
-      <header className={`sticky top-0 z-50 border-b transition-colors duration-300 ${
+      <header className={`sticky top-0 z-40 border-b transition-colors duration-300 ${
         isDarkMode 
           ? 'bg-[#111110] border-[#F7F5F0]/10 text-[#F7F5F0]' 
           : 'bg-[#F7F5F0] border-[#111110]/10 text-[#111110]'
       }`}>
         <div className="mx-auto grid grid-cols-[1fr_auto_1fr] items-center max-w-7xl px-6 py-4 md:px-12 gap-6">
 
-          {/* Logo tyks.svg taille intermédiaire idéale (~25x25 ou plus) */}
+          {/* Logo tyks.svg */}
           <Link href={isPro ? "/" : "/"} className="group justify-self-start flex items-center">
             <img
               src="/tyks.svg"
@@ -251,7 +251,6 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
                 <Loader2 className="h-4 w-4 animate-spin opacity-60" />
               </div>
             ) : user ? (
-              /* MENU DÉROULANT UTILISATEUR PROPRE */
               <div className="relative" ref={userMenuRef}>
                 <button
                   onClick={() => setUserMenuOpen(!userMenuOpen)}
