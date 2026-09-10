@@ -20,7 +20,7 @@ export async function middleware(request: NextRequest) {
         remove(name: string, options: CookieOptions) {
           request.cookies.set({ name, value: '', ...options })
           response = NextResponse.next({ request: { headers: request.headers } })
-          response.cookies.set({ name, value: '', ...options })
+          response.cookies.set({ name, value, ...options })
         },
       },
     }
@@ -39,7 +39,8 @@ export async function middleware(request: NextRequest) {
   const isDashboard = hostname.startsWith('dashboard.')
   const isMarketingPro = hostname.startsWith('pro.')
 
-  // 1. Dashboard (`dashboard.tyks.app`) -> Réécriture vers le dossier physique /dashboard
+  // 1. Dashboard (`dashboard.tyks.app`) -> Réécriture prioritaire vers le dossier physique /dashboard[cite: 4]
+  // Cela garantit que /events/cc-g945 ou /events/cc-g945/edit sur le dashboard pointent bien vers /dashboard/events/...
   if (isDashboard) {
     url.pathname = `/dashboard${url.pathname}`
     return NextResponse.rewrite(url)
@@ -51,7 +52,7 @@ export async function middleware(request: NextRequest) {
     return NextResponse.rewrite(url)
   }
 
-  // 3. Site Public (`tyks.app`) : Si on tape /events sur le domaine principal, on laisse passer directement
+  // 3. Site Public (`tyks.app`) : Si on est sur le domaine principal et qu'on va sur /events, on laisse passer directement
   if (url.pathname.startsWith('/events')) {
     return NextResponse.next()
   }
