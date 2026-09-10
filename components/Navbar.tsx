@@ -132,7 +132,7 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
 
   return (
     <>
-      <header className={`sticky top-0 z-40 border-b transition-colors duration-300 ${
+      <header className={`sticky top-0 z-20 border-b transition-colors duration-300 ${
         isDarkMode 
           ? 'bg-[#111110] border-[#F7F5F0]/10 text-[#F7F5F0]' 
           : 'bg-[#F7F5F0] border-[#111110]/10 text-[#111110]'
