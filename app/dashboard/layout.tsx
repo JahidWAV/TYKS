@@ -72,38 +72,29 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       >
         
         {/* En-tête & Navigation */}
-        <div className="py-6 px-3 space-y-8 overflow-y-auto overflow-x-hidden">
+        <div className="py-6 px-3 space-y-6 overflow-y-auto overflow-x-hidden">
           
-          {/* Logo dynamique basé sur les fichiers du repo (/public) */}
-          <div className="flex items-center pt-1">
-            <Link href="/" className="flex items-center gap-3 w-full">
-              <div className="w-10 h-10 flex items-center justify-center shrink-0">
+          {/* Logo dynamique épuré */}
+          <div className="flex items-center pt-1 px-1">
+            <Link href="/" className="flex items-center gap-3 w-full overflow-hidden">
+              <div className="w-9 h-9 flex items-center justify-center shrink-0">
                 <img 
                   src={isHovered ? "/logo.svg" : "/icon.svg"} 
                   alt="TYKS Pro" 
-                  className="w-9 h-9 object-contain transition-transform hover:scale-105"
+                  className="w-8 h-8 object-contain transition-transform"
                 />
               </div>
               
-              <div className={`flex flex-col whitespace-nowrap transition-opacity duration-200 ${
+              <div className={`flex flex-col justify-center whitespace-nowrap transition-opacity duration-200 ${
                 isHovered ? 'opacity-100' : 'opacity-0 pointer-events-none'
               }`}>
-                <img src="/tyks.svg" alt="TYKS" className="h-5 w-auto object-left object-contain" />
-                <span className="text-[10px] font-mono opacity-50 mt-1">Workspace v2.0</span>
+                <img src="/tyks.svg" alt="TYKS" className="h-4 w-auto object-left object-contain" />
               </div>
             </Link>
           </div>
 
-          {/* Liens de navigation avec icônes de taille confortable */}
-          <div className="space-y-1">
-            <div className={`transition-opacity duration-200 ${
-              isHovered ? 'opacity-100 pb-2' : 'opacity-0 pointer-events-none h-0'
-            }`}>
-              <p className="text-[10px] font-mono uppercase tracking-wider opacity-40 px-3 whitespace-nowrap">
-                Workspace
-              </p>
-            </div>
-
+          {/* Liens de navigation */}
+          <div className="space-y-1 pt-2">
             {navItems.map((item) => {
               const Icon = item.icon;
               const isActive = pathname === item.href;
