@@ -60,7 +60,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   // Génération dynamique du fil d'Ariane
   const getBreadcrumbs = () => {
-    if (pathname === '/') return ['Dashboard'];
+    if (pathname === '/') return ['Overview'];
     const segments = pathname.split('/').filter(Boolean);
     
     return segments.map(seg => {
