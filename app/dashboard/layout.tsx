@@ -145,7 +145,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               <img
                 src="/icon.svg"
                 alt="TYKS"
-                className="w-10 h-10 object-contain transition-transform group-hover:scale-105"
+                className="w-6 h-6 object-contain transition-transform group-hover:scale-105"
               />
             </Link>
           </div>
@@ -239,9 +239,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       </header>
 
       {/* 1. Barre d'icônes fixe à gauche (w-16), sous la barre horizontale */}
-      <aside className="fixed top-14 left-0 h-[calc(100vh-3.5rem)] w-16 border-r border-[#111110]/10 bg-[#F7F5F0] flex flex-col items-center justify-between py-6 z-40 select-none">
+      <aside className={`fixed top-14 left-0 h-[calc(100vh-3.5rem)] w-16 bg-[#F7F5F0] flex flex-col items-center py-6 z-40 select-none ${
+        isOpen ? '' : 'border-r border-[#111110]/10'
+      }`}>
 
-        <div className="flex flex-col items-center gap-2 w-full">
+        <div className="flex-1 w-full flex flex-col items-center justify-center gap-2">
           {navItems.map((item) => {
             const Icon = item.icon;
             const isActive = pathname === item.href;
@@ -270,7 +272,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             title={isOpen ? 'Réduire le menu' : 'Déployer le menu'}
             aria-label={isOpen ? 'Réduire le menu' : 'Déployer le menu'}
             aria-pressed={isOpen}
-            className="w-10 h-10 flex items-center justify-center rounded-xl opacity-60 hover:opacity-100 hover:bg-[#111110]/5 transition-all"
+            className="w-9 h-9 flex items-center justify-center rounded-xl opacity-60 hover:opacity-100 hover:bg-[#111110]/5 transition-all"
           >
             <ChevronRight className={`w-4 h-4 transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${isOpen ? 'rotate-180' : ''}`} />
           </button>
@@ -279,13 +281,15 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
       {/* 2. Panneau textuel contextuel, ouvert/fermé via l'interrupteur (état mémorisé) */}
       <div 
-        className={`fixed top-14 left-16 h-[calc(100vh-3.5rem)] bg-[#F7F5F0] border-r border-[#111110]/10 flex flex-col z-30 overflow-hidden select-none ${
+        className={`fixed top-14 left-16 h-[calc(100vh-3.5rem)] bg-[#F7F5F0] flex flex-col items-center py-6 z-30 overflow-hidden select-none ${
+          isOpen ? 'border-r border-[#111110]/10' : ''
+        } ${
           mounted ? 'transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]' : ''
         } ${
           isOpen ? 'w-56 opacity-100 shadow-xl' : 'w-0 opacity-0 pointer-events-none'
         }`}
       >
-        <div className="space-y-2 w-full px-3 flex-1 pt-6">
+        <div className="flex-1 w-full px-3 flex flex-col justify-center gap-2">
           {navItems.map((item) => {
             const isActive = pathname === item.href;
 
@@ -303,6 +307,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               </Link>
             );
           })}
+        </div>
+
+        {/* Espace réservé invisible, de même hauteur que l'interrupteur de la barre d'icônes, pour garder l'alignement vertical */}
+        <div className="w-full flex flex-col items-center gap-2 border-t border-transparent pt-4 opacity-0 pointer-events-none" aria-hidden="true">
+          <div className="w-9 h-9" />
         </div>
       </div>
 
