@@ -377,24 +377,25 @@ export default function PublicEventPage() {
                 </div>
 
                 <Elements
-                  stripe={stripePromise}
-                  options={{
-                    clientSecret,
-                    appearance: {
-                      theme: 'night',
-                      variables: {
-                        colorPrimary: '#F7F5F0',
-                        colorBackground: '#111110',
-                        colorText: '#F7F5F0',
-                        colorDanger: '#ef4444',
-                        fontFamily: 'monospace, sans-serif',
-                        borderRadius: '12px',
-                      },
-                    },
-                  }}
-                >
-                  <CustomCheckoutForm slug={event.slug} />
-                </Elements>
+  stripe={stripePromise}
+  options={{
+    clientSecret,
+    locale: 'fr', // <--- C'est ici qu'on force la langue française
+    appearance: {
+      theme: 'night',
+      variables: {
+        colorPrimary: '#F7F5F0',
+        colorBackground: '#111110',
+        colorText: '#F7F5F0',
+        colorDanger: '#ef4444',
+        fontFamily: 'monospace, sans-serif',
+        borderRadius: '12px',
+      },
+    },
+  }}
+>
+  <CustomCheckoutForm slug={event.slug} />
+</Elements>
               </div>
             )}
 
