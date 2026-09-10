@@ -3,18 +3,14 @@
 import { useState, useEffect } from 'react';
 import { Loader2, Euro, ShieldCheck, Building2, CreditCard, History, AlertCircle, X } from 'lucide-react';
 import { supabaseBrowser } from '@/lib/supabase-browser';
-import { loadConnectAndInitialize } from '@stripe/connect-js';
-import { ConnectComponentsProvider, ConnectAccountOnboarding } from '@stripe/react-connect-js';
 
 export default function BankingDashboardPage() {
   const [loading, setLoading] = useState(true);
-  const [initializingStripe, setInitializingStripe] = useState(false);
+  const [connectingStripe, setConnectingStripe] = useState(false);
   const [balance, setBalance] = useState({ available: 0, pending: 0 });
   const [payouts, setPayouts] = useState<any[]>([]);
   const [hasBankAccount, setHasBankAccount] = useState(false);
-  
-  const [stripeConnectInstance, setStripeConnectInstance] = useState<any>(null);
-  const [showEmbeddedStripe, setShowEmbeddedStripe] = useState(false);
+  const [stripeUrl, setStripeUrl] = useState<string | null>(null);
 
   useEffect(() => {
     async function loadBankingData() {
@@ -63,17 +59,17 @@ export default function BankingDashboardPage() {
     loadBankingData();
   }, []);
 
-  const handleOpenEmbeddedStripe = async () => {
+  const handleOpenStripeModal = async () => {
     try {
-      setInitializingStripe(true);
+      setConnectingStripe(true);
       const { data: { session } } = await supabaseBrowser.auth.getSession();
       if (!session?.access_token) {
         alert("Session expirée, veuillez vous reconnecter.");
-        setInitializingStripe(false);
+        setConnectingStripe(false);
         return;
       }
 
-      const res = await fetch('/api/organizer/stripe-session', {
+      const res = await fetch('/api/organizer/stripe', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${session.access_token}`,
@@ -82,30 +78,15 @@ export default function BankingDashboardPage() {
       });
 
       const data = await res.json();
-      if (data.clientSecret && data.publishableKey) {
-        const instance = loadConnectAndInitialize({
-          publishableKey: data.publishableKey,
-          fetchClientSecret: async () => data.clientSecret,
-          locale: 'fr-FR',
-          appearance: {
-            variables: {
-              colorPrimary: '#111110',
-              colorBackground: '#F7F5F0',
-              colorText: '#111110',
-              borderRadius: '16px',
-            },
-          },
-        });
-
-        setStripeConnectInstance(instance);
-        setShowEmbeddedStripe(true);
+      if (data.url) {
+        setStripeUrl(data.url); // On charge l'URL dans l'iframe de la modale
       } else {
-        alert(data.error || "Erreur lors de l'initialisation du module bancaire.");
+        alert(data.error || "Erreur lors de la configuration du compte Stripe.");
       }
     } catch (err) {
-      console.error('Erreur Stripe Connect Embedded :', err);
+      console.error('Erreur Stripe :', err);
     } finally {
-      setInitializingStripe(false);
+      setConnectingStripe(false);
     }
   };
 
@@ -120,36 +101,32 @@ export default function BankingDashboardPage() {
   return (
     <div className="max-w-7xl mx-auto px-8 py-10 space-y-8 relative">
       
-      {showEmbeddedStripe && stripeConnectInstance && (
+      {/* Modale avec iframe confinée */}
+      {stripeUrl && (
         <div className="fixed inset-0 z-50 bg-[#111110]/40 backdrop-blur-sm flex items-center justify-center p-4 md:p-8 animate-in fade-in duration-200">
-          <div className="bg-[#F7F5F0] border border-[#111110]/15 w-full max-w-3xl h-[80vh] rounded-3xl shadow-2xl flex flex-col overflow-hidden">
-            
-            {/* Barre de titre de la modale */}
+          <div className="bg-[#F7F5F0] border border-[#111110]/15 w-full max-w-4xl h-[85vh] rounded-3xl shadow-2xl flex flex-col overflow-hidden">
             <div className="px-6 py-4 border-b border-[#111110]/10 flex items-center justify-between bg-white/50 shrink-0">
               <div className="flex items-center gap-2">
                 <span className="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
                 <h3 className="font-display font-bold text-sm">Configuration sécurisée de votre compte</h3>
               </div>
               <button 
-                onClick={() => setShowEmbeddedStripe(false)}
-                className="w-8 h-8 rounded-full bg-[#111110]/5 flex items-center justify-center hover:bg-[#111110]/10 transition cursor-pointer"
+                onClick={() => {
+                  setStripeUrl(null);
+                  window.location.reload();
+                }}
+                className="w-8 h-8 rounded-full bg-[#111110]/5 flex items-center justify-center hover:bg-[#111110]/10 transition"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
-
-            {/* Conteneur contraint pour forcer Stripe à rester dans la boîte */}
-            <div className="flex-1 w-full h-full overflow-y-auto p-2 bg-white">
-              <ConnectComponentsProvider connectInstance={stripeConnectInstance}>
-                <ConnectAccountOnboarding 
-                  onExit={() => {
-                    setShowEmbeddedStripe(false);
-                    window.location.reload();
-                  }}
-                />
-              </ConnectComponentsProvider>
+            <div className="flex-1 w-full h-full bg-white">
+              <iframe 
+                src={stripeUrl} 
+                className="w-full h-full border-0" 
+                title="Onboarding Stripe"
+              />
             </div>
-
           </div>
         </div>
       )}
@@ -167,11 +144,11 @@ export default function BankingDashboardPage() {
         </div>
 
         <button
-          onClick={handleOpenEmbeddedStripe}
-          disabled={initializingStripe}
+          onClick={handleOpenStripeModal}
+          disabled={connectingStripe}
           className="inline-flex items-center gap-2 rounded-full bg-[#111110] px-5 py-2.5 text-xs font-semibold text-[#F7F5F0] transition hover:opacity-95 shadow-sm disabled:opacity-50"
         >
-          {initializingStripe ? (
+          {connectingStripe ? (
             <Loader2 className="h-4 w-4 animate-spin" />
           ) : (
             <Building2 className="h-4 w-4" />
@@ -180,7 +157,7 @@ export default function BankingDashboardPage() {
         </button>
       </div>
 
-      {/* Cartes de soldes */}
+      {/* Le reste de ta page (soldes, historique...) */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="p-8 rounded-3xl border border-[#111110]/15 bg-white/70 backdrop-blur-md shadow-sm space-y-4">
           <div className="flex items-center justify-between">
@@ -205,7 +182,6 @@ export default function BankingDashboardPage() {
         </div>
       </div>
 
-      {/* Alerte si pas de compte bancaire lié */}
       {!hasBankAccount && (
         <div className="p-5 rounded-2xl border border-amber-500/30 bg-amber-500/5 flex items-start gap-3">
           <AlertCircle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
@@ -216,7 +192,6 @@ export default function BankingDashboardPage() {
         </div>
       )}
 
-      {/* Historique des versements */}
       <div className="space-y-4 pt-4">
         <div className="flex items-center gap-2">
           <History className="w-4 h-4 opacity-70" />
