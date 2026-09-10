@@ -1,10 +1,10 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { Loader2, Euro, ShieldCheck, Building2, CreditCard, History, AlertCircle, X } from 'lucide-react';
 import { supabaseBrowser } from '@/lib/supabase-browser';
 import { loadConnectAndInitialize } from '@stripe/connect-js';
-import { ConnectEmbed } from '@stripe/react-connect-js';
+import { ConnectComponentsProvider, ConnectAccountOnboarding } from '@stripe/react-connect-js';
 
 export default function BankingDashboardPage() {
   const [loading, setLoading] = useState(true);
@@ -13,8 +13,6 @@ export default function BankingDashboardPage() {
   const [payouts, setPayouts] = useState<any[]>([]);
   const [hasBankAccount, setHasBankAccount] = useState(false);
   
-  // États pour l'onboarding embarqué (Embedded Connect)
-  const [clientSecret, setClientSecret] = useState<string | null>(null);
   const [stripeConnectInstance, setStripeConnectInstance] = useState<any>(null);
   const [showEmbeddedStripe, setShowEmbeddedStripe] = useState(false);
 
@@ -65,7 +63,6 @@ export default function BankingDashboardPage() {
     loadBankingData();
   }, []);
 
-  // Fonction pour initialiser l'Account Session et charger l'onboarding embarqué
   const handleOpenEmbeddedStripe = async () => {
     try {
       setInitializingStripe(true);
@@ -76,7 +73,6 @@ export default function BankingDashboardPage() {
         return;
       }
 
-      // Appel à ton API backend qui génère l'account session (au lieu d'un account_link de redirection)
       const res = await fetch('/api/organizer/stripe-session', {
         method: 'POST',
         headers: {
@@ -87,9 +83,6 @@ export default function BankingDashboardPage() {
 
       const data = await res.json();
       if (data.clientSecret && data.publishableKey) {
-        setClientSecret(data.clientSecret);
-
-        // Initialisation de l'instance Stripe Connect JS
         const instance = loadConnectAndInitialize({
           publishableKey: data.publishableKey,
           fetchClientSecret: async () => data.clientSecret,
@@ -128,11 +121,10 @@ export default function BankingDashboardPage() {
   return (
     <div className="max-w-7xl mx-auto px-8 py-10 space-y-8 relative">
       
-      {/* Modal / Vue Embarquée Stripe */}
       {showEmbeddedStripe && stripeConnectInstance && (
         <div className="fixed inset-0 z-50 bg-[#111110]/40 backdrop-blur-sm flex items-center justify-center p-4 md:p-8 animate-in fade-in duration-200">
           <div className="bg-[#F7F5F0] border border-[#111110]/15 w-full max-w-4xl h-[85vh] rounded-3xl shadow-2xl flex flex-col overflow-hidden">
-            <div className="px-6 py-4 border-b border-[#111110]/10 flex items-center justify-between bg-white/50">
+            <div className="px-6 py-4 border-b border-[#111110]/10 flex items-center justify-between bg-white/50 shrink-0">
               <div className="flex items-center gap-2">
                 <span className="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
                 <h3 className="font-display font-bold text-sm">Configuration sécurisée de votre compte</h3>
@@ -145,10 +137,14 @@ export default function BankingDashboardPage() {
               </button>
             </div>
             <div className="flex-1 overflow-y-auto p-6">
-              <ConnectEmbed 
-                connectInstance={stripeConnectInstance} 
-                component="account-onboarding"
-              />
+              <ConnectComponentsProvider connectInstance={stripeConnectInstance}>
+                <ConnectAccountOnboarding 
+                  onExit={() => {
+                    setShowEmbeddedStripe(false);
+                    window.location.reload();
+                  }}
+                />
+              </ConnectComponentsProvider>
             </div>
           </div>
         </div>
