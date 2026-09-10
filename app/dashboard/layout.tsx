@@ -78,7 +78,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               <div className="w-10 h-10 flex items-center justify-center shrink-0">
                 {/* Affiche l'icône seule quand c'est fermé, ou le logo combiné/textuel quand c'est ouvert */}
                 <img 
-                  src={isHovered ? "/logo.svg" : "/icon.svg"} 
+                  src={isHovered ? "/logo.svg" : "public/icon.svg"} 
                   alt="TYKS Pro" 
                   className="w-8 h-8 object-contain transition-transform hover:scale-105"
                 />
