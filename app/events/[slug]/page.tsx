@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { notFound, useParams } from 'next/navigation';
 import { supabaseBrowser } from '@/lib/supabase-browser';
 import { Calendar, MapPin, ArrowLeft, ArrowUpRight, Clock, Ticket, Minus, Plus, Users, Loader2, Sparkles, X, CheckCircle2 } from 'lucide-react';
@@ -96,12 +97,17 @@ export default function PublicEventPage() {
   const [clientSecret, setClientSecret] = useState<string | null>(null);
   const [isInitializingPayment, setIsInitializingPayment] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
   const [user, setUser] = useState<any>(null);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [authEmail, setAuthEmail] = useState('');
   const [authLoading, setAuthLoading] = useState(false);
   const [authSent, setAuthSent] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     if (!slug) return;
@@ -312,212 +318,218 @@ export default function PublicEventPage() {
         </div>
       </main>
 
-      {/* Modale d'authentification rapide (Sortie du main) */}
-      {showAuthModal && (
-        <div className="fixed inset-0 z-[999] bg-black/80 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in duration-200">
-          <div className="bg-[#111110] border border-[#F7F5F0]/15 rounded-3xl p-8 max-w-md w-full space-y-6 relative shadow-2xl text-[#F7F5F0]">
-            <button 
-              onClick={() => setShowAuthModal(false)}
-              className="absolute top-6 right-6 w-8 h-8 rounded-full bg-[#F7F5F0]/10 flex items-center justify-center text-[#F7F5F0]/70 hover:text-[#F7F5F0] hover:bg-[#F7F5F0]/20 transition-all cursor-pointer"
-            >
-              <X className="w-4 h-4" />
-            </button>
-
-            <div className="space-y-2">
-              <span className="text-[10px] font-mono uppercase tracking-widest text-[#F7F5F0]/50 block">Sécurité & Billetterie</span>
-              <h3 className="font-display text-2xl font-bold tracking-tight">Connexion requise</h3>
-              <p className="text-xs font-mono text-[#F7F5F0]/60 leading-relaxed">
-                Connectez-vous pour finaliser votre commande et récupérer vos billets en toute sécurité.
-              </p>
-            </div>
-
-            {!authSent ? (
-              <div className="space-y-4 pt-2">
-                <button
-                  onClick={handleGoogleLogin}
-                  className="w-full bg-[#F7F5F0]/10 hover:bg-[#F7F5F0]/20 text-[#F7F5F0] py-3.5 px-4 rounded-full text-xs font-mono uppercase tracking-widest transition-all flex items-center justify-center gap-3 border border-[#F7F5F0]/15 cursor-pointer font-bold"
+      {/* Rendu des modales via Portal pour échapper au contexte de la Navbar */}
+      {mounted && createPortal(
+        <>
+          {/* Modale d'authentification rapide */}
+          {showAuthModal && (
+            <div className="fixed inset-0 z-[99999] bg-black/80 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in duration-200">
+              <div className="bg-[#111110] border border-[#F7F5F0]/15 rounded-3xl p-8 max-w-md w-full space-y-6 relative shadow-2xl text-[#F7F5F0]">
+                <button 
+                  onClick={() => setShowAuthModal(false)}
+                  className="absolute top-6 right-6 w-8 h-8 rounded-full bg-[#F7F5F0]/10 flex items-center justify-center text-[#F7F5F0]/70 hover:text-[#F7F5F0] hover:bg-[#F7F5F0]/20 transition-all cursor-pointer"
                 >
-                  <span>Continuer avec Google</span>
+                  <X className="w-4 h-4" />
                 </button>
 
-                <div className="relative flex py-2 items-center">
-                  <div className="flex-grow border-t border-[#F7F5F0]/10"></div>
-                  <span className="flex-shrink mx-4 text-[#F7F5F0]/40 text-[10px] font-mono uppercase">ou par e-mail</span>
-                  <div className="flex-grow border-t border-[#F7F5F0]/10"></div>
-                </div>
-
-                <form onSubmit={handleMagicLinkLogin} className="space-y-4">
-                  <input
-                    type="email"
-                    required
-                    placeholder="votre@email.com"
-                    value={authEmail}
-                    onChange={(e) => setAuthEmail(e.target.value)}
-                    className="w-full bg-[#F7F5F0]/5 border border-[#F7F5F0]/15 rounded-xl px-4 py-3 text-sm font-mono text-[#F7F5F0] focus:outline-none focus:border-[#F7F5F0] transition-colors"
-                  />
-                  <button
-                    type="submit"
-                    disabled={authLoading}
-                    className="w-full bg-[#F7F5F0] text-[#111110] py-4 rounded-full text-xs font-mono uppercase tracking-widest font-bold hover:bg-white transition-all disabled:opacity-50 cursor-pointer shadow-lg flex items-center justify-center gap-2"
-                  >
-                    {authLoading ? <Loader2 className="w-4 h-4 animate-spin text-[#111110]" /> : <span>Recevoir mon lien magique</span>}
-                  </button>
-                </form>
-              </div>
-            ) : (
-              <div className="bg-[#F7F5F0]/5 border border-[#F7F5F0]/15 rounded-2xl p-6 text-center space-y-3">
-                <p className="text-sm font-mono font-bold text-[#F7F5F0]">Lien de connexion envoyé !</p>
-                <p className="text-xs font-mono text-[#F7F5F0]/60 leading-relaxed">
-                  Vérifiez vos e-mails. Votre session s'activera automatiquement dès que vous cliquerez sur le lien.
-                </p>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
-
-      {/* Modale de Paiement Stripe (Sortie du main) */}
-      {isCheckoutOpen && (
-        <div className="fixed inset-0 z-[999] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200">
-          <div className="relative w-full max-w-lg rounded-3xl bg-[#111110] text-[#F7F5F0] p-6 md:p-8 space-y-6 shadow-2xl border border-[#F7F5F0]/15 max-h-[90vh] overflow-y-auto">
-            
-            <button
-              onClick={() => {
-                setIsCheckoutOpen(false);
-                setClientSecret(null);
-                setIsSuccess(false);
-              }}
-              className="absolute top-6 right-6 w-8 h-8 rounded-full bg-[#F7F5F0]/10 flex items-center justify-center text-[#F7F5F0]/70 hover:text-[#F7F5F0] hover:bg-[#F7F5F0]/20 transition-all cursor-pointer z-10"
-            >
-              <X className="w-4 h-4" />
-            </button>
-
-            {isSuccess ? (
-              <div className="py-6 space-y-6 text-center">
-                <div className="flex justify-center">
-                  <div className="w-16 h-16 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 shadow-inner">
-                    <CheckCircle2 className="w-8 h-8" />
-                  </div>
-                </div>
                 <div className="space-y-2">
-                  <span className="text-[10px] font-mono uppercase tracking-widest text-emerald-400">Paiement validé</span>
-                  <h3 className="font-display text-2xl font-bold tracking-tight">Vos places sont réservées !</h3>
-                  <p className="text-xs text-[#F7F5F0]/60 font-mono leading-relaxed pt-1">
-                    Merci pour votre achat. Un e-mail de confirmation vient de vous être envoyé.
+                  <span className="text-[10px] font-mono uppercase tracking-widest text-[#F7F5F0]/50 block">Sécurité & Billetterie</span>
+                  <h3 className="font-display text-2xl font-bold tracking-tight">Connexion requise</h3>
+                  <p className="text-xs font-mono text-[#F7F5F0]/60 leading-relaxed">
+                    Connectez-vous pour finaliser votre commande et récupérer vos billets en toute sécurité.
                   </p>
                 </div>
+
+                {!authSent ? (
+                  <div className="space-y-4 pt-2">
+                    <button
+                      onClick={handleGoogleLogin}
+                      className="w-full bg-[#F7F5F0]/10 hover:bg-[#F7F5F0]/20 text-[#F7F5F0] py-3.5 px-4 rounded-full text-xs font-mono uppercase tracking-widest transition-all flex items-center justify-center gap-3 border border-[#F7F5F0]/15 cursor-pointer font-bold"
+                    >
+                      <span>Continuer avec Google</span>
+                    </button>
+
+                    <div className="relative flex py-2 items-center">
+                      <div className="flex-grow border-t border-[#F7F5F0]/10"></div>
+                      <span className="flex-shrink mx-4 text-[#F7F5F0]/40 text-[10px] font-mono uppercase">ou par e-mail</span>
+                      <div className="flex-grow border-t border-[#F7F5F0]/10"></div>
+                    </div>
+
+                    <form onSubmit={handleMagicLinkLogin} className="space-y-4">
+                      <input
+                        type="email"
+                        required
+                        placeholder="votre@email.com"
+                        value={authEmail}
+                        onChange={(e) => setAuthEmail(e.target.value)}
+                        className="w-full bg-[#F7F5F0]/5 border border-[#F7F5F0]/15 rounded-xl px-4 py-3 text-sm font-mono text-[#F7F5F0] focus:outline-none focus:border-[#F7F5F0] transition-colors"
+                      />
+                      <button
+                        type="submit"
+                        disabled={authLoading}
+                        className="w-full bg-[#F7F5F0] text-[#111110] py-4 rounded-full text-xs font-mono uppercase tracking-widest font-bold hover:bg-white transition-all disabled:opacity-50 cursor-pointer shadow-lg flex items-center justify-center gap-2"
+                      >
+                        {authLoading ? <Loader2 className="w-4 h-4 animate-spin text-[#111110]" /> : <span>Recevoir mon lien magique</span>}
+                      </button>
+                    </form>
+                  </div>
+                ) : (
+                  <div className="bg-[#F7F5F0]/5 border border-[#F7F5F0]/15 rounded-2xl p-6 text-center space-y-3">
+                    <p className="text-sm font-mono font-bold text-[#F7F5F0]">Lien de connexion envoyé !</p>
+                    <p className="text-xs font-mono text-[#F7F5F0]/60 leading-relaxed">
+                      Vérifiez vos e-mails. Votre session s'activera automatiquement dès que vous cliquerez sur le lien.
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Modale de Paiement Stripe */}
+          {isCheckoutOpen && (
+            <div className="fixed inset-0 z-[99999] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200">
+              <div className="relative w-full max-w-lg rounded-3xl bg-[#111110] text-[#F7F5F0] p-6 md:p-8 space-y-6 shadow-2xl border border-[#F7F5F0]/15 max-h-[90vh] overflow-y-auto">
+                
                 <button
                   onClick={() => {
                     setIsCheckoutOpen(false);
                     setClientSecret(null);
                     setIsSuccess(false);
                   }}
-                  className="w-full rounded-full bg-[#F7F5F0] text-[#111110] py-4 px-6 text-xs font-mono uppercase tracking-widest font-bold shadow-lg hover:bg-white transition-all cursor-pointer"
+                  className="absolute top-6 right-6 w-8 h-8 rounded-full bg-[#F7F5F0]/10 flex items-center justify-center text-[#F7F5F0]/70 hover:text-[#F7F5F0] hover:bg-[#F7F5F0]/20 transition-all cursor-pointer z-10"
                 >
-                  Fermer
+                  <X className="w-4 h-4" />
                 </button>
-              </div>
-            ) : !clientSecret ? (
-              <>
-                <div className="space-y-1">
-                  <span className="text-[10px] font-mono uppercase tracking-widest text-[#F7F5F0]/50 block">Billetterie</span>
-                  <h3 className="font-display text-xl font-bold tracking-tight line-clamp-1">{event.title}</h3>
-                </div>
 
-                <div className="space-y-2 pt-2">
-                  <div className="flex justify-between items-center text-xs font-mono text-[#F7F5F0]/60">
-                    <span>Quantité</span>
-                    <span className="text-[#F7F5F0] font-bold flex items-center gap-1">
-                      <Users className="w-3.5 h-3.5" /> {quantity}
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between bg-[#F7F5F0]/5 border border-[#F7F5F0]/15 rounded-2xl p-1.5">
+                {isSuccess ? (
+                  <div className="py-6 space-y-6 text-center">
+                    <div className="flex justify-center">
+                      <div className="w-16 h-16 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 shadow-inner">
+                        <CheckCircle2 className="w-8 h-8" />
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <span className="text-[10px] font-mono uppercase tracking-widest text-emerald-400">Paiement validé</span>
+                      <h3 className="font-display text-2xl font-bold tracking-tight">Vos places sont réservées !</h3>
+                      <p className="text-xs text-[#F7F5F0]/60 font-mono leading-relaxed pt-1">
+                        Merci pour votre achat. Un e-mail de confirmation vient de vous être envoyé.
+                      </p>
+                    </div>
                     <button
-                      onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                      disabled={quantity <= 1}
-                      className="w-10 h-10 rounded-xl bg-[#F7F5F0]/10 flex items-center justify-center text-[#F7F5F0] hover:bg-[#F7F5F0]/20 disabled:opacity-30 transition-all cursor-pointer"
+                      onClick={() => {
+                        setIsCheckoutOpen(false);
+                        setClientSecret(null);
+                        setIsSuccess(false);
+                      }}
+                      className="w-full rounded-full bg-[#F7F5F0] text-[#111110] py-4 px-6 text-xs font-mono uppercase tracking-widest font-bold shadow-lg hover:bg-white transition-all cursor-pointer"
                     >
-                      <Minus className="w-4 h-4" />
-                    </button>
-                    <span className="font-mono text-xl font-bold">{quantity}</span>
-                    <button
-                      onClick={() => setQuantity(Math.min(10, quantity + 1))}
-                      disabled={quantity >= 10}
-                      className="w-10 h-10 rounded-xl bg-[#F7F5F0]/10 flex items-center justify-center text-[#F7F5F0] hover:bg-[#F7F5F0]/20 disabled:opacity-30 transition-all cursor-pointer"
-                    >
-                      <Plus className="w-4 h-4" />
+                      Fermer
                     </button>
                   </div>
-                </div>
+                ) : !clientSecret ? (
+                  <>
+                    <div className="space-y-1">
+                      <span className="text-[10px] font-mono uppercase tracking-widest text-[#F7F5F0]/50 block">Billetterie</span>
+                      <h3 className="font-display text-xl font-bold tracking-tight line-clamp-1">{event.title}</h3>
+                    </div>
 
-                <div className="space-y-4 pt-4 border-t border-[#F7F5F0]/15">
-                  <div className="flex items-baseline justify-between">
-                    <span className="text-xs font-mono text-[#F7F5F0]/50 uppercase tracking-wider">Total</span>
-                    <p className="font-display text-3xl font-bold tracking-tight">{totalPrice.toFixed(2)} €</p>
+                    <div className="space-y-2 pt-2">
+                      <div className="flex justify-between items-center text-xs font-mono text-[#F7F5F0]/60">
+                        <span>Quantité</span>
+                        <span className="text-[#F7F5F0] font-bold flex items-center gap-1">
+                          <Users className="w-3.5 h-3.5" /> {quantity}
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between bg-[#F7F5F0]/5 border border-[#F7F5F0]/15 rounded-2xl p-1.5">
+                        <button
+                          onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                          disabled={quantity <= 1}
+                          className="w-10 h-10 rounded-xl bg-[#F7F5F0]/10 flex items-center justify-center text-[#F7F5F0] hover:bg-[#F7F5F0]/20 disabled:opacity-30 transition-all cursor-pointer"
+                        >
+                          <Minus className="w-4 h-4" />
+                        </button>
+                        <span className="font-mono text-xl font-bold">{quantity}</span>
+                        <button
+                          onClick={() => setQuantity(Math.min(10, quantity + 1))}
+                          disabled={quantity >= 10}
+                          className="w-10 h-10 rounded-xl bg-[#F7F5F0]/10 flex items-center justify-center text-[#F7F5F0] hover:bg-[#F7F5F0]/20 disabled:opacity-30 transition-all cursor-pointer"
+                        >
+                          <Plus className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="space-y-4 pt-4 border-t border-[#F7F5F0]/15">
+                      <div className="flex items-baseline justify-between">
+                        <span className="text-xs font-mono text-[#F7F5F0]/50 uppercase tracking-wider">Total</span>
+                        <p className="font-display text-3xl font-bold tracking-tight">{totalPrice.toFixed(2)} €</p>
+                      </div>
+
+                      <button 
+                        onClick={handleInitCheckout}
+                        disabled={isInitializingPayment}
+                        className="w-full rounded-full bg-[#F7F5F0] text-[#111110] py-4 px-6 text-xs font-mono uppercase tracking-widest transition-all duration-300 hover:bg-white hover:scale-[1.01] active:scale-[0.98] flex items-center justify-center gap-2 cursor-pointer shadow-xl font-bold disabled:opacity-50"
+                      >
+                        {isInitializingPayment ? (
+                          <Loader2 className="w-4 h-4 animate-spin text-[#111110]" />
+                        ) : (
+                          <>
+                            <span>Procéder au paiement</span>
+                            <ArrowUpRight className="w-4 h-4" />
+                          </>
+                        )}
+                      </button>
+                    </div>
+                  </>
+                ) : (
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between border-b border-[#F7F5F0]/10 pb-3">
+                      <div>
+                        <span className="text-[10px] font-mono uppercase tracking-widest text-[#F7F5F0]/50 block">Sécurisé par Stripe</span>
+                        <h4 className="font-display text-lg font-bold">{totalPrice.toFixed(2)} € • {quantity} place(s)</h4>
+                      </div>
+                      <button 
+                        onClick={() => setClientSecret(null)}
+                        className="text-xs font-mono underline text-[#F7F5F0]/60 hover:text-[#F7F5F0] cursor-pointer"
+                      >
+                        Modifier
+                      </button>
+                    </div>
+
+                    <Elements
+                      stripe={stripePromise}
+                      options={{
+                        clientSecret,
+                        locale: 'fr',
+                        appearance: {
+                          theme: 'night',
+                          variables: {
+                            colorPrimary: '#F7F5F0',
+                            colorBackground: '#111110',
+                            colorText: '#F7F5F0',
+                            colorDanger: '#ef4444',
+                            fontFamily: 'monospace, sans-serif',
+                            borderRadius: '12px',
+                          },
+                        },
+                      }}
+                    >
+                      <CustomCheckoutForm 
+                        slug={event.slug} 
+                        eventTitle={event.title}
+                        quantity={quantity}
+                        totalPrice={totalPrice}
+                        onSuccess={() => setIsSuccess(true)} 
+                      />
+                    </Elements>
                   </div>
+                )}
 
-                  <button 
-                    onClick={handleInitCheckout}
-                    disabled={isInitializingPayment}
-                    className="w-full rounded-full bg-[#F7F5F0] text-[#111110] py-4 px-6 text-xs font-mono uppercase tracking-widest transition-all duration-300 hover:bg-white hover:scale-[1.01] active:scale-[0.98] flex items-center justify-center gap-2 cursor-pointer shadow-xl font-bold disabled:opacity-50"
-                  >
-                    {isInitializingPayment ? (
-                      <Loader2 className="w-4 h-4 animate-spin text-[#111110]" />
-                    ) : (
-                      <>
-                        <span>Procéder au paiement</span>
-                        <ArrowUpRight className="w-4 h-4" />
-                      </>
-                    )}
-                  </button>
-                </div>
-              </>
-            ) : (
-              <div className="space-y-4">
-                <div className="flex items-center justify-between border-b border-[#F7F5F0]/10 pb-3">
-                  <div>
-                    <span className="text-[10px] font-mono uppercase tracking-widest text-[#F7F5F0]/50 block">Sécurisé par Stripe</span>
-                    <h4 className="font-display text-lg font-bold">{totalPrice.toFixed(2)} € • {quantity} place(s)</h4>
-                  </div>
-                  <button 
-                    onClick={() => setClientSecret(null)}
-                    className="text-xs font-mono underline text-[#F7F5F0]/60 hover:text-[#F7F5F0] cursor-pointer"
-                  >
-                    Modifier
-                  </button>
-                </div>
-
-                <Elements
-                  stripe={stripePromise}
-                  options={{
-                    clientSecret,
-                    locale: 'fr',
-                    appearance: {
-                      theme: 'night',
-                      variables: {
-                        colorPrimary: '#F7F5F0',
-                        colorBackground: '#111110',
-                        colorText: '#F7F5F0',
-                        colorDanger: '#ef4444',
-                        fontFamily: 'monospace, sans-serif',
-                        borderRadius: '12px',
-                      },
-                    },
-                  }}
-                >
-                  <CustomCheckoutForm 
-                    slug={event.slug} 
-                    eventTitle={event.title}
-                    quantity={quantity}
-                    totalPrice={totalPrice}
-                    onSuccess={() => setIsSuccess(true)} 
-                  />
-                </Elements>
               </div>
-            )}
-
-          </div>
-        </div>
+            </div>
+          )}
+        </>,
+        document.body
       )}
     </>
   );
