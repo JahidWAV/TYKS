@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Loader2, Euro, ShieldCheck, Building2, CreditCard, History, AlertCircle, X } from 'lucide-react';
+import { Loader2, Euro, ShieldCheck, Building2, CreditCard, History, AlertCircle } from 'lucide-react';
 import { supabaseBrowser } from '@/lib/supabase-browser';
 
 export default function BankingDashboardPage() {
@@ -10,7 +10,6 @@ export default function BankingDashboardPage() {
   const [balance, setBalance] = useState({ available: 0, pending: 0 });
   const [payouts, setPayouts] = useState<any[]>([]);
   const [hasBankAccount, setHasBankAccount] = useState(false);
-  const [stripeUrl, setStripeUrl] = useState<string | null>(null);
 
   useEffect(() => {
     async function loadBankingData() {
@@ -59,7 +58,7 @@ export default function BankingDashboardPage() {
     loadBankingData();
   }, []);
 
-  const handleOpenStripeModal = async () => {
+  const handleStripeRedirect = async () => {
     try {
       setConnectingStripe(true);
       const { data: { session } } = await supabaseBrowser.auth.getSession();
@@ -79,13 +78,13 @@ export default function BankingDashboardPage() {
 
       const data = await res.json();
       if (data.url) {
-        setStripeUrl(data.url); // On charge l'URL dans l'iframe de la modale
+        window.location.href = data.url; // Redirection directe vers le flux Stripe sécurisé
       } else {
         alert(data.error || "Erreur lors de la configuration du compte Stripe.");
+        setConnectingStripe(false);
       }
     } catch (err) {
-      console.error('Erreur Stripe :', err);
-    } finally {
+      console.error('Erreur de redirection Stripe :', err);
       setConnectingStripe(false);
     }
   };
@@ -99,38 +98,7 @@ export default function BankingDashboardPage() {
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-8 py-10 space-y-8 relative">
-      
-      {/* Modale avec iframe confinée */}
-      {stripeUrl && (
-        <div className="fixed inset-0 z-50 bg-[#111110]/40 backdrop-blur-sm flex items-center justify-center p-4 md:p-8 animate-in fade-in duration-200">
-          <div className="bg-[#F7F5F0] border border-[#111110]/15 w-full max-w-4xl h-[85vh] rounded-3xl shadow-2xl flex flex-col overflow-hidden">
-            <div className="px-6 py-4 border-b border-[#111110]/10 flex items-center justify-between bg-white/50 shrink-0">
-              <div className="flex items-center gap-2">
-                <span className="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
-                <h3 className="font-display font-bold text-sm">Configuration sécurisée de votre compte</h3>
-              </div>
-              <button 
-                onClick={() => {
-                  setStripeUrl(null);
-                  window.location.reload();
-                }}
-                className="w-8 h-8 rounded-full bg-[#111110]/5 flex items-center justify-center hover:bg-[#111110]/10 transition"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-            <div className="flex-1 w-full h-full bg-white">
-              <iframe 
-                src={stripeUrl} 
-                className="w-full h-full border-0" 
-                title="Onboarding Stripe"
-              />
-            </div>
-          </div>
-        </div>
-      )}
-
+    <div className="max-w-7xl mx-auto px-8 py-10 space-y-8">
       {/* En-tête */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 border-b border-[#111110]/10">
         <div className="space-y-1">
@@ -144,7 +112,7 @@ export default function BankingDashboardPage() {
         </div>
 
         <button
-          onClick={handleOpenStripeModal}
+          onClick={handleStripeRedirect}
           disabled={connectingStripe}
           className="inline-flex items-center gap-2 rounded-full bg-[#111110] px-5 py-2.5 text-xs font-semibold text-[#F7F5F0] transition hover:opacity-95 shadow-sm disabled:opacity-50"
         >
@@ -157,7 +125,7 @@ export default function BankingDashboardPage() {
         </button>
       </div>
 
-      {/* Le reste de ta page (soldes, historique...) */}
+      {/* Cartes de soldes */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="p-8 rounded-3xl border border-[#111110]/15 bg-white/70 backdrop-blur-md shadow-sm space-y-4">
           <div className="flex items-center justify-between">
@@ -182,6 +150,7 @@ export default function BankingDashboardPage() {
         </div>
       </div>
 
+      {/* Alerte si pas de compte bancaire lié */}
       {!hasBankAccount && (
         <div className="p-5 rounded-2xl border border-amber-500/30 bg-amber-500/5 flex items-start gap-3">
           <AlertCircle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
@@ -192,6 +161,7 @@ export default function BankingDashboardPage() {
         </div>
       )}
 
+      {/* Historique des versements */}
       <div className="space-y-4 pt-4">
         <div className="flex items-center gap-2">
           <History className="w-4 h-4 opacity-70" />
