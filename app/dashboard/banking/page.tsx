@@ -1,12 +1,11 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Loader2, Euro, ArrowUpRight, ShieldCheck, Building2, CreditCard, History, AlertCircle } from 'lucide-react';
+import { Loader2, Euro, ShieldCheck, Building2, CreditCard, History, AlertCircle } from 'lucide-react';
 import { supabaseBrowser } from '@/lib/supabase-browser';
 
 export default function BankingDashboardPage() {
   const [loading, setLoading] = useState(true);
-  const [user, setUser] = useState<any>(null);
   const [balance, setBalance] = useState({ available: 0, pending: 0 });
   const [payouts, setPayouts] = useState<any[]>([]);
   const [hasBankAccount, setHasBankAccount] = useState(false);
@@ -16,10 +15,8 @@ export default function BankingDashboardPage() {
       try {
         const { data: { session } } = await supabaseBrowser.auth.getSession();
         if (!session?.user) return;
-        setUser(session.user);
 
-        // Simulation ou appel de récupération des données financières liées à l'organisation
-        // Tu pourras adapter ces tables selon ton schéma Supabase (ex: organization_bank_accounts, payouts)
+        // Récupération de l'organisation liée à l'utilisateur connecté
         const { data: orgMember } = await supabaseBrowser
           .from('organization_members')
           .select('organization_id')
@@ -27,25 +24,32 @@ export default function BankingDashboardPage() {
           .maybeSingle();
 
         if (orgMember?.organization_id) {
-          // Exemple de vérification d'un compte bancaire configuré
-          const { data: bankInfo } = await supabaseBrowser
+          // Récupération des informations de l'organisation et du compte Stripe Connect
+          const { data: orgData } = await supabaseBrowser
             .from('organizations')
-            .select('stripe_account_id, payout_enabled')
+            .select('stripe_account_id, payout_enabled, balance_available, balance_pending')
             .eq('id', orgMember.organization_id)
             .single();
 
-          if (bankInfo?.stripe_account_id) {
-            setHasBankAccount(true);
+          if (orgData) {
+            setHasBankAccount(Boolean(orgData.stripe_account_id && orgData.payout_enabled));
+            setBalance({
+              available: Number(orgData.balance_available || 0),
+              pending: Number(orgData.balance_pending || 0),
+            });
+          }
+
+          // Récupération de l'historique réel des virements depuis la base
+          const { data: payoutsData } = await supabaseBrowser
+            .from('payouts')
+            .select('*')
+            .eq('organization_id', orgMember.organization_id)
+            .order('created_at', { ascending: false });
+
+          if (payoutsData) {
+            setPayouts(payoutsData);
           }
         }
-
-        // Données fictives/statiques de secours pour l'UI si les tables de paiments s'initialisent
-        setBalance({ available: 1245.50, pending: 480.00 });
-        setPayouts([
-          { id: 'po_1', date: '2026-08-31', amount: 950.00, status: 'paid', reference: 'VIR-2026-08' },
-          { id: 'po_2', date: '2026-07-31', amount: 1420.00, status: 'paid', reference: 'VIR-2026-07' },
-        ]);
-
       } catch (err) {
         console.error('Erreur lors du chargement des données bancaires :', err);
       } finally {
@@ -79,7 +83,7 @@ export default function BankingDashboardPage() {
         </div>
 
         <button
-          onClick={() => alert("Redirection vers le portail de configuration bancaire Stripe...")}
+          onClick={() => alert("Redirection vers le portail de configuration bancaire...")}
           className="inline-flex items-center gap-2 rounded-full bg-[#111110] px-5 py-2.5 text-xs font-semibold text-[#F7F5F0] transition hover:opacity-95 shadow-sm"
         >
           <Building2 className="h-4 w-4" />
@@ -91,24 +95,24 @@ export default function BankingDashboardPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="p-8 rounded-3xl border border-[#111110]/15 bg-white/70 backdrop-blur-md shadow-sm space-y-4">
           <div className="flex items-center justify-between">
-            <p className="text-xs font-mono opacity-60 uppercase tracking-wide">Solde disponible (Prêt à être versé)</p>
+            <p className="text-xs font-mono opacity-60 uppercase tracking-wide">Solde disponible</p>
             <Euro className="w-5 h-5 opacity-70" />
           </div>
           <p className="font-display text-4xl font-bold tracking-tight">
             {balance.available.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' })}
           </p>
-          <p className="text-xs opacity-60 font-mono">Prochain virement automatique prévu sous 48h.</p>
+          <p className="text-xs opacity-60 font-mono">Fonds prêts à être versés vers votre compte.</p>
         </div>
 
         <div className="p-8 rounded-3xl border border-[#111110]/15 bg-white/70 backdrop-blur-md shadow-sm space-y-4">
           <div className="flex items-center justify-between">
-            <p className="text-xs font-mono opacity-60 uppercase tracking-wide">En cours de traitement / Billets futurs</p>
+            <p className="text-xs font-mono opacity-60 uppercase tracking-wide">En cours de traitement</p>
             <CreditCard className="w-5 h-5 opacity-70" />
           </div>
           <p className="font-display text-4xl font-bold tracking-tight">
             {balance.pending.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' })}
           </p>
-          <p className="text-xs opacity-60 font-mono">Fonds bloqués pour les événements à venir.</p>
+          <p className="text-xs opacity-60 font-mono">Fonds liés aux ventes en cours.</p>
         </div>
       </div>
 
@@ -118,7 +122,7 @@ export default function BankingDashboardPage() {
           <AlertCircle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
           <div className="space-y-1">
             <p className="text-xs font-bold text-amber-900">Compte bancaire non configuré</p>
-            <p className="text-xs text-amber-800/80">Vous devez associer un compte bancaire ou une structure juridique pour déclencher le versement automatique de vos ventes de billets.</p>
+            <p className="text-xs text-amber-800/80">Associez vos coordonnées bancaires pour permettre les virements automatiques de vos ventes.</p>
           </div>
         </div>
       )}
@@ -133,22 +137,24 @@ export default function BankingDashboardPage() {
         <div className="rounded-3xl border border-[#111110]/15 bg-white/70 backdrop-blur-md overflow-hidden shadow-sm">
           {payouts.length === 0 ? (
             <div className="p-12 text-center text-xs font-mono opacity-60">
-              Aucun virement effectué pour le moment.
+              Aucun virement enregistré pour le moment.
             </div>
           ) : (
             <div className="divide-y divide-[#111110]/10">
               {payouts.map((payout) => (
                 <div key={payout.id} className="flex items-center justify-between p-6 hover:bg-white/40 transition">
                   <div className="space-y-1">
-                    <p className="text-xs font-mono font-bold">{payout.reference}</p>
-                    <p className="text-[11px] opacity-60">Virement versé le {new Date(payout.date).toLocaleDateString('fr-FR', { dateStyle: 'long' })}</p>
+                    <p className="text-xs font-mono font-bold">{payout.reference || payout.id}</p>
+                    <p className="text-[11px] opacity-60">
+                      {payout.created_at ? `Versé le ${new Date(payout.created_at).toLocaleDateString('fr-FR', { dateStyle: 'long' })}` : ''}
+                    </p>
                   </div>
                   <div className="flex items-center gap-6">
                     <span className="font-mono text-sm font-bold">
-                      {payout.amount.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' })}
+                      {Number(payout.amount || 0).toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' })}
                     </span>
                     <span className="px-3 py-1 rounded-full text-[10px] font-mono font-semibold bg-emerald-500/10 text-emerald-700 border border-emerald-500/20">
-                      Versé
+                      {payout.status || 'Versé'}
                     </span>
                   </div>
                 </div>
