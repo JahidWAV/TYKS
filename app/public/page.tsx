@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { ArrowUpRight, Smartphone, Apple, Play } from 'lucide-react';
 
@@ -22,39 +22,57 @@ const MANIFESTO = [
   },
 ];
 
-const UPCOMING_EVENTS = [
-  {
-    title: 'Nuit Électro — Session I',
-    venue: 'Le Sous-Sol, Lyon',
-    date: '12.03',
-    price: '18,00 €',
-    genre: 'Techno / Club',
-  },
-  {
-    title: 'Open Air Botanique',
-    venue: 'Les Docks, Marseille',
-    date: '21.03',
-    price: '22,00 €',
-    genre: 'House / Outdoor',
-  },
-  {
-    title: 'Club Infini',
-    venue: 'La Chapelle, Paris',
-    date: '27.03',
-    price: '15,00 €',
-    genre: 'Electro / Live',
-  },
-  {
-    title: 'Subterranean Echoes',
-    venue: 'Glitch Club, Bordeaux',
-    date: '04.04',
-    price: '16,00 €',
-    genre: 'Live Modular',
-  },
-];
-
 export default function PublicHome() {
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const [events, setEvents] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // Récupération des événements depuis l'API ou le state partagé de votre site
+    fetch('/api/events')
+      .then((res) => res.json())
+      .then((data) => {
+        if (Array.isArray(data) && data.length > 0) {
+          setEvents(data.slice(0, 4)); // Affiche les 4 premiers événements de la plateforme
+        } else {
+          // Fallback si l'API est vide pour l'instant
+          setEvents([
+            {
+              title: 'Nuit Électro — Session I',
+              venue: 'Le Sous-Sol, Lyon',
+              date: '12.03',
+              price: '18,00 €',
+              genre: 'Techno / Club',
+            },
+            {
+              title: 'Open Air Botanique',
+              venue: 'Les Docks, Marseille',
+              date: '21.03',
+              price: '22,00 €',
+              genre: 'House / Outdoor',
+            },
+            {
+              title: 'Club Infini',
+              venue: 'La Chapelle, Paris',
+              date: '27.03',
+              price: '15,00 €',
+              genre: 'Electro / Live',
+            },
+            {
+              title: 'Subterranean Echoes',
+              venue: 'Glitch Club, Bordeaux',
+              date: '04.04',
+              price: '16,00 €',
+              genre: 'Live Modular',
+            },
+          ]);
+        }
+        setLoading(false);
+      })
+      .catch(() => {
+        setLoading(false);
+      });
+  }, []);
 
   return (
     <div className={`flex-1 flex flex-col transition-colors duration-300 ${isDarkMode ? 'bg-[#111110] text-[#F7F5F0]' : 'bg-[#F7F5F0] text-[#111110]'}`}>
@@ -140,15 +158,16 @@ export default function PublicHome() {
           </div>
 
           <div className={`grid md:grid-cols-2 lg:grid-cols-4 border-t ${isDarkMode ? 'border-[#F7F5F0]/10' : 'border-[#111110]/10'}`}>
-            {UPCOMING_EVENTS.map((item, index) => (
-              <div 
+            {events.map((item, index) => (
+              <Link 
                 key={index} 
+                href={item.url || `/evenements/${item.id || index}`}
                 className={`group p-8 flex flex-col justify-between border-b md:border-r ${isDarkMode ? 'border-[#F7F5F0]/10 hover:bg-[#F7F5F0]/[0.02]' : 'border-[#111110]/10 hover:bg-[#111110]/[0.02]'} transition-colors cursor-pointer`}
               >
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
                     <span className={`text-xs font-mono px-2.5 py-1 rounded-full border ${isDarkMode ? 'border-[#F7F5F0]/20 text-[#F7F5F0]/70' : 'border-[#111110]/20 text-[#111110]/70'}`}>
-                      {item.genre}
+                      {item.genre || 'Concert / Club'}
                     </span>
                     <span className={`text-xs font-mono ${isDarkMode ? 'text-[#F7F5F0]/50' : 'text-[#111110]/50'}`}>{item.date}</span>
                   </div>
@@ -162,7 +181,7 @@ export default function PublicHome() {
                   <span className="text-sm font-mono font-semibold">{item.price}</span>
                   <ArrowUpRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" />
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         </section>
