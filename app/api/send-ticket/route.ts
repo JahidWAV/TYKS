@@ -12,13 +12,14 @@ export async function POST(request: Request) {
     }
 
     await resend.emails.send({
-      from: 'TYKS <tickets@ton-domaine.com>', // Remplace par ton domaine vérifié sur Resend
+      from: 'TYKS <support@tyks.app>',
       to: [email],
+      replyTo: 'support@tyks.app',
       subject: `Vos billets pour ${eventTitle}`,
       html: `
         <div style="font-family: monospace; background: #111110; color: #F7F5F0; padding: 32px; border-radius: 16px;">
           <h2 style="color: #F7F5F0; font-size: 20px; margin-bottom: 16px;">Réservation confirmée !</h2>
-          <p style="color: #F7F5F0; opacity: 0.8; font-size: 14px;">Merci pour votre achat sur TYKS.</p>
+          <p style="color: #F7F5F0; opacity: 0.8; font-size: 14px;">Merci pour votre achat sur TYKS. Pour toute question, vous pouvez directement répondre à cet e-mail.</p>
           <div style="background: rgba(255,255,255,0.05); padding: 16px; border-radius: 8px; margin: 24px 0;">
             <p style="margin: 4px 0;"><strong>Événement :</strong> ${eventTitle}</p>
             <p style="margin: 4px 0;"><strong>Quantité :</strong> ${quantity} place(s)</p>
