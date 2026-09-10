@@ -1,16 +1,52 @@
 "use client";
 
-import { useState } from 'react';
-import { Calendar, MapPin, ArrowLeft, ArrowUpRight, Clock, Ticket, ShieldCheck, Minus, Plus, Users } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { notFound, useParams } from 'next/navigation';
+import { supabaseBrowser } from '@/lib/supabase-browser';
+import { Calendar, MapPin, ArrowLeft, ArrowUpRight, Clock, Ticket, ShieldCheck, Minus, Plus, Users, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 
-interface PublicEventClientProps {
-  event: any;
-}
+export default function PublicEventPage() {
+  const params = useParams();
+  const slug = params?.slug as string;
 
-export default function PublicEventClient({ event }: PublicEventClientProps) {
+  const [event, setEvent] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState<number>(1);
   const [includeSupport, setIncludeSupport] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (!slug) return;
+    const fetchEvent = async () => {
+      const { data, error } = await supabaseBrowser
+        .from('events')
+        .select('*, organizations(name)')
+        .eq('slug', slug)
+        .eq('status', 'published')
+        .maybeSingle();
+
+      if (error || !data) {
+        setEvent(null);
+      } else {
+        setEvent(data);
+      }
+      setLoading(false);
+    };
+
+    fetchEvent();
+  }, [slug]);
+
+  if (loading) {
+    return (
+      <main className="min-h-screen bg-[#F7F5F0] flex items-center justify-center">
+        <Loader2 className="w-6 h-6 animate-spin text-[#111110]/60" />
+      </main>
+    );
+  }
+
+  if (!event) {
+    return notFound();
+  }
 
   const basePrice = Number(event.price) || 0;
   const supportDonation = includeSupport ? 2 : 0;
@@ -124,7 +160,7 @@ export default function PublicEventClient({ event }: PublicEventClientProps) {
                 <button
                   onClick={() => setQuantity(Math.max(1, quantity - 1))}
                   disabled={quantity <= 1}
-                  className="w-10 h-10 rounded-lg bg-[#F7F5F0]/10 flex items-center justify-center text-[#F7F5F0] hover:bg-[#F7F5F0]/20 disabled:opacity-30 transition-all cursor-pointer"
+                  className="w-10 h-10 rounded-lg bg-[#F7F5F0]/10 flex items-center justify-center text-[#F7F5F0] hover:bg-[#F7F5F0]/20 disabled:opacity-35 transition-all cursor-pointer"
                 >
                   <Minus className="w-4 h-4" />
                 </button>
@@ -132,7 +168,7 @@ export default function PublicEventClient({ event }: PublicEventClientProps) {
                 <button
                   onClick={() => setQuantity(Math.min(10, quantity + 1))}
                   disabled={quantity >= 10}
-                  className="w-10 h-10 rounded-lg bg-[#F7F5F0]/10 flex items-center justify-center text-[#F7F5F0] hover:bg-[#F7F5F0]/20 disabled:opacity-30 transition-all cursor-pointer"
+                  className="w-10 h-10 rounded-lg bg-[#F7F5F0]/10 flex items-center justify-center text-[#F7F5F0] hover:bg-[#F7F5F0]/20 disabled:opacity-35 transition-all cursor-pointer"
                 >
                   <Plus className="w-4 h-4" />
                 </button>
