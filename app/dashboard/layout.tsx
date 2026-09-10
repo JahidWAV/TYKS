@@ -1,16 +1,32 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { 
   LayoutDashboard, Calendar, BarChart3, Megaphone, 
-  Users, Wallet, Globe, Settings, LogOut, ArrowUpRight 
+  Users, Wallet, Globe, Settings, LogOut, Loader2 
 } from 'lucide-react';
 import { supabaseBrowser } from '@/lib/supabase-browser';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
+  const [user, setUser] = useState<any>(undefined);
+
+  useEffect(() => {
+    async function checkAuth() {
+      const { data: { session } } = await supabaseBrowser.auth.getSession();
+      setUser(session?.user ?? null);
+    }
+    checkAuth();
+
+    const { data: { subscription } } = supabaseBrowser.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
 
   const handleLogout = async () => {
     await supabaseBrowser.auth.signOut();
@@ -28,10 +44,25 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     { label: 'My Page', href: '/page', icon: Globe },
   ];
 
+  // Tant qu'on ne sait pas si l'utilisateur est connecté, on évite le flash visuel
+  if (user === undefined) {
+    return (
+      <div className="min-h-screen bg-[#F7F5F0] text-[#111110] flex items-center justify-center">
+        <Loader2 className="h-6 w-6 animate-spin opacity-60" />
+      </div>
+    );
+  }
+
+  // Si l'utilisateur n'est PAS connecté, on affiche uniquement les enfants (la page de login) sans la sidebar
+  if (!user) {
+    return <main className="min-h-screen w-full">{children}</main>;
+  }
+
+  // Si l'utilisateur est connecté, on affiche le layout complet avec la barre latérale
   return (
     <div className="min-h-screen bg-[#F7F5F0] text-[#111110] flex selection:bg-[#111110] selection:text-[#F7F5F0]">
       
-      {/* Menu Latéral Pro (Style Minimaliste & Aéré) */}
+      {/* Menu Latéral Pro (Affiché uniquement si connecté) */}
       <aside className="w-64 border-r border-[#111110]/10 bg-[#F7F5F0] flex flex-col justify-between sticky top-0 h-screen shrink-0 select-none z-20">
         
         {/* En-tête & Navigation */}
