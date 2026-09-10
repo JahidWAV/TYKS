@@ -1,77 +1,94 @@
 import { supabaseServer } from '@/lib/supabase-server';
 import Link from 'next/link';
-import { ArrowUpRight, Calendar, MapPin } from 'lucide-react';
+import { ArrowUpRight, Plus, MapPin, Settings } from 'lucide-react';
 
-export default async function EventsPage() {
+export default async function AdminEventsPage() {
+  // 1. Récupérer l'utilisateur connecté et son organisation
+  const { data: { user } } = await supabaseServer.auth.getUser();
+
+  // Optionnel : récupérer l'organisation liée à l'user (selon ton schéma lib/organizer.ts ou tables)
+  // Pour l'instant, on liste les événements de l'organisateur ou de sa structure
   const { data: events, error } = await supabaseServer
     .from('events')
     .select('*, organizations(name)')
-    .eq('status', 'published')
-    .order('starts_at', { ascending: true });
+    .order('created_at', { ascending: false });
 
   return (
     <main className="min-h-screen bg-[#F7F5F0] text-[#111110] px-6 md:px-12 py-20">
       <div className="max-w-7xl mx-auto space-y-16">
         
-        {/* En-tête de la page */}
-        <div className="space-y-4 max-w-2xl">
-          <span className="inline-block text-xs font-mono uppercase tracking-widest pb-1 border-b border-[#111110]/20 text-[#111110]/50">
-            Agenda officiel — Édition 2026
-          </span>
-          <h1 className="font-display text-4xl md:text-6xl font-bold tracking-tight">
-            Tous les événements.
-          </h1>
-          <p className="text-base text-[#111110]/70 font-light">
-            Découvrez la programmation indépendante, réservez vos places en un geste et soutenez directement les salles et collectifs.
-          </p>
+        {/* En-tête du Dashboard */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-6 border-b border-[#111110]/10">
+          <div className="space-y-2">
+            <span className="inline-block text-xs font-mono uppercase tracking-widest text-[#111110]/50">
+              Espace Organisateur
+            </span>
+            <h1 className="font-display text-4xl font-bold tracking-tight">
+              Gestion des événements.
+            </h1>
+          </div>
+          <Link
+            href="/dashboard/new"
+            className="inline-flex items-center gap-2 rounded-full bg-[#111110] px-6 py-3 text-xs font-semibold text-[#F7F5F0] transition-transform hover:scale-[1.02]"
+          >
+            <Plus className="w-4 h-4" />
+            <span>Créer un événement</span>
+          </Link>
         </div>
 
         {error && (
           <div className="p-4 rounded-xl bg-red-500/10 border border-red-500/25 text-red-600 text-sm font-mono">
-            Erreur lors du chargement des événements.
+            Erreur lors du chargement de vos événements.
           </div>
         )}
 
         {!events || events.length === 0 ? (
-          <div className="py-24 text-center border-t border-[#111110]/10">
-            <p className="text-sm font-mono text-[#111110]/50 uppercase tracking-widest">
-              Aucun événement publié pour le moment.
+          <div className="py-24 text-center border border-dashed border-[#111110]/20 rounded-3xl">
+            <p className="text-sm font-mono text-[#111110]/50 uppercase tracking-widest mb-4">
+              Vous n'avez créé aucun événement.
             </p>
+            <Link
+              href="/dashboard/new"
+              className="inline-flex items-center gap-2 text-xs font-semibold underline"
+            >
+              Créer votre premier événement
+            </Link>
           </div>
         ) : (
-          /* Grille au format vertical élégant inspirée de la DA */
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 border-t border-[#111110]/10 pt-12">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {events.map((event) => {
               const formattedDate = event.starts_at
                 ? new Date(event.starts_at).toLocaleDateString('fr-FR', {
                     day: '2-digit',
                     month: '2-digit',
+                    year: 'numeric',
                   })
-                : '';
+                : 'Date non définie';
 
               const priceFormatted =
                 Number(event.price) === 0 ? 'Gratuit' : `${event.price} €`;
 
               return (
-                <Link
+                <div
                   key={event.id}
-                  href={`/events/${event.slug}`}
-                  className="group flex flex-col justify-between p-8 bg-white border border-[#111110]/10 rounded-2xl hover:border-[#111110]/40 transition-all shadow-sm hover:shadow-md cursor-pointer"
+                  className="group flex flex-col justify-between p-8 bg-white border border-[#111110]/10 rounded-2xl shadow-sm hover:shadow-md transition-all"
                 >
                   <div className="space-y-6">
-                    {/* Top card metadata */}
                     <div className="flex items-center justify-between">
-                      <span className="text-xs font-mono px-3 py-1 rounded-full border border-[#111110]/15 text-[#111110]/70">
-                        {event.organizations?.name || 'Indépendant'}
+                      <span className={`text-xs font-mono px-3 py-1 rounded-full uppercase tracking-wider ${
+                        event.status === 'published' 
+                          ? 'bg-emerald-500/10 text-emerald-700 border border-emerald-500/20' 
+                          : 'bg-amber-500/10 text-amber-700 border border-amber-500/20'
+                      }`}>
+                        {event.status === 'published' ? 'Publié' : 'Brouillon'}
                       </span>
                       <span className="text-xs font-mono font-semibold text-[#111110]/60">
                         {formattedDate}
                       </span>
                     </div>
 
-                    {/* Titre & Lieu */}
                     <div className="space-y-2">
-                      <h2 className="font-display text-2xl font-bold tracking-tight group-hover:italic transition-all">
+                      <h2 className="font-display text-2xl font-bold tracking-tight">
                         {event.title}
                       </h2>
                       {event.location && (
@@ -82,24 +99,27 @@ export default async function EventsPage() {
                       )}
                     </div>
 
-                    {/* Description courte */}
                     {event.description && (
-                      <p className="text-sm text-[#111110]/70 font-light line-clamp-3 leading-relaxed">
+                      <p className="text-sm text-[#111110]/70 font-light line-clamp-2 leading-relaxed">
                         {event.description}
                       </p>
                     )}
                   </div>
 
-                  {/* Footer de la carte : Prix + Flèche */}
                   <div className="mt-10 pt-4 border-t border-[#111110]/10 flex items-center justify-between">
                     <span className="text-sm font-mono font-bold">
                       {priceFormatted}
                     </span>
-                    <span className="inline-flex items-center gap-1 text-xs font-semibold group-hover:underline">
-                      Réserver <ArrowUpRight className="w-4 h-4 ml-0.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
-                    </span>
+                    {/* Lien critique : pointe vers l'édition dans le dashboard admin-events */}
+                    <Link
+                      href={`/admin-events/${event.slug}/edit`}
+                      className="inline-flex items-center gap-1.5 text-xs font-semibold bg-[#111110]/5 hover:bg-[#111110] hover:text-white px-4 py-2 rounded-full transition-colors"
+                    >
+                      <Settings className="w-3.5 h-3.5" />
+                      <span>Modifier</span>
+                    </Link>
                   </div>
-                </Link>
+                </div>
               );
             })}
           </div>
