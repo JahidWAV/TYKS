@@ -25,11 +25,12 @@ export async function POST(req: Request) {
     if (unitAmountCents === 0) {
       return NextResponse.json({ 
         success: true, 
-        url: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/events/success?slug=${event.slug}` 
+        url: `/events/success?slug=${event.slug}` 
       });
     }
 
     const session = await stripe.checkout.sessions.create({
+      ui_mode: 'embedded',
       payment_method_types: ['card'],
       line_items: [
         {
@@ -45,8 +46,7 @@ export async function POST(req: Request) {
         },
       ],
       mode: 'payment',
-      success_url: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/events/success?session_id={CHECKOUT_SESSION_ID}&slug=${event.slug}`,
-      cancel_url: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/events/${event.slug}`,
+      return_url: `${process.env.NEXT_PUBLIC_APP_URL || 'https://' + process.env.VERCEL_URL}/events/success?session_id={CHECKOUT_SESSION_ID}&slug=${event.slug}`,
       metadata: {
         eventId: event.id,
         quantity: quantity.toString(),
@@ -54,9 +54,9 @@ export async function POST(req: Request) {
       },
     });
 
-    return NextResponse.json({ url: session.url });
+    return NextResponse.json({ clientSecret: session.client_secret });
   } catch (err: any) {
-    console.error('Erreur Checkout Stripe:', err);
+    console.error('Erreur Stripe Embedded:', err);
     return NextResponse.json({ error: err.message }, { status: 500 });
   }
 }
