@@ -20,33 +20,20 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Événement introuvable' }, { status: 404 });
     }
 
-    const unitAmountCents = Math.round(unitPrice * 100);
+    const totalAmountCents = Math.round((unitPrice * quantity) * 100);
 
-    if (unitAmountCents === 0) {
+    if (totalAmountCents === 0) {
       return NextResponse.json({ 
         success: true, 
+        free: true,
         url: `/events/success?slug=${event.slug}` 
       });
     }
 
-    const session = await stripe.checkout.sessions.create({
-      ui_mode: 'embedded',
-      payment_method_types: ['card'],
-      line_items: [
-        {
-          price_data: {
-            currency: 'eur',
-            product_data: {
-              name: event.title,
-              description: `Billet(s) pour ${event.title}`,
-            },
-            unit_amount: unitAmountCents,
-          },
-          quantity: quantity,
-        },
-      ],
-      mode: 'payment',
-      return_url: `${process.env.NEXT_PUBLIC_APP_URL || 'https://' + process.env.VERCEL_URL}/events/success?session_id={CHECKOUT_SESSION_ID}&slug=${event.slug}`,
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount: totalAmountCents,
+      currency: 'eur',
+      automatic_payment_methods: { enabled: true },
       metadata: {
         eventId: event.id,
         quantity: quantity.toString(),
@@ -54,9 +41,9 @@ export async function POST(req: Request) {
       },
     });
 
-    return NextResponse.json({ clientSecret: session.client_secret });
+    return NextResponse.json({ clientSecret: paymentIntent.client_secret });
   } catch (err: any) {
-    console.error('Erreur Stripe Embedded:', err);
+    console.error('Erreur PaymentIntent:', err);
     return NextResponse.json({ error: err.message }, { status: 500 });
   }
 }
