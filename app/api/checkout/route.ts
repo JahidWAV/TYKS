@@ -2,9 +2,8 @@ import { NextResponse } from 'next/server';
 import { supabaseServer } from '@/lib/supabase-server';
 import Stripe from 'stripe';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
-  // Retire simplement la ligne apiVersion pour utiliser la version par défaut de ton SDK, ou mets une version stable supportée :
-  apiVersion: '2024-12-18.acacia' as any, 
+export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
+  typescript: true,
 });
 
 export async function POST(req: Request) {
