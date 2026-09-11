@@ -10,18 +10,14 @@ import {
   ShieldCheck, 
   Zap, 
   Search, 
-  SlidersHorizontal, 
   Ticket, 
-  Music2, 
   Clock, 
-  ChevronRight, 
   CheckCircle2, 
   Smartphone,
-  Heart
+  RefreshCw
 } from 'lucide-react';
 import { supabaseBrowser } from '@/lib/supabase-browser';
 
-// Données de filtrage et catégories réelles pour la structure
 const CATEGORIES = ['Tous', 'Concerts', 'Clubbing', 'Festivals', 'Live & Showcase', 'Underground'];
 const VILLES = ['Toutes les villes', 'Paris', 'Lyon', 'Marseille', 'Bordeaux', 'Nantes'];
 
@@ -52,7 +48,6 @@ export default function PublicHome() {
     fetchPublishedEvents();
   }, []);
 
-  // Filtrage dynamique côté client pour une fluidité totale de la landing
   const filteredEvents = events.filter((item) => {
     const matchCity = selectedCity === 'Toutes les villes' || (item.location && item.location.toLowerCase().includes(selectedCity.toLowerCase()));
     const matchSearch = searchQuery === '' || 
@@ -65,7 +60,7 @@ export default function PublicHome() {
   return (
     <div className="flex-1 flex flex-col bg-[#FAF7F2] text-[#2D2220] selection:bg-[#5C1D24] selection:text-[#FAF7F2] font-serif min-h-screen">
       
-      {/* ─── 1. HERO SECTION : ACCROCHE FORTE & MOTEUR DE RECHERCHE INTÉGRÉ ─── */}
+      {/* ─── 1. HERO SECTION ─── */}
       <section className="relative px-6 md:px-16 pt-20 pb-20 max-w-7xl mx-auto w-full border-b border-[#E4DCD0]">
         <div className="max-w-4xl space-y-8">
           <div className="inline-flex items-center gap-2.5 text-xs font-sans tracking-[0.25em] uppercase px-4 py-2 rounded-full bg-[#F0EBE3] text-[#5C1D24] font-medium border border-[#E4DCD0]">
@@ -82,7 +77,6 @@ export default function PublicHome() {
             Découvrez les meilleurs concerts, soirées et performances underground près de chez vous. Zéro frais cachés, revente sécurisée et accès instantané.
           </p>
 
-          {/* Barre de recherche interactive intégrée au Hero */}
           <div className="pt-4 flex flex-col sm:flex-row items-stretch gap-3 bg-white p-3 rounded-2xl md:rounded-full border border-[#E4DCD0] shadow-sm max-w-3xl">
             <div className="flex items-center gap-3 px-4 py-3 flex-1 border-b sm:border-b-0 sm:border-r border-[#E4DCD0]">
               <Search className="w-5 h-5 text-[#2D2220]/40 shrink-0" />
@@ -118,7 +112,6 @@ export default function PublicHome() {
           </div>
         </div>
 
-        {/* Indicateurs rassurants immédiats */}
         <div className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-6 pt-10 border-t border-[#E4DCD0]/60 font-sans">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-full bg-[#5C1D24]/10 text-[#5C1D24] flex items-center justify-center shrink-0">
@@ -159,16 +152,14 @@ export default function PublicHome() {
         </div>
       </section>
 
-      {/* ─── 2. SECTION AGENDA & FILTRES OPÉRATIONNELS ─── */}
+      {/* ─── 2. SECTION AGENDA & FILTRES ─── */}
       <section id="agenda" className="py-20 px-6 md:px-16 max-w-7xl mx-auto w-full">
-        
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
           <div>
             <span className="text-xs font-sans tracking-[0.25em] uppercase text-[#5C1D24] font-semibold">Programmation live</span>
             <h2 className="text-4xl md:text-5xl font-light mt-2">Prochains Événements</h2>
           </div>
 
-          {/* Filtres de catégories */}
           <div className="flex items-center gap-2 overflow-x-auto pb-2 md:pb-0 scrollbar-none font-sans">
             {CATEGORIES.map((cat) => (
               <button
@@ -186,7 +177,6 @@ export default function PublicHome() {
           </div>
         </div>
 
-        {/* Grille des événements */}
         {loading ? (
           <div className="py-24 text-center font-sans text-xs tracking-widest uppercase text-[#2D2220]/40">
             Chargement de la programmation en cours...
@@ -204,7 +194,7 @@ export default function PublicHome() {
           </div>
         ) : (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {filteredEvents.map((item, index) => {
+            {filteredEvents.map((item) => {
               const startDate = item.starts_at ? new Date(item.starts_at) : null;
               const formattedDate = startDate
                 ? startDate.toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric', month: 'long' })
@@ -263,7 +253,7 @@ export default function PublicHome() {
         )}
       </section>
 
-      {/* ─── 3. SECTION VALEUR AJOUTÉE : POURQUOI CHOISIR NOTRE PLATEFORME ─── */}
+      {/* ─── 3. SECTION VALEUR AJOUTÉE ─── */}
       <section className="py-24 px-6 md:px-16 bg-[#F2ECE4]/60 border-t border-b border-[#E4DCD0]">
         <div className="max-w-7xl mx-auto grid lg:grid-cols-12 gap-12 items-center">
           <div className="lg:col-span-5 space-y-6">
@@ -312,7 +302,7 @@ export default function PublicHome() {
         </div>
       </section>
 
-      {/* ─── 4. CALL TO ACTION FINAL OPÉRATIONNEL ─── */}
+      {/* ─── 4. CTA FINAL ─── */}
       <section className="py-24 px-6 md:px-16 bg-[#5C1D24] text-[#FAF7F2] text-center">
         <div className="max-w-4xl mx-auto space-y-8">
           <span className="text-xs font-sans tracking-[0.3em] uppercase text-[#FAF7F2]/60">Rejoignez le mouvement</span>
