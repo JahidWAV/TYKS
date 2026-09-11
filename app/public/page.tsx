@@ -2,35 +2,21 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { ArrowUpRight, ShieldCheck, Zap, Ticket, Music, MapPin, Calendar, Radio } from 'lucide-react';
+import { ArrowUpRight, Calendar, MapPin, Sparkles, RefreshCw, HeartHandshake, ShieldCheck } from 'lucide-react';
 import { supabaseBrowser } from '@/lib/supabase-browser';
 
-const MANIFESTO = [
-  { 
-    num: '01', 
-    title: 'Transparence des flux', 
-    text: 'Une structure tarifaire intègre, sans intermédiaires obscurs ni frais cachés pour le public.' 
-  },
-  { 
-    num: '02', 
-    title: 'Souveraineté des lieux', 
-    text: 'Les collectifs reprennent le contrôle absolu de leurs données et de leur communauté.' 
-  },
-  { 
-    num: '03', 
-    title: 'Expérience fluide', 
-    text: 'Un accès instantané, pensé pour la réalité physique et l’effervescence du spectacle vivant.' 
-  },
-];
-
-const TEMOIGNAGES = [
+const FEATURES = [
   {
-    quote: "Enfin une billetterie qui respecte notre travail de programmation et notre public.",
-    author: "Collectif Sonic Vibe, Paris"
+    title: "Billetterie ultra-rapide",
+    text: "Prends tes places en quelques secondes, sans friction ni mauvaise surprise au moment de payer."
   },
   {
-    quote: "La prise en main est instantanée, les frais sont transparents. Un vrai soulagement.",
-    author: "L’Imprimerie, Bordeaux"
+    title: "Revente sécurisée",
+    text: "Un changement de plan ? Revends ton billet facilement et en toute sécurité sur la plateforme."
+  },
+  {
+    title: "Prix transparents",
+    text: "zéro frais cachés, le prix affiché est celui que tu payes."
   }
 ];
 
@@ -59,21 +45,21 @@ export default function PublicHome() {
   return (
     <div className="flex-1 flex flex-col bg-[#FAF7F2] text-[#2D2220] selection:bg-[#5C1D24] selection:text-[#FAF7F2] font-serif">
       
-      {/* ─── HERO IMMERSIF & RICHE EN CONTENU ─── */}
+      {/* ─── HERO PUBLIC (Inspiré DICE & Shotgun : Expérience fan) ─── */}
       <section className="px-6 md:px-16 pt-24 pb-20 max-w-7xl mx-auto w-full grid lg:grid-cols-12 gap-12 items-center">
         <div className="lg:col-span-7 space-y-8">
           <div className="inline-flex items-center gap-3 text-xs font-sans tracking-[0.25em] uppercase px-4 py-1.5 rounded-full bg-[#F0EBE3] text-[#5C1D24] font-medium border border-[#E4DCD0]">
             <span className="w-1.5 h-1.5 rounded-full bg-[#5C1D24]" />
-            <span>Saison 2026 &bull; Indice Culturel</span>
+            <span>Bienvenue dans l'alternative</span>
           </div>
           
           <h1 className="text-6xl md:text-8xl font-light tracking-tight leading-[0.95]">
-            L'art <br />
-            <span className="italic font-normal text-[#5C1D24]">du direct</span>.
+            Chope ton billet, <br />
+            <span className="italic font-normal text-[#5C1D24]">crée des souvenirs</span>.
           </h1>
 
           <p className="max-w-xl text-base md:text-lg font-sans font-light text-[#2D2220]/70 leading-relaxed">
-            Une infrastructure de billetterie indépendante conçue pour relier directement les lieux de création, les artistes et les passionnés, loin de la spéculation des plateformes de masse.
+            Concerts, lives, nuits et performances : découvre les meilleurs événements de ta scène locale, réserve en un clin d'œil et profite de tes soirées l'esprit léger.
           </p>
 
           <div className="flex flex-wrap items-center gap-4 pt-2">
@@ -84,70 +70,64 @@ export default function PublicHome() {
               <span>Explorer l'agenda</span>
               <ArrowUpRight className="w-4 h-4" />
             </a>
-            <a 
-              href="https://pro.tyks.app" 
-              className="px-8 py-4 bg-[#F2ECE4] text-[#2D2220] border border-[#E4DCD0] rounded-full text-xs font-sans font-medium uppercase tracking-widest hover:border-[#5C1D24] transition-all"
-            >
-              Espace Organisateur
-            </a>
           </div>
         </div>
 
-        {/* Bloc de statistiques / réassurance éditorial */}
+        {/* Bloc réassurance fan / Expérience */}
         <div className="lg:col-span-5 p-8 md:p-10 rounded-[2.5rem] bg-[#F2ECE4] border border-[#E4DCD0] space-y-6 shadow-xs">
           <div className="flex items-center justify-between text-xs font-sans tracking-widest uppercase text-[#2D2220]/50">
-            <span>Protocole TYKS</span>
-            <span className="text-[#5C1D24] font-semibold">100% Souverain</span>
+            <span>Expérience Fan</span>
+            <span className="text-[#5C1D24] font-semibold">100% Fluide</span>
           </div>
           
           <div className="space-y-4 pt-2 border-t border-[#E4DCD0]">
             <div className="flex items-start gap-4">
               <div className="w-10 h-10 rounded-full bg-[#5C1D24]/10 text-[#5C1D24] flex items-center justify-center shrink-0">
+                <Sparkles className="w-5 h-5" />
+              </div>
+              <div>
+                <h4 className="text-sm font-sans font-medium">Recommandations sur-mesure</h4>
+                <p className="text-xs font-sans font-light text-[#2D2220]/60 mt-0.5">Retrouve tes artistes favoris et découvre de nouvelles pépites.</p>
+              </div>
+            </div>
+
+            <div className="flex items-start gap-4 pt-2">
+              <div className="w-10 h-10 rounded-full bg-[#5C1D24]/10 text-[#5C1D24] flex items-center justify-center shrink-0">
+                <RefreshCw className="w-5 h-5" />
+              </div>
+              <div>
+                <h4 className="text-sm font-sans font-medium">Revente simplifiée</h4>
+                <p className="text-xs font-sans font-light text-[#2D2220]/60 mt-0.5">Un imprévu ? Revends ton billet en quelques clics à un autre fan.</p>
+              </div>
+            </div>
+
+            <div className="flex items-start gap-4 pt-2">
+              <div className="w-10 h-10 rounded-full bg-[#5C1D24]/10 text-[#5C1D24] flex items-center justify-center shrink-0">
                 <ShieldCheck className="w-5 h-5" />
               </div>
               <div>
-                <h4 className="text-sm font-sans font-medium">Zéro commission abusive</h4>
-                <p className="text-xs font-sans font-light text-[#2D2220]/60 mt-0.5">La juste rémunération pour les salles et les collectifs indépendants.</p>
-              </div>
-            </div>
-
-            <div className="flex items-start gap-4 pt-2">
-              <div className="w-10 h-10 rounded-full bg-[#5C1D24]/10 text-[#5C1D24] flex items-center justify-center shrink-0">
-                <Ticket className="w-5 h-5" />
-              </div>
-              <div>
-                <h4 className="text-sm font-sans font-medium">Pass numérique unifié</h4>
-                <p className="text-xs font-sans font-light text-[#2D2220]/60 mt-0.5">Centralisation des accès et scannabilité fluide garantie hors-ligne.</p>
-              </div>
-            </div>
-
-            <div className="flex items-start gap-4 pt-2">
-              <div className="w-10 h-10 rounded-full bg-[#5C1D24]/10 text-[#5C1D24] flex items-center justify-center shrink-0">
-                <Radio className="w-5 h-5" />
-              </div>
-              <div>
-                <h4 className="text-sm font-sans font-medium">Flux tendus en direct</h4>
-                <p className="text-xs font-sans font-light text-[#2D2220]/60 mt-0.5">Mise à jour instantanée des jauges et des disponibilités de places.</p>
+                <h4 className="text-sm font-sans font-medium">Zéro mauvaise surprise</h4>
+                <p className="text-xs font-sans font-light text-[#2D2220]/60 mt-0.5">Des tarifs clairs et affichés en toute transparence dès le départ.</p>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* ─── SECTION AGENDA RICHE (Grille dynamique) ─── */}
+      {/* ─── SECTION AGENDA / ÉVÈNEMENTS POPULAIRES ─── */}
       <section id="events" className="py-24 px-6 md:px-16 border-t border-[#E4DCD0] bg-[#F4EFE6]/40">
         <div className="max-w-7xl mx-auto">
           
           <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-4">
             <div>
-              <span className="text-xs font-sans tracking-[0.25em] uppercase text-[#5C1D24] font-semibold">Programmation</span>
-              <h2 className="text-4xl md:text-5xl font-light mt-2">Prochaines dates & rendez-vous</h2>
+              <span className="text-xs font-sans tracking-[0.25em] uppercase text-[#5C1D24] font-semibold">Autour de toi</span>
+              <h2 className="text-4xl md:text-5xl font-light mt-2">Événements populaires</h2>
             </div>
             <Link 
               href="/events"
               className="text-xs font-sans tracking-widest uppercase text-[#2D2220] border-b border-[#5C1D24] pb-0.5 hover:text-[#5C1D24] transition-colors"
             >
-              Consulter l'intégralité des flux &rarr;
+              Voir tous les événements &rarr;
             </Link>
           </div>
 
@@ -155,8 +135,8 @@ export default function PublicHome() {
             <div className="py-20 text-center text-xs font-sans tracking-widest uppercase text-[#2D2220]/40">Chargement des événements...</div>
           ) : events.length === 0 ? (
             <div className="py-24 text-center border border-[#E4DCD0] rounded-[2rem] bg-[#F2ECE4] space-y-3">
-              <p className="text-xs font-sans tracking-widest uppercase text-[#2D2220]/60">Aucun événement programmé pour le moment.</p>
-              <p className="text-xs font-sans font-light text-[#2D2220]/40">Revenez très prochainement ou connectez-vous à l'espace pro pour lancer une programmation.</p>
+              <p className="text-xs font-sans tracking-widest uppercase text-[#2D2220]/60">Aucun événement disponible pour le moment.</p>
+              <p className="text-xs font-sans font-light text-[#2D2220]/40">Reviens vite pour découvrir la programmation à venir.</p>
             </div>
           ) : (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -202,25 +182,27 @@ export default function PublicHome() {
         </div>
       </section>
 
-      {/* ─── SECTION MANIFESTO (3 piliers riches) ─── */}
+      {/* ─── SECTION AVANTAGES / POURQUOI TYKS ─── */}
       <section className="py-24 px-6 md:px-16 border-t border-[#E4DCD0]">
         <div className="max-w-7xl mx-auto space-y-16">
           <div className="max-w-2xl">
-            <span className="text-xs font-sans tracking-[0.25em] uppercase text-[#5C1D24] font-semibold">Philosophie</span>
-            <h2 className="text-4xl md:text-5xl font-light mt-2">Bâtir un écosystème pérenne</h2>
+            <span className="text-xs font-sans tracking-[0.25em] uppercase text-[#5C1D24] font-semibold">Pourquoi nous choisir</span>
+            <h2 className="text-4xl md:text-5xl font-light mt-2">Une billetterie pensée pour le public</h2>
             <p className="text-sm font-sans font-light text-[#2D2220]/70 mt-3 leading-relaxed">
-              Face à l'industrialisation à outrance de la billetterie, TYKS remet l'art et les relations humaines au centre de l'équation.
+              Fini les galères de réservation et les frais de dernière minute cachés. Retrouve le plaisir de sortir en toute sérénité.
             </p>
           </div>
 
           <div className="grid md:grid-cols-3 gap-8">
-            {MANIFESTO.map((m) => (
-              <div key={m.num} className="p-10 rounded-[2.5rem] bg-[#F2ECE4] border border-[#E4DCD0] space-y-6 flex flex-col justify-between">
+            {FEATURES.map((f, idx) => (
+              <div key={idx} className="p-10 rounded-[2.5rem] bg-[#F2ECE4] border border-[#E4DCD0] space-y-6 flex flex-col justify-between">
                 <div className="space-y-4">
-                  <span className="text-xs font-sans tracking-[0.25em] uppercase text-[#5C1D24] font-semibold px-3 py-1 rounded-full bg-[#FAF7F2] inline-block border border-[#E4DCD0]">{m.num}</span>
-                  <h3 className="text-2xl md:text-3xl font-normal">{m.title}</h3>
+                  <span className="text-xs font-sans tracking-[0.25em] uppercase text-[#5C1D24] font-semibold px-3 py-1 rounded-full bg-[#FAF7F2] inline-block border border-[#E4DCD0]">
+                    0{idx + 1}
+                  </span>
+                  <h3 className="text-2xl md:text-3xl font-normal">{f.title}</h3>
                   <p className="text-sm font-sans font-light text-[#2D2220]/70 leading-relaxed">
-                    {m.text}
+                    {f.text}
                   </p>
                 </div>
               </div>
@@ -229,54 +211,23 @@ export default function PublicHome() {
         </div>
       </section>
 
-      {/* ─── SECTION TÉMOIGNAGES / ENGAGEMENT ─── */}
-      <section className="py-24 px-6 md:px-16 border-t border-[#E4DCD0] bg-[#F4EFE6]/30">
-        <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-12 items-center">
-          <div className="space-y-6">
-            <span className="text-xs font-sans tracking-[0.25em] uppercase text-[#5C1D24] font-semibold">Ils nous font confiance</span>
-            <h2 className="text-4xl md:text-5xl font-light leading-tight">Adopté par les salles et collectifs exigeants.</h2>
-            <p className="text-sm font-sans font-light text-[#2D2220]/70 leading-relaxed">
-              Que vous gériez un club underground, une salle de concert associative ou un festival indépendant, notre infrastructure s'adapte à vos spécificités sans compromis.
-            </p>
-            <div className="pt-2">
-              <a 
-                href="https://pro.tyks.app"
-                className="text-xs font-sans font-medium uppercase tracking-widest text-[#5C1D24] border-b border-[#5C1D24] pb-1 hover:opacity-70 transition-opacity inline-flex items-center gap-2"
-              >
-                <span>Découvrir l'espace professionnel</span>
-                <ArrowUpRight className="w-4 h-4" />
-              </a>
-            </div>
-          </div>
-
-          <div className="space-y-6">
-            {TEMOIGNAGES.map((t, idx) => (
-              <div key={idx} className="p-8 rounded-[2rem] bg-[#FAF7F2] border border-[#E4DCD0] space-y-4 shadow-xs">
-                <p className="text-base font-serif italic text-[#2D2220]/90">"{t.quote}"</p>
-                <div className="text-xs font-sans tracking-widest uppercase text-[#5C1D24] font-medium">&mdash; {t.author}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ─── BANDEAU CTA PRO (Plein format burgundy) ─── */}
+      {/* ─── BANDEAU APP / ENGAGEMENT FINAL ─── */}
       <section className="py-24 px-6 md:px-16 bg-[#5C1D24] text-[#FAF7F2]">
         <div className="max-w-4xl mx-auto text-center space-y-8">
-          <span className="text-xs font-sans tracking-[0.3em] uppercase text-[#FAF7F2]/60">Espace Organisateur</span>
+          <span className="text-xs font-sans tracking-[0.3em] uppercase text-[#FAF7F2]/60">Expérience Mobile</span>
           <h2 className="text-4xl md:text-6xl font-light leading-tight">
-            Reprenez le contrôle <br />
-            <span className="italic">de vos salles et de vos flux</span>.
+            Prêt à vivre <br />
+            <span className="italic">les meilleurs moments de ta ville</span> ?
           </h2>
           <p className="max-w-xl mx-auto text-base font-sans font-light text-[#FAF7F2]/80 leading-relaxed">
-            Installez votre propre billetterie indépendante en quelques minutes et affranchissez-vous définitivement des intermédiaires opaques.
+            Rejoins la communauté, découvre les prochains événements et réserve tes places en quelques secondes.
           </p>
           <div className="pt-2">
             <a
-              href="https://pro.tyks.app"
+              href="#events"
               className="px-8 py-4 rounded-full bg-[#FAF7F2] text-[#5C1D24] hover:bg-white transition-colors text-xs font-sans font-medium uppercase tracking-widest inline-block shadow-md"
             >
-              Ouvrir un compte Pro
+              Découvrir les événements
             </a>
           </div>
         </div>
