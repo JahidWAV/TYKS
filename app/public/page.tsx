@@ -2,24 +2,30 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { ArrowUpRight, Sparkles, Zap, ShieldCheck, Radio, ChevronRight } from 'lucide-react';
+import { ArrowUpRight, Ticket, MapPin, Smile, Zap } from 'lucide-react';
 import { supabaseBrowser } from '@/lib/supabase-browser';
 
-const PILLARS = [
+const VALEURS = [
+  {
+    icon: Smile,
+    title: 'Billets ultra-frais',
+    text: 'Une expérience d’achat simple, rapide et sans aucune mauvaise surprise au moment de payer.',
+    color: 'bg-[#FFF4CC]', // Jaune beurre doux
+    textColor: 'text-[#1A1A1A]'
+  },
+  {
+    icon: Ticket,
+    title: 'Propriété des lieux',
+    text: 'Les collectifs et les salles gardent la main sur leurs données et leur billetterie.',
+    color: 'bg-[#E6F7FF]', // Bleu ciel glacier
+    textColor: 'text-[#1A1A1A]'
+  },
   {
     icon: Zap,
-    title: 'Zéro friction',
-    text: 'Un tunnel d’achat éclair en un clic, pensé pour des flux de foule instantanés.',
-  },
-  {
-    icon: ShieldCheck,
-    title: 'Transparence radicale',
-    text: 'Fini les frais cachés au dernier moment. Le prix affiché intègre tout, en toute clarté.',
-  },
-  {
-    icon: Radio,
-    title: 'Données souveraines',
-    text: 'Les collectifs et les salles récupèrent le contrôle absolu de leur communauté.',
+    title: 'Zéro prise de tête',
+    text: 'Plus d’excuses pour ne pas sortir. Votre soirée en un seul geste, un pass direct.',
+    color: 'bg-[#FFE6F0]', // Rose poudré bonbon
+    textColor: 'text-[#1A1A1A]'
   },
 ];
 
@@ -45,146 +51,140 @@ export default function PublicHome() {
     fetchPublishedEvents();
   }, []);
 
+  // Fonction pour les couleurs alternées des cartes événements
+  const getEventCardColor = (index: number) => {
+    const colors = ['bg-[#E6F7FF]', 'bg-[#FFE6F0]', 'bg-[#FFF4CC]', 'bg-[#E6FFF5]']; // Bleu, Rose, Jaune, Vert menthe
+    return colors[index % colors.length];
+  };
+
   return (
-    <div className="flex-1 flex flex-col bg-[#050505] text-white selection:bg-[#CCFF00] selection:text-black">
+    // Fond crème très clair, doux pour les yeux
+    <div className="flex-1 flex flex-col bg-[#FDFCF8] text-[#1A1A1A] selection:bg-[#FF66A1] selection:text-white font-sans">
       
       {/* ─── HERO SECTION ─── */}
-      <section className="relative pt-20 pb-28 md:pt-32 md:pb-40 px-6 md:px-12 max-w-7xl mx-auto w-full overflow-hidden">
-        
-        {/* Glow de fond subtil */}
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[350px] bg-gradient-to-tr from-[#CCFF00]/10 via-purple-600/10 to-transparent rounded-full blur-[120px] pointer-events-none" />
-
-        <div className="relative z-10 grid lg:grid-cols-[1.3fr_0.7fr] gap-12 items-center">
+      <section className="pt-24 pb-32 px-6 md:px-12 max-w-7xl mx-auto w-full">
+        <div className="grid lg:grid-cols-[1fr_0.9fr] gap-16 items-center">
           <div className="space-y-8">
-            <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-white/[0.06] border border-white/10 text-xs font-mono uppercase tracking-wider backdrop-blur-md">
-              <span className="w-2 h-2 rounded-full bg-[#CCFF00] animate-ping" />
-              <span className="text-white/90">La nouvelle ère de la billetterie live</span>
+            
+            {/* Badge "Édition 2026" version ludique */}
+            <div className="inline-flex items-center gap-3 px-4 py-2 rounded-full bg-[#1A1A1A] text-white border-2 border-[#1A1A1A]">
+              <Smile className="w-5 h-5 text-[#FFF4CC]" />
+              <span className="text-xs font-bold uppercase tracking-widest">Billetterie Indépendante — 2026</span>
             </div>
 
-            <h1 className="font-display text-5xl md:text-7xl lg:text-8xl font-black tracking-tight leading-[0.92]">
-              LE SOUND <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#CCFF00] via-teal-400 to-emerald-400">
-                SANS FILTRE.
-              </span>
+            {/* Titre ultra-gras et rond */}
+            <h1 className="text-6xl md:text-8xl lg:text-9xl font-extrabold tracking-tighter leading-[0.9]">
+              La fête <br/>
+              <span className="underline decoration-[#FF66A1] decoration-8 underline-offset-8">simple</span>.
             </h1>
 
-            <p className="max-w-xl text-lg md:text-xl text-white/60 font-light leading-relaxed">
-              La billetterie indépendante qui remet les artistes, les salles et les spectateurs au centre de la piste. Sans commission abusive.
+            <p className="max-w-xl text-lg md:text-xl text-[#1A1A1A]/80 font-normal leading-relaxed">
+              Une nouvelle billetterie pour la culture vivante. Fini les frais abusifs et les designs compliqués. Ici, c'est clair, net et sans bavure.
             </p>
 
             <div className="flex flex-wrap gap-4 pt-4">
               <a 
                 href="#events" 
-                className="px-8.5 py-4 rounded-2xl bg-[#CCFF00] text-black font-bold text-sm tracking-wide hover:bg-[#b3e000] transition-all shadow-[0_0_30px_-5px_rgba(204,255,0,0.3)] flex items-center gap-2 group"
+                className="px-9 py-5 rounded-3xl bg-[#1A1A1A] text-white font-bold text-base hover:bg-[#333] transition-colors flex items-center gap-2 group"
               >
-                Explorer les soirées
-                <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-              </a>
-              <a 
-                href="https://pro.tyks.app" 
-                className="px-8.5 py-4 rounded-2xl bg-white/[0.04] border border-white/10 text-white font-medium text-sm hover:bg-white/[0.08] transition-all backdrop-blur-md"
-              >
-                Espace Organisateur
+                Découvrir les soirées
+                <ArrowUpRight className="w-5 h-5 group-hover:rotate-12 transition-transform" />
               </a>
             </div>
           </div>
 
-          {/* Carte visuelle immersive droite */}
-          <div className="relative">
-            <div className="absolute -inset-1 bg-gradient-to-r from-[#CCFF00] to-purple-600 rounded-3xl blur opacity-20 group-hover:opacity-40 transition duration-1000"></div>
-            <div className="relative rounded-3xl p-8 bg-[#0D0D0D] border border-white/10 shadow-2xl backdrop-blur-xl">
-              <div className="flex items-center justify-between mb-8 pb-4 border-b border-white/10">
-                <div className="flex items-center gap-3">
-                  <div className="w-3 h-3 rounded-full bg-[#CCFF00]" />
-                  <span className="text-xs font-mono uppercase tracking-widest text-white/80">Application Mobile</span>
-                </div>
-                <span className="text-xs font-mono text-[#CCFF00] bg-[#CCFF00]/10 px-2.5 py-1 rounded-md">Bientôt</span>
+          {/* COLONNE DE DROITE : Carte visuelle App */}
+          <div className="relative p-10 rounded-[40px] bg-[#E6F7FF] border-4 border-[#1A1A1A] shadow-[8px_8px_0px_#1A1A1A]">
+            <div className="flex items-center justify-between mb-12">
+              <div className="w-16 h-16 rounded-3xl bg-white border-4 border-[#1A1A1A] grid place-content-center">
+                <Zap className="w-8 h-8 text-[#1A1A1A] fill-[#FFF4CC]" />
               </div>
+              <span className="text-xs font-bold uppercase tracking-widest text-[#1A1A1A]/70 border border-[#1A1A1A]/30 px-4 py-1.5 rounded-full bg-white/50">En approche</span>
+            </div>
 
-              <div className="space-y-4 mb-8">
-                <h3 className="text-2xl font-bold tracking-tight">Ton pass direct dans la poche.</h3>
-                <p className="text-sm text-white/50 leading-relaxed font-light">
-                  Scannabilité instantanée, portefeuille de billets unifié et accès aux afters cachés sur iOS & Android.
-                </p>
-              </div>
+            <div className="space-y-4 mb-10">
+              <h3 className="text-4xl font-bold tracking-tight text-[#1A1A1A]">Votre pass dans la poche.</h3>
+              <p className="text-base text-[#1A1A1A]/70 leading-relaxed font-normal">
+                Retrouvez tous vos billets au même endroit. Accédez à vos événements préférés en un seul flash. Bientôt sur iOS et Android.
+              </p>
+            </div>
 
-              <div className="grid grid-cols-2 gap-3">
-                <div className="p-3 rounded-xl bg-white/[0.03] border border-white/5 text-center text-xs font-mono text-white/40">
-                  App Store
-                </div>
-                <div className="p-3 rounded-xl bg-white/[0.03] border border-white/5 text-center text-xs font-mono text-white/40">
-                  Google Play
-                </div>
-              </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="h-16 rounded-2xl bg-white border-2 border-[#1A1A1A] grid place-content-center text-sm font-bold text-[#1A1A1A]/40">iOS Store</div>
+              <div className="h-16 rounded-2xl bg-white border-2 border-[#1A1A1A] grid place-content-center text-sm font-bold text-[#1A1A1A]/40">Play Store</div>
             </div>
           </div>
         </div>
       </section>
 
       {/* ─── PROCHAINS ÉVÉNEMENTS ─── */}
-      <section id="events" className="py-24 border-t border-white/10 bg-[#070707]">
+      <section id="events" className="py-32 border-t-4 border-[#1A1A1A] bg-white">
         <div className="max-w-7xl mx-auto px-6 md:px-12">
           
-          <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
-            <div>
-              <span className="text-xs font-mono uppercase tracking-widest text-[#CCFF00]">Agenda Live</span>
-              <h2 className="text-3xl md:text-5xl font-extrabold tracking-tight mt-2">Prochaines dates</h2>
-            </div>
+          <div className="flex flex-col md:flex-row md:items-end justify-between mb-20 gap-6">
+            <h2 className="text-5xl md:text-7xl font-extrabold tracking-tighter">Prochaines ondes</h2>
             <Link 
               href="/events"
-              className="inline-flex items-center gap-2 text-sm font-medium text-white/70 hover:text-[#CCFF00] transition-colors"
+              className="inline-flex items-center gap-2 text-base font-bold text-[#1A1A1A]/60 hover:text-[#1A1A1A] transition-colors"
             >
-              Voir toute la programmation
-              <ArrowUpRight className="w-4 h-4" />
+              Voir tout l'agenda
+              <ArrowUpRight className="w-5 h-5" />
             </Link>
           </div>
 
           {loading ? (
-            <div className="py-16 text-center text-xs font-mono text-white/40 animate-pulse">Chargement des ondes...</div>
+            <div className="py-16 text-center text-sm font-bold text-[#1A1A1A]/40">Chargement des événements...</div>
           ) : events.length === 0 ? (
-            <div className="py-20 text-center border border-dashed border-white/10 rounded-3xl text-white/40 font-mono text-xs">
-              Aucun événement actif pour le moment.
+            <div className="py-20 text-center border-4 border-dashed border-[#1A1A1A]/20 rounded-[32px] text-[#1A1A1A]/40 font-bold text-sm">
+              Aucun événement publié pour le moment.
             </div>
           ) : (
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {events.map((item) => {
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+              {events.map((item, index) => {
                 const startDate = item.starts_at ? new Date(item.starts_at) : null;
-                const formattedDate = startDate
-                  ? startDate.toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' }).toUpperCase()
+                const formattedDateDay = startDate
+                  ? startDate.toLocaleDateString('fr-FR', { day: '2-digit' })
                   : '';
-                const priceLabel = Number(item.price) === 0 ? 'Gratuit' : `${Number(item.price).toFixed(2)} €`;
+                const formattedDateMonth = startDate
+                  ? startDate.toLocaleDateString('fr-FR', { month: 'short' }).toUpperCase()
+                  : '';
+                const priceLabel = Number(item.price) === 0 ? 'GRATUIT' : `${Number(item.price).toFixed(2)} €`;
+
+                // Couleur de fond alternée pour les cartes
+                const cardBgColor = getEventCardColor(index);
 
                 return (
                   <Link 
                     key={item.id} 
                     href={`/events/${item.slug}`}
-                    className="group relative p-6 rounded-3xl bg-[#0D0D0D] border border-white/10 hover:border-[#CCFF00]/50 transition-all duration-300 flex flex-col justify-between h-[320px] overflow-hidden"
+                    className={`group p-8 rounded-[32px] border-4 border-[#1A1A1A] shadow-[8px_8px_0px_#1A1A1A] ${cardBgColor} flex flex-col justify-between h-[380px] transition-transform hover:-translate-y-2`}
                   >
-                    {/* Effet lumineux au hover */}
-                    <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[#CCFF00]/5 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
-
-                    <div className="space-y-4 relative z-10">
+                    <div className="space-y-8">
                       <div className="flex items-center justify-between">
-                        <span className="text-[10px] font-mono px-3 py-1 rounded-full bg-white/5 border border-white/10 text-white/70 uppercase">
-                          {item.organizations?.name || 'Club / Live'}
+                        <span className="text-xs font-bold px-4 py-1.5 rounded-full bg-white/80 border-2 border-[#1A1A1A] text-[#1A1A1A] uppercase tracking-wider">
+                          {item.organizations?.name || 'Event'}
                         </span>
-                        <span className="text-xs font-mono text-[#CCFF00] font-bold">{formattedDate}</span>
+                        <div className="text-center flex flex-col items-center justify-center w-16 h-16 rounded-2xl bg-white border-2 border-[#1A1A1A] font-black leading-tight">
+                          <span className="block text-2xl text-[#1A1A1A]">{formattedDateDay}</span>
+                          <span className="block text-xs text-[#1A1A1A]/60">{formattedDateMonth}</span>
+                        </div>
                       </div>
                       
                       <div>
-                        <h3 className="text-xl font-bold tracking-tight group-hover:text-[#CCFF00] transition-colors line-clamp-2">
+                        <h3 className="text-2xl font-bold tracking-tight text-[#1A1A1A] leading-snug group-hover:underline decoration-[#FF66A1] decoration-4">
                           {item.title}
                         </h3>
-                        <p className="text-xs text-white/40 mt-1.5 truncate">
-                          {item.location || 'Lieu confidentiel'}
-                        </p>
+                        <div className="flex items-center gap-2 mt-4 text-[#1A1A1A]/60 font-medium text-sm">
+                          <MapPin className="w-4 h-4 shrink-0" />
+                          <p className="truncate">{item.location || 'Lieu secret'}</p>
+                        </div>
                       </div>
                     </div>
 
-                    <div className="pt-4 border-t border-white/10 flex items-center justify-between relative z-10">
-                      <span className="text-sm font-mono font-bold text-white">{priceLabel}</span>
-                      <div className="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center group-hover:bg-[#CCFF00] group-hover:text-black transition-all">
-                        <ArrowUpRight className="w-4 h-4" />
+                    <div className="pt-6 border-t-2 border-[#1A1A1A]/10 flex items-center justify-between">
+                      <span className="text-2xl font-black text-[#1A1A1A]">{priceLabel}</span>
+                      <div className="w-12 h-12 rounded-2xl bg-[#1A1A1A] text-white grid place-content-center transition-transform group-hover:rotate-45">
+                        <ArrowUpRight className="w-6 h-6" />
                       </div>
                     </div>
                   </Link>
@@ -195,20 +195,20 @@ export default function PublicHome() {
         </div>
       </section>
 
-      {/* ─── PILIERS / MANIFESTO ─── */}
-      <section className="py-24 px-6 md:px-12 max-w-7xl mx-auto w-full">
+      {/* ─── VALEURS GRILLE ─── */}
+      <section className="py-32 px-6 md:px-12 max-w-7xl mx-auto w-full border-t-4 border-[#1A1A1A] bg-[#FDFCF8]">
         <div className="grid md:grid-cols-3 gap-8">
-          {PILLARS.map((pillar, idx) => {
-            const Icon = pillar.icon;
+          {VALEURS.map((item, idx) => {
+            const Icon = item.icon;
             return (
-              <div key={idx} className="p-8 rounded-3xl bg-[#0D0D0D] border border-white/10 space-y-6 relative overflow-hidden group hover:border-white/20 transition-all">
-                <div className="w-12 h-12 rounded-2xl bg-white/[0.04] border border-white/10 flex items-center justify-center text-[#CCFF00] group-hover:scale-110 transition-transform">
-                  <Icon className="w-6 h-6" />
+              <div key={idx} className={`p-10 rounded-[32px] border-4 border-[#1A1A1A] ${item.color} space-y-8`}>
+                <div className="w-16 h-16 rounded-3xl bg-white border-4 border-[#1A1A1A] grid place-content-center">
+                  <Icon className="w-8 h-8 text-[#1A1A1A]" />
                 </div>
-                <div className="space-y-2">
-                  <h3 className="text-xl font-bold tracking-tight">{pillar.title}</h3>
-                  <p className="text-sm text-white/50 leading-relaxed font-light">
-                    {pillar.text}
+                <div className="space-y-4">
+                  <h3 className={`text-3xl font-bold tracking-tight ${item.textColor}`}>{item.title}</h3>
+                  <p className={`text-base leading-relaxed font-normal ${item.textColor}/80`}>
+                    {item.text}
                   </p>
                 </div>
               </div>
@@ -217,25 +217,27 @@ export default function PublicHome() {
         </div>
       </section>
 
-      {/* ─── BANDEAU CTA PRO ─── */}
-      <section className="max-w-7xl mx-auto px-6 md:px-12 w-full pb-24">
-        <div className="relative rounded-3xl p-10 md:p-16 bg-gradient-to-r from-purple-950/40 via-[#111] to-[#0D0D0D] border border-white/10 overflow-hidden flex flex-col md:flex-row items-start md:items-center justify-between gap-8">
+      {/* ─── BANDEAU CTA PRO (Style ludique) ─── */}
+      <section className="max-w-7xl mx-auto px-6 md:px-12 w-full pb-32">
+        <div className="relative rounded-[40px] p-12 md:p-20 bg-[#FFF4CC] border-4 border-[#1A1A1A] shadow-[8px_8px_0px_#1A1A1A] overflow-hidden flex flex-col md:flex-row items-start md:items-center justify-between gap-10">
           
-          <div className="absolute top-0 right-0 w-96 h-96 bg-[#CCFF00]/10 rounded-full blur-3xl pointer-events-none" />
+          {/* Éléments graphiques de fond (cercles géométriques) */}
+          <div className="absolute -bottom-20 -left-20 w-64 h-64 rounded-full border-[30px] border-[#1A1A1A]/5 pointer-events-none" />
+          <div className="absolute top-10 right-10 w-20 h-20 rounded-full bg-[#FF66A1] pointer-events-none" />
 
-          <div className="space-y-3 max-w-xl relative z-10">
-            <span className="text-xs font-mono uppercase tracking-widest text-[#CCFF00]">Partenaires & Organisateurs</span>
-            <h2 className="text-3xl md:text-4xl font-extrabold tracking-tight">Reprenez le contrôle de votre billetterie.</h2>
-            <p className="text-sm text-white/60 font-light leading-relaxed">
-              Installez votre propre espace de vente en quelques minutes, profitez d'une structure de frais transparente et fidélisez votre public.
+          <div className="space-y-6 max-w-2xl relative z-10">
+            <span className="text-xs font-bold uppercase tracking-widest text-[#1A1A1A]/70 bg-white px-4 py-2 rounded-full border-2 border-[#1A1A1A]">Pour les organisateurs</span>
+            <h2 className="text-5xl md:text-6xl font-extrabold tracking-tighter text-[#1A1A1A]">Vous gérez un lieu ou un collectif ?</h2>
+            <p className="text-lg text-[#1A1A1A]/80 font-normal leading-relaxed">
+              Reprenez la main sur votre billetterie. Créez votre espace en quelques minutes, gardez le contrôle sur vos données et proposez une expérience d'achat irréprochable à votre public.
             </p>
           </div>
 
           <a
             href="https://pro.tyks.app"
-            className="relative z-10 px-8.5 py-4 rounded-2xl bg-white text-black font-bold text-xs uppercase tracking-wider hover:bg-[#CCFF00] transition-colors shadow-lg shrink-0"
+            className="relative z-10 px-10 py-7 rounded-[24px] bg-[#1A1A1A] text-white font-bold text-lg hover:scale-105 transition-transform shadow-lg shrink-0 border-4 border-[#1A1A1A]"
           >
-            Lancer mon événement Pro
+            Lancer mon compte pro
           </a>
         </div>
       </section>
