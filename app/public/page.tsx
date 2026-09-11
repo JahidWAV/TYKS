@@ -1,19 +1,52 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
-import { ArrowUpRight, Calendar, MapPin, Sparkles, RefreshCw, ShieldCheck, Flame, Heart } from 'lucide-react';
+import {
+  ArrowUpRight,
+  Calendar,
+  MapPin,
+  Sparkles,
+  RefreshCw,
+  ShieldCheck,
+  Flame,
+  Search,
+  Smartphone,
+  Megaphone,
+} from 'lucide-react';
 import { supabaseBrowser } from '@/lib/supabase-browser';
 
-const VILLES = ['Paris', 'Bordeaux', 'Lyon', 'Marseille', 'Nantes'];
+const VILLES = ['Toutes', 'Paris', 'Bordeaux', 'Lyon', 'Marseille', 'Nantes'];
 
 const LABELS_PARTENAIRES = [
-  'Factory Town', 'Boiler Room', 'Sónar', 'Spotify', 'Framework', 'Outernet', 'Rough Trade', 'Labyrinth', 'Red Bull'
+  'Factory Town', 'Boiler Room', 'Sónar', 'Spotify', 'Framework',
+  'Outernet', 'Rough Trade', 'Labyrinth', 'Red Bull',
+];
+
+const ARTISTES_A_LAFFICHE = [
+  { nom: 'Kaytranada', taille: 'text-4xl md:text-6xl font-normal' },
+  { nom: 'Overmono', taille: 'text-2xl md:text-4xl font-light italic' },
+  { nom: 'Fred again..', taille: 'text-5xl md:text-7xl font-normal' },
+  { nom: 'Job Jobse', taille: 'text-2xl md:text-3xl font-light' },
+  { nom: 'Amelie Lens', taille: 'text-4xl md:text-6xl font-normal italic' },
+  { nom: 'DJ Seinfeld', taille: 'text-2xl md:text-4xl font-light' },
+];
+
+const TEMOIGNAGES = [
+  {
+    texte: "J'ai trouvé le concert d'un ami trois villes plus loin en deux minutes, et le remboursement s'est fait tout seul quand j'ai dû annuler.",
+    auteur: 'Un fan de la communauté',
+  },
+  {
+    texte: "Le prix affiché au départ, c'est celui que je paie à la fin. Ça paraît basique mais c'est rare.",
+    auteur: 'Un fan de la communauté',
+  },
 ];
 
 export default function PublicHome() {
   const [events, setEvents] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [villeActive, setVilleActive] = useState('Toutes');
 
   useEffect(() => {
     const fetchPublishedEvents = async () => {
@@ -22,7 +55,7 @@ export default function PublicHome() {
         .select('*, organizations(name)')
         .eq('status', 'published')
         .order('starts_at', { ascending: true })
-        .limit(6);
+        .limit(12);
 
       if (!error && data) {
         setEvents(data);
@@ -33,139 +66,163 @@ export default function PublicHome() {
     fetchPublishedEvents();
   }, []);
 
+  const evenementsFiltres = useMemo(() => {
+    if (villeActive === 'Toutes') return events.slice(0, 6);
+    return events
+      .filter((item) => (item.location || '').toLowerCase().includes(villeActive.toLowerCase()))
+      .slice(0, 6);
+  }, [events, villeActive]);
+
   return (
     <div className="flex-1 flex flex-col bg-[#FAF7F2] text-[#2D2220] selection:bg-[#5C1D24] selection:text-[#FAF7F2] font-serif overflow-hidden">
-      
-      {/* ─── HERO ÉDITORIAL & IMMERSIF (Style Manifeste Culturel) ─── */}
-      <section className="relative px-6 md:px-16 pt-16 pb-28 max-w-7xl mx-auto w-full border-b border-[#E4DCD0]">
-        
-        {/* Barre de navigation éditoriale supérieure */}
+
+      {/* ─── HERO ─── */}
+      <section className="relative px-6 md:px-16 pt-16 pb-24 max-w-7xl mx-auto w-full border-b border-[#E4DCD0]">
+
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-16">
           <div className="inline-flex items-center gap-3 text-xs font-sans tracking-[0.3em] uppercase px-4 py-2 rounded-full bg-[#F0EBE3] text-[#5C1D24] font-medium border border-[#E4DCD0]">
             <span className="w-2 h-2 rounded-full bg-[#5C1D24] animate-pulse" />
-            <span>Welcome to the alternative[cite: 2]</span>
+            <span>Bienvenue dans l'alternative</span>
           </div>
-          <div className="flex items-center gap-2 text-xs font-sans tracking-widest uppercase text-[#2D2220]/60">
-            <span>Explorer par ville :</span>
-            <div className="flex gap-2 font-medium text-[#2D2220]">
-              {VILLES.slice(0, 3).map((v, i) => (
-                <span key={v} className="hover:text-[#5C1D24] cursor-pointer transition-colors">
-                  {v}{i < 2 ? ' •' : ''}
-                </span>
-              ))}
-            </div>
+
+          <div className="flex items-center gap-2 px-4 py-2 rounded-full border border-[#E4DCD0] bg-[#FAF7F2] text-sm font-sans text-[#2D2220]/50 w-full md:w-auto md:min-w-[280px]">
+            <Search className="w-4 h-4 shrink-0" />
+            <span>Rechercher un événement, un artiste, une salle...</span>
           </div>
         </div>
 
-        {/* Titre monumental asymétrique */}
         <div className="grid lg:grid-cols-12 gap-12 items-end">
           <div className="lg:col-span-8 space-y-6">
-            <h1 className="text-7xl md:text-9xl lg:text-[10rem] font-light tracking-tighter leading-[0.9]">
-              Chope ton <br />
-              <span className="italic font-normal text-[#5C1D24]">billet</span>.
+            <h1 className="text-6xl md:text-8xl lg:text-9xl font-light tracking-tighter leading-[0.9]">
+              Chope ton billet.
+              <br />
+              <span className="italic font-normal text-[#5C1D24]">Vis la soirée.</span>
             </h1>
           </div>
           <div className="lg:col-span-4 space-y-6 pb-4">
             <p className="text-base md:text-lg font-sans font-light text-[#2D2220]/70 leading-relaxed">
-              Incredible live shows, upfront pricing, and relevant recommendations. On rend tes sorties simples, intenses et indépendantes[cite: 2].
+              Des concerts et soirées près de chez toi, un prix affiché sans surprise au checkout,
+              et des recommandations qui collent vraiment à tes goûts.
             </p>
-            <div>
-              <a 
-                href="#events" 
-                className="inline-flex items-center gap-3 px-8 py-4 bg-[#5C1D24] text-[#FAF7F2] rounded-full text-xs font-sans font-medium uppercase tracking-widest hover:bg-[#43141A] transition-all shadow-sm"
+            <div className="flex flex-wrap gap-3">
+              <a
+                href="#events"
+                className="inline-flex items-center gap-3 px-8 py-4 bg-[#5C1D24] text-[#FAF7F2] rounded-full text-xs font-sans font-medium uppercase tracking-widest hover:bg-[#43141A] transition-colors shadow-sm"
               >
                 <span>Explorer l'agenda</span>
                 <ArrowUpRight className="w-4 h-4" />
               </a>
+              <Link
+                href="/organisateurs"
+                className="inline-flex items-center gap-3 px-8 py-4 rounded-full border border-[#2D2220]/20 text-xs font-sans font-medium uppercase tracking-widest hover:border-[#5C1D24] hover:text-[#5C1D24] transition-colors"
+              >
+                <span>Créer un événement</span>
+              </Link>
             </div>
           </div>
         </div>
 
-        {/* Chiffres clés / Manifeste en pied de hero */}
-        <div className="mt-24 pt-10 border-t border-[#E4DCD0] grid grid-cols-2 md:grid-cols-4 gap-8">
+        <div className="mt-20 pt-10 border-t border-[#E4DCD0] grid grid-cols-2 md:grid-cols-4 gap-8">
           <div>
             <div className="text-3xl md:text-4xl font-light text-[#5C1D24]">0 frais</div>
-            <div className="text-xs font-sans tracking-widest uppercase text-[#2D2220]/50 mt-1">Cachés au checkout[cite: 2]</div>
+            <div className="text-xs font-sans tracking-widest uppercase text-[#2D2220]/50 mt-1">cachés au checkout</div>
           </div>
           <div>
-            <div className="text-3xl md:text-4xl font-light text-[#5C1D24]">100%</div>
-            <div className="text-xs font-sans tracking-widest uppercase text-[#2D2220]/50 mt-1">Revente sécurisée[cite: 3]</div>
+            <div className="text-3xl md:text-4xl font-light text-[#5C1D24]">100 %</div>
+            <div className="text-xs font-sans tracking-widest uppercase text-[#2D2220]/50 mt-1">revente sécurisée</div>
           </div>
           <div>
-            <div className="text-3xl md:text-4xl font-light text-[#5C1D24]">Millions</div>
-            <div className="text-xs font-sans tracking-widest uppercase text-[#2D2220]/50 mt-1">De fans connectés[cite: 2]</div>
+            <div className="text-3xl md:text-4xl font-light text-[#5C1D24]">5 villes</div>
+            <div className="text-xs font-sans tracking-widest uppercase text-[#2D2220]/50 mt-1">et bientôt plus</div>
           </div>
           <div>
             <div className="text-3xl md:text-4xl font-light text-[#5C1D24]">Instantané</div>
-            <div className="text-xs font-sans tracking-widest uppercase text-[#2D2220]/50 mt-1">Billets sur ton tél[cite: 2]</div>
+            <div className="text-xs font-sans tracking-widest uppercase text-[#2D2220]/50 mt-1">billet sur ton tél.</div>
           </div>
         </div>
-
       </section>
 
-      {/* ─── MARQUEE / RÉSEAU DE PARTENAIRES (Inspiré Dice & Shotgun) ─── */}
-      <section className="py-12 border-b border-[#E4DCD0] bg-[#F4EFE6]/30 overflow-hidden">
-        <div className="max-w-7xl mx-auto px-6 md:px-16 mb-6">
-          <span className="text-xs font-sans tracking-[0.3em] uppercase text-[#2D2220]/40 block text-center">
-            En partenariat avec les meilleurs promoteurs et salles du monde[cite: 2]
+      {/* ─── ARTISTES À L'AFFICHE ─── */}
+      <section className="py-20 px-6 md:px-16 border-b border-[#E4DCD0] bg-[#F4EFE6]/40">
+        <div className="max-w-7xl mx-auto">
+          <span className="text-xs font-sans tracking-[0.25em] uppercase text-[#5C1D24] font-semibold">
+            Artistes à l'affiche
           </span>
-        </div>
-        <div className="flex flex-wrap items-center justify-center gap-8 md:gap-16 px-6 opacity-75">
-          {LABELS_PARTENAIRES.map((label, idx) => (
-            <span key={idx} className="text-sm md:text-base font-sans font-medium tracking-wider uppercase text-[#2D2220]/75">
-              {label}
-            </span>
-          ))}
+          <div className="mt-8 flex flex-col gap-3">
+            {ARTISTES_A_LAFFICHE.map((artiste) => (
+              <span key={artiste.nom} className={`${artiste.taille} leading-none tracking-tight`}>
+                {artiste.nom}
+              </span>
+            ))}
+          </div>
         </div>
       </section>
 
-      {/* ─── AGENDA / TENDANCES DYNAMIQUES ─── */}
+      {/* ─── AGENDA / ÉVÉNEMENTS ─── */}
       <section id="events" className="py-28 px-6 md:px-16 border-b border-[#E4DCD0]">
         <div className="max-w-7xl mx-auto">
-          
-          <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-4">
+
+          <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-6">
             <div>
               <span className="text-xs font-sans tracking-[0.25em] uppercase text-[#5C1D24] font-semibold flex items-center gap-2">
-                <Flame className="w-4 h-4" /> Trending around you[cite: 2]
+                <Flame className="w-4 h-4" /> Tendance en ce moment
               </span>
               <h2 className="text-4xl md:text-6xl font-light mt-3">Événements populaires</h2>
             </div>
-            <Link 
+            <Link
               href="/events"
-              className="text-xs font-sans tracking-widest uppercase text-[#2D2220] border-b border-[#5C1D24] pb-0.5 hover:text-[#5C1D24] transition-colors"
+              className="text-xs font-sans tracking-widest uppercase text-[#2D2220] border-b border-[#5C1D24] pb-0.5 hover:text-[#5C1D24] transition-colors whitespace-nowrap"
             >
               Voir tous les événements &rarr;
             </Link>
           </div>
 
+          <div className="flex flex-wrap gap-2 mb-12">
+            {VILLES.map((ville) => (
+              <button
+                key={ville}
+                onClick={() => setVilleActive(ville)}
+                className={`px-4 py-2 rounded-full text-xs font-sans uppercase tracking-widest border transition-colors ${
+                  villeActive === ville
+                    ? 'bg-[#5C1D24] text-[#FAF7F2] border-[#5C1D24]'
+                    : 'border-[#E4DCD0] text-[#2D2220]/60 hover:border-[#5C1D24] hover:text-[#5C1D24]'
+                }`}
+              >
+                {ville}
+              </button>
+            ))}
+          </div>
+
           {loading ? (
-            <div className="py-20 text-center text-xs font-sans tracking-widest uppercase text-[#2D2220]/40">Chargement de la programmation...</div>
-          ) : events.length === 0 ? (
+            <div className="py-20 text-center text-xs font-sans tracking-widest uppercase text-[#2D2220]/40">
+              Chargement de la programmation...
+            </div>
+          ) : evenementsFiltres.length === 0 ? (
             <div className="py-24 text-center border border-[#E4DCD0] rounded-[2.5rem] bg-[#F2ECE4] space-y-3">
-              <p className="text-xs font-sans tracking-widest uppercase text-[#2D2220]/60">Aucun événement disponible pour le moment.</p>
+              <p className="text-xs font-sans tracking-widest uppercase text-[#2D2220]/60">
+                Aucun événement à {villeActive === 'Toutes' ? 'afficher' : villeActive} pour le moment.
+              </p>
               <p className="text-xs font-sans font-light text-[#2D2220]/40">Reviens vite pour découvrir les prochaines dates.</p>
             </div>
           ) : (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {events.map((item, index) => {
+              {evenementsFiltres.map((item) => {
                 const startDate = item.starts_at ? new Date(item.starts_at) : null;
                 const formattedDate = startDate
                   ? startDate.toLocaleDateString('fr-FR', { day: '2-digit', month: 'long', year: 'numeric' })
                   : '';
                 const priceLabel = Number(item.price) === 0 ? 'Offert' : `${Number(item.price).toFixed(2)} €`;
 
-                const offsetClass = index % 3 === 1 ? 'lg:translate-y-6' : index % 3 === 2 ? 'lg:translate-y-12' : '';
-
                 return (
-                  <Link 
-                    key={item.id} 
+                  <Link
+                    key={item.id}
                     href={`/events/${item.slug}`}
-                    className={`group p-8 rounded-[2.5rem] bg-[#F2ECE4] border border-[#E4DCD0] hover:border-[#5C1D24] transition-all duration-300 flex flex-col justify-between h-[420px] shadow-xs ${offsetClass}`}
+                    className="group p-8 rounded-[2.5rem] bg-[#F2ECE4] border border-[#E4DCD0] hover:border-[#5C1D24] transition-colors duration-300 flex flex-col justify-between h-[380px] shadow-xs"
                   >
                     <div className="space-y-6">
-                      <div className="flex items-center justify-between text-xs font-sans tracking-wider text-[#2D2220]/50">
-                        <span className="truncate max-w-[150px] font-medium text-[#5C1D24]">{item.organizations?.name || 'Collectif'}</span>
-                        <span className="flex items-center gap-1.5"><Calendar className="w-3.5 h-3.5" />{formattedDate}</span>
+                      <div className="flex items-center justify-between text-xs font-sans tracking-wider text-[#2D2220]/50 gap-3">
+                        <span className="truncate font-medium text-[#5C1D24]">{item.organizations?.name || 'Collectif'}</span>
+                        <span className="flex items-center gap-1.5 shrink-0"><Calendar className="w-3.5 h-3.5" />{formattedDate}</span>
                       </div>
                       <div>
                         <h3 className="text-2xl md:text-3xl font-normal group-hover:italic transition-all leading-snug">{item.title}</h3>
@@ -187,39 +244,39 @@ export default function PublicHome() {
               })}
             </div>
           )}
-
         </div>
       </section>
 
-      {/* ─── SECTION EXPÉRIENCE FAN (Weirdly easy ticketing) ─── */}
+      {/* ─── EXPÉRIENCE FAN ─── */}
       <section className="py-28 px-6 md:px-16 border-b border-[#E4DCD0] bg-[#F4EFE6]/50">
-        <div className="max-w-7xl mx-auto grid lg:grid-cols-12 gap-12 items-center">
-          <div className="lg:col-span-5 space-y-6">
-            <span className="text-xs font-sans tracking-[0.25em] uppercase text-[#5C1D24] font-semibold">Weirdly easy ticketing[cite: 2]</span>
-            <h2 className="text-4xl md:text-6xl font-light leading-tight">Get tickets in less time than it took to read this[cite: 2].</h2>
-            <p className="text-sm md:text-base font-sans font-light text-[#2D2220]/70 leading-relaxed">
-              Plus besoin de chercher des e-mails ou d'imprimer des PDF. Tout est centralisé sur ton téléphone, avec des codes sécurisés et des remboursements gérés en quelques clics[cite: 2, 3].
-            </p>
-            <div className="pt-4 flex items-center gap-6">
-              <div className="flex items-center gap-3">
-                <span className="w-3 h-3 rounded-full bg-[#5C1D24]" />
-                <span className="text-xs font-sans uppercase tracking-widest font-medium">Prix transparents[cite: 2]</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <span className="w-3 h-3 rounded-full bg-[#5C1D24]" />
-                <span className="text-xs font-sans uppercase tracking-widest font-medium">Revente éthique[cite: 3]</span>
-              </div>
-            </div>
+        <div className="max-w-7xl mx-auto">
+          <div className="max-w-2xl mb-16">
+            <span className="text-xs font-sans tracking-[0.25em] uppercase text-[#5C1D24] font-semibold">
+              Une billetterie qui ne complique rien
+            </span>
+            <h2 className="text-4xl md:text-6xl font-light leading-tight mt-3">
+              Le billet en moins de temps qu'il n'en faut pour le lire.
+            </h2>
           </div>
 
-          <div className="lg:col-span-7 grid md:grid-cols-2 gap-6">
+          <div className="grid md:grid-cols-3 gap-6">
+            <div className="p-8 rounded-[2.5rem] bg-[#FAF7F2] border border-[#E4DCD0] space-y-4 shadow-xs">
+              <div className="w-12 h-12 rounded-full bg-[#5C1D24]/10 text-[#5C1D24] flex items-center justify-center">
+                <ShieldCheck className="w-6 h-6" />
+              </div>
+              <h3 className="text-2xl font-normal">Prix transparent</h3>
+              <p className="text-xs font-sans font-light text-[#2D2220]/70 leading-relaxed">
+                Le prix affiché à la recherche est celui du checkout, sans frais qui apparaissent au dernier moment.
+              </p>
+            </div>
+
             <div className="p-8 rounded-[2.5rem] bg-[#FAF7F2] border border-[#E4DCD0] space-y-4 shadow-xs">
               <div className="w-12 h-12 rounded-full bg-[#5C1D24]/10 text-[#5C1D24] flex items-center justify-center">
                 <Sparkles className="w-6 h-6" />
               </div>
-              <h3 className="text-2xl font-normal">Recommandations sur-mesure[cite: 2]</h3>
+              <h3 className="text-2xl font-normal">Recommandations sur-mesure</h3>
               <p className="text-xs font-sans font-light text-[#2D2220]/70 leading-relaxed">
-                Suis tes artistes favoris et reçois des suggestions ultra-pertinentes basées sur tes goûts musicaux[cite: 2].
+                Suis tes artistes favoris et reçois des suggestions basées sur ce que tu écoutes vraiment.
               </p>
             </div>
 
@@ -227,45 +284,146 @@ export default function PublicHome() {
               <div className="w-12 h-12 rounded-full bg-[#5C1D24]/10 text-[#5C1D24] flex items-center justify-center">
                 <RefreshCw className="w-6 h-6" />
               </div>
-              <h3 className="text-2xl font-normal">Changement de plan ?[cite: 3]</h3>
+              <h3 className="text-2xl font-normal">Changement de plan ?</h3>
               <p className="text-xs font-sans font-light text-[#2D2220]/70 leading-relaxed">
-                Un empêchement ? Revends ton billet instantanément et en toute sécurité sur la plateforme officielle[cite: 3].
+                Un empêchement ? Revends ton billet instantanément et en toute sécurité sur la plateforme.
               </p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* ─── SECTION TÉMOIGNAGES COMMUNAUTÉ (Loved by millions) ─── */}
-      <section className="py-28 px-6 md:px-16 border-b border-[#E4DCD0]">
-        <div className="max-w-5xl mx-auto text-center space-y-12">
-          <span className="text-xs font-sans tracking-[0.3em] uppercase text-[#5C1D24] font-semibold">Loved by millions[cite: 2]</span>
-          <blockquote className="text-3xl md:text-5xl font-light italic leading-tight text-[#2D2220]">
-            "La meilleure application de billetterie, rafraîchissante, rassurante, sans stress, 10/10, simple et humaine[cite: 2]."
-          </blockquote>
-          <div className="text-xs font-sans uppercase tracking-widest text-[#2D2220]/50">
-            &mdash; Extraits des retours de notre communauté[cite: 2]
+      {/* ─── RÉSEAU DE PARTENAIRES ─── */}
+      <section className="py-16 border-b border-[#E4DCD0] overflow-hidden">
+        <div className="max-w-7xl mx-auto px-6 md:px-16 mb-8">
+          <span className="text-xs font-sans tracking-[0.3em] uppercase text-[#2D2220]/40 block text-center">
+            En partenariat avec des promoteurs et des salles de tout le pays
+          </span>
+        </div>
+        <div className="flex flex-wrap items-center justify-center gap-8 md:gap-16 px-6 opacity-75">
+          {LABELS_PARTENAIRES.map((label) => (
+            <span key={label} className="text-sm md:text-base font-sans font-medium tracking-wider uppercase text-[#2D2220]/75">
+              {label}
+            </span>
+          ))}
+        </div>
+      </section>
+
+      {/* ─── POUR LES ORGANISATEURS ─── */}
+      <section className="py-28 px-6 md:px-16 bg-[#5C1D24] text-[#FAF7F2] border-b border-[#E4DCD0]">
+        <div className="max-w-7xl mx-auto grid lg:grid-cols-12 gap-12 items-center">
+          <div className="lg:col-span-7 space-y-6">
+            <span className="text-xs font-sans tracking-[0.25em] uppercase text-[#FAF7F2]/60 font-semibold flex items-center gap-2">
+              <Megaphone className="w-4 h-4" /> Pour les organisateurs
+            </span>
+            <h2 className="text-4xl md:text-6xl font-light leading-tight">
+              Vous organisez un événement ?
+              <br />
+              <span className="italic">Trouvez votre public.</span>
+            </h2>
+            <p className="text-sm md:text-base font-sans font-light text-[#FAF7F2]/80 leading-relaxed max-w-lg">
+              Vendez vos billets à la bonne personne, au bon moment, au juste prix — et suivez tout depuis un seul
+              tableau de bord.
+            </p>
+            <Link
+              href="/organisateurs"
+              className="inline-flex items-center gap-3 px-8 py-4 bg-[#FAF7F2] text-[#5C1D24] rounded-full text-xs font-sans font-medium uppercase tracking-widest hover:bg-white transition-colors"
+            >
+              <span>Publier mon événement</span>
+              <ArrowUpRight className="w-4 h-4" />
+            </Link>
+          </div>
+
+          <div className="lg:col-span-5 grid grid-cols-2 gap-4">
+            <div className="p-6 rounded-[2rem] bg-[#FAF7F2]/10 border border-[#FAF7F2]/20 space-y-2">
+              <div className="text-3xl font-light">0 €</div>
+              <div className="text-xs font-sans uppercase tracking-widest text-[#FAF7F2]/60">frais de mise en ligne</div>
+            </div>
+            <div className="p-6 rounded-[2rem] bg-[#FAF7F2]/10 border border-[#FAF7F2]/20 space-y-2">
+              <div className="text-3xl font-light">J+1</div>
+              <div className="text-xs font-sans uppercase tracking-widest text-[#FAF7F2]/60">versement après l'événement</div>
+            </div>
+            <div className="p-6 rounded-[2rem] bg-[#FAF7F2]/10 border border-[#FAF7F2]/20 space-y-2 col-span-2">
+              <div className="text-xl font-light">Suivi des ventes en temps réel</div>
+              <div className="text-xs font-sans uppercase tracking-widest text-[#FAF7F2]/60">jauge, revenus, provenance du public</div>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* ─── BANDEAU CTA FINAL ─── */}
-      <section className="py-28 px-6 md:px-16 bg-[#5C1D24] text-[#FAF7F2] text-center">
+      {/* ─── TÉLÉCHARGER L'APP ─── */}
+      <section className="py-28 px-6 md:px-16 border-b border-[#E4DCD0]">
+        <div className="max-w-7xl mx-auto grid lg:grid-cols-12 gap-12 items-center">
+          <div className="lg:col-span-6 space-y-6">
+            <span className="text-xs font-sans tracking-[0.25em] uppercase text-[#5C1D24] font-semibold flex items-center gap-2">
+              <Smartphone className="w-4 h-4" /> Sur ton téléphone
+            </span>
+            <h2 className="text-4xl md:text-6xl font-light leading-tight">
+              Chope ton billet, garde le souvenir.
+            </h2>
+            <p className="text-sm md:text-base font-sans font-light text-[#2D2220]/70 leading-relaxed max-w-md">
+              Plus besoin de chercher un e-mail ou d'imprimer un PDF : tout est centralisé sur ton téléphone, avec
+              des codes sécurisés et des remboursements gérés en deux clics.
+            </p>
+            <div className="flex gap-3">
+              <span className="px-6 py-3 rounded-full border border-[#2D2220]/20 text-xs font-sans font-medium uppercase tracking-widest">
+                App Store
+              </span>
+              <span className="px-6 py-3 rounded-full border border-[#2D2220]/20 text-xs font-sans font-medium uppercase tracking-widest">
+                Google Play
+              </span>
+            </div>
+          </div>
+
+          <div className="lg:col-span-6 flex justify-center">
+            <div className="w-56 h-[420px] rounded-[2.5rem] bg-[#F2ECE4] border border-[#E4DCD0] shadow-sm p-4 flex flex-col gap-3">
+              <div className="flex-1 rounded-[1.75rem] bg-[#5C1D24]/10 flex items-center justify-center">
+                <span className="text-xs font-sans uppercase tracking-widest text-[#5C1D24]/50">Aperçu billet</span>
+              </div>
+              <div className="h-10 rounded-full bg-[#5C1D24]" />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ─── TÉMOIGNAGES ─── */}
+      <section className="py-28 px-6 md:px-16 border-b border-[#E4DCD0]">
+        <div className="max-w-5xl mx-auto text-center space-y-16">
+          <span className="text-xs font-sans tracking-[0.3em] uppercase text-[#5C1D24] font-semibold">
+            La communauté en parle
+          </span>
+          <div className="grid md:grid-cols-2 gap-12">
+            {TEMOIGNAGES.map((t) => (
+              <div key={t.auteur} className="space-y-4">
+                <blockquote className="text-2xl md:text-3xl font-light italic leading-tight text-[#2D2220]">
+                  "{t.texte}"
+                </blockquote>
+                <div className="text-xs font-sans uppercase tracking-widest text-[#2D2220]/50">
+                  &mdash; {t.auteur}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ─── CTA FINAL ─── */}
+      <section className="py-28 px-6 md:px-16 bg-[#F4EFE6] text-center">
         <div className="max-w-4xl mx-auto space-y-8">
-          <span className="text-xs font-sans tracking-[0.3em] uppercase text-[#FAF7F2]/60">Expérience Mobile</span>
           <h2 className="text-5xl md:text-7xl font-light leading-tight">
-            Chope ton billet, <br />
-            <span className="italic">ne rate plus jamais une nuit</span>.
+            Ne rate plus jamais
+            <br />
+            <span className="italic text-[#5C1D24]">une nuit.</span>
           </h2>
-          <p className="max-w-xl mx-auto text-base font-sans font-light text-[#FAF7F2]/80 leading-relaxed">
-            Découvre les prochains événements et réserve tes places en quelques secondes, où que tu sois.
+          <p className="max-w-xl mx-auto text-base font-sans font-light text-[#2D2220]/70 leading-relaxed">
+            Découvre les prochains événements et réserve ta place en quelques secondes, où que tu sois.
           </p>
           <div className="pt-4">
             <a
               href="#events"
-              className="px-8 py-4 rounded-full bg-[#FAF7F2] text-[#5C1D24] hover:bg-white transition-colors text-xs font-sans font-medium uppercase tracking-widest shadow-md inline-block"
+              className="px-8 py-4 rounded-full bg-[#5C1D24] text-[#FAF7F2] hover:bg-[#43141A] transition-colors text-xs font-sans font-medium uppercase tracking-widest shadow-md inline-block"
             >
-              Découvrir les événements[cite: 2]
+              Découvrir les événements
             </a>
           </div>
         </div>
