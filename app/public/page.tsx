@@ -85,12 +85,6 @@ export default function PublicHome() {
             <span>Bienvenue dans l'alternative</span>
           </div>
 
-          <div className="flex items-center gap-2 px-4 py-2 rounded-full border border-[#E4DCD0] bg-[#FAF7F2] text-sm font-sans text-[#2D2220]/50 w-full md:w-auto md:min-w-[280px]">
-            <Search className="w-4 h-4 shrink-0" />
-            <span>Rechercher un événement, un artiste, une salle...</span>
-          </div>
-        </div>
-
         <div className="grid lg:grid-cols-12 gap-12 items-end">
           <div className="lg:col-span-8 space-y-6">
             <h1 className="text-6xl md:text-8xl lg:text-9xl font-light tracking-tighter leading-[0.9]">
