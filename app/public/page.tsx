@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { ArrowUpRight, Calendar, MapPin, Sparkles, RefreshCw, ShieldCheck, Flame, Disc, Radio } from 'lucide-react';
+import { ArrowUpRight, Calendar, MapPin, Sparkles, RefreshCw, ShieldCheck, Flame, Heart } from 'lucide-react';
 import { supabaseBrowser } from '@/lib/supabase-browser';
 
 const VILLES = ['Paris', 'Bordeaux', 'Lyon', 'Marseille', 'Nantes'];
@@ -36,14 +36,14 @@ export default function PublicHome() {
   return (
     <div className="flex-1 flex flex-col bg-[#FAF7F2] text-[#2D2220] selection:bg-[#5C1D24] selection:text-[#FAF7F2] font-serif overflow-hidden">
       
-      {/* ─── HERO EDITORIAL ASYMÉTRIQUE & IMMERSIF (Style Magazine d'Art) ─── */}
+      {/* ─── HERO ÉDITORIAL & IMMERSIF (Style Manifeste Culturel) ─── */}
       <section className="relative px-6 md:px-16 pt-16 pb-28 max-w-7xl mx-auto w-full border-b border-[#E4DCD0]">
         
-        {/* En-tête de section style manifeste */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
+        {/* Barre de navigation éditoriale supérieure */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-16">
           <div className="inline-flex items-center gap-3 text-xs font-sans tracking-[0.3em] uppercase px-4 py-2 rounded-full bg-[#F0EBE3] text-[#5C1D24] font-medium border border-[#E4DCD0]">
             <span className="w-2 h-2 rounded-full bg-[#5C1D24] animate-pulse" />
-            <span>Welcome to the alternative</span>
+            <span>Welcome to the alternative[cite: 2]</span>
           </div>
           <div className="flex items-center gap-2 text-xs font-sans tracking-widest uppercase text-[#2D2220]/60">
             <span>Explorer par ville :</span>
@@ -57,17 +57,17 @@ export default function PublicHome() {
           </div>
         </div>
 
-        {/* Titre monumental en décalé */}
-        <div className="grid lg:grid-cols-12 gap-8 items-end">
+        {/* Titre monumental asymétrique */}
+        <div className="grid lg:grid-cols-12 gap-12 items-end">
           <div className="lg:col-span-8 space-y-6">
             <h1 className="text-7xl md:text-9xl lg:text-[10rem] font-light tracking-tighter leading-[0.9]">
-              L'alternative <br />
-              <span className="italic font-normal text-[#5C1D24]">du live</span>.
+              Chope ton <br />
+              <span className="italic font-normal text-[#5C1D24]">billet</span>.
             </h1>
           </div>
           <div className="lg:col-span-4 space-y-6 pb-4">
             <p className="text-base md:text-lg font-sans font-light text-[#2D2220]/70 leading-relaxed">
-              Incredible live shows, upfront pricing, and relevant recommendations. TYKS makes going out easy, intense, and independent[cite: 2].
+              Incredible live shows, upfront pricing, and relevant recommendations. On rend tes sorties simples, intenses et indépendantes[cite: 2].
             </p>
             <div>
               <a 
@@ -81,8 +81,8 @@ export default function PublicHome() {
           </div>
         </div>
 
-        {/* Bandeau de statistiques artistiques en bas du hero */}
-        <div className="mt-20 pt-10 border-t border-[#E4DCD0] grid grid-cols-2 md:grid-cols-4 gap-8">
+        {/* Chiffres clés / Manifeste en pied de hero */}
+        <div className="mt-24 pt-10 border-t border-[#E4DCD0] grid grid-cols-2 md:grid-cols-4 gap-8">
           <div>
             <div className="text-3xl md:text-4xl font-light text-[#5C1D24]">0 frais</div>
             <div className="text-xs font-sans tracking-widest uppercase text-[#2D2220]/50 mt-1">Cachés au checkout[cite: 2]</div>
@@ -97,17 +97,17 @@ export default function PublicHome() {
           </div>
           <div>
             <div className="text-3xl md:text-4xl font-light text-[#5C1D24]">Instantané</div>
-            <div className="text-xs font-sans tracking-widest uppercase text-[#2D2220]/50 mt-1">Pass hors-ligne</div>
+            <div className="text-xs font-sans tracking-widest uppercase text-[#2D2220]/50 mt-1">Billets sur ton tél[cite: 2]</div>
           </div>
         </div>
 
       </section>
 
-      {/* ─── SECTION MARQUEE / RÉSEAU DE PARTENAIRES (Inspiré Dice/Shotgun) ─── */}
+      {/* ─── MARQUEE / RÉSEAU DE PARTENAIRES (Inspiré Dice & Shotgun) ─── */}
       <section className="py-12 border-b border-[#E4DCD0] bg-[#F4EFE6]/30 overflow-hidden">
         <div className="max-w-7xl mx-auto px-6 md:px-16 mb-6">
           <span className="text-xs font-sans tracking-[0.3em] uppercase text-[#2D2220]/40 block text-center">
-            Ils font confiance à notre réseau de salles et promoteurs[cite: 2]
+            En partenariat avec les meilleurs promoteurs et salles du monde[cite: 2]
           </span>
         </div>
         <div className="flex flex-wrap items-center justify-center gap-8 md:gap-16 px-6 opacity-75">
@@ -119,7 +119,7 @@ export default function PublicHome() {
         </div>
       </section>
 
-      {/* ─── AGENDA & TENDANCES (Mise en page asymétrique dynamique) ─── */}
+      {/* ─── AGENDA / TENDANCES DYNAMIQUES ─── */}
       <section id="events" className="py-28 px-6 md:px-16 border-b border-[#E4DCD0]">
         <div className="max-w-7xl mx-auto">
           
@@ -134,7 +134,7 @@ export default function PublicHome() {
               href="/events"
               className="text-xs font-sans tracking-widest uppercase text-[#2D2220] border-b border-[#5C1D24] pb-0.5 hover:text-[#5C1D24] transition-colors"
             >
-              Voir toute la programmation &rarr;
+              Voir tous les événements &rarr;
             </Link>
           </div>
 
@@ -143,7 +143,7 @@ export default function PublicHome() {
           ) : events.length === 0 ? (
             <div className="py-24 text-center border border-[#E4DCD0] rounded-[2.5rem] bg-[#F2ECE4] space-y-3">
               <p className="text-xs font-sans tracking-widest uppercase text-[#2D2220]/60">Aucun événement disponible pour le moment.</p>
-              <p className="text-xs font-sans font-light text-[#2D2220]/40">Reviens très vite pour découvrir les prochaines dates.</p>
+              <p className="text-xs font-sans font-light text-[#2D2220]/40">Reviens vite pour découvrir les prochaines dates.</p>
             </div>
           ) : (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -154,7 +154,6 @@ export default function PublicHome() {
                   : '';
                 const priceLabel = Number(item.price) === 0 ? 'Offert' : `${Number(item.price).toFixed(2)} €`;
 
-                // Effet de disposition asymétrique en quinconce subtil
                 const offsetClass = index % 3 === 1 ? 'lg:translate-y-6' : index % 3 === 2 ? 'lg:translate-y-12' : '';
 
                 return (
@@ -192,19 +191,19 @@ export default function PublicHome() {
         </div>
       </section>
 
-      {/* ─── SECTION EXPÉRIENCE FAN (Style Manifeste immersif) ─── */}
+      {/* ─── SECTION EXPÉRIENCE FAN (Weirdly easy ticketing) ─── */}
       <section className="py-28 px-6 md:px-16 border-b border-[#E4DCD0] bg-[#F4EFE6]/50">
         <div className="max-w-7xl mx-auto grid lg:grid-cols-12 gap-12 items-center">
           <div className="lg:col-span-5 space-y-6">
-            <span className="text-xs font-sans tracking-[0.25em] uppercase text-[#5C1D24] font-semibold">Weirdly easy ticketing</span>
+            <span className="text-xs font-sans tracking-[0.25em] uppercase text-[#5C1D24] font-semibold">Weirdly easy ticketing[cite: 2]</span>
             <h2 className="text-4xl md:text-6xl font-light leading-tight">Get tickets in less time than it took to read this[cite: 2].</h2>
             <p className="text-sm md:text-base font-sans font-light text-[#2D2220]/70 leading-relaxed">
-              Plus besoin d'imprimer des e-mails ou de paniquer à l'entrée. Tout est centralisé dans ton application avec des QR codes dynamiques ultra-sécurisés.
+              Plus besoin de chercher des e-mails ou d'imprimer des PDF. Tout est centralisé sur ton téléphone, avec des codes sécurisés et des remboursements gérés en quelques clics[cite: 2, 3].
             </p>
             <div className="pt-4 flex items-center gap-6">
               <div className="flex items-center gap-3">
                 <span className="w-3 h-3 rounded-full bg-[#5C1D24]" />
-                <span className="text-xs font-sans uppercase tracking-widest font-medium">Zéro frais cachés[cite: 2]</span>
+                <span className="text-xs font-sans uppercase tracking-widest font-medium">Prix transparents[cite: 2]</span>
               </div>
               <div className="flex items-center gap-3">
                 <span className="w-3 h-3 rounded-full bg-[#5C1D24]" />
@@ -220,7 +219,7 @@ export default function PublicHome() {
               </div>
               <h3 className="text-2xl font-normal">Recommandations sur-mesure[cite: 2]</h3>
               <p className="text-xs font-sans font-light text-[#2D2220]/70 leading-relaxed">
-                Suis tes artistes favoris, découvre des pépites underground et reçois des suggestions calées sur tes goûts musicaux[cite: 2].
+                Suis tes artistes favoris et reçois des suggestions ultra-pertinentes basées sur tes goûts musicaux[cite: 2].
               </p>
             </div>
 
@@ -230,14 +229,14 @@ export default function PublicHome() {
               </div>
               <h3 className="text-2xl font-normal">Changement de plan ?[cite: 3]</h3>
               <p className="text-xs font-sans font-light text-[#2D2220]/70 leading-relaxed">
-                Empêché de dernière minute ? Remets ton billet en vente instantanément sur la plateforme officielle en toute sécurité[cite: 3].
+                Un empêchement ? Revends ton billet instantanément et en toute sécurité sur la plateforme officielle[cite: 3].
               </p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* ─── SECTION CITATIONS & AVIS COMMUNAUTÉ (Style Dice) ─── */}
+      {/* ─── SECTION TÉMOIGNAGES COMMUNAUTÉ (Loved by millions) ─── */}
       <section className="py-28 px-6 md:px-16 border-b border-[#E4DCD0]">
         <div className="max-w-5xl mx-auto text-center space-y-12">
           <span className="text-xs font-sans tracking-[0.3em] uppercase text-[#5C1D24] font-semibold">Loved by millions[cite: 2]</span>
@@ -245,26 +244,26 @@ export default function PublicHome() {
             "La meilleure application de billetterie, rafraîchissante, rassurante, sans stress, 10/10, simple et humaine[cite: 2]."
           </blockquote>
           <div className="text-xs font-sans uppercase tracking-widest text-[#2D2220]/50">
-            &mdash; Extraits des retours de notre communauté de spectateurs[cite: 2]
+            &mdash; Extraits des retours de notre communauté[cite: 2]
           </div>
         </div>
       </section>
 
-      {/* ─── BANDEAU CTA APP FINAL (Inspiré Shotgun/Dice) ─── */}
+      {/* ─── BANDEAU CTA FINAL ─── */}
       <section className="py-28 px-6 md:px-16 bg-[#5C1D24] text-[#FAF7F2] text-center">
         <div className="max-w-4xl mx-auto space-y-8">
-          <span className="text-xs font-sans tracking-[0.3em] uppercase text-[#FAF7F2]/60">Application Mobile</span>
+          <span className="text-xs font-sans tracking-[0.3em] uppercase text-[#FAF7F2]/60">Expérience Mobile</span>
           <h2 className="text-5xl md:text-7xl font-light leading-tight">
             Chope ton billet, <br />
             <span className="italic">ne rate plus jamais une nuit</span>.
           </h2>
           <p className="max-w-xl mx-auto text-base font-sans font-light text-[#FAF7F2]/80 leading-relaxed">
-            Télécharge l'application et accède à tous tes billets directement depuis ton téléphone, même hors connexion.
+            Découvre les prochains événements et réserve tes places en quelques secondes, où que tu sois.
           </p>
-          <div className="pt-4 flex flex-wrap items-center justify-center gap-4">
+          <div className="pt-4">
             <a
               href="#events"
-              className="px-8 py-4 rounded-full bg-[#FAF7F2] text-[#5C1D24] hover:bg-white transition-colors text-xs font-sans font-medium uppercase tracking-widest shadow-md"
+              className="px-8 py-4 rounded-full bg-[#FAF7F2] text-[#5C1D24] hover:bg-white transition-colors text-xs font-sans font-medium uppercase tracking-widest shadow-md inline-block"
             >
               Découvrir les événements[cite: 2]
             </a>
