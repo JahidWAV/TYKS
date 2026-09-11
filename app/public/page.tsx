@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { ArrowUpRight, Terminal, Hash, Radio, Disc } from 'lucide-react';
+import { ArrowUpRight, Terminal, Radio, Disc } from 'lucide-react';
 import { supabaseBrowser } from '@/lib/supabase-browser';
 
 const MANIFESTO_ITEMS = [
@@ -48,9 +48,6 @@ export default function PublicHome() {
   return (
     <div className="flex-1 flex flex-col bg-[#0A0A0A] text-[#E0E0E0] selection:bg-[#E0E0E0] selection:text-black font-mono">
       
-      {/* Grille de fond technique subtile (lignes directrices) */}
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff05_1px,transparent_1px),linear-gradient(to_bottom,#ffffff05_1px,transparent_1px)] bg-[size:4rem_4rem] pointer-events-none" />
-
       <main className="mx-auto max-w-7xl px-6 md:px-12 flex-1 w-full relative z-10">
 
         {/* ─── HERO ─── */}
@@ -58,7 +55,7 @@ export default function PublicHome() {
           <div className="space-y-10">
             <div className="inline-flex items-center gap-3 text-[11px] uppercase tracking-[0.3em] text-white/40 pb-2 border-b border-white/10">
               <span className="w-1.5 h-1.5 bg-emerald-400 animate-pulse" />
-              <span>Infrastructures Live // Édition 2026</span>
+              <span>Infrastructures Live // Édition 2026[cite: 1]</span>
             </div>
             
             <h1 className="text-5xl md:text-7xl lg:text-8xl font-black tracking-tighter leading-[0.95] uppercase text-white font-sans">
@@ -75,7 +72,7 @@ export default function PublicHome() {
             <div className="flex items-center gap-6 pt-2">
               <a 
                 href="#events" 
-                className="px-8 py-4 bg-white text-black text-xs font-bold uppercase tracking-widest hover:bg-white/90 transition-all flex items-center gap-3"
+                className="px-8 py-4 bg-white/10 backdrop-blur-md border border-white/20 text-white text-xs font-bold uppercase tracking-widest hover:bg-white/20 transition-all flex items-center gap-3 shadow-[0_8px_32px_0_rgba(0,0,0,0.37)]"
               >
                 <span>Accéder au réseau</span>
                 <ArrowUpRight className="w-4 h-4" />
@@ -90,7 +87,7 @@ export default function PublicHome() {
           </div>
 
           {/* COLONNE DE DROITE : Bloc type "Terminal / Objet technique" */}
-          <div className="p-8 rounded-none border border-white/15 bg-black/40 backdrop-blur-md space-y-6">
+          <div className="p-8 rounded-none border border-white/15 bg-white/[0.02] backdrop-blur-xl space-y-6 shadow-[0_8px_32px_0_rgba(0,0,0,0.37)]">
             <div className="flex items-center justify-between text-[10px] tracking-widest uppercase text-white/40 border-b border-white/10 pb-4">
               <span className="flex items-center gap-2">
                 <Terminal className="w-3.5 h-3.5" /> app_mobile.bin
@@ -175,7 +172,7 @@ export default function PublicHome() {
         <section className="py-28 border-b border-white/10">
           <div className="grid md:grid-cols-3 gap-12">
             {MANIFESTO_ITEMS.map((item) => (
-              <div key={item.code} className="space-y-4 p-6 border border-white/10 bg-white/[0.01]">
+              <div key={item.code} className="space-y-4 p-6 border border-white/10 bg-white/[0.01] backdrop-blur-sm">
                 <div className="text-[10px] tracking-[0.2em] text-white/30">{item.code}</div>
                 <h3 className="text-xl font-bold text-white tracking-tight font-sans">{item.title}</h3>
                 <p className="text-xs text-white/60 leading-relaxed font-light">
@@ -187,7 +184,7 @@ export default function PublicHome() {
         </section>
 
         {/* ─── CTA PRO ─── */}
-        <section className="my-28 p-12 md:p-16 border border-white/20 bg-gradient-to-r from-white/[0.04] to-transparent flex flex-col md:flex-row items-start md:items-center justify-between gap-8">
+        <section className="my-28 p-12 md:p-16 border border-white/20 bg-white/[0.02] backdrop-blur-xl flex flex-col md:flex-row items-start md:items-center justify-between gap-8 shadow-[0_8px_32px_0_rgba(0,0,0,0.37)]">
           <div className="space-y-3 max-w-xl">
             <span className="text-[10px] uppercase tracking-[0.3em] text-emerald-400">Accès Organisateur</span>
             <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-white font-sans">Pilotez votre propre infrastructure.</h2>
@@ -197,7 +194,7 @@ export default function PublicHome() {
           </div>
           <a
             href="https://pro.tyks.app"
-            className="px-8 py-4 bg-white text-black text-xs font-bold uppercase tracking-widest hover:bg-white/90 transition-all shrink-0"
+            className="px-8 py-4 bg-white/10 backdrop-blur-md border border-white/20 text-white text-xs font-bold uppercase tracking-widest hover:bg-white/20 transition-all shrink-0 shadow-[0_8px_32px_0_rgba(0,0,0,0.37)]"
           >
             Ouvrir un compte Pro
           </a>
