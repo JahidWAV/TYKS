@@ -50,7 +50,7 @@ export default function PublicHome() {
       {/* ─── 1. HERO SECTION PLEIN ÉCRAN (TAGLINE SEULE, CENTRAGE STRICT) ─── */}
       <section className="relative h-screen w-full flex flex-col items-center justify-center text-center px-6 border-b border-[#1A0A0F]/10">
         <h1 className="max-w-5xl text-5xl sm:text-7xl md:text-8xl lg:text-9xl font-light tracking-tight leading-[0.95]">
-          Vivez le live, <br />
+          La billetterie, <br />
           <span className="italic font-normal text-[#721120]">sans compromis</span>.
         </h1>
 
