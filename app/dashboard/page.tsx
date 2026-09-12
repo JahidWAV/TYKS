@@ -148,83 +148,83 @@ export default function OrganizerDashboard() {
 
   if (!ready) {
     return (
-      <div className="min-h-screen bg-[#F7F5F0] text-[#111110] flex items-center justify-center">
-        <Loader2 className="h-6 w-6 animate-spin opacity-60" />
+      <div className="min-h-screen bg-[#F5F5F7] text-black font-mono text-xs uppercase tracking-widest flex items-center justify-center">
+        Chargement...
       </div>
     );
   }
 
   if (!user) {
     return (
-      <div className="min-h-screen bg-[#F7F5F0] text-[#111110] flex flex-col lg:flex-row w-full overflow-hidden selection:bg-[#111110] selection:text-[#F7F5F0]">
+      <div className="min-h-screen bg-[#F5F5F7] text-black flex flex-col lg:flex-row w-full overflow-hidden selection:bg-black selection:text-white font-sans">
         
         {/* Colonne gauche : Branding & Connexion */}
-        <div className="w-full lg:w-1/2 flex flex-col justify-between p-8 lg:p-20 z-10 bg-[#F7F5F0]">
-          <div className="flex items-center gap-2.5">
-            <span className="h-7 w-7 rounded-xl bg-[#111110] text-[#F7F5F0] flex items-center justify-center font-bold text-xs tracking-wider">T</span>
-            <span className="font-display font-bold text-base tracking-tight">TYKS Pro</span>
+        <div className="w-full lg:w-1/2 flex flex-col justify-between p-8 lg:p-16 z-10 bg-[#F5F5F7] border-b-2 lg:border-b-0 lg:border-r-2 border-black">
+          <div className="flex items-center gap-3">
+            <span className="h-9 w-9 border-2 border-black bg-black text-white flex items-center justify-center font-mono font-bold text-xs">T</span>
+            <span className="font-mono text-xs font-bold uppercase tracking-widest">TYKS Pro</span>
           </div>
 
           <div className="space-y-6 my-auto py-12">
-            <p className="text-xs font-mono opacity-60 uppercase tracking-wider">TYKS PRO · ESPACE ORGANISATEUR</p>
-            <h1 className="font-display text-4xl font-bold leading-tight tracking-tight md:text-5xl">
+            <span className="inline-block font-mono text-xs uppercase tracking-widest bg-black text-white px-3 py-1">
+              TYKS PRO · ESPACE ORGANISATEUR
+            </span>
+            <h1 className="text-4xl lg:text-6xl font-bold tracking-tighter uppercase leading-[0.95]">
               Créez autant d&apos;événements que vous voulez.
             </h1>
-            <p className="text-xs leading-relaxed opacity-70 max-w-md">
+            <p className="font-mono text-xs leading-relaxed text-neutral-600 max-w-md">
               Zéro abonnement, commission à la performance. Aucune limite de volume ni de jauge. Publiez vos événements en illimité et ne payez qu&apos;en cas de vente réussie.
             </p>
             <div>
               <button
                 onClick={() => setIsAuthModalOpen(true)}
-                className="inline-flex items-center gap-3 rounded-full bg-[#111110] px-8 py-3.5 text-xs font-semibold text-[#F7F5F0] transition hover:opacity-95 shadow-sm"
+                className="w-full sm:w-auto px-8 py-4 bg-black text-white font-mono text-xs uppercase tracking-widest hover:bg-neutral-800 transition-colors flex items-center justify-center gap-3 cursor-pointer shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 hover:shadow-none font-bold"
               >
-                <ArrowUpRight className="h-4 w-4" />
-                Accéder à mon espace Pro
+                <span>Accéder à mon espace Pro</span>
+                <ArrowUpRight className="w-4 h-4" />
               </button>
             </div>
           </div>
 
-          <div className="text-xs font-mono opacity-40">
+          <div className="font-mono text-xs uppercase tracking-wider text-neutral-500">
             © TYKS Inc.
           </div>
         </div>
 
-        {/* Colonne droite : Aperçu élégant du Dashboard en arrière-plan */}
-        <div className="hidden lg:flex w-1/2 bg-[#111110] text-white p-12 relative overflow-hidden items-center justify-center select-none pointer-events-none">
-          <div className="absolute inset-0 opacity-15 bg-[radial-gradient(#ffffff_1px,transparent_1px)] [background-size:20px_20px]"></div>
-          
-          <div className="w-full max-w-lg bg-white/5 border border-white/10 rounded-3xl p-6 backdrop-blur-md space-y-6 shadow-2xl">
-            <div className="flex items-center justify-between border-b border-white/10 pb-4">
+        {/* Colonne droite : Aperçu brut du Dashboard en arrière-plan */}
+        <div className="hidden lg:flex w-1/2 bg-white p-12 relative overflow-hidden items-center justify-center select-none pointer-events-none">
+          <div className="w-full max-w-lg bg-[#F5F5F7] border-2 border-black p-6 space-y-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+            <div className="flex items-center justify-between border-b-2 border-black pb-4">
               <div className="flex items-center gap-2">
-                <span className="h-3 w-3 rounded-full bg-red-500/80"></span>
-                <span className="h-3 w-3 rounded-full bg-yellow-500/80"></span>
-                <span className="h-3 w-3 rounded-full bg-emerald-500/80"></span>
+                <span className="h-3 w-3 border border-black bg-black"></span>
+                <span className="h-3 w-3 border border-black bg-white"></span>
+                <span className="h-3 w-3 border border-black bg-black"></span>
               </div>
-              <span className="text-[10px] font-mono text-white/40">dashboard.tyks.app</span>
+              <span className="text-xs font-mono uppercase tracking-wider">dashboard.tyks.app</span>
             </div>
 
-            <div className="grid grid-cols-3 gap-3">
-              <div className="bg-white/5 p-4 rounded-2xl border border-white/5 space-y-2">
-                <div className="h-2 w-12 bg-white/20 rounded"></div>
-                <div className="h-6 w-20 bg-white/40 rounded"></div>
+            <div className="grid grid-cols-3 gap-3 font-mono">
+              <div className="bg-white border-2 border-black p-4 space-y-2">
+                <div className="h-2 w-12 bg-neutral-200"></div>
+                <div className="h-6 w-16 bg-black"></div>
               </div>
-              <div className="bg-white/5 p-4 rounded-2xl border border-white/5 space-y-2">
-                <div className="h-2 w-12 bg-white/20 rounded"></div>
-                <div className="h-6 w-16 bg-white/40 rounded"></div>
+              <div className="bg-white border-2 border-black p-4 space-y-2">
+                <div className="h-2 w-12 bg-neutral-200"></div>
+                <div className="h-6 w-12 bg-black"></div>
               </div>
-              <div className="bg-white/5 p-4 rounded-2xl border border-white/5 space-y-2">
-                <div className="h-2 w-12 bg-white/20 rounded"></div>
-                <div className="h-6 w-14 bg-emerald-500/40 rounded"></div>
+              <div className="bg-white border-2 border-black p-4 space-y-2">
+                <div className="h-2 w-12 bg-neutral-200"></div>
+                <div className="h-6 w-10 bg-black"></div>
               </div>
             </div>
 
-            <div className="h-40 bg-white/5 rounded-2xl border border-white/5 flex items-end p-4 gap-2">
-              <div className="w-1/6 h-1/2 bg-white/20 rounded-t-lg"></div>
-              <div className="w-1/6 h-3/4 bg-white/30 rounded-t-lg"></div>
-              <div className="w-1/6 h-2/3 bg-white/20 rounded-t-lg"></div>
-              <div className="w-1/6 h-full bg-white/50 rounded-t-lg"></div>
-              <div className="w-1/6 h-4/5 bg-white/30 rounded-t-lg"></div>
-              <div className="w-1/6 h-5/6 bg-white/40 rounded-t-lg"></div>
+            <div className="h-40 bg-white border-2 border-black flex items-end p-4 gap-2">
+              <div className="w-1/6 h-1/2 bg-black"></div>
+              <div className="w-1/6 h-3/4 bg-black"></div>
+              <div className="w-1/6 h-2/3 bg-black"></div>
+              <div className="w-1/6 h-full bg-black"></div>
+              <div className="w-1/6 h-4/5 bg-black"></div>
+              <div className="w-1/6 h-5/6 bg-black"></div>
             </div>
           </div>
         </div>
@@ -241,8 +241,8 @@ export default function OrganizerDashboard() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#F7F5F0] text-[#111110] flex items-center justify-center">
-        <Loader2 className="h-6 w-6 animate-spin opacity-60" />
+      <div className="min-h-screen bg-[#F5F5F7] text-black font-mono text-xs uppercase tracking-widest flex items-center justify-center">
+        Chargement...
       </div>
     );
   }
@@ -259,107 +259,107 @@ export default function OrganizerDashboard() {
     : 0;
 
   return (
-    <div className="max-w-7xl mx-auto px-8 py-10 space-y-8">
+    <div className="max-w-7xl mx-auto px-6 lg:px-12 py-10 space-y-8 font-sans">
       
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 border-b border-[#111110]/10">
-        <div className="space-y-1">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 border-b-2 border-black">
+        <div className="space-y-2">
           <div className="flex items-center gap-2">
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-mono bg-emerald-500/10 text-emerald-700 font-semibold border border-emerald-500/20">
-              <ShieldCheck className="w-3 h-3" /> Accès Illimité (Sans Abonnement)
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 border-2 border-black text-xs font-mono bg-white font-bold uppercase tracking-wider shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+              <ShieldCheck className="w-3.5 h-3.5" /> Accès Illimité (Sans Abonnement)
             </span>
           </div>
-          <h1 className="font-display text-2xl md:text-3xl font-bold tracking-tight">Sales Overview</h1>
-          <p className="text-xs font-mono opacity-60 uppercase tracking-wider">Analysez et optimisez vos ventes en temps réel</p>
+          <h1 className="text-3xl lg:text-5xl font-bold tracking-tighter uppercase leading-none">Sales Overview</h1>
+          <p className="text-xs font-mono uppercase tracking-wider text-neutral-600">Analysez et optimisez vos ventes en temps réel</p>
         </div>
 
         <div className="flex items-center gap-3">
           <button
             onClick={() => loadDashboard(user.id, true)}
             disabled={refreshing}
-            className="inline-flex items-center gap-2 rounded-xl border border-[#111110]/15 bg-white/70 px-4 py-2.5 text-xs font-semibold transition hover:bg-white disabled:opacity-50"
+            className="h-12 px-5 border-2 border-black bg-white hover:bg-black hover:text-white font-mono text-xs uppercase tracking-widest transition-all flex items-center gap-2 disabled:opacity-50 cursor-pointer font-bold shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
           >
             <RefreshCw className={`h-3.5 w-3.5 ${refreshing ? 'animate-spin' : ''}`} />
             <span className="hidden sm:inline">Actualiser</span>
           </button>
           <Link
             href="/new"
-            className="inline-flex items-center justify-center gap-2 rounded-full bg-[#111110] px-5 py-2.5 text-xs font-semibold text-[#F7F5F0] transition-transform hover:scale-[1.02] shadow-sm"
+            className="h-12 px-6 border-2 border-black bg-black text-white hover:bg-neutral-800 font-mono text-xs uppercase tracking-widest transition-all flex items-center justify-center gap-2 cursor-pointer shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] font-bold hover:translate-x-1 hover:translate-y-1 hover:shadow-none"
           >
             <Plus className="h-4 w-4" />
-            Créer un événement illimité
+            <span>Créer un événement illimité</span>
           </Link>
         </div>
       </div>
 
       {/* Statistiques globales */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="p-6 rounded-3xl border border-[#111110]/15 bg-white/70 backdrop-blur-md shadow-sm space-y-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 font-mono">
+        <div className="p-6 border-2 border-black bg-white shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] space-y-3">
           <div className="flex items-center justify-between">
-            <p className="text-xs font-mono opacity-60 uppercase tracking-wide">Chiffre d&apos;affaires</p>
-            <Euro className="w-4 h-4 opacity-70" />
+            <p className="text-xs uppercase tracking-wider text-neutral-600 font-bold">Chiffre d&apos;affaires</p>
+            <Euro className="w-4 h-4 text-black" />
           </div>
-          <p className="font-display text-2xl md:text-3xl font-bold tracking-tight">
+          <p className="text-3xl font-bold tracking-tight">
             {stats.totalRevenue.toLocaleString('fr-FR')} €
           </p>
-          <p className="text-[11px] opacity-60 font-mono">Volume brut encaissé</p>
+          <p className="text-[11px] text-neutral-500 uppercase">Volume brut encaissé</p>
         </div>
 
-        <div className="p-6 rounded-3xl border border-[#111110]/15 bg-white/70 backdrop-blur-md shadow-sm space-y-3">
+        <div className="p-6 border-2 border-black bg-white shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] space-y-3">
           <div className="flex items-center justify-between">
-            <p className="text-xs font-mono opacity-60 uppercase tracking-wide">Billets vendus</p>
-            <Ticket className="w-4 h-4 opacity-70" />
+            <p className="text-xs uppercase tracking-wider text-neutral-600 font-bold">Billets vendus</p>
+            <Ticket className="w-4 h-4 text-black" />
           </div>
-          <p className="font-display text-2xl md:text-3xl font-bold tracking-tight">
+          <p className="text-3xl font-bold tracking-tight">
             {stats.totalTicketsSold}
           </p>
-          <p className="text-[11px] opacity-60 font-mono">Taux de remplissage : {fillRate}%</p>
+          <p className="text-[11px] text-neutral-500 uppercase">Taux de remplissage : {fillRate}%</p>
         </div>
 
-        <div className="p-6 rounded-3xl border border-[#111110]/15 bg-white/70 backdrop-blur-md shadow-sm space-y-3">
+        <div className="p-6 border-2 border-black bg-white shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] space-y-3">
           <div className="flex items-center justify-between">
-            <p className="text-xs font-mono opacity-60 uppercase tracking-wide">Événements publiés</p>
-            <Calendar className="w-4 h-4 opacity-70" />
+            <p className="text-xs uppercase tracking-wider text-neutral-600 font-bold">Événements publiés</p>
+            <Calendar className="w-4 h-4 text-black" />
           </div>
-          <p className="font-display text-2xl md:text-3xl font-bold tracking-tight">
-            {stats.publishedEventsCount} <span className="text-xs font-normal opacity-50">({stats.totalEventsCount} total)</span>
+          <p className="text-3xl font-bold tracking-tight">
+            {stats.publishedEventsCount} <span className="text-xs font-normal text-neutral-500">({stats.totalEventsCount} total)</span>
           </p>
-          <p className="text-[11px] opacity-60 font-mono">Création illimitée</p>
+          <p className="text-[11px] text-neutral-500 uppercase">Création illimitée</p>
         </div>
 
-        <div className="p-6 rounded-3xl border border-[#111110]/15 bg-white/70 backdrop-blur-md shadow-sm space-y-3">
+        <div className="p-6 border-2 border-black bg-white shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] space-y-3">
           <div className="flex items-center justify-between">
-            <p className="text-xs font-mono opacity-60 uppercase tracking-wide">Modèle tarifaire</p>
-            <span className="h-2.5 w-2.5 rounded-full bg-emerald-500 animate-pulse" />
+            <p className="text-xs uppercase tracking-wider text-neutral-600 font-bold">Modèle tarifaire</p>
+            <span className="h-3 w-3 border border-black bg-black animate-pulse" />
           </div>
-          <p className="font-display text-base font-bold tracking-tight pt-1">
+          <p className="text-base font-bold tracking-tight pt-1 uppercase">
             Commission sur ventes
           </p>
-          <p className="text-[11px] opacity-60 font-mono">0 € d&apos;abonnement fixe</p>
+          <p className="text-[11px] text-neutral-500 uppercase">0 € d&apos;abonnement fixe</p>
         </div>
       </div>
 
       {/* Barre de recherche et filtres */}
       <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4 pt-4">
-        <div className="flex items-center gap-3 flex-1">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 flex-1">
           <div className="relative flex-1 max-w-md">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 opacity-40" />
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-black" />
             <input
               type="text"
               placeholder="Rechercher par titre ou lieu..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full rounded-2xl border border-[#111110]/15 bg-white/70 pl-10 pr-4 py-2.5 text-xs focus:outline-none focus:border-[#111110] transition"
+              className="w-full h-12 border-2 border-black bg-white pl-11 pr-4 font-mono text-xs uppercase placeholder:text-neutral-400 focus:outline-none"
             />
           </div>
-          <div className="flex items-center gap-1.5 overflow-x-auto py-1">
+          <div className="flex items-center gap-2 overflow-x-auto py-1">
             {['all', 'published', 'draft', 'cancelled'].map((status) => (
               <button
                 key={status}
                 onClick={() => setStatusFilter(status)}
-                className={`px-3.5 py-2 rounded-xl text-xs font-mono transition whitespace-nowrap border ${
+                className={`h-12 px-4 border-2 border-black font-mono text-xs uppercase tracking-wider transition-all whitespace-nowrap cursor-pointer font-bold ${
                   statusFilter === status 
-                    ? 'bg-[#111110] text-[#F7F5F0] border-[#111110]' 
-                    : 'bg-white/70 text-[#111110] border-[#111110]/15 hover:bg-white'
+                    ? 'bg-black text-white shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]' 
+                    : 'bg-white text-black hover:bg-neutral-100'
                 }`}
               >
                 {status === 'all' ? 'Tous' : STATUS_LABEL[status] || status}
@@ -367,7 +367,7 @@ export default function OrganizerDashboard() {
             ))}
           </div>
         </div>
-        <span className="text-xs font-mono opacity-60 text-right">
+        <span className="font-mono text-xs uppercase tracking-wider text-neutral-600 text-right">
           {filteredEvents.length} événement(s)
         </span>
       </div>
@@ -375,9 +375,9 @@ export default function OrganizerDashboard() {
       {/* Liste des événements */}
       <div className="space-y-6">
         {filteredEvents.length === 0 ? (
-          <div className="rounded-3xl border border-[#111110]/15 bg-white/70 p-16 text-center space-y-3 backdrop-blur-md">
-            <Calendar className="mx-auto h-6 w-6 opacity-40" />
-            <p className="text-xs font-mono opacity-60">
+          <div className="border-2 border-black bg-white p-16 text-center space-y-4 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+            <Calendar className="mx-auto h-8 w-8 text-black" />
+            <p className="font-mono text-xs uppercase tracking-wider text-neutral-600">
               {events.length === 0 
                 ? "Vous n'avez pas encore créé d'événement. Lancez-vous, c'est illimité !" 
                 : "Aucun événement ne correspond à vos filtres."}
@@ -386,7 +386,7 @@ export default function OrganizerDashboard() {
               <div className="pt-2">
                 <Link
                   href="/new"
-                  className="inline-flex items-center gap-2 rounded-full bg-[#111110] px-5 py-2 text-xs font-semibold text-[#F7F5F0]"
+                  className="inline-flex items-center gap-2 h-12 px-6 border-2 border-black bg-black text-white font-mono text-xs uppercase tracking-widest font-bold hover:bg-neutral-800 transition-all shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
                 >
                   Créer mon premier événement
                 </Link>
@@ -394,17 +394,17 @@ export default function OrganizerDashboard() {
             )}
           </div>
         ) : (
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {filteredEvents.map((evt: any) => {
               const eventPrice = Number(evt.price || evt.ticket_price || 0);
               return (
                 <article
                   key={evt.id}
-                  className="group flex flex-col rounded-3xl border border-[#111110]/15 bg-white/70 backdrop-blur-md transition-all hover:bg-white overflow-hidden shadow-sm hover:shadow-md"
+                  className="group flex flex-col border-2 border-black bg-white shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-1 hover:translate-y-1 hover:shadow-none overflow-hidden"
                 >
                   <div className="space-y-3 p-6 flex-1">
-                    <div className="flex items-center justify-between">
-                      <span className="font-mono text-[10px] opacity-60">
+                    <div className="flex items-center justify-between font-mono">
+                      <span className="text-[10px] uppercase tracking-wider text-neutral-500 font-bold">
                         {evt.starts_at ? new Date(evt.starts_at).toLocaleDateString('fr-FR', {
                           day: '2-digit',
                           month: 'short',
@@ -413,53 +413,53 @@ export default function OrganizerDashboard() {
                           minute: '2-digit',
                         }) : 'Date non définie'}
                       </span>
-                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-mono font-semibold ${
+                      <span className={`inline-flex items-center px-2.5 py-0.5 border-2 border-black text-[10px] font-bold uppercase tracking-wider ${
                         evt.status === 'published' 
-                          ? 'bg-emerald-500/10 text-emerald-700 border border-emerald-500/20' 
+                          ? 'bg-emerald-100 text-emerald-900' 
                           : evt.status === 'cancelled'
-                          ? 'bg-red-500/10 text-red-700 border border-red-500/20'
-                          : 'bg-[#111110]/5 text-[#111110]'
+                          ? 'bg-red-100 text-red-900'
+                          : 'bg-neutral-100 text-neutral-900'
                       }`}>
                         {STATUS_LABEL[evt.status] ?? evt.status}
                       </span>
                     </div>
 
-                    <h3 className="font-display text-base font-bold leading-snug">
+                    <h3 className="text-xl font-bold uppercase tracking-tight leading-snug">
                       {evt.title}
                     </h3>
 
                     {evt.description && (
-                      <p className="line-clamp-2 text-xs leading-relaxed opacity-60">
+                      <p className="line-clamp-2 text-xs font-mono text-neutral-600 leading-relaxed">
                         {evt.description}
                       </p>
                     )}
 
                     {evt.location && (
-                      <div className="flex items-center gap-1.5 text-xs opacity-60 pt-1">
+                      <div className="flex items-center gap-2 font-mono text-xs text-neutral-600 pt-1">
                         <MapPin className="h-3.5 w-3.5 shrink-0" />
                         <span className="truncate">{evt.location}</span>
                       </div>
                     )}
                   </div>
 
-                  <div className="flex items-center justify-between border-t border-[#111110]/10 px-6 py-3.5 bg-white/40">
-                    <span className="font-mono text-xs font-bold">
+                  <div className="flex items-center justify-between border-t-2 border-black px-6 py-4 bg-[#F5F5F7]">
+                    <span className="font-mono text-xs font-bold uppercase tracking-wider">
                       {eventPrice > 0 ? `${eventPrice.toLocaleString('fr-FR')} €` : 'Gratuit'}
                     </span>
                     <div className="flex items-center gap-2">
                       <Link
                         href={`/events/${evt.slug || evt.id}/edit`}
-                        className="p-2 rounded-xl border border-[#111110]/15 bg-white text-[#111110] hover:bg-[#111110] hover:text-[#F7F5F0] transition-colors"
+                        className="w-10 h-10 border-2 border-black bg-white text-black flex items-center justify-center hover:bg-black hover:text-white transition-colors cursor-pointer shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
                         title="Modifier"
                       >
-                        <Edit3 className="h-3.5 w-3.5" />
+                        <Edit3 className="h-4 w-4" />
                       </Link>
                       <button
                         onClick={() => handleDeleteEvent(evt.id)}
-                        className="p-2 rounded-xl border border-red-500/20 bg-white text-red-600 hover:bg-red-500 hover:text-white transition-colors"
+                        className="w-10 h-10 border-2 border-black bg-white text-red-600 flex items-center justify-center hover:bg-red-600 hover:text-white transition-colors cursor-pointer shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
                         title="Supprimer"
                       >
-                        <Trash2 className="h-3.5 w-3.5" />
+                        <Trash2 className="h-4 w-4" />
                       </button>
                     </div>
                   </div>
