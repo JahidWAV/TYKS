@@ -62,7 +62,7 @@ function CustomCheckoutForm({ slug, eventTitle, quantity, totalPrice, onSuccess 
       <PaymentElement options={{ layout: 'tabs' }} />
       
       {errorMessage && (
-        <p className="text-xs font-mono text-red-500 bg-red-500/10 p-3 rounded-xl border border-red-500/20">
+        <p className="text-xs font-mono text-red-600 bg-red-500/10 p-3 rounded-none border-2 border-[#111110] font-bold">
           {errorMessage}
         </p>
       )}
@@ -70,10 +70,10 @@ function CustomCheckoutForm({ slug, eventTitle, quantity, totalPrice, onSuccess 
       <button
         type="submit"
         disabled={isProcessing || !stripe || !elements}
-        className="w-full rounded-full bg-[#721120] text-[#FAF7F2] py-4 px-6 text-xs font-mono uppercase tracking-widest transition-all duration-300 hover:bg-[#5c0e1a] hover:scale-[1.01] active:scale-[0.98] flex items-center justify-center gap-2 cursor-pointer font-bold disabled:opacity-50 shadow-lg"
+        className="w-full rounded-none bg-[#721120] text-[#F2EFE9] py-4 px-6 text-xs font-mono uppercase tracking-widest transition-all duration-150 hover:bg-[#5c0e1a] active:translate-x-0.5 active:translate-y-0.5 flex items-center justify-center gap-2 cursor-pointer font-bold disabled:opacity-50 border-2 border-[#111110] shadow-[4px_4px_0px_0px_#111110]"
       >
         {isProcessing ? (
-          <Loader2 className="w-4 h-4 animate-spin text-[#FAF7F2]" />
+          <Loader2 className="w-4 h-4 animate-spin text-[#F2EFE9]" />
         ) : (
           <>
             <span>Payer et valider ma place</span>
@@ -180,8 +180,8 @@ export default function PublicEventPage() {
 
   if (loading) {
     return (
-      <main className="min-h-screen bg-[#FAF7F2] flex items-center justify-center">
-        <Loader2 className="w-5 h-5 animate-spin text-[#111110]/50" />
+      <main className="min-h-screen bg-[#F2EFE9] flex items-center justify-center">
+        <Loader2 className="w-5 h-5 animate-spin text-[#111110]" />
       </main>
     );
   }
@@ -240,46 +240,46 @@ export default function PublicEventPage() {
 
   return (
     <>
-      <main className="min-h-screen bg-[#FAF7F2] text-[#111110] px-6 md:px-12 pt-32 pb-16 selection:bg-[#721120] selection:text-[#FAF7F2]">
+      <main className="min-h-screen bg-[#F2EFE9] text-[#111110] px-6 md:px-12 pt-32 pb-20 selection:bg-[#721120] selection:text-[#F2EFE9]">
         <div className="max-w-6xl mx-auto w-full space-y-12">
           
-          <div className="flex items-center justify-between border-b border-[#111110]/10 pb-4">
+          <div className="flex items-center justify-between border-b-2 border-[#111110] pb-4">
             <Link
               href="/"
-              className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-[#111110]/60 hover:text-[#111110] transition-colors group"
+              className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-[#111110] hover:bg-[#111110] hover:text-[#F2EFE9] px-3 py-1.5 transition-colors border-2 border-[#111110] shadow-[2px_2px_0px_0px_#111110]"
             >
-              <ArrowLeft className="w-3.5 h-3.5 transition-transform group-hover:-translate-x-1" />
+              <ArrowLeft className="w-3.5 h-3.5" />
               <span>Accueil</span>
             </Link>
-            <span className="text-xs font-mono uppercase tracking-widest text-[#111110]/60">
+            <span className="text-xs font-mono uppercase tracking-widest bg-[#111110] text-[#F2EFE9] px-3 py-1 font-bold">
               {event.organizations?.name || 'Organisateur Indépendant'}
             </span>
           </div>
 
-          <div className="grid lg:grid-cols-[1fr_1.2fr] gap-12 lg:gap-16 items-start">
+          <div className="grid lg:grid-cols-[1.2fr_1fr] gap-12 lg:gap-16 items-start">
             <div className="space-y-8">
-              <div className="space-y-3">
-                <span className="text-xs font-mono text-[#721120] uppercase tracking-widest">
-                  Par {event.organizations?.name || 'Organisateur'}
+              <div className="space-y-4">
+                <span className="inline-block text-xs font-mono bg-[#721120] text-[#F2EFE9] px-3 py-1 uppercase tracking-widest border-2 border-[#111110] font-bold shadow-[2px_2px_0px_0px_#111110]">
+                  Live Session // {event.organizations?.name || 'Organisateur'}
                 </span>
-                <h1 className="font-display text-4xl md:text-5xl font-bold tracking-tight leading-[1.05]">
+                <h1 className="font-display text-5xl md:text-6xl font-extrabold tracking-tight leading-[0.95] uppercase">
                   {event.title}
                 </h1>
               </div>
 
-              <div className="space-y-2.5 font-mono text-xs text-[#111110]/80 bg-white/60 p-5 rounded-2xl border border-[#111110]/10 shadow-sm">
-                <div className="flex items-center gap-3">
+              <div className="space-y-3 font-mono text-xs text-[#111110] bg-white p-6 border-2 border-[#111110] shadow-[6px_6px_0px_0px_#111110]">
+                <div className="flex items-center gap-3 border-b border-[#111110]/10 pb-3">
                   <Calendar className="w-4 h-4 text-[#721120] shrink-0" />
-                  <span>{formattedDate}</span>
+                  <span className="font-bold uppercase">{formattedDate}</span>
                 </div>
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-3 border-b border-[#111110]/10 pb-3">
                   <Clock className="w-4 h-4 text-[#721120] shrink-0" />
-                  <span>Portes à {formattedTime || '20:00'}</span>
+                  <span className="font-bold">Portes à {formattedTime || '20:00'}</span>
                 </div>
                 {event.location && (
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-3 pt-1">
                     <MapPin className="w-4 h-4 text-[#721120] shrink-0" />
-                    <span className="truncate">{event.location}</span>
+                    <span className="truncate font-bold">{event.location}</span>
                   </div>
                 )}
               </div>
@@ -291,25 +291,25 @@ export default function PublicEventPage() {
                     setIsSuccess(false);
                     setIsCheckoutOpen(true);
                   }}
-                  className="w-full sm:w-auto rounded-full bg-[#721120] text-[#FAF7F2] py-4 px-8 text-xs font-mono uppercase tracking-widest transition-all duration-300 hover:bg-[#5c0e1a] hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-3 cursor-pointer shadow-lg"
+                  className="w-full sm:w-auto rounded-none bg-[#721120] text-[#F2EFE9] py-5 px-10 text-xs font-mono uppercase tracking-widest transition-all duration-150 hover:bg-[#5c0e1a] active:translate-x-1 active:translate-y-1 flex items-center justify-center gap-3 cursor-pointer border-2 border-[#111110] shadow-[6px_6px_0px_0px_#111110] font-bold"
                 >
-                  <Ticket className="w-4 h-4 text-[#FAF7F2]" />
+                  <Ticket className="w-4 h-4 text-[#F2EFE9]" />
                   <span>{basePrice === 0 ? 'Prendre une place (Gratuit)' : `Prendre une place • ${basePrice.toFixed(2)} €`}</span>
-                  <ArrowUpRight className="w-4 h-4 text-[#FAF7F2]/60" />
+                  <ArrowUpRight className="w-4 h-4" />
                 </button>
               </div>
             </div>
 
             <div className="lg:sticky lg:top-32">
-              <div className="relative w-full aspect-[16/9] rounded-3xl overflow-hidden border border-[#111110]/15 bg-[#111110]/5 shadow-sm">
+              <div className="relative w-full aspect-[4/5] rounded-none overflow-hidden border-2 border-[#111110] bg-[#111110] shadow-[8px_8px_0px_0px_#111110]">
                 {event.image_url ? (
-                  <img src={event.image_url} alt={event.title} className="w-full h-full object-cover" />
+                  <img src={event.image_url} alt={event.title} className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-500" />
                 ) : (
-                  <div className="w-full h-full bg-[#721120] text-[#FAF7F2] p-8 flex flex-col justify-between">
-                    <span className="text-xs font-mono uppercase tracking-widest text-[#FAF7F2]/70">
+                  <div className="w-full h-full bg-[#721120] text-[#F2EFE9] p-8 flex flex-col justify-between">
+                    <span className="text-xs font-mono uppercase tracking-widest text-[#F2EFE9]/80 font-bold">
                       {event.organizations?.name || 'Production'}
                     </span>
-                    <Sparkles className="w-6 h-6 text-[#FAF7F2]/60" />
+                    <Sparkles className="w-8 h-8 text-[#F2EFE9]" />
                   </div>
                 )}
               </div>
@@ -318,24 +318,24 @@ export default function PublicEventPage() {
         </div>
       </main>
 
-      {/* Rendu des modales via Portal pour échapper au contexte de la Navbar */}
+      {/* Rendu des modales via Portal */}
       {mounted && createPortal(
         <>
           {/* Modale d'authentification rapide */}
           {showAuthModal && (
-            <div className="fixed inset-0 z-[99999] bg-black/80 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in duration-200">
-              <div className="bg-[#FAF7F2] border border-[#111110]/15 rounded-3xl p-8 max-w-md w-full space-y-6 relative shadow-2xl text-[#111110]">
+            <div className="fixed inset-0 z-[99999] bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200">
+              <div className="bg-[#F2EFE9] border-2 border-[#111110] rounded-none p-8 max-w-md w-full space-y-6 relative shadow-[8px_8px_0px_0px_#111110] text-[#111110]">
                 <button 
                   onClick={() => setShowAuthModal(false)}
-                  className="absolute top-6 right-6 w-8 h-8 rounded-full bg-[#111110]/10 flex items-center justify-center text-[#111110]/70 hover:text-[#111110] hover:bg-[#111110]/20 transition-all cursor-pointer"
+                  className="absolute top-6 right-6 w-8 h-8 rounded-none bg-[#111110] flex items-center justify-center text-[#F2EFE9] hover:bg-[#721120] transition-all cursor-pointer border-2 border-[#111110]"
                 >
                   <X className="w-4 h-4" />
                 </button>
 
                 <div className="space-y-2">
-                  <span className="text-[10px] font-mono uppercase tracking-widest text-[#721120] block">Sécurité & Billetterie</span>
-                  <h3 className="font-display text-2xl font-bold tracking-tight">Connexion requise</h3>
-                  <p className="text-xs font-mono text-[#111110]/60 leading-relaxed">
+                  <span className="text-[10px] font-mono uppercase tracking-widest bg-[#721120] text-[#F2EFE9] px-2 py-0.5 inline-block font-bold">Sécurité & Billetterie</span>
+                  <h3 className="font-display text-2xl font-extrabold uppercase tracking-tight">Connexion requise</h3>
+                  <p className="text-xs font-mono text-[#111110]/80 leading-relaxed">
                     Connectez-vous pour finaliser votre commande et récupérer vos billets en toute sécurité.
                   </p>
                 </div>
@@ -344,15 +344,15 @@ export default function PublicEventPage() {
                   <div className="space-y-4 pt-2">
                     <button
                       onClick={handleGoogleLogin}
-                      className="w-full bg-[#111110]/5 hover:bg-[#111110]/10 text-[#111110] py-3.5 px-4 rounded-full text-xs font-mono uppercase tracking-widest transition-all flex items-center justify-center gap-3 border border-[#111110]/15 cursor-pointer font-bold"
+                      className="w-full bg-white hover:bg-[#111110] hover:text-[#F2EFE9] text-[#111110] py-3.5 px-4 rounded-none text-xs font-mono uppercase tracking-widest transition-all flex items-center justify-center gap-3 border-2 border-[#111110] cursor-pointer font-bold shadow-[4px_4px_0px_0px_#111110]"
                     >
                       <span>Continuer avec Google</span>
                     </button>
 
                     <div className="relative flex py-2 items-center">
-                      <div className="flex-grow border-t border-[#111110]/15"></div>
-                      <span className="flex-shrink mx-4 text-[#111110]/40 text-[10px] font-mono uppercase">ou par e-mail</span>
-                      <div className="flex-grow border-t border-[#111110]/15"></div>
+                      <div className="flex-grow border-t-2 border-[#111110]"></div>
+                      <span className="flex-shrink mx-4 text-[#111110] text-[10px] font-mono uppercase font-bold">ou par e-mail</span>
+                      <div className="flex-grow border-t-2 border-[#111110]"></div>
                     </div>
 
                     <form onSubmit={handleMagicLinkLogin} className="space-y-4">
@@ -362,21 +362,21 @@ export default function PublicEventPage() {
                         placeholder="votre@email.com"
                         value={authEmail}
                         onChange={(e) => setAuthEmail(e.target.value)}
-                        className="w-full bg-white border border-[#111110]/15 rounded-xl px-4 py-3 text-sm font-mono text-[#111110] focus:outline-none focus:border-[#721120] transition-colors"
+                        className="w-full bg-white border-2 border-[#111110] rounded-none px-4 py-3 text-sm font-mono text-[#111110] focus:outline-none focus:bg-white transition-colors shadow-[2px_2px_0px_0px_#111110]"
                       />
                       <button
                         type="submit"
                         disabled={authLoading}
-                        className="w-full bg-[#721120] text-[#FAF7F2] py-4 rounded-full text-xs font-mono uppercase tracking-widest font-bold hover:bg-[#5c0e1a] transition-all disabled:opacity-50 cursor-pointer shadow-lg flex items-center justify-center gap-2"
+                        className="w-full bg-[#721120] text-[#F2EFE9] py-4 rounded-none text-xs font-mono uppercase tracking-widest font-bold hover:bg-[#5c0e1a] transition-all disabled:opacity-50 cursor-pointer border-2 border-[#111110] shadow-[4px_4px_0px_0px_#111110] flex items-center justify-center gap-2"
                       >
-                        {authLoading ? <Loader2 className="w-4 h-4 animate-spin text-[#FAF7F2]" /> : <span>Recevoir mon lien magique</span>}
+                        {authLoading ? <Loader2 className="w-4 h-4 animate-spin text-[#F2EFE9]" /> : <span>Recevoir mon lien magique</span>}
                       </button>
                     </form>
                   </div>
                 ) : (
-                  <div className="bg-[#721120]/5 border border-[#721120]/20 rounded-2xl p-6 text-center space-y-3">
+                  <div className="bg-white border-2 border-[#111110] rounded-none p-6 text-center space-y-3 shadow-[4px_4px_0px_0px_#111110]">
                     <p className="text-sm font-mono font-bold text-[#721120]">Lien de connexion envoyé !</p>
-                    <p className="text-xs font-mono text-[#111110]/60 leading-relaxed">
+                    <p className="text-xs font-mono text-[#111110]/80 leading-relaxed">
                       Vérifiez vos e-mails. Votre session s'activera automatiquement dès que vous cliquerez sur le lien.
                     </p>
                   </div>
@@ -387,8 +387,8 @@ export default function PublicEventPage() {
 
           {/* Modale de Paiement Stripe */}
           {isCheckoutOpen && (
-            <div className="fixed inset-0 z-[99999] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200">
-              <div className="relative w-full max-w-lg rounded-3xl bg-[#FAF7F2] text-[#111110] p-6 md:p-8 space-y-6 shadow-2xl border border-[#111110]/15 max-h-[90vh] overflow-y-auto">
+            <div className="fixed inset-0 z-[99999] bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200">
+              <div className="relative w-full max-w-lg rounded-none bg-[#F2EFE9] text-[#111110] p-6 md:p-8 space-y-6 shadow-[10px_10px_0px_0px_#111110] border-2 border-[#111110] max-h-[90vh] overflow-y-auto">
                 
                 <button
                   onClick={() => {
@@ -396,7 +396,7 @@ export default function PublicEventPage() {
                     setClientSecret(null);
                     setIsSuccess(false);
                   }}
-                  className="absolute top-6 right-6 w-8 h-8 rounded-full bg-[#111110]/10 flex items-center justify-center text-[#111110]/70 hover:text-[#111110] hover:bg-[#111110]/20 transition-all cursor-pointer z-10"
+                  className="absolute top-6 right-6 w-8 h-8 rounded-none bg-[#111110] flex items-center justify-center text-[#F2EFE9] hover:bg-[#721120] transition-all cursor-pointer z-10 border-2 border-[#111110]"
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -404,14 +404,14 @@ export default function PublicEventPage() {
                 {isSuccess ? (
                   <div className="py-6 space-y-6 text-center">
                     <div className="flex justify-center">
-                      <div className="w-16 h-16 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-600 shadow-inner">
+                      <div className="w-16 h-16 rounded-none bg-[#721120] border-2 border-[#111110] flex items-center justify-center text-[#F2EFE9] shadow-[4px_4px_0px_0px_#111110]">
                         <CheckCircle2 className="w-8 h-8" />
                       </div>
                     </div>
                     <div className="space-y-2">
-                      <span className="text-[10px] font-mono uppercase tracking-widest text-emerald-600">Paiement validé</span>
-                      <h3 className="font-display text-2xl font-bold tracking-tight">Vos places sont réservées !</h3>
-                      <p className="text-xs text-[#111110]/60 font-mono leading-relaxed pt-1">
+                      <span className="text-[10px] font-mono uppercase tracking-widest bg-[#721120] text-[#F2EFE9] px-2 py-0.5 font-bold">Paiement validé</span>
+                      <h3 className="font-display text-2xl font-extrabold uppercase tracking-tight">Vos places sont réservées !</h3>
+                      <p className="text-xs text-[#111110]/80 font-mono leading-relaxed pt-1">
                         Merci pour votre achat. Un e-mail de confirmation vient de vous être envoyé.
                       </p>
                     </div>
@@ -421,7 +421,7 @@ export default function PublicEventPage() {
                         setClientSecret(null);
                         setIsSuccess(false);
                       }}
-                      className="w-full rounded-full bg-[#721120] text-[#FAF7F2] py-4 px-6 text-xs font-mono uppercase tracking-widest font-bold shadow-lg hover:bg-[#5c0e1a] transition-all cursor-pointer"
+                      className="w-full rounded-none bg-[#721120] text-[#F2EFE9] py-4 px-6 text-xs font-mono uppercase tracking-widest font-bold border-2 border-[#111110] shadow-[4px_4px_0px_0px_#111110] hover:bg-[#5c0e1a] transition-all cursor-pointer"
                     >
                       Fermer
                     </button>
@@ -429,22 +429,22 @@ export default function PublicEventPage() {
                 ) : !clientSecret ? (
                   <>
                     <div className="space-y-1">
-                      <span className="text-[10px] font-mono uppercase tracking-widest text-[#721120] block">Billetterie</span>
-                      <h3 className="font-display text-xl font-bold tracking-tight line-clamp-1">{event.title}</h3>
+                      <span className="text-[10px] font-mono uppercase tracking-widest bg-[#721120] text-[#F2EFE9] px-2 py-0.5 inline-block font-bold">Billetterie</span>
+                      <h3 className="font-display text-xl font-bold uppercase tracking-tight line-clamp-1 pt-1">{event.title}</h3>
                     </div>
 
                     <div className="space-y-2 pt-2">
-                      <div className="flex justify-between items-center text-xs font-mono text-[#111110]/60">
-                        <span>Quantité</span>
-                        <span className="text-[#111110] font-bold flex items-center gap-1">
-                          <Users className="w-3.5 h-3.5 text-[#721120]" /> {quantity}
+                      <div className="flex justify-between items-center text-xs font-mono text-[#111110]">
+                        <span className="font-bold uppercase">Quantité</span>
+                        <span className="bg-[#111110] text-[#F2EFE9] px-2 py-0.5 font-bold flex items-center gap-1">
+                          <Users className="w-3.5 h-3.5" /> {quantity}
                         </span>
                       </div>
-                      <div className="flex items-center justify-between bg-white border border-[#111110]/15 rounded-2xl p-1.5 shadow-sm">
+                      <div className="flex items-center justify-between bg-white border-2 border-[#111110] rounded-none p-2 shadow-[4px_4px_0px_0px_#111110]">
                         <button
                           onClick={() => setQuantity(Math.max(1, quantity - 1))}
                           disabled={quantity <= 1}
-                          className="w-10 h-10 rounded-xl bg-[#111110]/5 flex items-center justify-center text-[#111110] hover:bg-[#111110]/10 disabled:opacity-30 transition-all cursor-pointer"
+                          className="w-10 h-10 rounded-none bg-[#111110] text-[#F2EFE9] flex items-center justify-center hover:bg-[#721120] disabled:opacity-30 transition-all cursor-pointer border border-[#111110]"
                         >
                           <Minus className="w-4 h-4" />
                         </button>
@@ -452,26 +452,26 @@ export default function PublicEventPage() {
                         <button
                           onClick={() => setQuantity(Math.min(10, quantity + 1))}
                           disabled={quantity >= 10}
-                          className="w-10 h-10 rounded-xl bg-[#111110]/5 flex items-center justify-center text-[#111110] hover:bg-[#111110]/10 disabled:opacity-30 transition-all cursor-pointer"
+                          className="w-10 h-10 rounded-none bg-[#111110] text-[#F2EFE9] flex items-center justify-center hover:bg-[#721120] disabled:opacity-30 transition-all cursor-pointer border border-[#111110]"
                         >
                           <Plus className="w-4 h-4" />
                         </button>
                       </div>
                     </div>
 
-                    <div className="space-y-4 pt-4 border-t border-[#111110]/15">
-                      <div className="flex items-baseline justify-between">
-                        <span className="text-xs font-mono text-[#111110]/50 uppercase tracking-wider">Total</span>
-                        <p className="font-display text-3xl font-bold tracking-tight">{totalPrice.toFixed(2)} €</p>
+                    <div className="space-y-4 pt-4 border-t-2 border-[#111110]">
+                      <div className="flex items-baseline justify-between bg-white p-4 border-2 border-[#111110] shadow-[4px_4px_0px_0px_#111110]">
+                        <span className="text-xs font-mono text-[#111110] uppercase tracking-wider font-bold">Total</span>
+                        <p className="font-display text-3xl font-extrabold tracking-tight">{totalPrice.toFixed(2)} €</p>
                       </div>
 
                       <button 
                         onClick={handleInitCheckout}
                         disabled={isInitializingPayment}
-                        className="w-full rounded-full bg-[#721120] text-[#FAF7F2] py-4 px-6 text-xs font-mono uppercase tracking-widest transition-all duration-300 hover:bg-[#5c0e1a] hover:scale-[1.01] active:scale-[0.98] flex items-center justify-center gap-2 cursor-pointer shadow-xl font-bold disabled:opacity-50"
+                        className="w-full rounded-none bg-[#721120] text-[#F2EFE9] py-4 px-6 text-xs font-mono uppercase tracking-widest transition-all duration-150 hover:bg-[#5c0e1a] active:translate-x-0.5 active:translate-y-0.5 flex items-center justify-center gap-2 cursor-pointer border-2 border-[#111110] shadow-[6px_6px_0px_0px_#111110] font-bold disabled:opacity-50"
                       >
                         {isInitializingPayment ? (
-                          <Loader2 className="w-4 h-4 animate-spin text-[#FAF7F2]" />
+                          <Loader2 className="w-4 h-4 animate-spin text-[#F2EFE9]" />
                         ) : (
                           <>
                             <span>Procéder au paiement</span>
@@ -483,14 +483,14 @@ export default function PublicEventPage() {
                   </>
                 ) : (
                   <div className="space-y-4">
-                    <div className="flex items-center justify-between border-b border-[#111110]/10 pb-3">
+                    <div className="flex items-center justify-between border-b-2 border-[#111110] pb-3">
                       <div>
-                        <span className="text-[10px] font-mono uppercase tracking-widest text-[#721120] block">Sécurisé par Stripe</span>
-                        <h4 className="font-display text-lg font-bold">{totalPrice.toFixed(2)} € • {quantity} place(s)</h4>
+                        <span className="text-[10px] font-mono uppercase tracking-widest bg-[#721120] text-[#F2EFE9] px-2 py-0.5 font-bold">Stripe Secured</span>
+                        <h4 className="font-display text-lg font-bold pt-1">{totalPrice.toFixed(2)} € • {quantity} place(s)</h4>
                       </div>
                       <button 
                         onClick={() => setClientSecret(null)}
-                        className="text-xs font-mono underline text-[#111110]/60 hover:text-[#111110] cursor-pointer"
+                        className="text-xs font-mono underline uppercase font-bold text-[#721120] hover:text-[#111110] cursor-pointer"
                       >
                         Modifier
                       </button>
@@ -509,7 +509,7 @@ export default function PublicEventPage() {
                             colorText: '#111110',
                             colorDanger: '#ef4444',
                             fontFamily: 'monospace, sans-serif',
-                            borderRadius: '12px',
+                            borderRadius: '0px',
                           },
                         },
                       }}
