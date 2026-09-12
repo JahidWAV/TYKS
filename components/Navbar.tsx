@@ -135,8 +135,8 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
       <header className="sticky top-0 z-50 bg-white border-b-2 border-black font-sans text-black">
         <div className="max-w-7xl mx-auto px-6 lg:px-12 h-20 flex items-center justify-between gap-6">
 
-          {/* 1. BARRE DE RECHERCHE (À GAUCHE) */}
-          <div className="w-64 sm:w-72 hidden md:block">
+          {/* 1. BARRE DE RECHERCHE (À GAUCHE - Largeur fixe identique au bouton de droite) */}
+          <div className="w-[220px] sm:w-[240px] hidden md:block">
             {!isPro ? (
               <div className="relative" ref={searchRef}>
                 <div className="relative flex items-center w-full">
@@ -221,26 +221,28 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
             ) : <div />}
           </div>
 
-          {/* 2. LOGO (AU CENTRE) */}
+          {/* 2. LOGO (AU CENTRE - Agrandi) */}
           <Link href="/" className="flex items-center shrink-0">
-            <Image src="/tyks.svg" alt="TYKS" width={80} height={28} priority className="h-6 w-auto object-contain" />
+            <Image src="/tyks.svg" alt="TYKS" width={140} height={48} priority className="h-9 w-auto object-contain" />
           </Link>
 
-          {/* 3. BOUTON COMPTE / CONNEXION (À DROITE DESKTOP) */}
-          <div className="w-64 sm:w-72 hidden md:flex justify-end">
+          {/* 3. BOUTON COMPTE / CONNEXION (À DROITE DESKTOP - Largeur fixe identique à gauche) */}
+          <div className="w-[220px] sm:w-[240px] hidden md:flex justify-end">
             {loadingUser ? (
-              <div className="h-11 w-full max-w-[200px] border-2 border-black bg-white" />
+              <div className="h-11 w-full border-2 border-black bg-white" />
             ) : user ? (
-              <div className="relative w-full max-w-[200px]" ref={userMenuRef}>
+              <div className="relative w-full" ref={userMenuRef}>
                 <button
                   onClick={() => setUserMenuOpen(!userMenuOpen)}
-                  className="inline-flex h-11 w-full items-center gap-2 border-2 border-black bg-white px-4 text-xs font-mono font-bold uppercase tracking-wider transition-all hover:bg-black hover:text-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 hover:shadow-none cursor-pointer text-black"
+                  className="inline-flex h-11 w-full items-center justify-between border-2 border-black bg-white px-4 text-xs font-mono font-bold uppercase tracking-wider transition-all hover:bg-black hover:text-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 hover:shadow-none cursor-pointer text-black"
                 >
-                  <UserIcon className="w-3.5 h-3.5 shrink-0" />
-                  <span className="truncate flex-1 text-left">
-                    {firstName || user.email.split('@')[0]}
-                  </span>
-                  <ChevronDown className={`w-3 h-3 transition-transform shrink-0 ${userMenuOpen ? 'rotate-180' : ''}`} />
+                  <div className="flex items-center gap-2 truncate">
+                    <UserIcon className="w-3.5 h-3.5 shrink-0" />
+                    <span className="truncate text-left">
+                      {firstName || user.email.split('@')[0]}
+                    </span>
+                  </div>
+                  <ChevronDown className={`w-3 h-3 transition-transform shrink-0 ml-2 ${userMenuOpen ? 'rotate-180' : ''}`} />
                 </button>
 
                 {userMenuOpen && (
@@ -267,7 +269,7 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
             ) : (
               <button
                 onClick={() => setIsAuthOpen(true)}
-                className="inline-flex h-11 w-full max-w-[200px] px-6 border-2 border-black bg-white hover:bg-black hover:text-white font-mono text-xs uppercase tracking-widest transition-all items-center justify-center font-bold shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 hover:shadow-none cursor-pointer text-black"
+                className="inline-flex h-11 w-full px-6 border-2 border-black bg-white hover:bg-black hover:text-white font-mono text-xs uppercase tracking-widest transition-all items-center justify-center font-bold shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 hover:shadow-none cursor-pointer text-black"
               >
                 <span>{isPro ? "Connexion Pro" : "Connexion"}</span>
               </button>
@@ -328,9 +330,11 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
               </div>
             ) : user ? (
               <div className="flex flex-col gap-3 pt-2 font-mono">
-                <div className="flex items-center gap-2 border-2 border-black bg-[#F5F5F7] px-4 py-3 text-xs font-bold uppercase text-black">
-                  <UserIcon className="w-4 h-4" />
-                  <span className="truncate">{firstName || user.email}</span>
+                <div className="flex items-center justify-between border-2 border-black bg-[#F5F5F7] px-4 py-3 text-xs font-bold uppercase text-black">
+                  <div className="flex items-center gap-2 truncate">
+                    <UserIcon className="w-4 h-4 shrink-0" />
+                    <span className="truncate">{firstName || user.email}</span>
+                  </div>
                 </div>
                 <Link
                   href="/settings"
