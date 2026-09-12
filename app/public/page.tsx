@@ -18,13 +18,11 @@ import {
 import { supabaseBrowser } from '@/lib/supabase-browser';
 
 const CATEGORIES = ['Tous', 'Concerts', 'Clubbing', 'Festivals', 'Live & Showcase', 'Underground'];
-const VILLES = ['Toutes les villes', 'Paris', 'Lyon', 'Marseille', 'Bordeaux', 'Nantes'];
 
 export default function PublicHome() {
   const [events, setEvents] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState('Tous');
-  const [selectedCity, setSelectedCity] = useState('Toutes les villes');
 
   useEffect(() => {
     const fetchPublishedEvents = async () => {
@@ -45,16 +43,17 @@ export default function PublicHome() {
   }, []);
 
   const filteredEvents = events.filter((item) => {
-    const matchCity = selectedCity === 'Toutes les villes' || (item.location && item.location.toLowerCase().includes(selectedCity.toLowerCase()));
-    return matchCity;
+    if (selectedCategory === 'Tous') return true;
+    // Ajoute ici une condition si tu filtres par catégorie en base ou dynamiquement
+    return true;
   });
 
   return (
     <div className="flex-1 flex flex-col bg-[#fbfbfc] text-[#1A0A0F] selection:bg-[#721120] selection:text-[#FAF7F2] font-serif min-h-screen">
       
-      {/* ─── 1. HERO SECTION ─── */}
-      <section className="relative px-6 md:px-16 pt-32 pb-24 max-w-7xl mx-auto w-full border-b border-[#1A0A0F]/10 flex flex-col items-center text-center">
-        <div className="max-w-4xl space-y-8 flex flex-col items-center">
+      {/* ─── 1. HERO SECTION PLEIN ÉCRAN (TAGLINE SEULE) ─── */}
+      <section className="relative h-screen w-full flex flex-col items-center justify-center text-center px-6 md:px-16 border-b border-[#1A0A0F]/10">
+        <div className="max-w-5xl space-y-8 flex flex-col items-center">
           <div className="inline-flex items-center justify-center gap-2.5 text-xs font-sans tracking-[0.25em] uppercase px-4 py-2 rounded-full bg-[#721120]/10 text-[#721120] font-medium border border-[#721120]/20">
             <span className="w-2 h-2 rounded-full bg-[#721120] animate-ping" />
             <span>La billetterie indépendante et transparente</span>
@@ -68,24 +67,19 @@ export default function PublicHome() {
           <p className="text-lg md:text-xl font-sans font-light text-[#1A0A0F]/75 max-w-2xl leading-relaxed">
             Découvrez les meilleurs concerts, soirées et performances underground près de chez vous. Zéro frais cachés, revente sécurisée et accès instantané.
           </p>
-
-          <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-3 bg-white p-3 rounded-2xl md:rounded-full border border-[#1A0A0F]/15 shadow-xl w-full max-w-md">
-            <div className="flex items-center justify-center gap-3 px-4 py-3 w-full">
-              <MapPin className="w-5 h-5 text-[#1A0A0F]/40 shrink-0" />
-              <select
-                value={selectedCity}
-                onChange={(e) => setSelectedCity(e.target.value)}
-                className="bg-transparent font-sans text-sm focus:outline-none w-full text-[#1A0A0F] cursor-pointer text-center [&>option]:bg-white [&>option]:text-[#1A0A0F]"
-              >
-                {VILLES.map((v) => (
-                  <option key={v} value={v}>{v}</option>
-                ))}
-              </select>
-            </div>
-          </div>
         </div>
 
-        <div className="mt-20 grid grid-cols-2 md:grid-cols-4 gap-6 pt-12 border-t border-[#1A0A0F]/10 font-sans w-full max-w-5xl">
+        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 animate-bounce">
+          <span className="text-[10px] font-sans uppercase tracking-[0.2em] text-[#1A0A0F]/45">Scroller pour explorer</span>
+          <div className="w-4 h-7 rounded-full border-2 border-[#1A0A0F]/20 flex items-start justify-center p-1">
+            <div className="w-1 h-1.5 bg-[#721120] rounded-full animate-pulse" />
+          </div>
+        </div>
+      </section>
+
+      {/* ─── 2. SECTION AVANTAGES ─── */}
+      <section className="py-24 px-6 md:px-16 max-w-7xl mx-auto w-full flex flex-col items-center">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 font-sans w-full">
           <div className="flex flex-col md:flex-row items-center text-center md:text-left gap-3">
             <div className="w-10 h-10 rounded-full bg-[#721120]/10 text-[#721120] flex items-center justify-center shrink-0 border border-[#721120]/20">
               <Zap className="w-4 h-4" />
@@ -125,7 +119,7 @@ export default function PublicHome() {
         </div>
       </section>
 
-      {/* ─── 2. SECTION AGENDA & FILTRES ─── */}
+      {/* ─── 3. SECTION AGENDA & FILTRES ─── */}
       <section id="agenda" className="py-24 px-6 md:px-16 max-w-7xl mx-auto w-full">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12 text-center md:text-left">
           <div>
@@ -157,9 +151,8 @@ export default function PublicHome() {
         ) : filteredEvents.length === 0 ? (
           <div className="py-24 text-center border border-[#1A0A0F]/15 rounded-[2.5rem] bg-white space-y-4 font-sans shadow-sm flex flex-col items-center justify-center">
             <p className="text-base font-medium text-[#1A0A0F]/85">Aucun événement ne correspond à vos critères de recherche.</p>
-            <p className="text-xs text-[#1A0A0F]/50">Essayez de modifier votre filtre de ville.</p>
             <button 
-              onClick={() => { setSelectedCity('Toutes les villes'); setSelectedCategory('Tous'); }}
+              onClick={() => setSelectedCategory('Tous')}
               className="mt-2 px-6 py-3 bg-[#721120] text-[#FAF7F2] rounded-full text-xs font-medium uppercase tracking-widest hover:bg-[#5c0e1a] transition-colors"
             >
               Réinitialiser les filtres
@@ -181,7 +174,7 @@ export default function PublicHome() {
                 <Link
                   key={item.id}
                   href={`/events/${item.slug}`}
-                  className="group bg-white border border-[#1A0A0F]/15 hover:border-[#721120] rounded-[2.5rem] p-8 flex flex-col justify-between h-[440px] transition-all duration-300 shadow-sm hover:shadow-xl relative overflow-hidden"
+                  className="group bg-white border border-[#1A0A0F]/15 rounded-[2.5rem] p-8 flex flex-col justify-between h-[440px] transition-all duration-300 shadow-sm hover:shadow-xl relative overflow-hidden"
                 >
                   <div className="space-y-4">
                     <div className="flex items-center justify-between text-xs font-sans tracking-wider text-[#1A0A0F]/60">
@@ -194,7 +187,8 @@ export default function PublicHome() {
                     </div>
 
                     <div className="space-y-2 pt-2">
-                      <h3 className="text-2xl md:text-3xl font-normal group-hover:italic transition-all leading-snug line-clamp-2 text-[#1A0A0F]">
+                      {/* SURVOL : Le texte grossit légèrement (transition scale sans changer de couleur) */}
+                      <h3 className="text-2xl md:text-3xl font-normal transition-transform duration-300 group-hover:scale-[1.02] origin-left leading-snug line-clamp-2 text-[#1A0A0F]">
                         {item.title}
                       </h3>
                       <p className="text-xs font-sans font-light text-[#1A0A0F]/60 flex items-center gap-1.5 pt-1">
@@ -214,7 +208,7 @@ export default function PublicHome() {
                       </span>
                     </div>
 
-                    <div className="w-full py-3.5 rounded-full bg-[#721120] text-[#FAF7F2] group-hover:bg-[#5c0e1a] transition-colors flex items-center justify-center gap-2 text-xs font-sans font-medium uppercase tracking-widest shadow-sm">
+                    <div className="w-full py-3.5 rounded-full bg-[#721120] text-[#FAF7F2] hover:bg-[#5c0e1a] transition-colors flex items-center justify-center gap-2 text-xs font-sans font-medium uppercase tracking-widest shadow-sm">
                       <span>Réserver ma place</span>
                       <ArrowUpRight className="w-4 h-4" />
                     </div>
@@ -226,7 +220,7 @@ export default function PublicHome() {
         )}
       </section>
 
-      {/* ─── 3. SECTION VALEUR AJOUTÉE ─── */}
+      {/* ─── 4. SECTION VALEUR AJOUTÉE ─── */}
       <section className="py-24 px-6 md:px-16 bg-white border-t border-b border-[#1A0A0F]/10">
         <div className="max-w-7xl mx-auto grid lg:grid-cols-12 gap-12 items-center">
           <div className="lg:col-span-5 space-y-6 text-center lg:text-left flex flex-col items-center lg:items-start">
@@ -275,7 +269,7 @@ export default function PublicHome() {
         </div>
       </section>
 
-      {/* ─── 4. CTA FINAL ─── */}
+      {/* ─── 5. CTA FINAL ─── */}
       <section className="py-24 px-6 md:px-16 bg-[#fbfbfc] text-[#1A0A0F] text-center border-t border-[#1A0A0F]/10 flex flex-col items-center">
         <div className="max-w-4xl mx-auto space-y-8 flex flex-col items-center">
           <span className="text-xs font-sans tracking-[0.3em] uppercase text-[#721120] font-semibold">Rejoignez le mouvement</span>
