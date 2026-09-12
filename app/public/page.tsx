@@ -48,7 +48,7 @@ export default function PublicHome() {
     <div className="h-screen w-full overflow-y-scroll snap-y snap-mandatory bg-[#fbfbfc] text-[#1A0A0F] selection:bg-[#721120] selection:text-[#FAF7F2] font-serif scrollbar-none">
 
       {/* ─── 1. HERO SECTION PLEIN ÉCRAN ─── */}
-      <section className="relative h-screen w-full snap-start flex flex-col items-center justify-center text-center px-6">
+      <section className="relative h-screen w-full snap-start snap-always flex flex-col items-center justify-center text-center px-6">
         <h1 className="max-w-5xl text-5xl sm:text-7xl md:text-8xl lg:text-9xl font-light tracking-tight leading-[0.95]">
           La billetterie, <br />
           <span className="italic font-normal text-[#721120]">sans compromis</span>.
@@ -65,7 +65,7 @@ export default function PublicHome() {
       </section>
 
       {/* ─── 2. SECTION AVANTAGES ─── */}
-      <section className="h-screen w-full snap-start flex flex-col items-center justify-center px-4 sm:px-6 md:px-16 max-w-7xl mx-auto">
+      <section className="h-screen w-full snap-start snap-always flex flex-col items-center justify-center px-4 sm:px-6 md:px-16 max-w-7xl mx-auto">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 font-sans w-full max-w-6xl mx-auto">
           <div className="flex flex-col items-center text-center gap-3 p-4">
             <div className="w-10 h-10 rounded-full bg-[#721120]/10 text-[#721120] flex items-center justify-center shrink-0 border border-[#721120]/20 mx-auto">
@@ -110,7 +110,7 @@ export default function PublicHome() {
       </section>
 
       {/* ─── 3. SECTION AGENDA & FILTRES ─── */}
-      <section id="agenda" className="h-screen w-full snap-start flex flex-col justify-center px-4 sm:px-6 md:px-16 max-w-7xl mx-auto">
+      <section id="agenda" className="h-screen w-full snap-start snap-always flex flex-col justify-center px-4 sm:px-6 md:px-16 max-w-7xl mx-auto">
         <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-12 text-center lg:text-left">
           <div className="space-y-2">
             <span className="text-xs font-sans tracking-[0.25em] uppercase text-[#721120] font-semibold block">Programmation live</span>
@@ -164,7 +164,7 @@ export default function PublicHome() {
                 <Link
                   key={item.id}
                   href={`/events/${item.slug}`}
-                  className="group bg-white border border-[#1A0A0F]/15 rounded-[2.5rem] p-8 flex flex-col justify-between h-[400px] transition-shadow duration-300 shadow-sm hover:shadow-xl relative overflow-hidden"
+                  className="group bg-white border border-[#1A0A0F]/15 rounded-[2.5rem] p-8 flex flex-col justify-between h-[380px] transition-shadow duration-300 shadow-sm hover:shadow-xl relative overflow-hidden"
                 >
                   <div className="space-y-4">
                     <div className="flex items-center justify-between text-xs font-sans tracking-wider text-[#1A0A0F]/60">
@@ -177,7 +177,7 @@ export default function PublicHome() {
                     </div>
 
                     <div className="space-y-2 pt-2">
-                      <h3 className="text-2xl md:text-3xl font-normal transition-transform duration-300 group-hover:scale-[1.02] origin-left leading-snug line-clamp-2 text-[#1A0A0F]">
+                      <h3 className="text-2xl font-normal transition-transform duration-300 group-hover:scale-[1.02] origin-left leading-snug line-clamp-2 text-[#1A0A0F]">
                         {item.title}
                       </h3>
                       <p className="text-xs font-sans font-light text-[#1A0A0F]/60 flex items-center gap-1.5 pt-1">
@@ -197,7 +197,7 @@ export default function PublicHome() {
                       </span>
                     </div>
 
-                    <div className="w-full py-3.5 rounded-full bg-[#721120] text-[#FAF7F2] flex items-center justify-center gap-2 text-xs font-sans font-medium uppercase tracking-widest shadow-sm">
+                    <div className="w-full py-3 rounded-full bg-[#721120] text-[#FAF7F2] flex items-center justify-center gap-2 text-xs font-sans font-medium uppercase tracking-widest shadow-sm">
                       <span>Réserver ma place</span>
                       <ArrowUpRight className="w-4 h-4" />
                     </div>
@@ -210,7 +210,7 @@ export default function PublicHome() {
       </section>
 
       {/* ─── 4. SECTION VALEUR AJOUTÉE ─── */}
-      <section className="h-screen w-full snap-start flex items-center px-4 sm:px-6 md:px-16 bg-white">
+      <section className="h-screen w-full snap-start snap-always flex items-center px-4 sm:px-6 md:px-16 bg-white">
         <div className="max-w-7xl mx-auto grid lg:grid-cols-12 gap-12 items-center w-full">
           <div className="lg:col-span-5 space-y-6 text-center lg:text-left flex flex-col items-center lg:items-start">
             <span className="text-xs font-sans tracking-[0.25em] uppercase text-[#721120] font-semibold">Notre engagement</span>
@@ -259,7 +259,7 @@ export default function PublicHome() {
       </section>
 
       {/* ─── 5. CTA FINAL ─── */}
-      <section className="h-screen w-full snap-start bg-[#fbfbfc] text-[#1A0A0F] text-center flex flex-col items-center justify-center px-4 sm:px-6 md:px-16">
+      <section className="h-screen w-full snap-start snap-always bg-[#fbfbfc] text-[#1A0A0F] text-center flex flex-col items-center justify-center px-4 sm:px-6 md:px-16">
         <div className="max-w-4xl mx-auto space-y-8 flex flex-col items-center">
           <span className="text-xs font-sans tracking-[0.3em] uppercase text-[#721120] font-semibold block">Rejoignez le mouvement</span>
           <h2 className="text-5xl md:text-7xl font-light leading-tight">
