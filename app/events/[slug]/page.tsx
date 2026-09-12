@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { notFound, useParams } from 'next/navigation';
 import { supabaseBrowser } from '@/lib/supabase-browser';
-import { Calendar, MapPin, ArrowLeft, ArrowUpRight, Clock, Ticket, Minus, Plus, Users, Loader2, X, CheckCircle2, ShieldAlert } from 'lucide-react';
+import { ArrowLeft, ArrowUpRight, Ticket, Minus, Plus, Users, X, CheckCircle2, ShieldAlert } from 'lucide-react';
 import Link from 'next/link';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements, PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js';
@@ -178,7 +178,7 @@ export default function PublicEventPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#F5F5F7] flex items-center justify-center font-mono text-xs uppercase tracking-widest text-black">
+      <div className="fixed inset-0 bg-[#F5F5F7] flex items-center justify-center font-mono text-xs uppercase tracking-widest text-black">
         Chargement...
       </div>
     );
@@ -236,62 +236,28 @@ export default function PublicEventPage() {
   };
 
   return (
-    <main className="min-h-screen bg-[#F5F5F7] text-black font-sans selection:bg-black selection:text-white flex flex-col justify-between">
+    <main className="fixed inset-0 w-full h-[100dvh] bg-[#F5F5F7] text-black font-sans selection:bg-black selection:text-white flex flex-col justify-between p-6 sm:p-12 overflow-y-auto">
       
-      {/* ─── HEADER BRUTALISTE ─── */}
-      <header className="border-b-2 border-black bg-white px-6 py-4 flex items-center justify-between sticky top-0 z-40">
+      {/* ─── NAVIGATION FLOTTANTE MINIMALISTE (PAS DE COMPOSANT EXTERNE) ─── */}
+      <div className="flex items-center justify-between w-full max-w-7xl mx-auto z-10">
         <Link
           href="/"
-          className="font-mono text-xs uppercase tracking-wider flex items-center gap-2 hover:opacity-60 transition-opacity"
+          className="font-mono text-xs uppercase tracking-wider flex items-center gap-2 hover:opacity-60 transition-opacity bg-white border-2 border-black px-4 py-2 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
         >
-          <ArrowLeft className="w-4 h-4" />
-          <span>Index</span>
+          <ArrowLeft className="w-3.5 h-3.5" />
+          <span>Retour Index</span>
         </Link>
-        <span className="font-mono text-xs uppercase tracking-widest font-bold bg-black text-white px-3 py-1">
+        <span className="font-mono text-xs uppercase tracking-widest font-bold bg-black text-white px-4 py-2">
           {event.organizations?.name || 'TYKS LIVE'}
         </span>
-      </header>
+      </div>
 
-      {/* ─── CONTENU PRINCIPAL ASYMÉTRIQUE ─── */}
-      <section className="max-w-7xl mx-auto w-full px-6 py-12 lg:py-20 grid grid-cols-1 lg:grid-cols-12 gap-12 items-start my-auto">
+      {/* ─── MISE EN PAGE CENTRÉE / PLEIN ÉCRAN TYPE FLYER ─── */}
+      <section className="w-full max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 items-center my-auto py-8">
         
-        {/* Bloc Texte & Infos à gauche */}
-        <div className="lg:col-span-7 space-y-8">
-          <div className="space-y-4">
-            <div className="inline-block font-mono text-xs uppercase tracking-widest border-2 border-black px-3 py-1 bg-white">
-              {formattedDate} — {formattedTime}
-            </div>
-            <h1 className="text-5xl sm:text-7xl lg:text-8xl font-bold tracking-tighter uppercase leading-[0.9]">
-              {event.title}
-            </h1>
-          </div>
-
-          <div className="border-l-4 border-black pl-6 py-2 space-y-2 font-mono text-sm">
-            <div className="flex items-center gap-2 text-neutral-800">
-              <MapPin className="w-4 h-4 text-black" />
-              <span>{event.location || 'Lieu communiqué après validation'}</span>
-            </div>
-          </div>
-
-          <div className="pt-4">
-            <button
-              onClick={() => {
-                setClientSecret(null);
-                setIsSuccess(false);
-                setIsCheckoutOpen(true);
-              }}
-              className="w-full sm:w-auto px-10 py-5 bg-black text-white font-mono text-xs uppercase tracking-widest hover:bg-neutral-800 transition-colors flex items-center justify-center gap-3 cursor-pointer shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 hover:shadow-none"
-            >
-              <Ticket className="w-4 h-4" />
-              <span>{basePrice === 0 ? 'Réserver ma place (Gratuit)' : `Réserver • ${basePrice.toFixed(2)} €`}</span>
-              <ArrowUpRight className="w-4 h-4" />
-            </button>
-          </div>
-        </div>
-
-        {/* Visuel Brutaliste / Poster à droite */}
-        <div className="lg:col-span-5">
-          <div className="relative w-full aspect-[4/5] border-2 border-black bg-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] overflow-hidden">
+        {/* Visuel / Poster brut à gauche */}
+        <div className="lg:col-span-5 order-2 lg:order-1">
+          <div className="relative w-full aspect-[4/5] max-w-md mx-auto border-2 border-black bg-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] overflow-hidden">
             {event.image_url ? (
               <img src={event.image_url} alt={event.title} className="w-full h-full object-cover grayscale contrast-125" />
             ) : (
@@ -303,18 +269,49 @@ export default function PublicEventPage() {
           </div>
         </div>
 
+        {/* Blocs d'informations et CTA à droite */}
+        <div className="lg:col-span-7 space-y-6 order-1 lg:order-2 text-left">
+          <div className="space-y-3">
+            <div className="inline-block font-mono text-xs uppercase tracking-widest border-2 border-black px-3 py-1 bg-white">
+              {formattedDate} — {formattedTime}
+            </div>
+            <h1 className="text-4xl sm:text-6xl lg:text-7xl font-bold tracking-tighter uppercase leading-[0.95]">
+              {event.title}
+            </h1>
+          </div>
+
+          <div className="border-l-4 border-black pl-4 py-1 font-mono text-xs uppercase tracking-wider text-neutral-700">
+            {event.location || 'Lieu communiqué après validation'}
+          </div>
+
+          <div className="pt-2">
+            <button
+              onClick={() => {
+                setClientSecret(null);
+                setIsSuccess(false);
+                setIsCheckoutOpen(true);
+              }}
+              className="w-full sm:w-auto px-8 py-5 bg-black text-white font-mono text-xs uppercase tracking-widest hover:bg-neutral-800 transition-colors flex items-center justify-center gap-3 cursor-pointer shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 hover:shadow-none font-bold"
+            >
+              <Ticket className="w-4 h-4" />
+              <span>{basePrice === 0 ? 'Réserver ma place (Gratuit)' : `Réserver • ${basePrice.toFixed(2)} €`}</span>
+              <ArrowUpRight className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+
       </section>
 
-      {/* ─── FOOTER ÉPURÉ ─── */}
-      <footer className="border-t-2 border-black bg-white px-6 py-6 flex flex-col sm:flex-row items-center justify-between text-xs font-mono uppercase tracking-wider gap-4">
-        <div>© {new Date().getFullYear()} TYKS. Tous droits réservés.</div>
-        <div className="flex items-center gap-6">
-          <Link href="/legal" className="hover:underline">Mentions Légales</Link>
-          <Link href="/cgv" className="hover:underline">CGV</Link>
+      {/* ─── BAS DE PAGE INTÉGRÉ (DISCRET) ─── */}
+      <div className="w-full max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between text-[11px] font-mono uppercase tracking-wider text-neutral-500 gap-2 z-10 pt-4 border-t border-black/20">
+        <div>TYKS Experience</div>
+        <div className="flex items-center gap-4">
+          <Link href="/legal" className="hover:text-black">Mentions Légales</Link>
+          <Link href="/cgv" className="hover:text-black">CGV</Link>
         </div>
-      </footer>
+      </div>
 
-      {/* ─── MODALES (AUTH & CHECKOUT) ─── */}
+      {/* ─── MODALES INTÉGRÉES ─── */}
       {mounted && createPortal(
         <>
           {showAuthModal && (
