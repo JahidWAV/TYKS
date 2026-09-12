@@ -5,10 +5,11 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { 
   ArrowUpRight, Plus, Loader2, Calendar, MapPin, Trash2, Edit3, 
-  Euro, Ticket, Search, RefreshCw, BarChart3, Users, TrendingUp, Layers
+  Euro, Ticket, Search, RefreshCw, Layers, TrendingUp 
 } from 'lucide-react';
 import type { IortiEvent } from '@/types/event';
 import { supabaseBrowser } from '@/lib/supabase-browser';
+import CustomAuthModal from '@/components/CustomAuthModal';
 
 const STATUS_LABEL: Record<string, string> = {
   draft: 'Brouillon',
@@ -41,27 +42,22 @@ export default function OrganizerOverviewDashboard() {
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [refreshing, setRefreshing] = useState(false);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
   useEffect(() => {
     async function getSession() {
       const { data: { session } } = await supabaseBrowser.auth.getSession();
       setUser(session?.user ?? null);
       setReady(true);
-      if (!session?.user) {
-        router.push('/login');
-      }
     }
     getSession();
 
     const { data: { subscription } } = supabaseBrowser.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
-      if (!session?.user) {
-        router.push('/login');
-      }
     });
 
     return () => subscription.unsubscribe();
-  }, [router]);
+  }, []);
 
   const loadDashboard = useCallback(async (userId: string, isRefresh = false) => {
     try {
@@ -150,7 +146,47 @@ export default function OrganizerOverviewDashboard() {
     }
   };
 
-  if (!ready || loading) {
+  if (!ready) {
+    return (
+      <div className="flex min-h-[80vh] items-center justify-center">
+        <Loader2 className="h-6 w-6 animate-spin text-bone-muted" />
+      </div>
+    );
+  }
+
+  // Si l'utilisateur n'est pas connecté, affichage de l'accès propre avec modale (évite la 404 /login)
+  if (!user) {
+    return (
+      <div className="mx-auto max-w-4xl px-6 py-20 text-center space-y-8">
+        <div className="inline-flex items-center gap-2 rounded-full border border-onyx-line bg-onyx-raised px-4 py-1.5 text-xs text-bone-muted">
+          <Layers className="w-3.5 h-3.5 text-bone" />
+          <span>Espace Organisateur Sécurisé</span>
+        </div>
+        <h1 className="font-display text-4xl font-bold text-bone tracking-tight">
+          Connectez-vous pour accéder à votre overview.
+        </h1>
+        <p className="text-sm text-bone-muted max-w-md mx-auto">
+          Pilotez vos ventes, suivez vos jauges et gérez vos événements en toute simplicité.
+        </p>
+        <div>
+          <button
+            onClick={() => setIsAuthModalOpen(true)}
+            className="inline-flex items-center gap-2 rounded-full bg-bone px-8 py-3.5 text-sm font-semibold text-onyx transition hover:bg-white cursor-pointer shadow-lg shadow-bone/5"
+          >
+            <span>Se connecter</span>
+            <ArrowUpRight className="h-4 w-4" />
+          </button>
+        </div>
+
+        <CustomAuthModal 
+          isOpen={isAuthModalOpen} 
+          onClose={() => setIsAuthModalOpen(false)} 
+        />
+      </div>
+    );
+  }
+
+  if (loading) {
     return (
       <div className="flex min-h-[80vh] items-center justify-center">
         <Loader2 className="h-6 w-6 animate-spin text-bone-muted" />
