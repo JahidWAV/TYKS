@@ -173,18 +173,6 @@ export default function PublicHome() {
         )}
       </section>
 
-      {/* ─── FOOTER ─── */}
-      <footer className="border-t-2 border-black bg-white mt-20">
-        <div className="max-w-7xl mx-auto px-6 lg:px-12 py-8 flex flex-col sm:flex-row items-center justify-between text-xs font-mono uppercase tracking-wider gap-4">
-          <div>© {new Date().getFullYear()} TYKS Inc. Tous droits réservés.</div>
-          <div className="flex items-center gap-6">
-            <Link href="/legal" className="hover:underline">Mentions Légales</Link>
-            <Link href="/cgv" className="hover:underline">CGV</Link>
-            <Link href="/privacy" className="hover:underline">Confidentialité</Link>
-          </div>
-        </div>
-      </footer>
-
     </main>
   );
 }
