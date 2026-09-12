@@ -137,12 +137,22 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
       }`}>
         <div className="mx-auto grid grid-cols-[1fr_auto_1fr] items-center max-w-7xl px-6 py-4 md:px-12 gap-6">
 
-          {/* Logo tyks.svg */}
+          {/* Logo tyks.svg, teinté en rouge via un masque CSS */}
           <Link href={isPro ? "/" : "/"} className="group justify-self-start flex items-center">
-            <img
-              src="/tyks.svg"
-              alt="TYKS"
-              className="w-16 h-16 object-contain transition-transform group-hover:scale-105"
+            <span
+              role="img"
+              aria-label="TYKS"
+              className="w-16 h-16 shrink-0 bg-[#721120] transition-transform group-hover:scale-105"
+              style={{
+                WebkitMaskImage: "url(/tyks.svg)",
+                WebkitMaskRepeat: "no-repeat",
+                WebkitMaskSize: "contain",
+                WebkitMaskPosition: "center",
+                maskImage: "url(/tyks.svg)",
+                maskRepeat: "no-repeat",
+                maskSize: "contain",
+                maskPosition: "center",
+              }}
             />
           </Link>
 
@@ -160,10 +170,10 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
                   }}
                   onFocus={() => setShowDropdown(true)}
                   placeholder="Rechercher un événement, un artiste, un lieu..."
-                  className={`w-full rounded-full border px-4 py-3 pl-11 pr-10 text-xs font-medium focus:outline-none transition-all shadow-sm ${
+                  className={`w-full rounded-full border px-4 py-3 pl-11 pr-10 text-xs font-medium focus:outline-none focus:border-[#721120] transition-all shadow-sm ${
                     isDarkMode 
-                      ? 'bg-[#111110] border-[#F7F5F0]/20 text-[#F7F5F0] placeholder:text-[#F7F5F0]/40 focus:border-[#F7F5F0]/60' 
-                      : 'bg-[#F7F5F0] border-[#111110]/20 text-[#111110] placeholder:text-[#111110]/40 focus:border-[#111110]/60'
+                      ? 'bg-[#111110] border-[#F7F5F0]/20 text-[#F7F5F0] placeholder:text-[#F7F5F0]/40' 
+                      : 'bg-[#F7F5F0] border-[#111110]/20 text-[#111110] placeholder:text-[#111110]/40'
                   }`}
                 />
 
@@ -209,11 +219,11 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
                               </p>
                               <div className={`flex items-center gap-4 text-xs font-mono ${isDarkMode ? 'text-[#F7F5F0]/50' : 'text-[#111110]/50'}`}>
                                 <span className="flex items-center gap-1.5">
-                                  <Calendar className="w-3.5 h-3.5" />
+                                  <Calendar className="w-3.5 h-3.5 text-[#721120]" />
                                   {new Date(evt.starts_at).toLocaleDateString("fr-FR", { day: "numeric", month: "short", year: "numeric" })}
                                 </span>
                                 <span className="flex items-center gap-1.5 truncate">
-                                  <MapPin className="w-3.5 h-3.5" />
+                                  <MapPin className="w-3.5 h-3.5 text-[#721120]" />
                                   {evt.location}
                                 </span>
                               </div>
@@ -258,7 +268,7 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
                       : 'border-[#111110]/20 bg-[#111110]/5 text-[#111110] hover:border-[#111110]/50'
                   }`}
                 >
-                  <div className={`w-5 h-5 rounded-full flex items-center justify-center ${isDarkMode ? 'bg-[#F7F5F0] text-[#111110]' : 'bg-[#111110] text-[#F7F5F0]'}`}>
+                  <div className="w-5 h-5 rounded-full flex items-center justify-center bg-[#721120] text-[#FAF7F2]">
                     <UserIcon className="w-3 h-3" />
                   </div>
                   <span className="font-mono max-w-[110px] truncate">
@@ -299,9 +309,7 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
             ) : (
               <button
                 onClick={() => setIsAuthOpen(true)}
-                className={`inline-flex items-center rounded-full px-5 py-2 text-xs font-semibold transition-transform hover:scale-[1.02] ${
-                  isDarkMode ? 'bg-[#F7F5F0] text-[#111110] hover:bg-white' : 'bg-[#111110] text-[#F7F5F0] hover:opacity-90'
-                }`}
+                className="inline-flex items-center rounded-full bg-[#721120] px-5 py-2 text-xs font-semibold text-[#FAF7F2] transition-all hover:scale-[1.02] hover:bg-[#5c0e1a]"
               >
                 {isPro ? "Connexion Pro" : "Connexion"}
               </button>
@@ -367,7 +375,7 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
                 <div className={`flex items-center gap-2 px-4 py-2.5 rounded-full border text-xs font-mono ${
                   isDarkMode ? 'border-[#F7F5F0]/20 bg-[#F7F5F0]/5 text-[#F7F5F0]' : 'border-[#111110]/20 bg-[#111110]/5 text-[#111110]'
                 }`}>
-                  <UserIcon className="w-3.5 h-3.5 opacity-70" />
+                  <UserIcon className="w-3.5 h-3.5 text-[#721120]" />
                   <span className="truncate">{firstName || user.email}</span>
                 </div>
                 <Link
@@ -392,7 +400,7 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
                   setMobileOpen(false);
                   setIsAuthOpen(true);
                 }}
-                className={`inline-flex w-full items-center justify-center rounded-full px-5 py-2.5 text-xs font-semibold ${isDarkMode ? 'bg-[#F7F5F0] text-[#111110]' : 'bg-[#111110] text-[#F7F5F0]'}`}
+                className="inline-flex w-full items-center justify-center rounded-full bg-[#721120] px-5 py-2.5 text-xs font-semibold text-[#FAF7F2] transition-colors hover:bg-[#5c0e1a]"
               >
                 {isPro ? "Connexion Pro" : "Connexion"}
               </button>
