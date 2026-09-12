@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { 
   ArrowUpRight, Plus, Loader2, Calendar, MapPin, Trash2, Edit3, 
-  Euro, Ticket, Search, RefreshCw, Zap, TrendingUp, Users, ShieldCheck, Database 
+  Euro, Ticket, Search, RefreshCw, Zap, Database, ShieldCheck, Users, TrendingUp 
 } from 'lucide-react';
 import type { IortiEvent } from '@/types/event';
 import { supabaseBrowser } from '@/lib/supabase-browser';
@@ -154,9 +154,6 @@ export default function OrganizerDashboard() {
     );
   }
 
-  // ==========================================
-  // 1. LANDING PAGE PRO (Non connectés) - DA Identique page-15
-  // ==========================================
   if (!user) {
     return (
       <div className="mx-auto max-w-5xl px-6 py-16 space-y-24">
@@ -212,7 +209,7 @@ export default function OrganizerDashboard() {
             </div>
             <h3 className="font-display text-lg font-bold text-bone">Image de marque</h3>
             <p className="text-xs text-bone-muted leading-relaxed">
-              Profitez d&apos;un sous-domaine dédié (`pro.tyks.app`) et d&apos;une interface aux couleurs de votre univers artistique ou de votre structure.
+              Profitez d&apos;un sous-domaine dédié et d&apos;une interface aux couleurs de votre univers artistique ou de votre structure.
             </p>
           </div>
         </div>
@@ -244,9 +241,6 @@ export default function OrganizerDashboard() {
     ? Math.round((stats.totalTicketsSold / stats.totalCapacity) * 100) 
     : 0;
 
-  // ==========================================
-  // 2. DASHBOARD ORGANISATEUR (Connectés) - DA page-15
-  // ==========================================
   return (
     <div className="mx-auto max-w-6xl px-6 py-10 space-y-10">
       
@@ -260,7 +254,7 @@ export default function OrganizerDashboard() {
           <button
             onClick={() => loadDashboard(user.id, true)}
             disabled={refreshing}
-            className="inline-flex items-center gap-2 rounded-full border border-onyx-line bg-onyx-raised/60 px-4 py-2.5 text-sm font-semibold text-bone transition hover:bg-onyx-raised disabled:opacity-50"
+            className="inline-flex items-center gap-2 rounded-full border border-onyx-line bg-onyx-raised/60 px-4 py-2.5 text-sm font-semibold text-bone transition hover:bg-onyx-raised disabled:opacity-50 cursor-pointer"
           >
             <RefreshCw className={`h-4 w-4 ${refreshing ? 'animate-spin' : ''}`} />
             <span>Actualiser</span>
@@ -330,7 +324,7 @@ export default function OrganizerDashboard() {
             <button
               key={status}
               onClick={() => setStatusFilter(status)}
-              className={`px-4 py-2 rounded-xl text-xs font-mono uppercase tracking-wider transition-all whitespace-nowrap ${
+              className={`px-4 py-2 rounded-xl text-xs font-mono uppercase tracking-wider transition-all whitespace-nowrap cursor-pointer ${
                 statusFilter === status 
                   ? 'bg-bone text-onyx font-bold' 
                   : 'bg-onyx border border-onyx-line text-bone-muted hover:text-bone'
@@ -407,7 +401,7 @@ export default function OrganizerDashboard() {
                       </Link>
                       <button
                         onClick={() => handleDeleteEvent(evt.id)}
-                        className="p-2 rounded-full border border-red-500/30 hover:bg-red-500/10 text-red-400 transition-colors"
+                        className="p-2 rounded-full border border-red-500/30 hover:bg-red-500/10 text-red-400 transition-colors cursor-pointer"
                         title="Supprimer"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
