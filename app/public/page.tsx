@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { 
-  ArrowUpRight, 
   Calendar, 
   MapPin, 
   Sparkles, 
@@ -47,58 +46,61 @@ export default function PublicHome() {
   return (
     <div className="flex-1 flex flex-col bg-[#fbfbfc] text-[#1A0A0F] selection:bg-[#721120] selection:text-[#FAF7F2] font-serif min-h-screen">
       
-      {/* ─── 1. HERO SECTION PLEIN ÉCRAN (UNIQUEMENT LA TAGLINE) ─── */}
+      {/* ─── 1. HERO SECTION PLEIN ÉCRAN (TAGLINE CENTRÉE STRICTEMENT) ─── */}
       <section className="relative h-screen w-full flex flex-col items-center justify-center text-center px-4 sm:px-6 md:px-16 border-b border-[#1A0A0F]/10">
         <div className="max-w-5xl mx-auto w-full flex flex-col items-center justify-center">
-          <h1 className="text-5xl sm:text-7xl md:text-8xl lg:text-9xl font-light tracking-tight leading-[0.95] break-words">
+          <h1 className="text-5xl sm:text-7xl md:text-8xl lg:text-9xl font-light tracking-tight leading-[0.95] break-words text-center">
             Vivez le live, <br />
             <span className="italic font-normal text-[#721120]">sans compromis</span>.
           </h1>
         </div>
 
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 animate-bounce">
-          <span className="text-[10px] font-sans uppercase tracking-[0.2em] text-[#1A0A0F]/45">Scroller pour explorer</span>
-          <div className="w-4 h-7 rounded-full border-2 border-[#1A0A0F]/20 flex items-start justify-center p-1">
+        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center justify-center gap-2 animate-bounce w-full max-w-xs">
+          <span className="text-[10px] font-sans uppercase tracking-[0.2em] text-[#1A0A0F]/45 text-center block">Scroller pour explorer</span>
+          <div className="w-4 h-7 rounded-full border-2 border-[#1A0A0F]/20 flex items-start justify-center p-1 mx-auto">
             <div className="w-1 h-1.5 bg-[#721120] rounded-full animate-pulse" />
           </div>
         </div>
       </section>
 
       {/* ─── 2. SECTION AVANTAGES ─── */}
-      <section className="py-24 px-6 md:px-16 max-w-7xl mx-auto w-full flex flex-col items-center">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 font-sans w-full">
-          <div className="flex flex-col md:flex-row items-center text-center md:text-left gap-3">
-            <div className="w-10 h-10 rounded-full bg-[#721120]/10 text-[#721120] flex items-center justify-center shrink-0 border border-[#721120]/20">
+      <section className="py-24 px-4 sm:px-6 md:px-16 max-w-7xl mx-auto w-full flex flex-col items-center">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 font-sans w-full max-w-6xl mx-auto">
+          <div className="flex flex-col items-center text-center gap-3 p-4">
+            <div className="w-10 h-10 rounded-full bg-[#721120]/10 text-[#721120] flex items-center justify-center shrink-0 border border-[#721120]/20 mx-auto">
               <Zap className="w-4 h-4" />
             </div>
-            <div>
+            <div className="space-y-1">
               <div className="text-sm font-medium text-[#1A0A0F]">Zéro frais cachés</div>
               <div className="text-xs text-[#1A0A0F]/60">Le prix affiché est final</div>
             </div>
           </div>
-          <div className="flex flex-col md:flex-row items-center text-center md:text-left gap-3">
-            <div className="w-10 h-10 rounded-full bg-[#721120]/10 text-[#721120] flex items-center justify-center shrink-0 border border-[#721120]/20">
+
+          <div className="flex flex-col items-center text-center gap-3 p-4">
+            <div className="w-10 h-10 rounded-full bg-[#721120]/10 text-[#721120] flex items-center justify-center shrink-0 border border-[#721120]/20 mx-auto">
               <ShieldCheck className="w-4 h-4" />
             </div>
-            <div>
+            <div className="space-y-1">
               <div className="text-sm font-medium text-[#1A0A0F]">Billets garantis</div>
               <div className="text-xs text-[#1A0A0F]/60">Anti-contrefaçon certifié</div>
             </div>
           </div>
-          <div className="flex flex-col md:flex-row items-center text-center md:text-left gap-3">
-            <div className="w-10 h-10 rounded-full bg-[#721120]/10 text-[#721120] flex items-center justify-center shrink-0 border border-[#721120]/20">
+
+          <div className="flex flex-col items-center text-center gap-3 p-4">
+            <div className="w-10 h-10 rounded-full bg-[#721120]/10 text-[#721120] flex items-center justify-center shrink-0 border border-[#721120]/20 mx-auto">
               <Smartphone className="w-4 h-4" />
             </div>
-            <div>
+            <div className="space-y-1">
               <div className="text-sm font-medium text-[#1A0A0F]">100% Mobile</div>
               <div className="text-xs text-[#1A0A0F]/60">Accès direct sans imprimer</div>
             </div>
           </div>
-          <div className="flex flex-col md:flex-row items-center text-center md:text-left gap-3">
-            <div className="w-10 h-10 rounded-full bg-[#721120]/10 text-[#721120] flex items-center justify-center shrink-0 border border-[#721120]/20">
+
+          <div className="flex flex-col items-center text-center gap-3 p-4">
+            <div className="w-10 h-10 rounded-full bg-[#721120]/10 text-[#721120] flex items-center justify-center shrink-0 border border-[#721120]/20 mx-auto">
               <RefreshCw className="w-4 h-4" />
             </div>
-            <div>
+            <div className="space-y-1">
               <div className="text-sm font-medium text-[#1A0A0F]">Revente officielle</div>
               <div className="text-xs text-[#1A0A0F]/60">Cédez votre place en 1 clic</div>
             </div>
@@ -107,14 +109,14 @@ export default function PublicHome() {
       </section>
 
       {/* ─── 3. SECTION AGENDA & FILTRES ─── */}
-      <section id="agenda" className="py-24 px-6 md:px-16 max-w-7xl mx-auto w-full">
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12 text-center md:text-left">
-          <div>
-            <span className="text-xs font-sans tracking-[0.25em] uppercase text-[#721120] font-semibold">Programmation live</span>
-            <h2 className="text-4xl md:text-6xl font-light mt-2 tracking-tight">Prochains Événements</h2>
+      <section id="agenda" className="py-24 px-4 sm:px-6 md:px-16 max-w-7xl mx-auto w-full">
+        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-12 text-center lg:text-left">
+          <div className="space-y-2">
+            <span className="text-xs font-sans tracking-[0.25em] uppercase text-[#721120] font-semibold block">Programmation live</span>
+            <h2 className="text-4xl md:text-6xl font-light tracking-tight">Prochains Événements</h2>
           </div>
 
-          <div className="flex items-center justify-center md:justify-end gap-2 overflow-x-auto pb-2 md:pb-0 scrollbar-none font-sans w-full md:w-auto">
+          <div className="flex items-center justify-center lg:justify-end gap-2 overflow-x-auto pb-2 lg:pb-0 scrollbar-none font-sans w-full lg:w-auto">
             {CATEGORIES.map((cat) => (
               <button
                 key={cat}
@@ -136,7 +138,7 @@ export default function PublicHome() {
             Chargement de la programmation en cours...
           </div>
         ) : filteredEvents.length === 0 ? (
-          <div className="py-24 text-center border border-[#1A0A0F]/15 rounded-[2.5rem] bg-white space-y-4 font-sans shadow-sm flex flex-col items-center justify-center">
+          <div className="py-24 text-center border border-[#1A0A0F]/15 rounded-[2.5rem] bg-white space-y-4 font-sans shadow-sm flex flex-col items-center justify-center max-w-xl mx-auto">
             <p className="text-base font-medium text-[#1A0A0F]/85">Aucun événement ne correspond à vos critères de recherche.</p>
             <button 
               onClick={() => setSelectedCategory('Tous')}
@@ -174,6 +176,7 @@ export default function PublicHome() {
                     </div>
 
                     <div className="space-y-2 pt-2">
+                      {/* SURVOL : Le texte grossit légèrement sans changer de couleur */}
                       <h3 className="text-2xl md:text-3xl font-normal transition-transform duration-300 group-hover:scale-[1.02] origin-left leading-snug line-clamp-2 text-[#1A0A0F]">
                         {item.title}
                       </h3>
@@ -207,7 +210,7 @@ export default function PublicHome() {
       </section>
 
       {/* ─── 4. SECTION VALEUR AJOUTÉE ─── */}
-      <section className="py-24 px-6 md:px-16 bg-white border-t border-b border-[#1A0A0F]/10">
+      <section className="py-24 px-4 sm:px-6 md:px-16 bg-white border-t border-b border-[#1A0A0F]/10">
         <div className="max-w-7xl mx-auto grid lg:grid-cols-12 gap-12 items-center">
           <div className="lg:col-span-5 space-y-6 text-center lg:text-left flex flex-col items-center lg:items-start">
             <span className="text-xs font-sans tracking-[0.25em] uppercase text-[#721120] font-semibold">Notre engagement</span>
@@ -256,9 +259,9 @@ export default function PublicHome() {
       </section>
 
       {/* ─── 5. CTA FINAL ─── */}
-      <section className="py-24 px-6 md:px-16 bg-[#fbfbfc] text-[#1A0A0F] text-center border-t border-[#1A0A0F]/10 flex flex-col items-center">
+      <section className="py-24 px-4 sm:px-6 md:px-16 bg-[#fbfbfc] text-[#1A0A0F] text-center border-t border-[#1A0A0F]/10 flex flex-col items-center justify-center">
         <div className="max-w-4xl mx-auto space-y-8 flex flex-col items-center">
-          <span className="text-xs font-sans tracking-[0.3em] uppercase text-[#721120] font-semibold">Rejoignez le mouvement</span>
+          <span className="text-xs font-sans tracking-[0.3em] uppercase text-[#721120] font-semibold block">Rejoignez le mouvement</span>
           <h2 className="text-5xl md:text-7xl font-light leading-tight">
             Prêt à vivre votre <br />
             <span className="italic text-[#721120]">prochain concert</span> ?
