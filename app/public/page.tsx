@@ -9,7 +9,6 @@ import {
   Sparkles, 
   ShieldCheck, 
   Zap, 
-  Search, 
   Ticket, 
   Clock, 
   CheckCircle2, 
@@ -26,7 +25,6 @@ export default function PublicHome() {
   const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState('Tous');
   const [selectedCity, setSelectedCity] = useState('Toutes les villes');
-  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     const fetchPublishedEvents = async () => {
@@ -48,20 +46,16 @@ export default function PublicHome() {
 
   const filteredEvents = events.filter((item) => {
     const matchCity = selectedCity === 'Toutes les villes' || (item.location && item.location.toLowerCase().includes(selectedCity.toLowerCase()));
-    const matchSearch = searchQuery === '' || 
-      item.title?.toLowerCase().includes(searchQuery.toLowerCase()) || 
-      item.location?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      item.organizations?.name?.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchCity && matchSearch;
+    return matchCity;
   });
 
   return (
     <div className="flex-1 flex flex-col bg-[#fbfbfc] text-[#1A0A0F] selection:bg-[#721120] selection:text-[#FAF7F2] font-serif min-h-screen">
       
       {/* ─── 1. HERO SECTION ─── */}
-      <section className="relative px-6 md:px-16 pt-24 pb-24 max-w-7xl mx-auto w-full border-b border-[#1A0A0F]/10">
-        <div className="max-w-4xl space-y-8">
-          <div className="inline-flex items-center gap-2.5 text-xs font-sans tracking-[0.25em] uppercase px-4 py-2 rounded-full bg-[#721120]/10 text-[#721120] font-medium border border-[#721120]/20">
+      <section className="relative px-6 md:px-16 pt-32 pb-24 max-w-7xl mx-auto w-full border-b border-[#1A0A0F]/10 flex flex-col items-center text-center">
+        <div className="max-w-4xl space-y-8 flex flex-col items-center">
+          <div className="inline-flex items-center justify-center gap-2.5 text-xs font-sans tracking-[0.25em] uppercase px-4 py-2 rounded-full bg-[#721120]/10 text-[#721120] font-medium border border-[#721120]/20">
             <span className="w-2 h-2 rounded-full bg-[#721120] animate-ping" />
             <span>La billetterie indépendante et transparente</span>
           </div>
@@ -75,43 +69,24 @@ export default function PublicHome() {
             Découvrez les meilleurs concerts, soirées et performances underground près de chez vous. Zéro frais cachés, revente sécurisée et accès instantané.
           </p>
 
-          <div className="pt-4 flex flex-col sm:flex-row items-stretch gap-3 bg-white p-3 rounded-2xl md:rounded-full border border-[#1A0A0F]/15 shadow-xl max-w-3xl">
-            <div className="flex items-center gap-3 px-4 py-3 flex-1 border-b sm:border-b-0 sm:border-r border-[#1A0A0F]/10">
-              <Search className="w-5 h-5 text-[#1A0A0F]/40 shrink-0" />
-              <input 
-                type="text"
-                placeholder="Artiste, salle, événement..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="bg-transparent font-sans text-sm focus:outline-none w-full text-[#1A0A0F] placeholder:text-[#1A0A0F]/30"
-              />
-            </div>
-            
-            <div className="flex items-center gap-3 px-4 py-3 sm:w-52">
+          <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-3 bg-white p-3 rounded-2xl md:rounded-full border border-[#1A0A0F]/15 shadow-xl w-full max-w-md">
+            <div className="flex items-center justify-center gap-3 px-4 py-3 w-full">
               <MapPin className="w-5 h-5 text-[#1A0A0F]/40 shrink-0" />
               <select
                 value={selectedCity}
                 onChange={(e) => setSelectedCity(e.target.value)}
-                className="bg-transparent font-sans text-sm focus:outline-none w-full text-[#1A0A0F] cursor-pointer [&>option]:bg-white [&>option]:text-[#1A0A0F]"
+                className="bg-transparent font-sans text-sm focus:outline-none w-full text-[#1A0A0F] cursor-pointer text-center [&>option]:bg-white [&>option]:text-[#1A0A0F]"
               >
                 {VILLES.map((v) => (
                   <option key={v} value={v}>{v}</option>
                 ))}
               </select>
             </div>
-
-            <a 
-              href="#agenda" 
-              className="px-8 py-3.5 bg-[#721120] text-[#FAF7F2] rounded-xl sm:rounded-full font-sans text-xs font-medium uppercase tracking-widest hover:bg-[#5c0e1a] transition-all flex items-center justify-center gap-2 shadow-sm"
-            >
-              <span>Chercher</span>
-              <ArrowUpRight className="w-4 h-4" />
-            </a>
           </div>
         </div>
 
-        <div className="mt-20 grid grid-cols-2 md:grid-cols-4 gap-6 pt-12 border-t border-[#1A0A0F]/10 font-sans">
-          <div className="flex items-center gap-3">
+        <div className="mt-20 grid grid-cols-2 md:grid-cols-4 gap-6 pt-12 border-t border-[#1A0A0F]/10 font-sans w-full max-w-5xl">
+          <div className="flex flex-col md:flex-row items-center text-center md:text-left gap-3">
             <div className="w-10 h-10 rounded-full bg-[#721120]/10 text-[#721120] flex items-center justify-center shrink-0 border border-[#721120]/20">
               <Zap className="w-4 h-4" />
             </div>
@@ -120,7 +95,7 @@ export default function PublicHome() {
               <div className="text-xs text-[#1A0A0F]/60">Le prix affiché est final</div>
             </div>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex flex-col md:flex-row items-center text-center md:text-left gap-3">
             <div className="w-10 h-10 rounded-full bg-[#721120]/10 text-[#721120] flex items-center justify-center shrink-0 border border-[#721120]/20">
               <ShieldCheck className="w-4 h-4" />
             </div>
@@ -129,7 +104,7 @@ export default function PublicHome() {
               <div className="text-xs text-[#1A0A0F]/60">Anti-contrefaçon certifié</div>
             </div>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex flex-col md:flex-row items-center text-center md:text-left gap-3">
             <div className="w-10 h-10 rounded-full bg-[#721120]/10 text-[#721120] flex items-center justify-center shrink-0 border border-[#721120]/20">
               <Smartphone className="w-4 h-4" />
             </div>
@@ -138,7 +113,7 @@ export default function PublicHome() {
               <div className="text-xs text-[#1A0A0F]/60">Accès direct sans imprimer</div>
             </div>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex flex-col md:flex-row items-center text-center md:text-left gap-3">
             <div className="w-10 h-10 rounded-full bg-[#721120]/10 text-[#721120] flex items-center justify-center shrink-0 border border-[#721120]/20">
               <RefreshCw className="w-4 h-4" />
             </div>
@@ -152,13 +127,13 @@ export default function PublicHome() {
 
       {/* ─── 2. SECTION AGENDA & FILTRES ─── */}
       <section id="agenda" className="py-24 px-6 md:px-16 max-w-7xl mx-auto w-full">
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12 text-center md:text-left">
           <div>
             <span className="text-xs font-sans tracking-[0.25em] uppercase text-[#721120] font-semibold">Programmation live</span>
             <h2 className="text-4xl md:text-6xl font-light mt-2 tracking-tight">Prochains Événements</h2>
           </div>
 
-          <div className="flex items-center gap-2 overflow-x-auto pb-2 md:pb-0 scrollbar-none font-sans">
+          <div className="flex items-center justify-center md:justify-end gap-2 overflow-x-auto pb-2 md:pb-0 scrollbar-none font-sans w-full md:w-auto">
             {CATEGORIES.map((cat) => (
               <button
                 key={cat}
@@ -180,11 +155,11 @@ export default function PublicHome() {
             Chargement de la programmation en cours...
           </div>
         ) : filteredEvents.length === 0 ? (
-          <div className="py-24 text-center border border-[#1A0A0F]/15 rounded-[2.5rem] bg-white space-y-4 font-sans shadow-sm">
+          <div className="py-24 text-center border border-[#1A0A0F]/15 rounded-[2.5rem] bg-white space-y-4 font-sans shadow-sm flex flex-col items-center justify-center">
             <p className="text-base font-medium text-[#1A0A0F]/85">Aucun événement ne correspond à vos critères de recherche.</p>
-            <p className="text-xs text-[#1A0A0F]/50">Essayez de modifier votre recherche ou de réinitialiser les filtres.</p>
+            <p className="text-xs text-[#1A0A0F]/50">Essayez de modifier votre filtre de ville.</p>
             <button 
-              onClick={() => { setSearchQuery(''); setSelectedCity('Toutes les villes'); setSelectedCategory('Tous'); }}
+              onClick={() => { setSelectedCity('Toutes les villes'); setSelectedCategory('Tous'); }}
               className="mt-2 px-6 py-3 bg-[#721120] text-[#FAF7F2] rounded-full text-xs font-medium uppercase tracking-widest hover:bg-[#5c0e1a] transition-colors"
             >
               Réinitialiser les filtres
@@ -254,22 +229,22 @@ export default function PublicHome() {
       {/* ─── 3. SECTION VALEUR AJOUTÉE ─── */}
       <section className="py-24 px-6 md:px-16 bg-white border-t border-b border-[#1A0A0F]/10">
         <div className="max-w-7xl mx-auto grid lg:grid-cols-12 gap-12 items-center">
-          <div className="lg:col-span-5 space-y-6">
+          <div className="lg:col-span-5 space-y-6 text-center lg:text-left flex flex-col items-center lg:items-start">
             <span className="text-xs font-sans tracking-[0.25em] uppercase text-[#721120] font-semibold">Notre engagement</span>
             <h2 className="text-4xl md:text-5xl font-light leading-tight">Repenser l'expérience de la billetterie live.</h2>
             <p className="text-sm md:text-base font-sans font-light text-[#1A0A0F]/75 leading-relaxed">
               Nous redonnons le pouvoir au public et aux créateurs d'événements. Fini les frais de service exorbitants au moment de payer et la spéculation abusive sur les billets.
             </p>
-            <div className="pt-2 space-y-3 font-sans text-sm text-[#1A0A0F]/85">
-              <div className="flex items-center gap-3">
+            <div className="pt-2 space-y-3 font-sans text-sm text-[#1A0A0F]/85 w-full">
+              <div className="flex items-center justify-center lg:justify-start gap-3">
                 <CheckCircle2 className="w-5 h-5 text-[#721120] shrink-0" />
                 <span>Transparence totale sur les tarifs pratiqués</span>
               </div>
-              <div className="flex items-center gap-3">
+              <div className="flex items-center justify-center lg:justify-start gap-3">
                 <CheckCircle2 className="w-5 h-5 text-[#721120] shrink-0" />
                 <span>Bourse d'échange officielle anti-arnaque</span>
               </div>
-              <div className="flex items-center gap-3">
+              <div className="flex items-center justify-center lg:justify-start gap-3">
                 <CheckCircle2 className="w-5 h-5 text-[#721120] shrink-0" />
                 <span>Support réactif et humain 7j/7</span>
               </div>
@@ -277,7 +252,7 @@ export default function PublicHome() {
           </div>
 
           <div className="lg:col-span-7 grid md:grid-cols-2 gap-6 font-sans">
-            <div className="p-8 rounded-[2.5rem] bg-[#fbfbfc] border border-[#1A0A0F]/10 space-y-4 shadow-sm">
+            <div className="p-8 rounded-[2.5rem] bg-[#fbfbfc] border border-[#1A0A0F]/10 space-y-4 shadow-sm text-center md:text-left flex flex-col items-center md:items-start">
               <div className="w-12 h-12 rounded-full bg-[#721120]/10 text-[#721120] flex items-center justify-center border border-[#721120]/20">
                 <Sparkles className="w-6 h-6" />
               </div>
@@ -287,7 +262,7 @@ export default function PublicHome() {
               </p>
             </div>
 
-            <div className="p-8 rounded-[2.5rem] bg-[#fbfbfc] border border-[#1A0A0F]/10 space-y-4 shadow-sm">
+            <div className="p-8 rounded-[2.5rem] bg-[#fbfbfc] border border-[#1A0A0F]/10 space-y-4 shadow-sm text-center md:text-left flex flex-col items-center md:items-start">
               <div className="w-12 h-12 rounded-full bg-[#721120]/10 text-[#721120] flex items-center justify-center border border-[#721120]/20">
                 <Ticket className="w-6 h-6" />
               </div>
@@ -301,8 +276,8 @@ export default function PublicHome() {
       </section>
 
       {/* ─── 4. CTA FINAL ─── */}
-      <section className="py-24 px-6 md:px-16 bg-[#fbfbfc] text-[#1A0A0F] text-center border-t border-[#1A0A0F]/10">
-        <div className="max-w-4xl mx-auto space-y-8">
+      <section className="py-24 px-6 md:px-16 bg-[#fbfbfc] text-[#1A0A0F] text-center border-t border-[#1A0A0F]/10 flex flex-col items-center">
+        <div className="max-w-4xl mx-auto space-y-8 flex flex-col items-center">
           <span className="text-xs font-sans tracking-[0.3em] uppercase text-[#721120] font-semibold">Rejoignez le mouvement</span>
           <h2 className="text-5xl md:text-7xl font-light leading-tight">
             Prêt à vivre votre <br />
