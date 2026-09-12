@@ -91,28 +91,28 @@ export default function BankingDashboardPage() {
 
   if (loading) {
     return (
-      <div className="min-h-[60vh] flex items-center justify-center">
-        <Loader2 className="h-6 w-6 animate-spin opacity-60" />
+      <div className="min-h-screen bg-[#0a0b0e] text-neutral-400 font-mono text-xs uppercase tracking-widest flex items-center justify-center">
+        Chargement...
       </div>
     );
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-8 py-10 space-y-8">
+    <div className="w-full px-6 lg:px-12 py-10 space-y-8 font-sans text-white bg-[#0a0b0e] min-h-full">
       {/* Alerte si pas de compte bancaire lié avec bouton d'action intégré */}
       {!hasBankAccount && (
-        <div className="p-6 rounded-3xl border border-amber-500/30 bg-amber-500/5 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="p-6 rounded-2xl border border-amber-500/30 bg-amber-500/5 flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-lg">
           <div className="flex items-start gap-3">
-            <AlertCircle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
-            <div className="space-y-1">
-              <p className="text-xs font-bold text-amber-900">Compte bancaire non configuré</p>
-              <p className="text-xs text-amber-800/80">Associez vos coordonnées bancaires pour permettre les virements automatiques de vos ventes.</p>
+            <AlertCircle className="w-5 h-5 text-amber-500 shrink-0 mt-0.5" />
+            <div className="space-y-1 font-mono">
+              <p className="text-xs font-bold text-amber-300 uppercase tracking-wider">Compte bancaire non configuré</p>
+              <p className="text-xs text-amber-400/80">Associez vos coordonnées bancaires pour permettre les virements automatiques de vos ventes.</p>
             </div>
           </div>
           <button
             onClick={handleStripeRedirect}
             disabled={connectingStripe}
-            className="inline-flex items-center justify-center gap-2 rounded-full bg-[#111110] px-5 py-2.5 text-xs font-semibold text-[#F7F5F0] transition hover:opacity-95 shadow-sm disabled:opacity-50 shrink-0"
+            className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#E5D4B4] px-5 py-3 text-xs font-mono font-bold text-black uppercase tracking-widest transition hover:bg-[#d8c39e] shadow-lg disabled:opacity-50 shrink-0 cursor-pointer"
           >
             {connectingStripe ? (
               <Loader2 className="h-4 w-4 animate-spin" />
@@ -130,7 +130,7 @@ export default function BankingDashboardPage() {
           <button
             onClick={handleStripeRedirect}
             disabled={connectingStripe}
-            className="inline-flex items-center gap-2 rounded-full bg-[#111110] px-5 py-2.5 text-xs font-semibold text-[#F7F5F0] transition hover:opacity-95 shadow-sm disabled:opacity-50"
+            className="inline-flex items-center gap-2 rounded-xl bg-[#E5D4B4] px-5 py-3 text-xs font-mono font-bold text-black uppercase tracking-widest transition hover:bg-[#d8c39e] shadow-lg disabled:opacity-50 cursor-pointer"
           >
             {connectingStripe ? (
               <Loader2 className="h-4 w-4 animate-spin" />
@@ -143,57 +143,57 @@ export default function BankingDashboardPage() {
       )}
 
       {/* Cartes de soldes */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="p-8 rounded-3xl border border-[#111110]/15 bg-white/70 backdrop-blur-md shadow-sm space-y-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 font-mono">
+        <div className="p-6 rounded-2xl border border-neutral-800 bg-[#14171f] space-y-3 shadow-lg">
           <div className="flex items-center justify-between">
-            <p className="text-xs font-mono opacity-60 uppercase tracking-wide">Solde disponible</p>
-            <Euro className="w-5 h-5 opacity-70" />
+            <p className="text-xs uppercase tracking-wider text-neutral-400 font-bold">Solde disponible</p>
+            <Euro className="w-4 h-4 text-[#E5D4B4]" />
           </div>
-          <p className="font-display text-4xl font-bold tracking-tight">
+          <p className="text-3xl font-bold tracking-tight text-white">
             {balance.available.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' })}
           </p>
-          <p className="text-xs opacity-60 font-mono">Fonds prêts à être versés vers votre compte.</p>
+          <p className="text-[11px] text-neutral-500 uppercase">Fonds prêts à être versés vers votre compte.</p>
         </div>
 
-        <div className="p-8 rounded-3xl border border-[#111110]/15 bg-white/70 backdrop-blur-md shadow-sm space-y-4">
+        <div className="p-6 rounded-2xl border border-neutral-800 bg-[#14171f] space-y-3 shadow-lg">
           <div className="flex items-center justify-between">
-            <p className="text-xs font-mono opacity-60 uppercase tracking-wide">En cours de traitement</p>
-            <CreditCard className="w-5 h-5 opacity-70" />
+            <p className="text-xs uppercase tracking-wider text-neutral-400 font-bold">En cours de traitement</p>
+            <CreditCard className="w-4 h-4 text-[#E5D4B4]" />
           </div>
-          <p className="font-display text-4xl font-bold tracking-tight">
+          <p className="text-3xl font-bold tracking-tight text-white">
             {balance.pending.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' })}
           </p>
-          <p className="text-xs opacity-60 font-mono">Fonds liés aux ventes en cours.</p>
+          <p className="text-[11px] text-neutral-500 uppercase">Fonds liés aux ventes en cours.</p>
         </div>
       </div>
 
       {/* Historique des versements */}
       <div className="space-y-4 pt-4">
         <div className="flex items-center gap-2">
-          <History className="w-4 h-4 opacity-70" />
-          <h2 className="font-display text-lg font-bold tracking-tight">Historique des virements</h2>
+          <History className="w-4 h-4 text-[#E5D4B4]" />
+          <h2 className="text-xl font-bold uppercase tracking-tight text-white">Historique des virements</h2>
         </div>
 
-        <div className="rounded-3xl border border-[#111110]/15 bg-white/70 backdrop-blur-md overflow-hidden shadow-sm">
+        <div className="rounded-2xl border border-neutral-800 bg-[#14171f] overflow-hidden shadow-lg font-mono">
           {payouts.length === 0 ? (
-            <div className="p-12 text-center text-xs font-mono opacity-60">
+            <div className="p-12 text-center text-xs uppercase tracking-wider text-neutral-400">
               Aucun virement enregistré pour le moment.
             </div>
           ) : (
-            <div className="divide-y divide-[#111110]/10">
+            <div className="divide-y divide-neutral-800">
               {payouts.map((payout) => (
-                <div key={payout.id} className="flex items-center justify-between p-6 hover:bg-white/40 transition">
+                <div key={payout.id} className="flex items-center justify-between p-6 hover:bg-neutral-800/50 transition">
                   <div className="space-y-1">
-                    <p className="text-xs font-mono font-bold">{payout.reference || payout.id}</p>
-                    <p className="text-[11px] opacity-60">
+                    <p className="text-xs font-bold uppercase tracking-wider text-white">{payout.reference || payout.id}</p>
+                    <p className="text-[10px] text-neutral-500 uppercase">
                       {payout.created_at ? `Versé le ${new Date(payout.created_at).toLocaleDateString('fr-FR', { dateStyle: 'long' })}` : ''}
                     </p>
                   </div>
                   <div className="flex items-center gap-6">
-                    <span className="font-mono text-sm font-bold">
+                    <span className="text-sm font-bold text-[#E5D4B4]">
                       {Number(payout.amount || 0).toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' })}
                     </span>
-                    <span className="px-3 py-1 rounded-full text-[10px] font-mono font-semibold bg-emerald-500/10 text-emerald-700 border border-emerald-500/20">
+                    <span className="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-emerald-950 text-emerald-300 border border-emerald-800">
                       {payout.status || 'Versé'}
                     </span>
                   </div>
