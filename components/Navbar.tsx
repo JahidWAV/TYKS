@@ -132,10 +132,8 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
 
   return (
     <>
-      <header className={`sticky top-0 z-20 border-b transition-colors duration-300 ${
-        isDarkMode 
-          ? 'bg-[#111110] border-[#F7F5F0]/10 text-[#F7F5F0]' 
-          : 'bg-[#F7F5F0] border-[#111110]/10 text-[#111110]'
+      <header className={`sticky top-0 z-20 bg-transparent transition-colors duration-300 ${
+        isDarkMode ? 'text-[#F7F5F0]' : 'text-[#111110]'
       }`}>
         <div className="mx-auto grid grid-cols-[1fr_auto_1fr] items-center max-w-7xl px-6 py-4 md:px-12 gap-6">
 
@@ -324,7 +322,7 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
 
         {/* Mobile panel */}
         {mobileOpen && (
-          <div className={`border-t px-6 py-4 sm:hidden space-y-4 ${isDarkMode ? 'border-[#F7F5F0]/10 bg-[#111110]' : 'border-[#111110]/10 bg-[#F7F5F0]'}`}>
+          <div className="px-6 py-4 sm:hidden space-y-4">
             {!isPro && (
               <>
                 <div className="relative flex items-center">
