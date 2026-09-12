@@ -45,10 +45,10 @@ export default function PublicHome() {
   const filteredEvents = events.filter(() => true);
 
   return (
-    <div className="flex-1 flex flex-col bg-[#fbfbfc] text-[#1A0A0F] selection:bg-[#721120] selection:text-[#FAF7F2] font-serif min-h-screen">
+    <div className="h-screen w-full overflow-y-scroll snap-y snap-mandatory bg-[#fbfbfc] text-[#1A0A0F] selection:bg-[#721120] selection:text-[#FAF7F2] font-serif scrollbar-none">
 
-      {/* ─── 1. HERO SECTION PLEIN ÉCRAN (TAGLINE SEULE, CENTRAGE STRICT) ─── */}
-      <section className="relative h-screen w-full flex flex-col items-center justify-center text-center px-6 border-b border-[#1A0A0F]/10">
+      {/* ─── 1. HERO SECTION PLEIN ÉCRAN ─── */}
+      <section className="relative h-screen w-full snap-start flex flex-col items-center justify-center text-center px-6">
         <h1 className="max-w-5xl text-5xl sm:text-7xl md:text-8xl lg:text-9xl font-light tracking-tight leading-[0.95]">
           La billetterie, <br />
           <span className="italic font-normal text-[#721120]">sans compromis</span>.
@@ -65,7 +65,7 @@ export default function PublicHome() {
       </section>
 
       {/* ─── 2. SECTION AVANTAGES ─── */}
-      <section className="py-24 px-4 sm:px-6 md:px-16 max-w-7xl mx-auto w-full flex flex-col items-center">
+      <section className="h-screen w-full snap-start flex flex-col items-center justify-center px-4 sm:px-6 md:px-16 max-w-7xl mx-auto">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 font-sans w-full max-w-6xl mx-auto">
           <div className="flex flex-col items-center text-center gap-3 p-4">
             <div className="w-10 h-10 rounded-full bg-[#721120]/10 text-[#721120] flex items-center justify-center shrink-0 border border-[#721120]/20 mx-auto">
@@ -110,7 +110,7 @@ export default function PublicHome() {
       </section>
 
       {/* ─── 3. SECTION AGENDA & FILTRES ─── */}
-      <section id="agenda" className="py-24 px-4 sm:px-6 md:px-16 max-w-7xl mx-auto w-full">
+      <section id="agenda" className="h-screen w-full snap-start flex flex-col justify-center px-4 sm:px-6 md:px-16 max-w-7xl mx-auto">
         <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-12 text-center lg:text-left">
           <div className="space-y-2">
             <span className="text-xs font-sans tracking-[0.25em] uppercase text-[#721120] font-semibold block">Programmation live</span>
@@ -150,7 +150,7 @@ export default function PublicHome() {
           </div>
         ) : (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {filteredEvents.map((item) => {
+            {filteredEvents.slice(0, 3).map((item) => {
               const startDate = item.starts_at ? new Date(item.starts_at) : null;
               const formattedDate = startDate
                 ? startDate.toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric', month: 'long' })
@@ -164,7 +164,7 @@ export default function PublicHome() {
                 <Link
                   key={item.id}
                   href={`/events/${item.slug}`}
-                  className="group bg-white border border-[#1A0A0F]/15 rounded-[2.5rem] p-8 flex flex-col justify-between h-[440px] transition-shadow duration-300 shadow-sm hover:shadow-xl relative overflow-hidden"
+                  className="group bg-white border border-[#1A0A0F]/15 rounded-[2.5rem] p-8 flex flex-col justify-between h-[400px] transition-shadow duration-300 shadow-sm hover:shadow-xl relative overflow-hidden"
                 >
                   <div className="space-y-4">
                     <div className="flex items-center justify-between text-xs font-sans tracking-wider text-[#1A0A0F]/60">
@@ -210,8 +210,8 @@ export default function PublicHome() {
       </section>
 
       {/* ─── 4. SECTION VALEUR AJOUTÉE ─── */}
-      <section className="py-24 px-4 sm:px-6 md:px-16 bg-white border-t border-b border-[#1A0A0F]/10">
-        <div className="max-w-7xl mx-auto grid lg:grid-cols-12 gap-12 items-center">
+      <section className="h-screen w-full snap-start flex items-center px-4 sm:px-6 md:px-16 bg-white">
+        <div className="max-w-7xl mx-auto grid lg:grid-cols-12 gap-12 items-center w-full">
           <div className="lg:col-span-5 space-y-6 text-center lg:text-left flex flex-col items-center lg:items-start">
             <span className="text-xs font-sans tracking-[0.25em] uppercase text-[#721120] font-semibold">Notre engagement</span>
             <h2 className="text-4xl md:text-5xl font-light leading-tight">Repenser l'expérience de la billetterie live.</h2>
@@ -259,7 +259,7 @@ export default function PublicHome() {
       </section>
 
       {/* ─── 5. CTA FINAL ─── */}
-      <section className="py-24 px-4 sm:px-6 md:px-16 bg-[#fbfbfc] text-[#1A0A0F] text-center border-t border-[#1A0A0F]/10 flex flex-col items-center justify-center">
+      <section className="h-screen w-full snap-start bg-[#fbfbfc] text-[#1A0A0F] text-center flex flex-col items-center justify-center px-4 sm:px-6 md:px-16">
         <div className="max-w-4xl mx-auto space-y-8 flex flex-col items-center">
           <span className="text-xs font-sans tracking-[0.3em] uppercase text-[#721120] font-semibold block">Rejoignez le mouvement</span>
           <h2 className="text-5xl md:text-7xl font-light leading-tight">
