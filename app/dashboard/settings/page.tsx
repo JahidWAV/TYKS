@@ -80,7 +80,6 @@ export default function SettingsPage() {
         setPostalCode(profileData.postal_code || "");
         setCity(profileData.city || "");
       } else {
-        // Fallback optionnel sur les metadata si le profil n'existe pas encore dans la table
         const meta = currentUser.user_metadata || {};
         setFirstName(meta.first_name || meta.full_name?.split(" ")[0] || "");
         setLastName(meta.last_name || meta.full_name?.split(" ").slice(1).join(" ") || "");
@@ -128,39 +127,39 @@ export default function SettingsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#F7F5F0] text-[#111110] flex items-center justify-center">
-        <Loader2 className="h-6 w-6 animate-spin opacity-60" />
+      <div className="min-h-screen bg-[#0a0b0e] text-neutral-400 font-mono text-xs uppercase tracking-widest flex items-center justify-center">
+        Chargement...
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#F7F5F0] text-[#111110] selection:bg-[#111110] selection:text-[#F7F5F0]">
-      <div className="mx-auto max-w-5xl px-6 py-12 md:px-12 space-y-10">
+    <div className="w-full px-6 lg:px-12 py-10 space-y-8 font-sans text-white bg-[#0a0b0e] min-h-full">
+      <div className="space-y-10">
         
         {/* En-tête */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-6 border-b border-[#111110]/10">
-          <div className="space-y-1">
-            <h1 className="font-display text-2xl md:text-3xl font-bold tracking-tight">Paramètres</h1>
-            <p className="text-xs font-mono opacity-60 uppercase tracking-wider">Espace personnel & Table profiles</p>
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 border-b border-neutral-800">
+          <div className="space-y-2">
+            <h1 className="text-3xl lg:text-5xl font-bold tracking-tight uppercase leading-none text-white">Paramètres</h1>
+            <p className="font-mono text-xs uppercase tracking-wider text-neutral-400">Espace personnel & Table profiles</p>
           </div>
 
-          <div className="flex items-center gap-4 bg-white/80 border border-[#111110]/15 rounded-2xl p-4 shadow-sm backdrop-blur-md">
+          <div className="flex items-center gap-4 bg-[#14171f] border border-neutral-800 rounded-2xl p-4 shadow-lg font-mono">
             <div className="relative flex items-center justify-center">
-              <div className="w-12 h-12 rounded-full border-4 border-[#111110]/10 flex items-center justify-center font-mono text-xs font-bold">
+              <div className="w-12 h-12 rounded-full border-4 border-neutral-800 text-[#E5D4B4] flex items-center justify-center text-xs font-bold">
                 {profileCompletion}%
               </div>
             </div>
             <div className="space-y-0.5">
               <div className="flex items-center gap-2">
-                <p className="text-xs font-bold font-mono uppercase tracking-wide">Complétion</p>
+                <p className="text-xs font-bold uppercase tracking-wider text-white">Complétion</p>
                 {profileCompletion < 100 && (
-                  <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[9px] font-mono bg-amber-500/10 text-amber-600 font-semibold">
+                  <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] bg-amber-950 text-amber-300 border border-amber-800 font-bold uppercase">
                     Incomplet
                   </span>
                 )}
               </div>
-              <p className="text-[11px] opacity-60">
+              <p className="text-[10px] text-neutral-400 uppercase">
                 {profileCompletion === 100 ? "Profil à 100%, parfait !" : "Remplissez vos champs manquants"}
               </p>
             </div>
@@ -168,14 +167,14 @@ export default function SettingsPage() {
         </div>
 
         {successMessage && (
-          <div className="flex items-center gap-2 rounded-2xl border border-emerald-500/20 bg-emerald-500/10 px-5 py-3 text-xs text-emerald-600">
-            <Check className="h-4 w-4 shrink-0" />
+          <div className="flex items-center gap-2 rounded-xl border border-emerald-800 bg-emerald-950 px-5 py-3 font-mono text-xs text-emerald-300 uppercase tracking-wider">
+            <Check className="h-4 w-4 shrink-0 text-emerald-400" />
             <span>{successMessage}</span>
           </div>
         )}
 
         {errorMessage && (
-          <div className="rounded-2xl border border-red-500/20 bg-red-500/10 px-5 py-3 text-xs text-red-600">
+          <div className="rounded-xl border border-red-800 bg-red-950 px-5 py-3 font-mono text-xs text-red-300 uppercase tracking-wider">
             <span>{errorMessage}</span>
           </div>
         )}
@@ -183,7 +182,7 @@ export default function SettingsPage() {
         <div className="space-y-6">
           
           {/* Barre d'onglets supérieure */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 font-mono">
             {tabs.map((tab) => {
               const Icon = tab.icon;
               const isActive = activeTab === tab.id;
@@ -191,16 +190,16 @@ export default function SettingsPage() {
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`flex items-center gap-3 p-4 rounded-2xl border transition-all text-left ${
+                  className={`flex items-center gap-3 p-4 rounded-2xl border transition-all text-left cursor-pointer ${
                     isActive
-                      ? "bg-[#111110] text-[#F7F5F0] border-[#111110] shadow-md scale-[1.01]"
-                      : "bg-white/60 text-[#111110] border-[#111110]/15 hover:bg-white opacity-80 hover:opacity-100"
+                      ? "bg-[#E5D4B4] text-black border-[#E5D4B4] shadow-lg font-bold"
+                      : "bg-[#14171f] text-neutral-300 border-neutral-800 hover:bg-neutral-800"
                   }`}
                 >
-                  <Icon className={`w-4 h-4 shrink-0 ${isActive ? "text-[#F7F5F0]" : "opacity-60"}`} />
+                  <Icon className={`w-4 h-4 shrink-0 ${isActive ? "text-black" : "text-[#E5D4B4]"}`} />
                   <div className="overflow-hidden">
-                    <p className="text-xs font-bold font-mono truncate">{tab.title}</p>
-                    <p className={`text-[10px] truncate ${isActive ? "text-[#F7F5F0]/70" : "opacity-50"}`}>{tab.desc}</p>
+                    <p className="text-xs font-bold uppercase tracking-wider truncate">{tab.title}</p>
+                    <p className={`text-[10px] uppercase truncate ${isActive ? "text-black/70" : "text-neutral-500"}`}>{tab.desc}</p>
                   </div>
                 </button>
               );
@@ -208,125 +207,125 @@ export default function SettingsPage() {
           </div>
 
           {/* Panneau de contenu */}
-          <div className="rounded-3xl border border-[#111110]/15 bg-white/70 p-6 md:p-8 backdrop-blur-md shadow-sm transition-all">
+          <div className="rounded-2xl border border-neutral-800 bg-[#14171f] p-6 md:p-8 shadow-xl transition-all">
             
             {/* ONGLET 1 : PROFIL & ADRESSE */}
             {activeTab === "profile" && (
               <form onSubmit={handleSaveProfile} className="space-y-6">
-                <div className="flex items-center justify-between border-b border-[#111110]/10 pb-4">
-                  <div className="space-y-0.5">
-                    <h2 className="text-sm font-bold uppercase tracking-wider font-mono">Informations personnelles & Adresse</h2>
-                    <p className="text-xs opacity-60">Enregistré dans la table publique <code className="font-mono bg-black/5 px-1 py-0.5 rounded">profiles</code>.</p>
+                <div className="flex items-center justify-between border-b border-neutral-800 pb-4">
+                  <div className="space-y-1 font-mono">
+                    <h2 className="text-xs font-bold uppercase tracking-wider text-white">Informations personnelles & Adresse</h2>
+                    <p className="text-[11px] text-neutral-500 uppercase">Enregistré dans la table publique <code className="bg-neutral-900 border border-neutral-800 px-1.5 py-0.5 rounded text-[#E5D4B4]">profiles</code>.</p>
                   </div>
                   <button
                     type="submit"
                     disabled={saving}
-                    className="inline-flex items-center gap-2 rounded-full bg-[#111110] px-5 py-2 text-xs font-semibold text-[#F7F5F0] transition-transform hover:scale-[1.02] disabled:opacity-50"
+                    className="inline-flex items-center gap-2 rounded-xl bg-[#E5D4B4] px-5 py-3 font-mono text-xs font-bold uppercase tracking-widest text-black hover:bg-[#d8c39e] transition-all disabled:opacity-50 cursor-pointer shadow-lg"
                   >
                     {saving && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
                     Enregistrer
                   </button>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-5 pt-2">
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-mono opacity-60">Prénom</label>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5 pt-2 font-mono">
+                  <div className="space-y-2">
+                    <label className="text-xs uppercase tracking-wider text-neutral-400 font-bold">Prénom</label>
                     <input
                       type="text"
                       value={firstName}
                       onChange={(e) => setFirstName(e.target.value)}
                       placeholder="Votre prénom"
-                      className="w-full rounded-2xl border border-[#111110]/20 bg-[#F7F5F0] px-4 py-3 text-xs focus:outline-none focus:border-[#111110]/65 transition-colors"
+                      className="w-full rounded-xl border border-neutral-800 bg-[#101319] px-4 py-3 text-xs uppercase text-white placeholder:text-neutral-600 focus:outline-none focus:border-[#E5D4B4] transition-colors"
                     />
                   </div>
 
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-mono opacity-60">Nom</label>
+                  <div className="space-y-2">
+                    <label className="text-xs uppercase tracking-wider text-neutral-400 font-bold">Nom</label>
                     <input
                       type="text"
                       value={lastName}
                       onChange={(e) => setLastName(e.target.value)}
                       placeholder="Votre nom"
-                      className="w-full rounded-2xl border border-[#111110]/20 bg-[#F7F5F0] px-4 py-3 text-xs focus:outline-none focus:border-[#111110]/65 transition-colors"
+                      className="w-full rounded-xl border border-neutral-800 bg-[#101319] px-4 py-3 text-xs uppercase text-white placeholder:text-neutral-600 focus:outline-none focus:border-[#E5D4B4] transition-colors"
                     />
                   </div>
 
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-mono opacity-60">Adresse email</label>
+                  <div className="space-y-2">
+                    <label className="text-xs uppercase tracking-wider text-neutral-400 font-bold">Adresse email</label>
                     <div className="relative flex items-center">
-                      <Mail className="absolute left-4 h-4 w-4 opacity-30 pointer-events-none" />
+                      <Mail className="absolute left-4 h-4 w-4 text-neutral-500 pointer-events-none" />
                       <input
                         type="email"
                         value={email}
                         disabled
-                        className="w-full rounded-2xl border border-[#111110]/10 bg-[#111110]/5 px-4 py-3 pl-11 text-xs opacity-60 cursor-not-allowed font-mono"
+                        className="w-full rounded-xl border border-neutral-800 bg-[#101319]/50 px-4 py-3 pl-11 text-xs text-neutral-500 uppercase cursor-not-allowed"
                       />
                     </div>
                   </div>
 
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-mono opacity-60">Date de naissance</label>
+                  <div className="space-y-2">
+                    <label className="text-xs uppercase tracking-wider text-neutral-400 font-bold">Date de naissance</label>
                     <div className="relative flex items-center">
-                      <Calendar className="absolute left-4 h-4 w-4 opacity-30 pointer-events-none" />
+                      <Calendar className="absolute left-4 h-4 w-4 text-[#E5D4B4] pointer-events-none" />
                       <input
                         type="date"
                         value={birthDate}
                         onChange={(e) => setBirthDate(e.target.value)}
-                        className="w-full rounded-2xl border border-[#111110]/20 bg-[#F7F5F0] px-4 py-3 pl-11 text-xs focus:outline-none focus:border-[#111110]/65 font-mono"
+                        className="w-full rounded-xl border border-neutral-800 bg-[#101319] px-4 py-3 pl-11 text-xs uppercase text-white focus:outline-none focus:border-[#E5D4B4]"
                       />
                     </div>
                   </div>
 
-                  <div className="md:col-span-2 space-y-1.5">
-                    <label className="text-xs font-mono opacity-60">Adresse postale</label>
+                  <div className="md:col-span-2 space-y-2">
+                    <label className="text-xs uppercase tracking-wider text-neutral-400 font-bold">Adresse postale</label>
                     <div className="relative flex items-center">
-                      <MapPin className="absolute left-4 h-4 w-4 opacity-30 pointer-events-none" />
+                      <MapPin className="absolute left-4 h-4 w-4 text-[#E5D4B4] pointer-events-none" />
                       <input
                         type="text"
                         value={address}
                         onChange={(e) => setAddress(e.target.value)}
                         placeholder="Numéro et nom de rue"
-                        className="w-full rounded-2xl border border-[#111110]/20 bg-[#F7F5F0] px-4 py-3 pl-11 text-xs focus:outline-none focus:border-[#111110]/65"
+                        className="w-full rounded-xl border border-neutral-800 bg-[#101319] px-4 py-3 pl-11 text-xs uppercase text-white placeholder:text-neutral-600 focus:outline-none focus:border-[#E5D4B4]"
                       />
                     </div>
                   </div>
 
-                  <div className="md:col-span-2 space-y-1.5">
-                    <label className="text-xs font-mono opacity-60">Complément d&apos;adresse <span className="opacity-40">(facultatif)</span></label>
+                  <div className="md:col-span-2 space-y-2">
+                    <label className="text-xs uppercase tracking-wider text-neutral-400 font-bold">Complément d&apos;adresse <span className="text-neutral-600">(facultatif)</span></label>
                     <div className="relative flex items-center">
-                      <Building2 className="absolute left-4 h-4 w-4 opacity-30 pointer-events-none" />
+                      <Building2 className="absolute left-4 h-4 w-4 text-[#E5D4B4] pointer-events-none" />
                       <input
                         type="text"
                         value={addressComplement}
                         onChange={(e) => setAddressComplement(e.target.value)}
                         placeholder="Appartement, bâtiment, étage, interphone..."
-                        className="w-full rounded-2xl border border-[#111110]/20 bg-[#F7F5F0] px-4 py-3 pl-11 text-xs focus:outline-none focus:border-[#111110]/65"
+                        className="w-full rounded-xl border border-neutral-800 bg-[#101319] px-4 py-3 pl-11 text-xs uppercase text-white placeholder:text-neutral-600 focus:outline-none focus:border-[#E5D4B4]"
                       />
                     </div>
                   </div>
 
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-mono opacity-60">Code postal</label>
+                  <div className="space-y-2">
+                    <label className="text-xs uppercase tracking-wider text-neutral-400 font-bold">Code postal</label>
                     <div className="relative flex items-center">
-                      <Hash className="absolute left-4 h-4 w-4 opacity-30 pointer-events-none" />
+                      <Hash className="absolute left-4 h-4 w-4 text-[#E5D4B4] pointer-events-none" />
                       <input
                         type="text"
                         value={postalCode}
                         onChange={(e) => setPostalCode(e.target.value)}
                         placeholder="Ex: 59100"
-                        className="w-full rounded-2xl border border-[#111110]/20 bg-[#F7F5F0] px-4 py-3 pl-11 text-xs focus:outline-none focus:border-[#111110]/65 font-mono"
+                        className="w-full rounded-xl border border-neutral-800 bg-[#101319] px-4 py-3 pl-11 text-xs uppercase text-white placeholder:text-neutral-600 focus:outline-none focus:border-[#E5D4B4]"
                       />
                     </div>
                   </div>
 
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-mono opacity-60">Ville</label>
+                  <div className="space-y-2">
+                    <label className="text-xs uppercase tracking-wider text-neutral-400 font-bold">Ville</label>
                     <input
                       type="text"
                       value={city}
                       onChange={(e) => setCity(e.target.value)}
                       placeholder="Ex: Roubaix"
-                      className="w-full rounded-2xl border border-[#111110]/20 bg-[#F7F5F0] px-4 py-3 text-xs focus:outline-none focus:border-[#111110]/65"
+                      className="w-full rounded-xl border border-neutral-800 bg-[#101319] px-4 py-3 text-xs uppercase text-white placeholder:text-neutral-600 focus:outline-none focus:border-[#E5D4B4]"
                     />
                   </div>
                 </div>
@@ -335,16 +334,16 @@ export default function SettingsPage() {
 
             {/* ONGLET 2 : SÉCURITÉ */}
             {activeTab === "security" && (
-              <div className="space-y-6">
-                <div className="border-b border-[#111110]/10 pb-4">
-                  <h2 className="text-sm font-bold uppercase tracking-wider font-mono">Sécurité et Connexion</h2>
-                  <p className="text-xs opacity-60">Gérez la méthode d&apos;authentification de votre compte.</p>
+              <div className="space-y-6 font-mono">
+                <div className="border-b border-neutral-800 pb-4">
+                  <h2 className="text-xs font-bold uppercase tracking-wider text-white">Sécurité et Connexion</h2>
+                  <p className="text-[11px] text-neutral-500 uppercase">Gérez la méthode d&apos;authentification de votre compte.</p>
                 </div>
 
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-5 rounded-2xl border border-[#111110]/10 bg-white/50">
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-5 rounded-xl border border-neutral-800 bg-[#101319]">
                   <div className="space-y-1">
-                    <p className="text-xs font-bold uppercase tracking-wide font-mono">Fournisseur d&apos;accès</p>
-                    <p className="text-xs opacity-70">
+                    <p className="text-xs font-bold uppercase tracking-wider text-white">Fournisseur d&apos;accès</p>
+                    <p className="text-[11px] text-neutral-400 uppercase">
                       {isGoogleProvider 
                         ? "Votre compte est lié à Google. La sécurité est gérée directement via votre profil Google." 
                         : "Votre compte utilise une authentification classique par e-mail et mot de passe."}
@@ -352,7 +351,7 @@ export default function SettingsPage() {
                   </div>
                   <div className="shrink-0">
                     {isGoogleProvider ? (
-                      <span className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-[#111110]/20 bg-white text-xs font-mono font-semibold shadow-sm">
+                      <span className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-neutral-800 bg-[#14171f] text-xs font-bold uppercase tracking-widest text-white shadow-sm">
                         <svg className="w-3.5 h-3.5" viewBox="0 0 24 24">
                           <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.66-5.17 3.66-9.17z"/>
                           <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.13 0-5.78-2.11-6.73-4.96H1.19v3.15C3.17 21.36 7.22 24 12 24z"/>
@@ -364,7 +363,7 @@ export default function SettingsPage() {
                     ) : (
                       <button 
                         onClick={() => alert("Réinitialisation du mot de passe")}
-                        className="px-4 py-2 rounded-xl border border-[#111110]/20 bg-[#111110] text-[#F7F5F0] text-xs font-semibold hover:opacity-95 transition-opacity"
+                        className="px-4 py-2.5 rounded-xl border border-neutral-800 bg-[#E5D4B4] text-black text-xs font-bold uppercase tracking-widest hover:bg-[#d8c39e] transition-colors cursor-pointer shadow-lg"
                       >
                         Modifier le mot de passe
                       </button>
@@ -376,61 +375,61 @@ export default function SettingsPage() {
 
             {/* ONGLET 3 : PRÉFÉRENCES */}
             {activeTab === "preferences" && (
-              <div className="space-y-6">
-                <div className="border-b border-[#111110]/10 pb-4">
-                  <h2 className="text-sm font-bold uppercase tracking-wider font-mono">Notifications et Préférences</h2>
-                  <p className="text-xs opacity-60">Paramétrez vos alertes et options d&apos;affichage.</p>
+              <div className="space-y-6 font-mono">
+                <div className="border-b border-neutral-800 pb-4">
+                  <h2 className="text-xs font-bold uppercase tracking-wider text-white">Notifications et Préférences</h2>
+                  <p className="text-[11px] text-neutral-500 uppercase">Paramétrez vos alertes et options d&apos;affichage.</p>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="flex items-center justify-between p-4 rounded-2xl border border-[#111110]/10 bg-white/50">
-                    <div className="space-y-0.5">
-                      <p className="text-xs font-bold">Rappels par e-mail</p>
-                      <p className="text-[11px] opacity-60 font-mono">Billets et horaires</p>
+                  <div className="flex items-center justify-between p-4 rounded-xl border border-neutral-800 bg-[#101319]">
+                    <div className="space-y-1">
+                      <p className="text-xs font-bold uppercase tracking-wider text-white">Rappels par e-mail</p>
+                      <p className="text-[10px] text-neutral-400 uppercase">Billets et horaires</p>
                     </div>
                     <input 
                       type="checkbox" 
                       checked={emailNotifs} 
                       onChange={(e) => setEmailNotifs(e.target.checked)} 
-                      className="accent-[#111110] w-4 h-4 rounded cursor-pointer" 
+                      className="accent-[#E5D4B4] w-4 h-4 rounded cursor-pointer" 
                     />
                   </div>
 
-                  <div className="flex items-center justify-between p-4 rounded-2xl border border-[#111110]/10 bg-white/50">
-                    <div className="space-y-0.5">
-                      <p className="text-xs font-bold">Alertes SMS</p>
-                      <p className="text-[11px] opacity-60 font-mono">Accès rapides</p>
+                  <div className="flex items-center justify-between p-4 rounded-xl border border-neutral-800 bg-[#101319]">
+                    <div className="space-y-1">
+                      <p className="text-xs font-bold uppercase tracking-wider text-white">Alertes SMS</p>
+                      <p className="text-[10px] text-neutral-400 uppercase">Accès rapides</p>
                     </div>
                     <input 
                       type="checkbox" 
                       checked={smsNotifs} 
                       onChange={(e) => setSmsNotifs(e.target.checked)} 
-                      className="accent-[#111110] w-4 h-4 rounded cursor-pointer" 
+                      className="accent-[#E5D4B4] w-4 h-4 rounded cursor-pointer" 
                     />
                   </div>
 
-                  <div className="flex items-center justify-between p-4 rounded-2xl border border-[#111110]/10 bg-white/50">
-                    <div className="space-y-0.5">
-                      <p className="text-xs font-bold">Newsletter culturelle</p>
-                      <p className="text-[11px] opacity-60 font-mono">Sélection hebdomadaire</p>
+                  <div className="flex items-center justify-between p-4 rounded-xl border border-neutral-800 bg-[#101319]">
+                    <div className="space-y-1">
+                      <p className="text-xs font-bold uppercase tracking-wider text-white">Newsletter culturelle</p>
+                      <p className="text-[10px] text-neutral-400 uppercase">Sélection hebdomadaire</p>
                     </div>
                     <input 
                       type="checkbox" 
                       checked={newsletter} 
                       onChange={(e) => setNewsletter(e.target.checked)} 
-                      className="accent-[#111110] w-4 h-4 rounded cursor-pointer" 
+                      className="accent-[#E5D4B4] w-4 h-4 rounded cursor-pointer" 
                     />
                   </div>
 
-                  <div className="flex items-center justify-between p-4 rounded-2xl border border-[#111110]/10 bg-white/50">
-                    <div className="space-y-0.5">
-                      <p className="text-xs font-bold">Devise par défaut</p>
-                      <p className="text-[11px] opacity-60 font-mono">Affichage billetterie</p>
+                  <div className="flex items-center justify-between p-4 rounded-xl border border-neutral-800 bg-[#101319]">
+                    <div className="space-y-1">
+                      <p className="text-xs font-bold uppercase tracking-wider text-white">Devise par défaut</p>
+                      <p className="text-[10px] text-neutral-400 uppercase">Affichage billetterie</p>
                     </div>
                     <select 
                       value={currency} 
                       onChange={(e) => setCurrency(e.target.value)}
-                      className="bg-transparent text-xs font-mono font-bold border border-[#111110]/20 rounded-xl px-3 py-1.5 focus:outline-none"
+                      className="bg-[#14171f] text-xs font-bold uppercase border border-neutral-800 rounded-xl px-3 py-2 focus:outline-none focus:border-[#E5D4B4] text-white cursor-pointer"
                     >
                       <option value="EUR">EUR (€)</option>
                       <option value="USD">USD ($)</option>
@@ -443,20 +442,20 @@ export default function SettingsPage() {
 
             {/* ONGLET 4 : ZONE DE DANGER */}
             {activeTab === "danger" && (
-              <div className="space-y-6">
-                <div className="border-b border-red-500/10 pb-4">
-                  <h2 className="text-sm font-bold uppercase tracking-wider font-mono text-red-600">Zone de danger</h2>
-                  <p className="text-xs opacity-60">Actions irréversibles concernant votre compte.</p>
+              <div className="space-y-6 font-mono">
+                <div className="border-b border-red-900 pb-4">
+                  <h2 className="text-xs font-bold uppercase tracking-wider text-red-400">Zone de danger</h2>
+                  <p className="text-[11px] text-neutral-500 uppercase">Actions irréversibles concernant votre compte.</p>
                 </div>
 
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-5 rounded-2xl border border-red-500/20 bg-red-500/5">
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-5 rounded-xl border border-red-900/50 bg-red-950/20">
                   <div className="space-y-1">
-                    <p className="text-xs font-bold">Suppression du compte</p>
-                    <p className="text-[11px] opacity-60 font-mono">Supprime définitivement vos données</p>
+                    <p className="text-xs font-bold uppercase tracking-wider text-red-300">Suppression du compte</p>
+                    <p className="text-[10px] text-neutral-400 uppercase">Supprime définitivement vos données</p>
                   </div>
                   <button 
                     onClick={() => alert("Veuillez contacter le support.")}
-                    className="px-4 py-2 rounded-full border border-red-500/30 text-red-600 text-xs font-semibold hover:bg-red-500/10 transition-colors shrink-0"
+                    className="px-4 py-2.5 rounded-xl border border-red-800 bg-red-950 text-red-300 text-xs font-bold uppercase tracking-widest hover:bg-red-900 transition-colors shrink-0 cursor-pointer shadow-lg"
                   >
                     Supprimer mon compte
                   </button>
