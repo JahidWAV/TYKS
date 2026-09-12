@@ -1,125 +1,146 @@
+import { notFound } from 'next/navigation';
 import { supabaseServer } from '@/lib/supabase-server';
+import { Calendar, MapPin, ArrowLeft, ArrowUpRight, Clock, Ticket } from 'lucide-react';
 import Link from 'next/link';
-import { Plus, MapPin, Settings } from 'lucide-react';
 
-export default async function AdminEventsPage() {
-  const { data: events, error } = await supabaseServer
+interface PublicEventPageProps {
+  params: {
+    slug: string;
+  };
+}
+
+export default async function PublicEventPage({ params }: PublicEventPageProps) {
+  const { slug } = params;
+
+  const { data: event, error } = await supabaseServer
     .from('events')
     .select('*, organizations(name)')
-    .order('created_at', { ascending: false });
+    .eq('slug', slug)
+    .eq('status', 'published')
+    .maybeSingle();
+
+  if (error || !event) {
+    notFound();
+  }
+
+  const startDate = event.starts_at ? new Date(event.starts_at) : null;
+  const formattedDate = startDate
+    ? startDate.toLocaleDateString('fr-FR', {
+        weekday: 'long',
+        day: '2-digit',
+        month: 'long',
+        year: 'numeric',
+      })
+    : '';
+
+  const formattedTime = startDate
+    ? startDate.toLocaleDateString('fr-FR', {
+        hour: '2-digit',
+        minute: '2-digit',
+      })
+    : '';
+
+  const priceFormatted = Number(event.price) === 0 ? 'Gratuit' : `${event.price} €`;
 
   return (
-    <main className="min-h-screen bg-[#F7F5F0] text-[#111110] px-6 md:px-12 py-20">
-      <div className="max-w-7xl mx-auto space-y-16">
+    <main className="min-h-screen bg-[#0a0b0e] text-white px-6 md:px-12 py-12 md:py-20 flex flex-col justify-between font-sans">
+      <div className="max-w-6xl mx-auto w-full space-y-12">
         
-        {/* En-tête du Dashboard */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-6 border-b border-[#111110]/10">
-          <div className="space-y-2">
-            <span className="inline-block text-xs font-mono uppercase tracking-widest text-[#111110]/50">
-              Espace Organisateur
-            </span>
-            <h1 className="font-display text-4xl font-bold tracking-tight">
-              Gestion des événements.
-            </h1>
-          </div>
-
-          {/* Correction ici : href="/new" au lieu de "/dashboard/new" */}
+        {/* Navigation & Fil d'Ariane */}
+        <div className="flex items-center justify-between border-b border-neutral-800 pb-6 font-mono">
           <Link
-            href="/new"
-            className="inline-flex items-center gap-2 rounded-full bg-[#111110] px-6 py-3 text-xs font-semibold text-[#F7F5F0] transition-transform hover:scale-[1.02]"
+            href="/events"
+            className="inline-flex items-center gap-2 text-xs uppercase tracking-widest text-neutral-400 hover:text-white transition-colors"
           >
-            <Plus className="w-4 h-4" />
-            <span>Créer un événement</span>
+            <ArrowLeft className="w-4 h-4" />
+            <span>Retour à l&apos;agenda</span>
           </Link>
+          <span className="text-xs uppercase tracking-widest text-[#E5D4B4] font-bold">
+            {event.organizations?.name || 'Organisateur Indépendant'}
+          </span>
         </div>
 
-        {error && (
-          <div className="p-4 rounded-xl bg-red-500/10 border border-red-500/25 text-red-600 text-sm font-mono">
-            Erreur lors du chargement de vos événements.
-          </div>
-        )}
+        {/* Grille principale */}
+        <div className="grid lg:grid-cols-[1.3fr_0.7fr] gap-12 lg:gap-20 items-start">
+          
+          {/* Colonne gauche */}
+          <div className="space-y-10">
+            <div className="space-y-6">
+              <span className="inline-block text-xs font-mono px-3 py-1.5 rounded-full border border-neutral-800 bg-[#14171f] text-[#E5D4B4] uppercase tracking-widest font-bold">
+                Événement officiel
+              </span>
+              <h1 className="text-4xl md:text-6xl font-bold tracking-tight leading-[1.02] text-white">
+                {event.title}
+              </h1>
+            </div>
 
-        {!events || events.length === 0 ? (
-          <div className="py-24 text-center border border-dashed border-[#111110]/20 rounded-3xl">
-            <p className="text-sm font-mono text-[#111110]/50 uppercase tracking-widest mb-4">
-              Vous n'avez créé aucun événement.
-            </p>
-            <Link
-              href="/new"
-              className="inline-flex items-center gap-2 text-xs font-semibold underline"
-            >
-              Créer votre premier événement
-            </Link>
-          </div>
-        ) : (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {events.map((event) => {
-              const formattedDate = event.starts_at
-                ? new Date(event.starts_at).toLocaleDateString('fr-FR', {
-                    day: '2-digit',
-                    month: '2-digit',
-                    year: 'numeric',
-                  })
-                : 'Date non définie';
-
-              const priceFormatted =
-                Number(event.price) === 0 ? 'Gratuit' : `${event.price} €`;
-
-              return (
-                <div
-                  key={event.id}
-                  className="group flex flex-col justify-between p-8 bg-white border border-[#111110]/10 rounded-2xl shadow-sm hover:shadow-md transition-all"
-                >
-                  <div className="space-y-6">
-                    <div className="flex items-center justify-between">
-                      <span className={`text-xs font-mono px-3 py-1 rounded-full uppercase tracking-wider ${
-                        event.status === 'published' 
-                          ? 'bg-emerald-500/10 text-emerald-700 border border-emerald-500/20' 
-                          : 'bg-amber-500/10 text-amber-700 border border-amber-500/20'
-                      }`}>
-                        {event.status === 'published' ? 'Publié' : 'Brouillon'}
-                      </span>
-                      <span className="text-xs font-mono font-semibold text-[#111110]/60">
-                        {formattedDate}
-                      </span>
-                    </div>
-
-                    <div className="space-y-2">
-                      <h2 className="font-display text-2xl font-bold tracking-tight">
-                        {event.title}
-                      </h2>
-                      {event.location && (
-                        <p className="flex items-center gap-1.5 text-xs text-[#111110]/50 font-mono">
-                          <MapPin className="w-3.5 h-3.5" />
-                          <span>{event.location}</span>
-                        </p>
-                      )}
-                    </div>
-
-                    {event.description && (
-                      <p className="text-sm text-[#111110]/70 font-light line-clamp-2 leading-relaxed">
-                        {event.description}
-                      </p>
-                    )}
-                  </div>
-
-                  <div className="mt-10 pt-4 border-t border-[#111110]/10 flex items-center justify-between">
-                    <span className="text-sm font-mono font-bold">
-                      {priceFormatted}
-                    </span>
-                    <Link
-                      href={`/admin-events/${event.slug}/edit`}
-                      className="inline-flex items-center gap-1.5 text-xs font-semibold bg-[#111110]/5 hover:bg-[#111110] hover:text-white px-4 py-2 rounded-full transition-colors"
-                    >
-                      <Settings className="w-3.5 h-3.5" />
-                      <span>Modifier</span>
-                    </Link>
-                  </div>
+            {/* Lignes d'informations métadonnées */}
+            <div className="border-t border-b border-neutral-800 py-6 space-y-4 font-mono text-xs text-neutral-300">
+              <div className="flex items-center gap-3">
+                <Calendar className="w-4 h-4 text-[#E5D4B4]" />
+                <span className="capitalize">{formattedDate}</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <Clock className="w-4 h-4 text-[#E5D4B4]" />
+                <span>Ouverture des portes à {formattedTime}</span>
+              </div>
+              {event.location && (
+                <div className="flex items-center gap-3">
+                  <MapPin className="w-4 h-4 text-[#E5D4B4]" />
+                  <span>{event.location}</span>
                 </div>
-              );
-            })}
+              )}
+            </div>
+
+            {/* Description */}
+            <div className="space-y-4">
+              <h3 className="text-xs font-mono uppercase tracking-widest text-neutral-500">À propos</h3>
+              {event.description ? (
+                <div className="text-base text-neutral-300 font-light leading-relaxed whitespace-pre-line">
+                  {event.description}
+                </div>
+              ) : (
+                <p className="text-sm text-neutral-500 italic font-light">Aucune description détaillée fournie.</p>
+              )}
+            </div>
           </div>
-        )}
+
+          {/* Colonne droite : Carte de billetterie */}
+          <div className="rounded-2xl bg-[#14171f] border border-neutral-800 text-white p-8 md:p-10 space-y-8 sticky top-8 shadow-2xl font-mono">
+            <div className="flex items-center justify-between pb-6 border-b border-neutral-800">
+              <span className="text-xs uppercase tracking-widest text-neutral-400 font-bold">Tarif unique</span>
+              <Ticket className="w-5 h-5 text-[#E5D4B4]" />
+            </div>
+
+            <div className="space-y-2">
+              <p className="text-5xl font-bold tracking-tight text-white">
+                {priceFormatted}
+              </p>
+              <p className="text-xs text-neutral-500">Taxes et frais de service inclus</p>
+            </div>
+
+            <div className="space-y-3 pt-4 border-t border-neutral-800 text-xs text-neutral-300 font-light">
+              <div className="flex justify-between">
+                <span>Format</span>
+                <span className="text-white font-bold">Pass numérique instantané</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Politique</span>
+                <span className="text-white font-bold">Garantie salle</span>
+              </div>
+            </div>
+
+            <button className="w-full rounded-xl bg-[#E5D4B4] text-black py-4 text-xs font-bold uppercase tracking-wider transition-transform hover:scale-[1.02] flex items-center justify-center gap-2 cursor-pointer shadow-lg">
+              <span>Réserver ma place</span>
+              <ArrowUpRight className="w-4 h-4" />
+            </button>
+
+            <p className="text-[11px] text-center text-neutral-500">
+              Paiement direct · Soutien aux artistes et lieux
+            </p>
+          </div>
+
+        </div>
 
       </div>
     </main>
