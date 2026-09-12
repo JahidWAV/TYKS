@@ -233,7 +233,7 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
             <span
               role="img"
               aria-label="TYKS"
-              className="w-12 h-12 shrink-0 bg-[#721120] transition-transform group-hover:scale-105"
+              className="w-20 h-20 shrink-0 bg-[#721120] transition-transform group-hover:scale-105"
               style={{
                 WebkitMaskImage: "url(/tyks.svg)",
                 WebkitMaskRepeat: "no-repeat",
