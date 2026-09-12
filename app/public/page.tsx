@@ -2,13 +2,13 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { ArrowUpRight, Sparkles, Compass } from 'lucide-react';
+import { ArrowUpRight, Calendar, MapPin, Search } from 'lucide-react';
 import { supabaseBrowser } from '@/lib/supabase-browser';
 
 export default function PublicHome() {
   const [events, setEvents] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [activeId, setActiveId] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     const fetchPublishedEvents = async () => {
@@ -21,7 +21,6 @@ export default function PublicHome() {
 
       if (!error && data) {
         setEvents(data);
-        if (data.length > 0) setActiveId(data[0].id);
       }
       setLoading(false);
     };
@@ -29,112 +28,160 @@ export default function PublicHome() {
     fetchPublishedEvents();
   }, []);
 
-  const activeEvent = events.find((e) => e.id === activeId) || events[0];
+  const filteredEvents = events.filter((evt) => {
+    const matchesSearch = evt.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                          evt.location?.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesSearch;
+  });
 
   return (
-    <main className="fixed inset-0 w-full h-[100dvh] bg-[#0A0507] text-[#FAF7F2] font-serif flex flex-col justify-between p-6 sm:p-12 overflow-hidden selection:bg-[#721120] selection:text-[#FAF7F2]">
+    <main className="min-h-screen bg-[#F5F5F7] text-black font-sans selection:bg-black selection:text-white">
       
-      {/* ─── HEADER MINIMALISTE ─── */}
-      <header className="flex items-center justify-between w-full max-w-7xl mx-auto z-10">
-        <div className="flex items-center gap-3">
-          <span className="w-3 h-3 rounded-full bg-[#721120] animate-pulse" />
-          <span className="text-[11px] font-sans tracking-[0.3em] uppercase text-[#FAF7F2]/60">
-            TYKS — Live Experience
-          </span>
-        </div>
+      {/* ─── HEADER BRUTALISTE ─── */}
+      <header className="border-b-2 border-black bg-white sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-6 lg:px-12 h-20 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <span className="h-9 w-9 border-2 border-black bg-black text-white flex items-center justify-center font-mono font-bold text-xs">T</span>
+            <span className="font-mono text-xs font-bold uppercase tracking-widest">TYKS Live</span>
+          </div>
 
-        <Link
-          href="/public"
-          className="font-sans text-xs tracking-widest uppercase text-[#FAF7F2]/80 hover:text-[#FAF7F2] transition-colors flex items-center gap-1.5 group"
-        >
-          <span>Accès Agenda</span>
-          <ArrowUpRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
-        </Link>
+          <div className="flex items-center gap-4">
+            <Link
+              href="/login"
+              className="h-11 px-6 border-2 border-black bg-white hover:bg-black hover:text-white font-mono text-xs uppercase tracking-widest transition-all flex items-center justify-center font-bold shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 hover:shadow-none"
+            >
+              <span>Espace Pro</span>
+            </Link>
+          </div>
+        </div>
       </header>
 
-      {/* ─── CORPS PRINCIPAL : SPLIT VIEW TYPOGRAPHIQUE ─── */}
-      <section className="w-full max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 items-center z-10 my-auto">
-        
-        {/* Titre & Manifesto à gauche */}
-        <div className="lg:col-span-7 space-y-6 sm:space-y-8 text-left">
-          <h1 className="text-5xl sm:text-7xl lg:text-8xl font-light tracking-tight leading-[0.92]">
-            L'art du <br />
-            <span className="italic font-normal text-[#721120]">spectacle</span>, sans artifice.
+      {/* ─── HERO SECTION ─── */}
+      <section className="max-w-7xl mx-auto px-6 lg:px-12 py-16 lg:py-24 border-b-2 border-black space-y-8">
+        <div className="max-w-3xl space-y-6">
+          <span className="inline-block font-mono text-xs uppercase tracking-widest bg-black text-white px-3 py-1">
+            BILLETTERIE OFFICIELLE & INDÉPENDANTE
+          </span>
+          <h1 className="text-5xl sm:text-7xl lg:text-8xl font-bold tracking-tighter uppercase leading-[0.95]">
+            L&apos;art du spectacle, sans artifice.
           </h1>
-          <p className="max-w-md font-sans font-light text-xs sm:text-sm text-[#FAF7F2]/60 leading-relaxed">
-            Une billetterie radicale, pensée pour l'immédiateté. Zéro frais cachés, revente officielle instantanée, et une sélection pointue de la scène live.
+          <p className="font-mono text-xs sm:text-sm leading-relaxed text-neutral-600 max-w-xl">
+            Zéro frais cachés, revente officielle instantanée, et une sélection pointue de la scène live. Réservez vos places en toute simplicité.
           </p>
         </div>
 
-        {/* Aperçu interactif dynamique de la programmation à droite */}
-        <div className="lg:col-span-5 flex flex-col justify-center">
-          {loading ? (
-            <div className="font-sans text-xs uppercase tracking-widest text-[#FAF7F2]/40 py-12">
-              Chargement des ondes...
-            </div>
-          ) : events.length === 0 ? (
-            <div className="font-sans text-xs text-[#FAF7F2]/50 italic">
-              Aucun événement pour le moment.
-            </div>
-          ) : (
-            <div className="flex flex-col border-l border-[#FAF7F2]/15 pl-6 space-y-4">
-              <span className="text-[10px] font-sans tracking-[0.25em] uppercase text-[#721120] font-semibold">
-                À l'affiche
-              </span>
-              <div className="space-y-3 max-h-[300px] overflow-y-auto scrollbar-none pr-2">
-                {events.map((evt) => {
-                  const isSelected = evt.id === activeId;
-                  const dateStr = evt.starts_at
-                    ? new Date(evt.starts_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })
-                    : '';
-
-                  return (
-                    <button
-                      key={evt.id}
-                      onClick={() => setActiveId(evt.id)}
-                      className={`text-left w-full group transition-all py-2 ${
-                        isSelected ? 'opacity-100 pl-2 border-l-2 border-[#721120]' : 'opacity-40 hover:opacity-80'
-                      }`}
-                    >
-                      <div className="flex items-center justify-between font-sans text-[10px] tracking-widest text-[#FAF7F2]/60 mb-1">
-                        <span>{dateStr}</span>
-                        <span>{evt.organizations?.name || 'Live'}</span>
-                      </div>
-                      <div className="text-xl sm:text-2xl font-normal tracking-tight truncate group-hover:translate-x-1 transition-transform">
-                        {evt.title}
-                      </div>
-                    </button>
-                  );
-                })}
-              </div>
-
-              {activeEvent && (
-                <div className="pt-4 border-t border-[#FAF7F2]/10 flex items-center justify-between">
-                  <div className="font-sans text-xs text-[#FAF7F2]/70 truncate max-w-[200px]">
-                    {activeEvent.location || 'Lieu secret'}
-                  </div>
-                  <Link
-                    href={`/events/${activeEvent.slug}`}
-                    className="px-5 py-2.5 rounded-full bg-[#721120] text-[#FAF7F2] font-sans text-xs font-medium uppercase tracking-widest hover:bg-[#5c0e1a] transition-colors flex items-center gap-2 shadow-lg"
-                  >
-                    <span>Réserver</span>
-                    <ArrowUpRight className="w-3.5 h-3.5" />
-                  </Link>
-                </div>
-              )}
-            </div>
-          )}
+        {/* Barre de recherche intégrée au Hero */}
+        <div className="pt-4 max-w-xl">
+          <div className="relative">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-black" />
+            <input
+              type="text"
+              placeholder="Rechercher un artiste, un lieu, un événement..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full h-14 border-2 border-black bg-white pl-11 pr-4 font-mono text-xs uppercase placeholder:text-neutral-400 focus:outline-none shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]"
+            />
+          </div>
         </div>
-
       </section>
 
-      {/* ─── FOOTER DISCRET INTÉGRÉ ─── */}
-      <footer className="w-full max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between text-[11px] font-sans text-[#FAF7F2]/40 gap-4 z-10 pt-4 border-t border-[#FAF7F2]/10">
-        <div>© {new Date().getFullYear()} TYKS. Tous droits réservés.</div>
-        <div className="flex items-center gap-6">
-          <Link href="/legal" className="hover:text-[#FAF7F2] transition-colors">Mentions Légales</Link>
-          <Link href="/cgv" className="hover:text-[#FAF7F2] transition-colors">CGV</Link>
-          <Link href="/privacy" className="hover:text-[#FAF7F2] transition-colors">Confidentialité</Link>
+      {/* ─── LISTE DES ÉVÉNEMENTS ─── */}
+      <section className="max-w-7xl mx-auto px-6 lg:px-12 py-16 space-y-8">
+        <div className="flex items-center justify-between border-b-2 border-black pb-4">
+          <h2 className="font-mono text-xs uppercase tracking-widest font-bold">
+            Programmation à l&apos;affiche
+          </h2>
+          <span className="font-mono text-xs uppercase tracking-wider text-neutral-600">
+            {filteredEvents.length} événement(s)
+          </span>
+        </div>
+
+        {loading ? (
+          <div className="border-2 border-black bg-white p-16 text-center font-mono text-xs uppercase tracking-widest shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+            Chargement des ondes...
+          </div>
+        ) : filteredEvents.length === 0 ? (
+          <div className="border-2 border-black bg-white p-16 text-center space-y-4 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+            <Calendar className="mx-auto h-8 w-8 text-black" />
+            <p className="font-mono text-xs uppercase tracking-wider text-neutral-600">
+              Aucun événement ne correspond à votre recherche.
+            </p>
+          </div>
+        ) : (
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {filteredEvents.map((evt: any) => {
+              const eventPrice = Number(evt.price || evt.ticket_price || 0);
+              const dateStr = evt.starts_at
+                ? new Date(evt.starts_at).toLocaleDateString('fr-FR', {
+                    day: '2-digit',
+                    month: 'short',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                  })
+                : 'Date non définie';
+
+              return (
+                <article
+                  key={evt.id}
+                  className="group flex flex-col border-2 border-black bg-white shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-1 hover:translate-y-1 hover:shadow-none overflow-hidden"
+                >
+                  <div className="space-y-3 p-6 flex-1">
+                    <div className="flex items-center justify-between font-mono">
+                      <span className="text-[10px] uppercase tracking-wider text-neutral-500 font-bold">
+                        {dateStr}
+                      </span>
+                      <span className="inline-flex items-center px-2.5 py-0.5 border-2 border-black bg-black text-white text-[10px] font-bold uppercase tracking-wider">
+                        {evt.organizations?.name || 'Live'}
+                      </span>
+                    </div>
+
+                    <h3 className="text-xl font-bold uppercase tracking-tight leading-snug">
+                      {evt.title}
+                    </h3>
+
+                    {evt.description && (
+                      <p className="line-clamp-2 text-xs font-mono text-neutral-600 leading-relaxed">
+                        {evt.description}
+                      </p>
+                    )}
+
+                    {evt.location && (
+                      <div className="flex items-center gap-2 font-mono text-xs text-neutral-600 pt-1">
+                        <MapPin className="h-3.5 w-3.5 shrink-0" />
+                        <span className="truncate">{evt.location}</span>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="flex items-center justify-between border-t-2 border-black px-6 py-4 bg-[#F5F5F7]">
+                    <span className="font-mono text-xs font-bold uppercase tracking-wider">
+                      {eventPrice > 0 ? `${eventPrice.toLocaleString('fr-FR')} €` : 'Gratuit'}
+                    </span>
+                    <Link
+                      href={`/events/${evt.slug || evt.id}`}
+                      className="h-10 px-5 border-2 border-black bg-black text-white hover:bg-neutral-800 font-mono text-xs uppercase tracking-widest transition-all flex items-center gap-2 cursor-pointer font-bold shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
+                    >
+                      <span>Réserver</span>
+                      <ArrowUpRight className="w-3.5 h-3.5" />
+                    </Link>
+                  </div>
+                </article>
+              );
+            })}
+          </div>
+        )}
+      </section>
+
+      {/* ─── FOOTER ─── */}
+      <footer className="border-t-2 border-black bg-white mt-20">
+        <div className="max-w-7xl mx-auto px-6 lg:px-12 py-8 flex flex-col sm:flex-row items-center justify-between text-xs font-mono uppercase tracking-wider gap-4">
+          <div>© {new Date().getFullYear()} TYKS Inc. Tous droits réservés.</div>
+          <div className="flex items-center gap-6">
+            <Link href="/legal" className="hover:underline">Mentions Légales</Link>
+            <Link href="/cgv" className="hover:underline">CGV</Link>
+            <Link href="/privacy" className="hover:underline">Confidentialité</Link>
+          </div>
         </div>
       </footer>
 
