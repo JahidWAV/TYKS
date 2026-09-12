@@ -132,7 +132,7 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
 
   return (
     <>
-      <header className={`sticky top-0 z-20 bg-transparent transition-colors duration-300 ${
+      <header className={`fixed inset-x-0 top-0 z-20 bg-transparent transition-colors duration-300 ${
         isDarkMode ? 'text-[#F7F5F0]' : 'text-[#111110]'
       }`}>
         <div className="mx-auto grid grid-cols-[1fr_auto_1fr] items-center max-w-7xl px-6 py-4 md:px-12 gap-6">
@@ -160,7 +160,7 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
           {!isPro ? (
             <div className="relative hidden md:block w-full max-w-lg justify-self-center" ref={searchRef}>
               <div className="relative flex items-center w-full">
-                <Search className={`absolute left-4 h-4 w-4 pointer-events-none ${isDarkMode ? 'text-[#F7F5F0]/50' : 'text-[#111110]/50'}`} />
+                <Search className="absolute left-4 h-4 w-4 pointer-events-none text-[#FAF7F2]/60" />
                 <input
                   type="text"
                   value={searchQuery}
@@ -170,11 +170,7 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
                   }}
                   onFocus={() => setShowDropdown(true)}
                   placeholder="Rechercher un événement, un artiste, un lieu..."
-                  className={`w-full rounded-full border px-4 py-3 pl-11 pr-10 text-xs font-medium focus:outline-none focus:border-[#721120] transition-all shadow-sm ${
-                    isDarkMode 
-                      ? 'bg-[#111110] border-[#F7F5F0]/20 text-[#F7F5F0] placeholder:text-[#F7F5F0]/40' 
-                      : 'bg-[#F7F5F0] border-[#111110]/20 text-[#111110] placeholder:text-[#111110]/40'
-                  }`}
+                  className="w-full rounded-full border border-[#721120] bg-[#721120] px-4 py-3 pl-11 pr-10 text-xs font-medium text-[#FAF7F2] placeholder:text-[#FAF7F2]/50 focus:outline-none focus:border-[#FAF7F2]/60 transition-all shadow-sm"
                 />
 
                 {searchQuery && (
@@ -183,7 +179,7 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
                       setSearchQuery("");
                       setResults([]);
                     }}
-                    className={`absolute right-3.5 transition-colors p-1 ${isDarkMode ? 'text-[#F7F5F0]/40 hover:text-[#F7F5F0]' : 'text-[#111110]/40 hover:text-[#111110]'}`}
+                    className="absolute right-3.5 p-1 text-[#FAF7F2]/60 transition-colors hover:text-[#FAF7F2]"
                   >
                     <X className="h-3.5 w-3.5" />
                   </button>
@@ -262,19 +258,15 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
               <div className="relative" ref={userMenuRef}>
                 <button
                   onClick={() => setUserMenuOpen(!userMenuOpen)}
-                  className={`inline-flex items-center gap-2.5 px-4 py-2 rounded-full border text-xs font-medium transition-all ${
-                    isDarkMode 
-                      ? 'border-[#F7F5F0]/20 bg-[#F7F5F0]/5 text-[#F7F5F0] hover:border-[#F7F5F0]/50' 
-                      : 'border-[#111110]/20 bg-[#111110]/5 text-[#111110] hover:border-[#111110]/50'
-                  }`}
+                  className="inline-flex items-center gap-2.5 rounded-full border border-[#721120] bg-[#721120] px-4 py-2 text-xs font-medium text-[#FAF7F2] transition-all hover:bg-[#5c0e1a]"
                 >
-                  <div className="w-5 h-5 rounded-full flex items-center justify-center bg-[#721120] text-[#FAF7F2]">
+                  <div className="w-5 h-5 rounded-full flex items-center justify-center bg-[#FAF7F2] text-[#721120]">
                     <UserIcon className="w-3 h-3" />
                   </div>
                   <span className="font-mono max-w-[110px] truncate">
                     {firstName || user.email.split('@')[0]}
                   </span>
-                  <ChevronDown className={`w-3.5 h-3.5 opacity-60 transition-transform ${userMenuOpen ? 'rotate-180' : ''}`} />
+                  <ChevronDown className={`w-3.5 h-3.5 opacity-70 transition-transform ${userMenuOpen ? 'rotate-180' : ''}`} />
                 </button>
 
                 {userMenuOpen && (
@@ -334,15 +326,13 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
             {!isPro && (
               <>
                 <div className="relative flex items-center">
-                  <Search className="absolute left-3.5 h-4 w-4 opacity-40 pointer-events-none" />
+                  <Search className="absolute left-3.5 h-4 w-4 pointer-events-none text-[#FAF7F2]/60" />
                   <input
                     type="text"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     placeholder="Rechercher un événement..."
-                    className={`w-full border rounded-full pl-10 pr-4 py-2.5 text-xs focus:outline-none ${
-                      isDarkMode ? 'bg-[#111110] border-[#F7F5F0]/20 text-[#F7F5F0]' : 'bg-[#F7F5F0] border-[#111110]/20 text-[#111110]'
-                    }`}
+                    className="w-full rounded-full border border-[#721120] bg-[#721120] pl-10 pr-4 py-2.5 text-xs text-[#FAF7F2] placeholder:text-[#FAF7F2]/50 focus:outline-none focus:border-[#FAF7F2]/60"
                   />
                 </div>
                 {searchQuery.trim().length > 0 && results.length > 0 && (
@@ -372,10 +362,8 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
               </div>
             ) : user ? (
               <div className="flex flex-col gap-2.5 pt-2">
-                <div className={`flex items-center gap-2 px-4 py-2.5 rounded-full border text-xs font-mono ${
-                  isDarkMode ? 'border-[#F7F5F0]/20 bg-[#F7F5F0]/5 text-[#F7F5F0]' : 'border-[#111110]/20 bg-[#111110]/5 text-[#111110]'
-                }`}>
-                  <UserIcon className="w-3.5 h-3.5 text-[#721120]" />
+                <div className="flex items-center gap-2 rounded-full border border-[#721120] bg-[#721120] px-4 py-2.5 text-xs font-mono text-[#FAF7F2]">
+                  <UserIcon className="w-3.5 h-3.5" />
                   <span className="truncate">{firstName || user.email}</span>
                 </div>
                 <Link
