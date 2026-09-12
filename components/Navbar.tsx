@@ -134,10 +134,102 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
       <header className={`fixed inset-x-0 top-0 z-20 bg-transparent transition-colors duration-300 ${
         isDarkMode ? 'text-[#F7F5F0]' : 'text-[#111110]'
       }`}>
-        <div className="mx-auto grid grid-cols-[1fr_auto_1fr] items-center max-w-7xl px-6 py-4 md:px-12 gap-6">
+        <div className="mx-auto flex items-center justify-between max-w-7xl px-6 py-4 md:px-12">
 
-          {/* Logo centré */}
-          <Link href={isPro ? "/" : "/"} className="group col-start-2 justify-self-center flex items-center">
+          {/* 1. BARRE DE RECHERCHE (À GAUCHE) */}
+          <div className="w-48 hidden md:block">
+            {!isPro ? (
+              <div className="relative" ref={searchRef}>
+                <div className="relative flex items-center w-full">
+                  <Search className="absolute left-3.5 h-3.5 w-3.5 pointer-events-none text-[#FAF7F2]/60" />
+                  <input
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => {
+                      setSearchQuery(e.target.value);
+                      if (!showDropdown) setShowDropdown(true);
+                    }}
+                    onFocus={() => setShowDropdown(true)}
+                    placeholder="Rechercher..."
+                    className="w-full h-10 rounded-full border border-[#721120] bg-[#721120] px-4 pl-9 pr-8 text-xs font-medium text-[#FAF7F2] placeholder:text-[#FAF7F2]/50 focus:outline-none focus:border-[#FAF7F2]/60 transition-all shadow-sm"
+                  />
+
+                  {searchQuery && (
+                    <button
+                      onClick={() => {
+                        setSearchQuery("");
+                        setResults([]);
+                      }}
+                      className="absolute right-3 p-1 text-[#FAF7F2]/60 transition-colors hover:text-[#FAF7F2]"
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                  )}
+                </div>
+
+                {showDropdown && searchQuery.trim().length > 0 && (
+                  <div className={`absolute top-full left-0 w-80 mt-2 rounded-2xl shadow-2xl overflow-hidden z-50 backdrop-blur-2xl border ${
+                    isDarkMode ? 'bg-[#111110] border-[#F7F5F0]/15 divide-y divide-[#F7F5F0]/10 text-[#F7F5F0]' : 'bg-[#F7F5F0] border-[#111110]/15 divide-y divide-[#111110]/10 text-[#111110]'
+                  }`}>
+                    {results.length > 0 ? (
+                      <div className="py-2">
+                        {results.map((evt) => {
+                          const priceFormatted = evt.price && parseFloat(evt.price) > 0
+                            ? `${parseFloat(evt.price).toFixed(2)} €`
+                            : 'Gratuit';
+
+                          return (
+                            <button
+                              key={evt.id}
+                              onClick={() => {
+                                setShowDropdown(false);
+                                setSearchQuery("");
+                                router.push(`/events/${evt.slug || evt.id}`);
+                              }}
+                              className={`w-full text-left px-4 py-3 transition-all flex items-center justify-between group ${
+                                isDarkMode ? 'hover:bg-[#F7F5F0]/5' : 'hover:bg-[#111110]/5'
+                              }`}
+                            >
+                              <div className="space-y-1 pr-3 truncate">
+                                <p className="text-xs font-bold truncate">
+                                  {evt.title}
+                                </p>
+                                <div className={`flex items-center gap-3 text-[10px] font-mono ${isDarkMode ? 'text-[#F7F5F0]/50' : 'text-[#111110]/50'}`}>
+                                  <span className="flex items-center gap-1">
+                                    <Calendar className="w-3 h-3 text-[#721120]" />
+                                    {new Date(evt.starts_at).toLocaleDateString("fr-FR", { day: "numeric", month: "short" })}
+                                  </span>
+                                  <span className="flex items-center gap-1 truncate">
+                                    <MapPin className="w-3 h-3 text-[#721120]" />
+                                    {evt.location}
+                                  </span>
+                                </div>
+                              </div>
+                              <div className="flex items-center gap-2 shrink-0">
+                                <span className={`font-mono text-[10px] font-bold px-2 py-1 rounded-md border shadow-sm ${
+                                  isDarkMode ? 'bg-[#111110] border-[#F7F5F0]/10 text-[#F7F5F0]' : 'bg-[#F7F5F0] border-[#111110]/10 text-[#111110]'
+                                }`}>
+                                  {priceFormatted}
+                                </span>
+                                <ArrowUpRight className="w-3.5 h-3.5 opacity-50 group-hover:opacity-100 transition-opacity" />
+                              </div>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    ) : (
+                      <div className="px-4 py-6 text-center">
+                        <p className={`text-[10px] font-semibold uppercase tracking-wider ${isDarkMode ? 'text-[#F7F5F0]/40' : 'text-[#111110]/40'}`}>Aucun résultat pour &quot;{searchQuery}&quot;</p>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            ) : <div />}
+          </div>
+
+          {/* 2. LOGO (AU CENTRE) */}
+          <Link href={isPro ? "/" : "/"} className="group flex items-center absolute left-1/2 -translate-x-1/2">
             <span
               role="img"
               aria-label="TYKS"
@@ -155,100 +247,8 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
             />
           </Link>
 
-          {/* Barre de recherche (Pilule compacte à gauche) */}
-          {!isPro ? (
-            <div className="relative hidden md:block w-48 col-start-1 justify-self-start" ref={searchRef}>
-              <div className="relative flex items-center w-full">
-                <Search className="absolute left-3.5 h-3.5 w-3.5 pointer-events-none text-[#FAF7F2]/60" />
-                <input
-                  type="text"
-                  value={searchQuery}
-                  onChange={(e) => {
-                    setSearchQuery(e.target.value);
-                    if (!showDropdown) setShowDropdown(true);
-                  }}
-                  onFocus={() => setShowDropdown(true)}
-                  placeholder="Rechercher..."
-                  className="w-full h-10 rounded-full border border-[#721120] bg-[#721120] px-4 pl-9 pr-8 text-xs font-medium text-[#FAF7F2] placeholder:text-[#FAF7F2]/50 focus:outline-none focus:border-[#FAF7F2]/60 transition-all shadow-sm"
-                />
-
-                {searchQuery && (
-                  <button
-                    onClick={() => {
-                      setSearchQuery("");
-                      setResults([]);
-                    }}
-                    className="absolute right-3 p-1 text-[#FAF7F2]/60 transition-colors hover:text-[#FAF7F2]"
-                  >
-                    <X className="h-3 w-3" />
-                  </button>
-                )}
-              </div>
-
-              {showDropdown && searchQuery.trim().length > 0 && (
-                <div className={`absolute top-full left-0 w-80 mt-2 rounded-2xl shadow-2xl overflow-hidden z-50 backdrop-blur-2xl border ${
-                  isDarkMode ? 'bg-[#111110] border-[#F7F5F0]/15 divide-y divide-[#F7F5F0]/10 text-[#F7F5F0]' : 'bg-[#F7F5F0] border-[#111110]/15 divide-y divide-[#111110]/10 text-[#111110]'
-                }`}>
-                  {results.length > 0 ? (
-                    <div className="py-2">
-                      {results.map((evt) => {
-                        const priceFormatted = evt.price && parseFloat(evt.price) > 0
-                          ? `${parseFloat(evt.price).toFixed(2)} €`
-                          : 'Gratuit';
-
-                        return (
-                          <button
-                            key={evt.id}
-                            onClick={() => {
-                              setShowDropdown(false);
-                              setSearchQuery("");
-                              router.push(`/events/${evt.slug || evt.id}`);
-                            }}
-                            className={`w-full text-left px-4 py-3 transition-all flex items-center justify-between group ${
-                              isDarkMode ? 'hover:bg-[#F7F5F0]/5' : 'hover:bg-[#111110]/5'
-                            }`}
-                          >
-                            <div className="space-y-1 pr-3 truncate">
-                              <p className="text-xs font-bold truncate">
-                                {evt.title}
-                              </p>
-                              <div className={`flex items-center gap-3 text-[10px] font-mono ${isDarkMode ? 'text-[#F7F5F0]/50' : 'text-[#111110]/50'}`}>
-                                <span className="flex items-center gap-1">
-                                  <Calendar className="w-3 h-3 text-[#721120]" />
-                                  {new Date(evt.starts_at).toLocaleDateString("fr-FR", { day: "numeric", month: "short" })}
-                                </span>
-                                <span className="flex items-center gap-1 truncate">
-                                  <MapPin className="w-3 h-3 text-[#721120]" />
-                                  {evt.location}
-                                </span>
-                              </div>
-                            </div>
-                            <div className="flex items-center gap-2 shrink-0">
-                              <span className={`font-mono text-[10px] font-bold px-2 py-1 rounded-md border shadow-sm ${
-                                isDarkMode ? 'bg-[#111110] border-[#F7F5F0]/10 text-[#F7F5F0]' : 'bg-[#F7F5F0] border-[#111110]/10 text-[#111110]'
-                              }`}>
-                                {priceFormatted}
-                              </span>
-                              <ArrowUpRight className="w-3.5 h-3.5 opacity-50 group-hover:opacity-100 transition-opacity" />
-                            </div>
-                          </button>
-                        );
-                      })}
-                    </div>
-                  ) : (
-                    <div className="px-4 py-6 text-center">
-                      <p className={`text-[10px] font-semibold uppercase tracking-wider ${isDarkMode ? 'text-[#F7F5F0]/40' : 'text-[#111110]/40'}`}>Aucun résultat pour &quot;{searchQuery}&quot;</p>
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
-          ) : (
-            <div />
-          )}
-
-          {/* Desktop right side (Pilule compacte de compte) */}
-          <div className="hidden items-center gap-3 sm:flex sm:col-start-3 justify-self-end">
+          {/* 3. BOUTON COMPTE / CONNEXION (À DROITE DESKTOP) */}
+          <div className="w-48 hidden sm:flex justify-end">
             {loadingUser ? (
               <div className={`flex h-10 w-40 items-center justify-center rounded-full border ${isDarkMode ? 'border-[#F7F5F0]/20 bg-[#111110]' : 'border-[#111110]/20 bg-[#F7F5F0]'}`}>
                 <Loader2 className="h-3.5 w-3.5 animate-spin opacity-60" />
@@ -299,8 +299,8 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
             )}
           </div>
 
-          {/* Mobile toggle */}
-          <div className="flex items-center gap-2 sm:hidden col-start-3 justify-self-end">
+          {/* MOBILE TOGGLE */}
+          <div className="flex items-center sm:hidden">
             <button
               className={`inline-flex items-center justify-center rounded-full border p-2 shrink-0 ${isDarkMode ? 'border-[#F7F5F0]/20 text-[#F7F5F0]' : 'border-[#111110]/20 text-[#111110]'}`}
               onClick={() => setMobileOpen((open) => !open)}
@@ -311,9 +311,9 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
           </div>
         </div>
 
-        {/* Mobile panel */}
+        {/* MOBILE PANEL */}
         {mobileOpen && (
-          <div className="px-6 py-4 sm:hidden space-y-4">
+          <div className="px-6 py-4 sm:hidden space-y-4 bg-transparent backdrop-blur-md">
             {!isPro && (
               <>
                 <div className="relative flex items-center">
