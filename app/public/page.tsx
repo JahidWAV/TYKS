@@ -42,31 +42,18 @@ export default function PublicHome() {
     fetchPublishedEvents();
   }, []);
 
-  const filteredEvents = events.filter((item) => {
-    if (selectedCategory === 'Tous') return true;
-    // Ajoute ici une condition si tu filtres par catégorie en base ou dynamiquement
-    return true;
-  });
+  const filteredEvents = events.filter(() => true);
 
   return (
     <div className="flex-1 flex flex-col bg-[#fbfbfc] text-[#1A0A0F] selection:bg-[#721120] selection:text-[#FAF7F2] font-serif min-h-screen">
       
-      {/* ─── 1. HERO SECTION PLEIN ÉCRAN (TAGLINE SEULE) ─── */}
-      <section className="relative h-screen w-full flex flex-col items-center justify-center text-center px-6 md:px-16 border-b border-[#1A0A0F]/10">
-        <div className="max-w-5xl space-y-8 flex flex-col items-center">
-          <div className="inline-flex items-center justify-center gap-2.5 text-xs font-sans tracking-[0.25em] uppercase px-4 py-2 rounded-full bg-[#721120]/10 text-[#721120] font-medium border border-[#721120]/20">
-            <span className="w-2 h-2 rounded-full bg-[#721120] animate-ping" />
-            <span>La billetterie indépendante et transparente</span>
-          </div>
-
-          <h1 className="text-6xl md:text-8xl lg:text-9xl font-light tracking-tight leading-[0.95]">
+      {/* ─── 1. HERO SECTION PLEIN ÉCRAN (UNIQUEMENT LA TAGLINE) ─── */}
+      <section className="relative h-screen w-full flex flex-col items-center justify-center text-center px-4 sm:px-6 md:px-16 border-b border-[#1A0A0F]/10">
+        <div className="max-w-5xl mx-auto w-full flex flex-col items-center justify-center">
+          <h1 className="text-5xl sm:text-7xl md:text-8xl lg:text-9xl font-light tracking-tight leading-[0.95] break-words">
             Vivez le live, <br />
             <span className="italic font-normal text-[#721120]">sans compromis</span>.
           </h1>
-
-          <p className="text-lg md:text-xl font-sans font-light text-[#1A0A0F]/75 max-w-2xl leading-relaxed">
-            Découvrez les meilleurs concerts, soirées et performances underground près de chez vous. Zéro frais cachés, revente sécurisée et accès instantané.
-          </p>
         </div>
 
         <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 animate-bounce">
@@ -79,7 +66,7 @@ export default function PublicHome() {
 
       {/* ─── 2. SECTION AVANTAGES ─── */}
       <section className="py-24 px-6 md:px-16 max-w-7xl mx-auto w-full flex flex-col items-center">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 font-sans w-full">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 font-sans w-full">
           <div className="flex flex-col md:flex-row items-center text-center md:text-left gap-3">
             <div className="w-10 h-10 rounded-full bg-[#721120]/10 text-[#721120] flex items-center justify-center shrink-0 border border-[#721120]/20">
               <Zap className="w-4 h-4" />
@@ -187,7 +174,6 @@ export default function PublicHome() {
                     </div>
 
                     <div className="space-y-2 pt-2">
-                      {/* SURVOL : Le texte grossit légèrement (transition scale sans changer de couleur) */}
                       <h3 className="text-2xl md:text-3xl font-normal transition-transform duration-300 group-hover:scale-[1.02] origin-left leading-snug line-clamp-2 text-[#1A0A0F]">
                         {item.title}
                       </h3>
