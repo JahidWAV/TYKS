@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { LogOut, Loader2, Menu, X, Search, Calendar, MapPin, ArrowUpRight, User as UserIcon, Settings, ChevronDown } from "lucide-react";
 import CustomAuthModal from "@/components/CustomAuthModal";
@@ -132,10 +133,10 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
   return (
     <>
       <header className="sticky top-0 z-50 bg-white border-b-2 border-black font-sans text-black">
-        <div className="max-w-7xl mx-auto px-6 lg:px-12 h-20 flex items-center justify-between gap-4">
+        <div className="max-w-7xl mx-auto px-6 lg:px-12 h-20 flex items-center justify-between gap-6">
 
           {/* 1. BARRE DE RECHERCHE (À GAUCHE) */}
-          <div className="w-72 hidden md:block">
+          <div className="w-64 sm:w-72 hidden md:block">
             {!isPro ? (
               <div className="relative" ref={searchRef}>
                 <div className="relative flex items-center w-full">
@@ -221,19 +222,16 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
           </div>
 
           {/* 2. LOGO (AU CENTRE) */}
-          <Link href="/" className="group flex items-center gap-3 shrink-0">
-            <span className="h-9 w-9 border-2 border-black bg-black text-white flex items-center justify-center font-mono font-bold text-xs transition-transform group-hover:scale-105 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">T</span>
-            <span className="font-mono text-xs font-bold uppercase tracking-widest text-black">TYKS Live</span>
+          <Link href="/" className="flex items-center shrink-0">
+            <Image src="/tyks.svg" alt="TYKS" width={80} height={28} priority className="h-6 w-auto object-contain" />
           </Link>
 
           {/* 3. BOUTON COMPTE / CONNEXION (À DROITE DESKTOP) */}
-          <div className="w-72 hidden md:flex justify-end">
+          <div className="w-64 sm:w-72 hidden md:flex justify-end">
             {loadingUser ? (
-              <div className="flex h-11 w-40 items-center justify-center border-2 border-black bg-white">
-                <Loader2 className="h-3.5 w-3.5 animate-spin text-black" />
-              </div>
+              <div className="h-11 w-full max-w-[200px] border-2 border-black bg-white" />
             ) : user ? (
-              <div className="relative w-48" ref={userMenuRef}>
+              <div className="relative w-full max-w-[200px]" ref={userMenuRef}>
                 <button
                   onClick={() => setUserMenuOpen(!userMenuOpen)}
                   className="inline-flex h-11 w-full items-center gap-2 border-2 border-black bg-white px-4 text-xs font-mono font-bold uppercase tracking-wider transition-all hover:bg-black hover:text-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 hover:shadow-none cursor-pointer text-black"
@@ -246,7 +244,7 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
                 </button>
 
                 {userMenuOpen && (
-                  <div className="absolute right-0 top-full mt-2 w-48 bg-white border-2 border-black py-1.5 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] z-50 font-mono text-black">
+                  <div className="absolute right-0 top-full mt-2 w-full bg-white border-2 border-black py-1.5 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] z-50 font-mono text-black">
                     <Link
                       href="/settings"
                       onClick={() => setUserMenuOpen(false)}
@@ -269,7 +267,7 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
             ) : (
               <button
                 onClick={() => setIsAuthOpen(true)}
-                className="inline-flex h-11 px-6 border-2 border-black bg-white hover:bg-black hover:text-white font-mono text-xs uppercase tracking-widest transition-all items-center justify-center font-bold shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 hover:shadow-none cursor-pointer text-black"
+                className="inline-flex h-11 w-full max-w-[200px] px-6 border-2 border-black bg-white hover:bg-black hover:text-white font-mono text-xs uppercase tracking-widest transition-all items-center justify-center font-bold shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 hover:shadow-none cursor-pointer text-black"
               >
                 <span>{isPro ? "Connexion Pro" : "Connexion"}</span>
               </button>
