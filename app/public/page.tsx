@@ -12,7 +12,8 @@ import {
   Clock, 
   CheckCircle2, 
   Smartphone,
-  RefreshCw
+  RefreshCw,
+  ArrowUpRight
 } from 'lucide-react';
 import { supabaseBrowser } from '@/lib/supabase-browser';
 
@@ -176,7 +177,6 @@ export default function PublicHome() {
                     </div>
 
                     <div className="space-y-2 pt-2">
-                      {/* SURVOL : Le texte grossit légèrement sans changer de couleur */}
                       <h3 className="text-2xl md:text-3xl font-normal transition-transform duration-300 group-hover:scale-[1.02] origin-left leading-snug line-clamp-2 text-[#1A0A0F]">
                         {item.title}
                       </h3>
