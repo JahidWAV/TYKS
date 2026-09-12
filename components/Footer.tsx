@@ -6,34 +6,31 @@ interface FooterProps {
   isDarkMode?: boolean;
 }
 
-export default function Footer({ isDarkMode = false }: FooterProps) {
+export default function Footer({}: FooterProps) {
   return (
-    <footer className={`border-t transition-colors duration-300 ${
-      isDarkMode 
-        ? 'bg-[#111110] border-[#F7F5F0]/10 text-[#F7F5F0]' 
-        : 'bg-[#F7F5F0] border-[#111110]/10 text-[#111110]'
-    }`}>
+    <footer className="border-t-2 border-black bg-white text-black">
       <div className="mx-auto max-w-7xl px-6 py-12 md:px-12 flex flex-col md:flex-row items-center justify-between gap-6">
         
         {/* Logo & Copyright */}
         <div className="flex flex-col items-center md:items-start gap-1">
-          <Link href="/" className="font-display text-lg font-bold tracking-tighter">
-            TYKS
+          <Link href="/" className="font-mono font-bold uppercase tracking-widest text-sm flex items-center gap-2">
+            <span className="h-5 w-5 border-2 border-black bg-black text-white flex items-center justify-center text-[10px]">T</span>
+            TYKS Live
           </Link>
-          <p className={`text-xs ${isDarkMode ? 'text-[#F7F5F0]/40' : 'text-[#111110]/40'}`}>
+          <p className="font-mono text-xs text-neutral-500 uppercase tracking-wider">
             © {new Date().getFullYear()} TYKS. Tous droits réservés.
           </p>
         </div>
 
         {/* Liens utiles */}
-        <div className="flex items-center gap-6 text-xs font-medium">
-          <Link href="/legal" className={`transition-colors ${isDarkMode ? 'text-[#F7F5F0]/60 hover:text-[#F7F5F0]' : 'text-[#111110]/60 hover:text-[#111110]'}`}>
+        <div className="flex items-center gap-6 font-mono text-xs uppercase tracking-widest font-bold">
+          <Link href="/legal" className="border-b-2 border-transparent hover:border-black transition-colors">
             Mentions légales
           </Link>
-          <Link href="/privacy" className={`transition-colors ${isDarkMode ? 'text-[#F7F5F0]/60 hover:text-[#F7F5F0]' : 'text-[#111110]/60 hover:text-[#111110]'}`}>
+          <Link href="/privacy" className="border-b-2 border-transparent hover:border-black transition-colors">
             Confidentialité
           </Link>
-          <Link href="https://pro.tyks.app" className={`transition-colors ${isDarkMode ? 'text-[#F7F5F0]/60 hover:text-[#F7F5F0]' : 'text-[#111110]/60 hover:text-[#111110]'}`}>
+          <Link href="https://pro.tyks.app" className="border-b-2 border-transparent hover:border-black transition-colors">
             Espace Pro
           </Link>
         </div>
