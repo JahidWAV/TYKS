@@ -2,15 +2,15 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { 
-  Calendar, 
-  MapPin, 
-  Sparkles, 
-  ShieldCheck, 
-  Zap, 
-  Ticket, 
-  Clock, 
-  CheckCircle2, 
+import {
+  Calendar,
+  MapPin,
+  Sparkles,
+  ShieldCheck,
+  Zap,
+  Ticket,
+  Clock,
+  CheckCircle2,
   Smartphone,
   RefreshCw,
   ArrowUpRight
@@ -46,19 +46,19 @@ export default function PublicHome() {
 
   return (
     <div className="flex-1 flex flex-col bg-[#fbfbfc] text-[#1A0A0F] selection:bg-[#721120] selection:text-[#FAF7F2] font-serif min-h-screen">
-      
-      {/* ─── 1. HERO SECTION PLEIN ÉCRAN (TAGLINE CENTRÉE STRICTEMENT) ─── */}
-      <section className="relative h-screen w-full flex flex-col items-center justify-center text-center px-4 sm:px-6 md:px-16 border-b border-[#1A0A0F]/10">
-        <div className="max-w-5xl mx-auto w-full flex flex-col items-center justify-center">
-          <h1 className="text-5xl sm:text-7xl md:text-8xl lg:text-9xl font-light tracking-tight leading-[0.95] break-words text-center">
-            Vivez le live, <br />
-            <span className="italic font-normal text-[#721120]">sans compromis</span>.
-          </h1>
-        </div>
 
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center justify-center gap-2 animate-bounce w-full max-w-xs">
-          <span className="text-[10px] font-sans uppercase tracking-[0.2em] text-[#1A0A0F]/45 text-center block">Scroller pour explorer</span>
-          <div className="w-4 h-7 rounded-full border-2 border-[#1A0A0F]/20 flex items-start justify-center p-1 mx-auto">
+      {/* ─── 1. HERO SECTION PLEIN ÉCRAN (TAGLINE SEULE, CENTRAGE STRICT) ─── */}
+      <section className="relative h-screen w-full flex flex-col items-center justify-center text-center px-6 border-b border-[#1A0A0F]/10">
+        <h1 className="max-w-5xl text-5xl sm:text-7xl md:text-8xl lg:text-9xl font-light tracking-tight leading-[0.95]">
+          Vivez le live, <br />
+          <span className="italic font-normal text-[#721120]">sans compromis</span>.
+        </h1>
+
+        <div className="absolute inset-x-0 bottom-8 flex flex-col items-center gap-2 animate-bounce">
+          <span className="text-[10px] font-sans uppercase tracking-[0.2em] text-[#1A0A0F]/45">
+            Scroller pour explorer
+          </span>
+          <div className="w-4 h-7 rounded-full border-2 border-[#1A0A0F]/20 flex items-start justify-center p-1">
             <div className="w-1 h-1.5 bg-[#721120] rounded-full animate-pulse" />
           </div>
         </div>
@@ -123,8 +123,8 @@ export default function PublicHome() {
                 key={cat}
                 onClick={() => setSelectedCategory(cat)}
                 className={`px-5 py-2.5 rounded-full text-xs font-medium tracking-wider uppercase whitespace-nowrap transition-all border ${
-                  selectedCategory === cat 
-                    ? 'bg-[#721120] text-[#FAF7F2] border-[#721120]' 
+                  selectedCategory === cat
+                    ? 'bg-[#721120] text-[#FAF7F2] border-[#721120]'
                     : 'bg-white text-[#1A0A0F]/70 border-[#1A0A0F]/15 hover:border-[#1A0A0F]/40'
                 }`}
               >
@@ -141,7 +141,7 @@ export default function PublicHome() {
         ) : filteredEvents.length === 0 ? (
           <div className="py-24 text-center border border-[#1A0A0F]/15 rounded-[2.5rem] bg-white space-y-4 font-sans shadow-sm flex flex-col items-center justify-center max-w-xl mx-auto">
             <p className="text-base font-medium text-[#1A0A0F]/85">Aucun événement ne correspond à vos critères de recherche.</p>
-            <button 
+            <button
               onClick={() => setSelectedCategory('Tous')}
               className="mt-2 px-6 py-3 bg-[#721120] text-[#FAF7F2] rounded-full text-xs font-medium uppercase tracking-widest hover:bg-[#5c0e1a] transition-colors"
             >
@@ -164,7 +164,7 @@ export default function PublicHome() {
                 <Link
                   key={item.id}
                   href={`/events/${item.slug}`}
-                  className="group bg-white border border-[#1A0A0F]/15 rounded-[2.5rem] p-8 flex flex-col justify-between h-[440px] transition-all duration-300 shadow-sm hover:shadow-xl relative overflow-hidden"
+                  className="group bg-white border border-[#1A0A0F]/15 rounded-[2.5rem] p-8 flex flex-col justify-between h-[440px] transition-shadow duration-300 shadow-sm hover:shadow-xl relative overflow-hidden"
                 >
                   <div className="space-y-4">
                     <div className="flex items-center justify-between text-xs font-sans tracking-wider text-[#1A0A0F]/60">
@@ -197,7 +197,7 @@ export default function PublicHome() {
                       </span>
                     </div>
 
-                    <div className="w-full py-3.5 rounded-full bg-[#721120] text-[#FAF7F2] hover:bg-[#5c0e1a] transition-colors flex items-center justify-center gap-2 text-xs font-sans font-medium uppercase tracking-widest shadow-sm">
+                    <div className="w-full py-3.5 rounded-full bg-[#721120] text-[#FAF7F2] flex items-center justify-center gap-2 text-xs font-sans font-medium uppercase tracking-widest shadow-sm">
                       <span>Réserver ma place</span>
                       <ArrowUpRight className="w-4 h-4" />
                     </div>
