@@ -118,7 +118,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   if (user === undefined) {
     return (
-      <div className="min-h-screen bg-[#F5F5F7] text-black font-mono text-xs uppercase tracking-widest flex items-center justify-center">
+      <div className="min-h-screen bg-[#0a0b0e] text-neutral-400 font-mono text-xs uppercase tracking-widest flex items-center justify-center">
         Chargement...
       </div>
     );
@@ -132,12 +132,12 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const CONTENT_MARGIN = isOpen ? 'ml-64' : 'ml-16';
 
   return (
-    <div className="min-h-screen bg-[#F5F5F7] text-black font-sans selection:bg-black selection:text-white flex overflow-x-hidden">
+    <div className="min-h-screen bg-[#0a0b0e] text-white font-sans selection:bg-[#E5D4B4] selection:text-black flex overflow-x-hidden">
 
-      {/* 0. Barre horizontale fixe en haut : brut-design */}
-      <header className="fixed top-0 left-0 right-0 h-16 border-b-2 border-black bg-[#F5F5F7] flex items-center justify-between shrink-0 z-50 select-none">
+      {/* 0. Barre horizontale fixe en haut : design élégant sombre / gold */}
+      <header className="fixed top-0 left-0 right-0 h-16 border-b border-neutral-800 bg-[#0a0b0e] flex items-center justify-between shrink-0 z-50 select-none">
         <div className="flex items-center h-full">
-          <div className="w-16 h-full flex items-center justify-center shrink-0 border-r-2 border-black bg-white">
+          <div className="w-16 h-full flex items-center justify-center shrink-0 border-r border-neutral-800 bg-[#101319]">
             <Link href="/" className="w-9 h-9 flex items-center justify-center group">
               <img
                 src="/icon.svg"
@@ -150,8 +150,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           <div className="flex items-center gap-2 text-xs uppercase font-mono tracking-wider pl-6">
             {breadcrumbs.map((crumb, index) => (
               <div key={index} className="flex items-center gap-2">
-                {index > 0 && <ChevronRight className="w-3.5 h-3.5 text-black/40" />}
-                <span className={`flex items-center ${index === breadcrumbs.length - 1 ? "bg-black text-white px-2 py-1 font-bold" : "text-black/70"}`}>
+                {index > 0 && <ChevronRight className="w-3.5 h-3.5 text-neutral-600" />}
+                <span className={`flex items-center ${index === breadcrumbs.length - 1 ? "bg-[#E5D4B4] text-black px-3 py-1 font-bold rounded-full" : "text-neutral-400"}`}>
                   {crumb}
                 </span>
               </div>
@@ -162,60 +162,60 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         <div className="relative pr-6" ref={profileMenuRef}>
           <button 
             onClick={() => setProfileOpen(!profileOpen)}
-            className="w-10 h-10 border-2 border-black bg-white text-black flex items-center justify-center hover:bg-black hover:text-white transition-colors text-xs font-mono font-bold tracking-tighter shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] cursor-pointer"
+            className="w-10 h-10 rounded-xl border border-neutral-800 bg-[#14171f] text-[#E5D4B4] flex items-center justify-center hover:bg-[#E5D4B4] hover:text-black hover:border-[#E5D4B4] transition-colors text-xs font-mono font-bold tracking-tighter cursor-pointer shadow-md"
             title="Mon profil"
           >
             {initials}
           </button>
 
           {profileOpen && (
-            <div className="absolute right-6 mt-3 w-72 bg-white border-2 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] py-2 z-50 font-mono text-xs">
-              <div className="flex items-center gap-3 px-4 py-3 border-b-2 border-black bg-[#F5F5F7]">
-                <div className="w-9 h-9 border-2 border-black bg-black text-white flex items-center justify-center text-xs font-bold shrink-0">
+            <div className="absolute right-6 mt-3 w-72 bg-[#14171f] border border-neutral-800 shadow-2xl rounded-2xl py-2 z-50 font-mono text-xs text-white">
+              <div className="flex items-center gap-3 px-4 py-3 border-b border-neutral-800 bg-[#101319]">
+                <div className="w-9 h-9 rounded-xl border border-neutral-800 bg-[#E5D4B4] text-black flex items-center justify-center text-xs font-bold shrink-0">
                   {initials}
                 </div>
                 <div className="min-w-0">
-                  <p className="font-bold truncate uppercase">{displayName}</p>
+                  <p className="font-bold truncate uppercase text-white">{displayName}</p>
                   <p className="text-[10px] text-neutral-500 truncate">{user.email}</p>
                 </div>
               </div>
 
-              <div className="py-2 space-y-1">
+              <div className="py-2 space-y-1 px-2">
                 <Link 
                   href="/settings" 
                   onClick={() => setProfileOpen(false)}
-                  className="flex items-center gap-3 mx-2 px-3 py-2.5 rounded-none hover:bg-black hover:text-white transition-colors uppercase tracking-wider font-bold"
+                  className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-neutral-800 hover:text-[#E5D4B4] transition-colors uppercase tracking-wider font-bold text-neutral-300"
                 >
-                  <User className="w-4 h-4" />
+                  <User className="w-4 h-4 text-[#E5D4B4]" />
                   <span>Profil</span>
                 </Link>
 
                 <Link 
                   href="/settings/security" 
                   onClick={() => setProfileOpen(false)}
-                  className="flex items-center gap-3 mx-2 px-3 py-2.5 rounded-none hover:bg-black hover:text-white transition-colors uppercase tracking-wider font-bold"
+                  className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-neutral-800 hover:text-[#E5D4B4] transition-colors uppercase tracking-wider font-bold text-neutral-300"
                 >
-                  <Shield className="w-4 h-4" />
+                  <Shield className="w-4 h-4 text-[#E5D4B4]" />
                   <span>Sécurité</span>
                 </Link>
 
                 <Link 
                   href="/settings/preferences" 
                   onClick={() => setProfileOpen(false)}
-                  className="flex items-center gap-3 mx-2 px-3 py-2.5 rounded-none hover:bg-black hover:text-white transition-colors uppercase tracking-wider font-bold"
+                  className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-neutral-800 hover:text-[#E5D4B4] transition-colors uppercase tracking-wider font-bold text-neutral-300"
                 >
-                  <Sliders className="w-4 h-4" />
+                  <Sliders className="w-4 h-4 text-[#E5D4B4]" />
                   <span>Préférences</span>
                 </Link>
               </div>
 
-              <div className="border-t-2 border-black pt-2 px-2">
+              <div className="border-t border-neutral-800 pt-2 px-2">
                 <button
                   onClick={() => {
                     setProfileOpen(false);
                     handleLogout();
                   }}
-                  className="w-full flex items-center gap-3 px-3 py-2.5 text-red-600 hover:bg-red-500 hover:text-white transition-colors uppercase tracking-wider font-bold cursor-pointer"
+                  className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-red-400 hover:bg-red-950 hover:text-red-200 transition-colors uppercase tracking-wider font-bold cursor-pointer"
                 >
                   <LogOut className="w-4 h-4" />
                   <span>Se déconnecter</span>
@@ -227,7 +227,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       </header>
 
       {/* 1. Sidebar unique */}
-      <aside className={`fixed top-16 left-0 h-[calc(100vh-4rem)] ${SIDEBAR_WIDTH} border-r-2 border-black bg-white flex flex-col py-6 z-40 select-none overflow-hidden ${
+      <aside className={`fixed top-16 left-0 h-[calc(100vh-4rem)] ${SIDEBAR_WIDTH} border-r border-neutral-800 bg-[#0a0b0e] flex flex-col py-6 z-40 select-none overflow-hidden ${
         mounted ? 'transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]' : ''
       }`}>
 
@@ -241,15 +241,15 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 key={item.href}
                 href={item.href}
                 title={isOpen ? undefined : item.label}
-                className={`flex items-center h-12 transition-all font-mono text-xs uppercase tracking-wider group ${
-                  isOpen ? 'px-3 gap-3 border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]' : 'justify-center border-2 border-transparent hover:border-black'
+                className={`flex items-center h-12 transition-all font-mono text-xs uppercase tracking-wider group rounded-xl ${
+                  isOpen ? 'px-3 gap-3 border border-neutral-800 shadow-sm' : 'justify-center border border-transparent hover:border-neutral-800'
                 } ${
                   isActive
-                    ? 'bg-black text-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]'
-                    : 'bg-white text-black hover:bg-neutral-100'
+                    ? 'bg-[#E5D4B4] text-black border-[#E5D4B4] font-bold shadow-lg'
+                    : 'bg-[#14171f] text-neutral-300 hover:bg-neutral-800 hover:text-white'
                 }`}
               >
-                <Icon className={`w-4 h-4 shrink-0 transition-transform group-hover:scale-110 ${isActive ? 'text-white' : 'text-black'}`} />
+                <Icon className={`w-4 h-4 shrink-0 transition-transform group-hover:scale-110 ${isActive ? 'text-black' : 'text-[#E5D4B4]'}`} />
                 <span
                   className={`font-bold whitespace-nowrap overflow-hidden transition-all duration-300 ${
                     isOpen ? 'max-w-[160px] opacity-100' : 'max-w-0 opacity-0'
@@ -263,13 +263,13 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         </div>
 
         {/* Interrupteur pour ouvrir/fermer le menu */}
-        <div className={`w-full flex items-center border-t-2 border-black pt-4 px-3 ${isOpen ? '' : 'justify-center'}`}>
+        <div className={`w-full flex items-center border-t border-neutral-800 pt-4 px-3 ${isOpen ? '' : 'justify-center'}`}>
           <button
             onClick={() => setIsOpen(prev => !prev)}
             title={isOpen ? 'Réduire le menu' : 'Déployer le menu'}
             aria-label={isOpen ? 'Réduire le menu' : 'Déployer le menu'}
             aria-pressed={isOpen}
-            className="w-10 h-10 border-2 border-black bg-white flex items-center justify-center hover:bg-black hover:text-white transition-all shrink-0 cursor-pointer shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
+            className="w-10 h-10 rounded-xl border border-neutral-800 bg-[#14171f] text-neutral-300 flex items-center justify-center hover:bg-[#E5D4B4] hover:text-black hover:border-[#E5D4B4] transition-all shrink-0 cursor-pointer shadow-md"
           >
             <ChevronRight className={`w-4 h-4 transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${isOpen ? 'rotate-180' : ''}`} />
           </button>
@@ -282,7 +282,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           mounted ? 'transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]' : ''
         }`}
       >
-        <main className="flex-1 overflow-y-auto p-8 bg-[#F5F5F7]">
+        <main className="flex-1 overflow-y-auto p-8 bg-[#0a0b0e]">
           {children}
         </main>
       </div>
