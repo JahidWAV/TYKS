@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { 
   LayoutDashboard, Calendar, BarChart3, Megaphone, 
-  Users, Wallet, Globe, LogOut, Loader2, User, ChevronRight, Shield, Sliders 
+  Users, Wallet, Globe, LogOut, Loader2, User, ChevronRight, Shield, Sliders, X 
 } from 'lucide-react';
 import { supabaseBrowser } from '@/lib/supabase-browser';
 
@@ -34,7 +34,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     return () => subscription.unsubscribe();
   }, []);
 
-  // Charge l'état ouvert/fermé du menu depuis le stockage local (persiste au reload, connexion, déconnexion)
+  // Charge l'état ouvert/fermé du menu depuis le stockage local
   useEffect(() => {
     try {
       const stored = window.localStorage.getItem(SIDEBAR_STORAGE_KEY);
@@ -90,8 +90,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   const breadcrumbs = getBreadcrumbs();
 
-  // Nom affiché : prénom + nom si disponibles dans les métadonnées Supabase, sinon repli sur l'email
-  // Adapte les clés (first_name/last_name/full_name) au schéma réellement utilisé à l'inscription
   const getDisplayName = () => {
     const meta = user?.user_metadata || {};
     if (meta.first_name && meta.last_name) return `${meta.first_name} ${meta.last_name}`;
@@ -120,8 +118,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   if (user === undefined) {
     return (
-      <div className="min-h-screen bg-[#F7F5F0] text-[#111110] flex items-center justify-center">
-        <Loader2 className="h-6 w-6 animate-spin opacity-60" />
+      <div className="min-h-screen bg-[#F5F5F7] text-black font-mono text-xs uppercase tracking-widest flex items-center justify-center">
+        Chargement...
       </div>
     );
   }
@@ -130,32 +128,30 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     return <main className="min-h-screen w-full">{children}</main>;
   }
 
-  // Largeur unique, partagée par l'aside ET la marge du contenu : plus jamais de désynchronisation
   const SIDEBAR_WIDTH = isOpen ? 'w-64' : 'w-16';
   const CONTENT_MARGIN = isOpen ? 'ml-64' : 'ml-16';
 
   return (
-    <div className="min-h-screen bg-[#F7F5F0] text-[#111110] flex selection:bg-[#111110] selection:text-[#F7F5F0] overflow-x-hidden">
+    <div className="min-h-screen bg-[#F5F5F7] text-black font-sans selection:bg-black selection:text-white flex overflow-x-hidden">
 
-      {/* 0. Barre horizontale fixe en haut : logo + fil d'ariane + profil */}
-      <header className="fixed top-0 left-0 right-0 h-14 border-b border-[#111110]/10 bg-[#F7F5F0] flex items-center justify-between shrink-0 z-50 select-none">
+      {/* 0. Barre horizontale fixe en haut : brut-design */}
+      <header className="fixed top-0 left-0 right-0 h-16 border-b-2 border-black bg-[#F5F5F7] flex items-center justify-between shrink-0 z-50 select-none">
         <div className="flex items-center h-full">
-          {/* Colonne de largeur identique à la barre d'icônes (w-16), avec la même bordure droite : la ligne verticale continue sans rupture jusque dans le menu latéral */}
-          <div className="w-16 h-full flex items-center justify-center shrink-0 border-r border-[#111110]/10">
+          <div className="w-16 h-full flex items-center justify-center shrink-0 border-r-2 border-black bg-white">
             <Link href="/" className="w-9 h-9 flex items-center justify-center group">
               <img
                 src="/icon.svg"
                 alt="TYKS"
-                className="w-10 h-10 object-contain transition-transform group-hover:scale-105"
+                className="w-8 h-8 object-contain transition-transform group-hover:scale-105"
               />
             </Link>
           </div>
 
-          <div className="flex items-center gap-2.5 text-sm tracking-tight font-medium text-[#111110]/60 pl-4">
+          <div className="flex items-center gap-2 text-xs uppercase font-mono tracking-wider pl-6">
             {breadcrumbs.map((crumb, index) => (
-              <div key={index} className="flex items-center gap-2.5">
-                {index > 0 && <ChevronRight className="w-4 h-4 opacity-30" />}
-                <span className={`flex items-center ${index === breadcrumbs.length - 1 ? "text-[#111110] font-bold text-base" : ""}`}>
+              <div key={index} className="flex items-center gap-2">
+                {index > 0 && <ChevronRight className="w-3.5 h-3.5 text-black/40" />}
+                <span className={`flex items-center ${index === breadcrumbs.length - 1 ? "bg-black text-white px-2 py-1 font-bold" : "text-black/70"}`}>
                   {crumb}
                 </span>
               </div>
@@ -163,75 +159,66 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           </div>
         </div>
 
-        <div className="relative pr-4" ref={profileMenuRef}>
+        <div className="relative pr-6" ref={profileMenuRef}>
           <button 
             onClick={() => setProfileOpen(!profileOpen)}
-            className="w-9 h-9 rounded-full bg-[#111110] text-[#F7F5F0] flex items-center justify-center hover:opacity-90 transition text-[11px] font-bold tracking-tight"
+            className="w-10 h-10 border-2 border-black bg-white text-black flex items-center justify-center hover:bg-black hover:text-white transition-colors text-xs font-mono font-bold tracking-tighter shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] cursor-pointer"
             title="Mon profil"
           >
             {initials}
           </button>
 
           {profileOpen && (
-            <div className="absolute right-0 mt-3 w-64 bg-[#F7F5F0] border border-[#111110]/10 rounded-2xl shadow-2xl shadow-black/10 py-2 z-50 animate-in fade-in slide-in-from-top-2 duration-200 overflow-hidden">
-              <div className="flex items-center gap-3 px-4 py-3 border-b border-[#111110]/10">
-                <div className="w-10 h-10 rounded-full bg-[#111110] text-[#F7F5F0] flex items-center justify-center text-xs font-bold shrink-0">
+            <div className="absolute right-6 mt-3 w-72 bg-white border-2 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] py-2 z-50 font-mono text-xs">
+              <div className="flex items-center gap-3 px-4 py-3 border-b-2 border-black bg-[#F5F5F7]">
+                <div className="w-9 h-9 border-2 border-black bg-black text-white flex items-center justify-center text-xs font-bold shrink-0">
                   {initials}
                 </div>
                 <div className="min-w-0">
-                  <p className="text-sm font-semibold truncate">{displayName}</p>
-                  <p className="text-[11px] opacity-50 truncate">{user.email}</p>
+                  <p className="font-bold truncate uppercase">{displayName}</p>
+                  <p className="text-[10px] text-neutral-500 truncate">{user.email}</p>
                 </div>
               </div>
 
-              <div className="py-1.5">
+              <div className="py-2 space-y-1">
                 <Link 
                   href="/settings" 
                   onClick={() => setProfileOpen(false)}
-                  className="flex items-center gap-3 mx-2 px-2.5 py-2 rounded-xl text-xs font-medium opacity-70 hover:opacity-100 hover:bg-[#111110]/5 transition-colors"
+                  className="flex items-center gap-3 mx-2 px-3 py-2.5 rounded-none hover:bg-black hover:text-white transition-colors uppercase tracking-wider font-bold"
                 >
-                  <span className="w-7 h-7 rounded-lg bg-[#111110]/5 flex items-center justify-center shrink-0">
-                    <User className="w-3.5 h-3.5" />
-                  </span>
-                  Profil
+                  <User className="w-4 h-4" />
+                  <span>Profil</span>
                 </Link>
 
                 <Link 
                   href="/settings/security" 
                   onClick={() => setProfileOpen(false)}
-                  className="flex items-center gap-3 mx-2 px-2.5 py-2 rounded-xl text-xs font-medium opacity-70 hover:opacity-100 hover:bg-[#111110]/5 transition-colors"
+                  className="flex items-center gap-3 mx-2 px-3 py-2.5 rounded-none hover:bg-black hover:text-white transition-colors uppercase tracking-wider font-bold"
                 >
-                  <span className="w-7 h-7 rounded-lg bg-[#111110]/5 flex items-center justify-center shrink-0">
-                    <Shield className="w-3.5 h-3.5" />
-                  </span>
-                  Sécurité
+                  <Shield className="w-4 h-4" />
+                  <span>Sécurité</span>
                 </Link>
 
                 <Link 
                   href="/settings/preferences" 
                   onClick={() => setProfileOpen(false)}
-                  className="flex items-center gap-3 mx-2 px-2.5 py-2 rounded-xl text-xs font-medium opacity-70 hover:opacity-100 hover:bg-[#111110]/5 transition-colors"
+                  className="flex items-center gap-3 mx-2 px-3 py-2.5 rounded-none hover:bg-black hover:text-white transition-colors uppercase tracking-wider font-bold"
                 >
-                  <span className="w-7 h-7 rounded-lg bg-[#111110]/5 flex items-center justify-center shrink-0">
-                    <Sliders className="w-3.5 h-3.5" />
-                  </span>
-                  Préférences
+                  <Sliders className="w-4 h-4" />
+                  <span>Préférences</span>
                 </Link>
               </div>
 
-              <div className="border-t border-[#111110]/10 pt-1.5">
+              <div className="border-t-2 border-black pt-2 px-2">
                 <button
                   onClick={() => {
                     setProfileOpen(false);
                     handleLogout();
                   }}
-                  className="w-full flex items-center gap-3 mx-2 px-2.5 py-2 rounded-xl text-xs font-medium text-red-600 hover:bg-red-500/10 transition-colors"
-                  style={{ width: 'calc(100% - 1rem)' }}
+                  className="w-full flex items-center gap-3 px-3 py-2.5 text-red-600 hover:bg-red-500 hover:text-white transition-colors uppercase tracking-wider font-bold cursor-pointer"
                 >
-                  <span className="w-7 h-7 rounded-lg bg-red-500/10 flex items-center justify-center shrink-0">
-                    <LogOut className="w-3.5 h-3.5" />
-                  </span>
-                  Se déconnecter
+                  <LogOut className="w-4 h-4" />
+                  <span>Se déconnecter</span>
                 </button>
               </div>
             </div>
@@ -239,12 +226,12 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         </div>
       </header>
 
-      {/* 1. Sidebar unique (icônes + labels dans le même bloc) : plus de désynchronisation entre deux colonnes séparées */}
-      <aside className={`fixed top-14 left-0 h-[calc(100vh-3.5rem)] ${SIDEBAR_WIDTH} border-r border-[#111110]/10 bg-[#F7F5F0] flex flex-col py-6 z-40 select-none overflow-hidden ${
+      {/* 1. Sidebar unique */}
+      <aside className={`fixed top-16 left-0 h-[calc(100vh-4rem)] ${SIDEBAR_WIDTH} border-r-2 border-black bg-white flex flex-col py-6 z-40 select-none overflow-hidden ${
         mounted ? 'transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]' : ''
       }`}>
 
-        <div className="flex-1 w-full flex flex-col justify-center gap-2 px-3">
+        <div className="flex-1 w-full flex flex-col justify-center gap-3 px-3">
           {navItems.map((item) => {
             const Icon = item.icon;
             const isActive = pathname === item.href;
@@ -254,17 +241,17 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 key={item.href}
                 href={item.href}
                 title={isOpen ? undefined : item.label}
-                className={`flex items-center h-10 rounded-xl transition-colors group ${
-                  isOpen ? 'px-2.5 gap-3' : 'justify-center'
+                className={`flex items-center h-12 transition-all font-mono text-xs uppercase tracking-wider group ${
+                  isOpen ? 'px-3 gap-3 border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]' : 'justify-center border-2 border-transparent hover:border-black'
                 } ${
                   isActive
-                    ? 'bg-[#111110] text-[#F7F5F0] shadow-sm'
-                    : 'opacity-70 hover:opacity-100 hover:bg-[#111110]/5 text-[#111110]'
+                    ? 'bg-black text-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]'
+                    : 'bg-white text-black hover:bg-neutral-100'
                 }`}
               >
-                <Icon className={`w-5 h-5 shrink-0 transition-transform group-hover:scale-105 ${isActive ? 'text-[#F7F5F0]' : ''}`} />
+                <Icon className={`w-4 h-4 shrink-0 transition-transform group-hover:scale-110 ${isActive ? 'text-white' : 'text-black'}`} />
                 <span
-                  className={`text-xs font-medium whitespace-nowrap overflow-hidden transition-all duration-300 ${
+                  className={`font-bold whitespace-nowrap overflow-hidden transition-all duration-300 ${
                     isOpen ? 'max-w-[160px] opacity-100' : 'max-w-0 opacity-0'
                   }`}
                 >
@@ -275,27 +262,27 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           })}
         </div>
 
-        {/* Interrupteur pour ouvrir/fermer le menu : même taille de case que le logo (w-9 h-9) */}
-        <div className={`w-full flex items-center border-t border-[#111110]/10 pt-4 px-3 ${isOpen ? '' : 'justify-center'}`}>
+        {/* Interrupteur pour ouvrir/fermer le menu */}
+        <div className={`w-full flex items-center border-t-2 border-black pt-4 px-3 ${isOpen ? '' : 'justify-center'}`}>
           <button
             onClick={() => setIsOpen(prev => !prev)}
             title={isOpen ? 'Réduire le menu' : 'Déployer le menu'}
             aria-label={isOpen ? 'Réduire le menu' : 'Déployer le menu'}
             aria-pressed={isOpen}
-            className="w-9 h-9 flex items-center justify-center rounded-xl opacity-60 hover:opacity-100 hover:bg-[#111110]/5 transition-all shrink-0"
+            className="w-10 h-10 border-2 border-black bg-white flex items-center justify-center hover:bg-black hover:text-white transition-all shrink-0 cursor-pointer shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
           >
             <ChevronRight className={`w-4 h-4 transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${isOpen ? 'rotate-180' : ''}`} />
           </button>
         </div>
       </aside>
 
-      {/* 2. Contenu principal, sous la barre horizontale */}
+      {/* 2. Contenu principal */}
       <div 
-        className={`flex-1 min-w-0 flex flex-col h-screen pt-14 overflow-hidden ${CONTENT_MARGIN} ${
+        className={`flex-1 min-w-0 flex flex-col h-screen pt-16 overflow-hidden ${CONTENT_MARGIN} ${
           mounted ? 'transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]' : ''
         }`}
       >
-        <main className="flex-1 overflow-y-auto p-8">
+        <main className="flex-1 overflow-y-auto p-8 bg-[#F5F5F7]">
           {children}
         </main>
       </div>
