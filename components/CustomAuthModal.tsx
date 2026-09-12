@@ -10,7 +10,7 @@ interface CustomAuthModalProps {
   isDarkMode?: boolean;
 }
 
-export default function CustomAuthModal({ isOpen, onClose, isDarkMode = false }: CustomAuthModalProps) {
+export default function CustomAuthModal({ isOpen, onClose }: CustomAuthModalProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -18,9 +18,6 @@ export default function CustomAuthModal({ isOpen, onClose, isDarkMode = false }:
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
-  // 'email' = saisie initiale de l'email
-  // 'signin' = l'email existe, on demande le mot de passe
-  // 'signup' = l'email n'existe pas, on demande le mot de passe + la confirmation affichée en dessous
   const [step, setStep] = useState<'email' | 'signin' | 'signup'>('email');
 
   if (!isOpen) return null;
@@ -58,7 +55,6 @@ export default function CustomAuthModal({ isOpen, onClose, isDarkMode = false }:
     }
   };
 
-  // Étape cruciale : Interrogation de Supabase pour savoir si l'e-mail existe
   const handleCheckEmail = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email || !email.includes("@")) {
@@ -69,44 +65,27 @@ export default function CustomAuthModal({ isOpen, onClose, isDarkMode = false }:
     setLoading(true);
 
     try {
-      // Astuce standard Supabase pour détecter si un utilisateur existe :
-      // On tente un signUp avec un mot de passe temporaire ou on regarde les identités.
-      // Si l'e-mail existe déjà, Supabase retourne un tableau d'identités vide ou une indication selon la configuration,
-      // ou plus simplement : on tente un signIn avec un mauvais mot de passe exprès. 
-      // Si l'erreur renvoyée est "Invalid login credentials", l'utilisateur existe ! 
-      // S'il n'existe pas, le comportement varie, mais la méthode la plus robuste pour vérifier l'existence 
-      // sans créer de compte intempestif est d'utiliser une requête de test sur l'unicité ou d'analyser le retour de signUp.
-      
-      // Approche alternative propre : On tente un signUp de test. Si l'utilisateur existe déjà, 
-      // data.user.identities sera vide ([]), sinon il contiendra l'objet.
       const { data, error: signUpCheckError } = await supabaseBrowser.auth.signUp({
         email,
-        password: "TempPassword123!", // Mot de passe jetable pour le test d'existence
+        password: "TempPassword123!",
       });
 
-      // Si l'API renvoie une erreur directe "User already registered" (si les confirm emails sont désactivés)
-      // OU si data.user?.identities est vide (ce qui signifie que le compte existe déjà) :
       const userExists = 
         (signUpCheckError && signUpCheckError.message.includes("already registered")) ||
         (data?.user && data.user.identities && data.user.identities.length === 0);
 
       if (userExists) {
-        // Le compte existe -> On bascule en mode connexion (juste le mot de passe)
         setStep('signin');
       } else {
-        // Le compte n'existe pas -> On bascule en mode inscription 
-        // et on affiche direct le mot de passe + la confirmation juste en dessous
         setStep('signup');
       }
     } catch (err: any) {
-      // Par défaut en cas de doute, on propose la connexion
       setStep('signin');
     } finally {
       setLoading(false);
     }
   };
 
-  // Soumission finale selon le mode détecté
   const handleSubmitAuth = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
@@ -127,7 +106,6 @@ export default function CustomAuthModal({ isOpen, onClose, isDarkMode = false }:
           return;
         }
 
-        // Inscription définitive avec le vrai mot de passe choisi par l'utilisateur
         const { error: signUpError } = await supabaseBrowser.auth.signUp({
           email,
           password,
@@ -147,22 +125,19 @@ export default function CustomAuthModal({ isOpen, onClose, isDarkMode = false }:
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-in fade-in duration-300">
-      <div className={`relative w-full max-w-md rounded-2xl p-8 shadow-2xl border transition-all duration-300 animate-in zoom-in-95 ${
-        isDarkMode 
-          ? 'bg-[#111110] border-[#F7F5F0]/15 text-[#F7F5F0]' 
-          : 'bg-[#F7F5F0] border-[#111110]/15 text-[#111110]'
-      }`}>
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+      <div className="relative w-full max-w-md bg-white border-2 border-black p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] text-black font-sans">
         <button
           onClick={onClose}
-          className="absolute top-5 right-5 p-1 rounded-full transition-colors opacity-60 hover:opacity-100"
+          className="absolute top-5 right-5 w-8 h-8 border-2 border-black bg-white flex items-center justify-center hover:bg-black hover:text-white transition-colors cursor-pointer"
         >
           <X className="w-4 h-4" />
         </button>
 
         <div className="text-center mb-6 space-y-2">
-          <h2 className="font-display text-2xl font-bold tracking-tight">TYKS</h2>
-          <p className={`text-xs font-light ${isDarkMode ? 'text-[#F7F5F0]/60' : 'text-[#111110]/60'}`}>
+          <div className="inline-block h-8 w-8 border-2 border-black bg-black text-white font-mono font-bold text-xs flex items-center justify-center mx-auto mb-2">T</div>
+          <h2 className="font-mono text-lg font-bold uppercase tracking-widest">TYKS Live</h2>
+          <p className="font-mono text-xs uppercase tracking-wider text-neutral-600">
             {step === 'email' && "Entrez votre e-mail pour continuer"}
             {step === 'signin' && "Bon retour ! Entrez votre mot de passe"}
             {step === 'signup' && "Première visite ? Créez votre mot de passe"}
@@ -170,7 +145,7 @@ export default function CustomAuthModal({ isOpen, onClose, isDarkMode = false }:
         </div>
 
         {error && (
-          <div className="mb-4 p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-xs text-center font-mono">
+          <div className="mb-4 p-3 border-2 border-black bg-red-100 text-red-900 text-xs font-mono uppercase tracking-wider text-center">
             {error}
           </div>
         )}
@@ -182,11 +157,7 @@ export default function CustomAuthModal({ isOpen, onClose, isDarkMode = false }:
               <button
                 onClick={handleLoginWithGoogle}
                 disabled={loading}
-                className={`w-full flex items-center justify-center gap-3 px-4 py-3.5 rounded-full border text-xs font-semibold transition-all hover:scale-[1.02] disabled:opacity-50 ${
-                  isDarkMode 
-                    ? 'border-[#F7F5F0]/20 bg-[#F7F5F0]/5 hover:bg-[#F7F5F0]/10 text-[#F7F5F0]' 
-                    : 'border-[#111110]/20 bg-[#111110]/5 hover:bg-[#111110]/10 text-[#111110]'
-                }`}
+                className="w-full h-12 flex items-center justify-center gap-3 px-4 border-2 border-black bg-white hover:bg-black hover:text-white font-mono text-xs font-bold uppercase tracking-wider transition-all shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 hover:shadow-none disabled:opacity-50 cursor-pointer"
               >
                 <svg className="w-4 h-4" viewBox="0 0 24 24">
                   <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
@@ -200,11 +171,7 @@ export default function CustomAuthModal({ isOpen, onClose, isDarkMode = false }:
               <button
                 onClick={handleLoginWithApple}
                 disabled={loading}
-                className={`w-full flex items-center justify-center gap-3 px-4 py-3.5 rounded-full border text-xs font-semibold transition-all hover:scale-[1.02] disabled:opacity-50 ${
-                  isDarkMode 
-                    ? 'border-[#F7F5F0]/20 bg-[#F7F5F0]/5 hover:bg-[#F7F5F0]/10 text-[#F7F5F0]' 
-                    : 'border-[#111110]/20 bg-[#111110]/5 hover:bg-[#111110]/10 text-[#111110]'
-                }`}
+                className="w-full h-12 flex items-center justify-center gap-3 px-4 border-2 border-black bg-white hover:bg-black hover:text-white font-mono text-xs font-bold uppercase tracking-wider transition-all shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 hover:shadow-none disabled:opacity-50 cursor-pointer"
               >
                 <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
                   <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 6.01c.65-.79 1.09-1.89.97-2.99-.96.04-2.13.64-2.82 1.43-.6.68-1.13 1.78-.99 2.85 1.08.08 2.19-.53 2.84-1.29z"/>
@@ -214,10 +181,10 @@ export default function CustomAuthModal({ isOpen, onClose, isDarkMode = false }:
             </div>
 
             <div className="relative flex items-center justify-center mb-6">
-              <div className={`absolute inset-0 flex items-center ${isDarkMode ? 'opacity-15' : 'opacity-20'}`}>
-                <div className={`w-full border-t ${isDarkMode ? 'border-[#F7F5F0]' : 'border-[#111110]'}`} />
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t-2 border-black" />
               </div>
-              <span className={`relative px-3 text-[10px] uppercase font-mono tracking-widest ${isDarkMode ? 'bg-[#111110] text-[#F7F5F0]/50' : 'bg-[#F7F5F0] text-[#111110]/50'}`}>
+              <span className="relative px-3 font-mono text-[10px] uppercase tracking-widest bg-white font-bold">
                 ou par e-mail
               </span>
             </div>
@@ -226,25 +193,19 @@ export default function CustomAuthModal({ isOpen, onClose, isDarkMode = false }:
 
         {/* Formulaire étape e-mail */}
         {step === 'email' ? (
-          <form onSubmit={handleCheckEmail} className="space-y-3">
+          <form onSubmit={handleCheckEmail} className="space-y-4">
             <input
               type="email"
               placeholder="name@example.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className={`w-full px-4 py-3 rounded-xl border text-xs font-mono transition-all outline-none ${
-                isDarkMode 
-                  ? 'bg-black/20 border-[#F7F5F0]/20 text-[#F7F5F0] focus:border-[#F7F5F0]/60' 
-                  : 'bg-white/50 border-[#111110]/20 text-[#111110] focus:border-[#111110]/60'
-              }`}
+              className="w-full h-12 px-4 border-2 border-black bg-[#F5F5F7] font-mono text-xs uppercase placeholder:text-neutral-400 focus:outline-none"
             />
             <button
               type="submit"
               disabled={loading}
-              className={`w-full flex items-center justify-center gap-2 px-4 py-3.5 rounded-full text-xs font-semibold transition-all hover:scale-[1.02] disabled:opacity-50 ${
-                isDarkMode ? 'bg-[#F7F5F0] text-[#111110] hover:bg-white' : 'bg-[#111110] text-[#F7F5F0] hover:opacity-90'
-              }`}
+              className="w-full h-12 flex items-center justify-center gap-2 px-4 border-2 border-black bg-black text-white font-mono text-xs font-bold uppercase tracking-widest transition-all shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 hover:shadow-none disabled:opacity-50 cursor-pointer"
             >
               {loading ? (
                 <Loader2 className="w-4 h-4 animate-spin" />
@@ -257,15 +218,13 @@ export default function CustomAuthModal({ isOpen, onClose, isDarkMode = false }:
             </button>
           </form>
         ) : (
-          /* Formulaire dynamique selon l'existence ou non du compte */
-          <form onSubmit={handleSubmitAuth} className="space-y-3 animate-in fade-in slide-in-from-right-2 duration-300">
-            {/* Rappel de l'e-mail avec bouton pour changer */}
-            <div className="flex items-center justify-between px-3 py-2.5 rounded-xl bg-black/5 border border-black/10 text-xs font-mono mb-3">
-              <span className="opacity-70 truncate max-w-[240px]">{email}</span>
+          <form onSubmit={handleSubmitAuth} className="space-y-4 animate-in fade-in slide-in-from-right-2 duration-200">
+            <div className="flex items-center justify-between px-4 py-3 border-2 border-black bg-[#F5F5F7] font-mono text-xs">
+              <span className="font-bold truncate max-w-[220px]">{email}</span>
               <button
                 type="button"
                 onClick={() => { setStep('email'); setPassword(''); setConfirmPassword(''); setError(null); }}
-                className="inline-flex items-center gap-1 text-[10px] underline opacity-60 hover:opacity-100"
+                className="inline-flex items-center gap-1 font-bold underline hover:opacity-70 cursor-pointer"
               >
                 <ArrowLeft className="w-3 h-3" /> Changer
               </button>
@@ -279,27 +238,18 @@ export default function CustomAuthModal({ isOpen, onClose, isDarkMode = false }:
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 autoFocus
-                className={`w-full px-4 py-3 rounded-xl border text-xs font-mono transition-all outline-none ${
-                  isDarkMode 
-                    ? 'bg-black/20 border-[#F7F5F0]/20 text-[#F7F5F0] focus:border-[#F7F5F0]/60' 
-                    : 'bg-white/50 border-[#111110]/20 text-[#111110] focus:border-[#111110]/60'
-                }`}
+                className="w-full h-12 px-4 border-2 border-black bg-[#F5F5F7] font-mono text-xs uppercase placeholder:text-neutral-400 focus:outline-none"
               />
 
-              {/* Si le compte n'existe pas (signup), la confirmation s'affiche directement en dessous */}
               {step === 'signup' && (
-                <div className="animate-in fade-in slide-in-from-top-2 duration-300">
+                <div className="animate-in fade-in slide-in-from-top-2 duration-200">
                   <input
                     type="password"
                     placeholder="Confirmer le mot de passe"
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     required
-                    className={`w-full px-4 py-3 rounded-xl border text-xs font-mono transition-all outline-none ${
-                      isDarkMode 
-                        ? 'bg-black/20 border-[#F7F5F0]/20 text-[#F7F5F0] focus:border-[#F7F5F0]/60' 
-                        : 'bg-white/50 border-[#111110]/20 text-[#111110] focus:border-[#111110]/60'
-                    }`}
+                    className="w-full h-12 px-4 border-2 border-black bg-[#F5F5F7] font-mono text-xs uppercase placeholder:text-neutral-400 focus:outline-none"
                   />
                 </div>
               )}
@@ -308,9 +258,7 @@ export default function CustomAuthModal({ isOpen, onClose, isDarkMode = false }:
             <button
               type="submit"
               disabled={loading}
-              className={`w-full flex items-center justify-center gap-2 px-4 py-3.5 rounded-full text-xs font-semibold transition-all hover:scale-[1.02] disabled:opacity-50 mt-4 ${
-                isDarkMode ? 'bg-[#F7F5F0] text-[#111110] hover:bg-white' : 'bg-[#111110] text-[#F7F5F0] hover:opacity-90'
-              }`}
+              className="w-full h-12 flex items-center justify-center gap-2 px-4 border-2 border-black bg-black text-white font-mono text-xs font-bold uppercase tracking-widest transition-all shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 hover:shadow-none disabled:opacity-50 cursor-pointer mt-2"
             >
               {loading ? (
                 <Loader2 className="w-4 h-4 animate-spin" />
