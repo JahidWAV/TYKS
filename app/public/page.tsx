@@ -37,25 +37,6 @@ export default function PublicHome() {
   return (
     <main className="min-h-screen bg-[#F5F5F7] text-black font-sans selection:bg-black selection:text-white">
       
-      {/* ─── HEADER BRUTALISTE ─── */}
-      <header className="border-b-2 border-black bg-white sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-6 lg:px-12 h-20 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <span className="h-9 w-9 border-2 border-black bg-black text-white flex items-center justify-center font-mono font-bold text-xs">T</span>
-            <span className="font-mono text-xs font-bold uppercase tracking-widest">TYKS Live</span>
-          </div>
-
-          <div className="flex items-center gap-4">
-            <Link
-              href="/login"
-              className="h-11 px-6 border-2 border-black bg-white hover:bg-black hover:text-white font-mono text-xs uppercase tracking-widest transition-all flex items-center justify-center font-bold shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 hover:shadow-none"
-            >
-              <span>Espace Pro</span>
-            </Link>
-          </div>
-        </div>
-      </header>
-
       {/* ─── HERO SECTION ─── */}
       <section className="max-w-7xl mx-auto px-6 lg:px-12 py-16 lg:py-24 border-b-2 border-black space-y-8">
         <div className="max-w-3xl space-y-6">
