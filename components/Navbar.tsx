@@ -137,8 +137,8 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
       }`}>
         <div className="mx-auto grid grid-cols-[1fr_auto_1fr] items-center max-w-7xl px-6 py-4 md:px-12 gap-6">
 
-          {/* Logo tyks.svg, teinté en rouge via un masque CSS */}
-          <Link href={isPro ? "/" : "/"} className="group justify-self-start flex items-center">
+          {/* Logo tyks.svg, centré, teinté en rouge via un masque CSS */}
+          <Link href={isPro ? "/" : "/"} className="group col-start-2 justify-self-center flex items-center">
             <span
               role="img"
               aria-label="TYKS"
@@ -156,9 +156,9 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
             />
           </Link>
 
-          {/* BARRE DE RECHERCHE ÉLARGIE & CENTRÉE */}
+          {/* BARRE DE RECHERCHE À GAUCHE, MÊME TAILLE QUE LE BOUTON COMPTE */}
           {!isPro ? (
-            <div className="relative hidden md:block w-full max-w-lg justify-self-center" ref={searchRef}>
+            <div className="relative hidden md:block w-64 col-start-1 justify-self-start" ref={searchRef}>
               <div className="relative flex items-center w-full">
                 <Search className="absolute left-4 h-4 w-4 pointer-events-none text-[#FAF7F2]/60" />
                 <input
@@ -169,8 +169,8 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
                     if (!showDropdown) setShowDropdown(true);
                   }}
                   onFocus={() => setShowDropdown(true)}
-                  placeholder="Rechercher un événement, un artiste, un lieu..."
-                  className="w-full rounded-full border border-[#721120] bg-[#721120] px-4 py-3 pl-11 pr-10 text-xs font-medium text-[#FAF7F2] placeholder:text-[#FAF7F2]/50 focus:outline-none focus:border-[#FAF7F2]/60 transition-all shadow-sm"
+                  placeholder="Rechercher..."
+                  className="w-full h-11 rounded-full border border-[#721120] bg-[#721120] px-4 pl-11 pr-10 text-xs font-medium text-[#FAF7F2] placeholder:text-[#FAF7F2]/50 focus:outline-none focus:border-[#FAF7F2]/60 transition-all shadow-sm"
                 />
 
                 {searchQuery && (
@@ -249,48 +249,42 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
           )}
 
           {/* Desktop right side */}
-          <div className="hidden items-center gap-3 sm:flex justify-self-end">
+          <div className="hidden items-center gap-3 sm:flex sm:col-start-3 justify-self-end">
             {loadingUser ? (
-              <div className={`flex h-10 w-28 items-center justify-center rounded-full border ${isDarkMode ? 'border-[#F7F5F0]/20 bg-[#111110]' : 'border-[#111110]/20 bg-[#F7F5F0]'}`}>
+              <div className={`flex h-11 w-64 items-center justify-center rounded-full border ${isDarkMode ? 'border-[#F7F5F0]/20 bg-[#111110]' : 'border-[#111110]/20 bg-[#F7F5F0]'}`}>
                 <Loader2 className="h-4 w-4 animate-spin opacity-60" />
               </div>
             ) : user ? (
-              <div className="relative" ref={userMenuRef}>
+              <div className="relative w-64" ref={userMenuRef}>
                 <button
                   onClick={() => setUserMenuOpen(!userMenuOpen)}
-                  className="inline-flex items-center gap-2.5 rounded-full border border-[#721120] bg-[#721120] px-4 py-2 text-xs font-medium text-[#FAF7F2] transition-all hover:bg-[#5c0e1a]"
+                  className={`inline-flex h-11 w-64 items-center gap-2.5 rounded-full border border-[#721120] bg-[#721120] px-4 text-xs font-medium text-[#FAF7F2] transition-colors hover:bg-[#5c0e1a] ${
+                    userMenuOpen ? 'rounded-b-none' : ''
+                  }`}
                 >
-                  <div className="w-5 h-5 rounded-full flex items-center justify-center bg-[#FAF7F2] text-[#721120]">
+                  <div className="w-5 h-5 rounded-full flex items-center justify-center bg-[#FAF7F2] text-[#721120] shrink-0">
                     <UserIcon className="w-3 h-3" />
                   </div>
                   <span className="font-mono max-w-[110px] truncate">
                     {firstName || user.email.split('@')[0]}
                   </span>
-                  <ChevronDown className={`w-3.5 h-3.5 opacity-70 transition-transform ${userMenuOpen ? 'rotate-180' : ''}`} />
+                  <ChevronDown className={`w-3.5 h-3.5 opacity-70 transition-transform ml-auto ${userMenuOpen ? 'rotate-180' : ''}`} />
                 </button>
 
                 {userMenuOpen && (
-                  <div className={`absolute right-0 mt-2 w-56 rounded-2xl shadow-xl overflow-hidden z-50 border py-1.5 ${
-                    isDarkMode ? 'bg-[#111110] border-[#F7F5F0]/15 text-[#F7F5F0]' : 'bg-[#F7F5F0] border-[#111110]/15 text-[#111110]'
-                  }`}>
-                    <div className="px-4 py-2.5 border-b border-inherit opacity-60 text-[10px] font-mono truncate">
-                      {user.email}
-                    </div>
-
+                  <div className="absolute left-0 top-full w-64 overflow-hidden rounded-b-2xl border border-t-0 border-[#721120] bg-[#721120] py-1.5 text-[#FAF7F2] shadow-xl z-50">
                     <Link
                       href="/settings"
                       onClick={() => setUserMenuOpen(false)}
-                      className={`w-full text-left px-4 py-2.5 text-xs flex items-center gap-2.5 transition-colors ${
-                        isDarkMode ? 'hover:bg-[#F7F5F0]/10' : 'hover:bg-[#111110]/10'
-                      }`}
+                      className="w-full text-left px-4 py-2.5 text-xs flex items-center gap-2.5 transition-colors hover:bg-[#FAF7F2]/10"
                     >
-                      <Settings className="w-3.5 h-3.5 opacity-70" />
+                      <Settings className="w-3.5 h-3.5 opacity-80" />
                       Paramètres
                     </Link>
 
                     <button
                       onClick={handleLogout}
-                      className={`w-full text-left px-4 py-2.5 text-xs flex items-center gap-2.5 transition-colors text-red-500 hover:bg-red-500/10`}
+                      className="w-full text-left px-4 py-2.5 text-xs flex items-center gap-2.5 transition-colors hover:bg-[#FAF7F2]/10"
                     >
                       <LogOut className="w-3.5 h-3.5" />
                       Déconnexion
@@ -301,7 +295,7 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
             ) : (
               <button
                 onClick={() => setIsAuthOpen(true)}
-                className="inline-flex items-center rounded-full bg-[#721120] px-5 py-2 text-xs font-semibold text-[#FAF7F2] transition-all hover:scale-[1.02] hover:bg-[#5c0e1a]"
+                className="inline-flex h-11 w-64 items-center justify-center rounded-full bg-[#721120] px-5 text-xs font-semibold text-[#FAF7F2] transition-colors hover:bg-[#5c0e1a]"
               >
                 {isPro ? "Connexion Pro" : "Connexion"}
               </button>
@@ -309,7 +303,7 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
           </div>
 
           {/* Mobile toggle */}
-          <div className="flex items-center gap-2 sm:hidden justify-self-end">
+          <div className="flex items-center gap-2 sm:hidden col-start-3 justify-self-end">
             <button
               className={`inline-flex items-center justify-center rounded-full border p-2 shrink-0 ${isDarkMode ? 'border-[#F7F5F0]/20 text-[#F7F5F0]' : 'border-[#111110]/20 text-[#111110]'}`}
               onClick={() => setMobileOpen((open) => !open)}
