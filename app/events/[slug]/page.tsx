@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
 import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { notFound, useParams } from 'next/navigation';
 import { supabaseBrowser } from '@/lib/supabase-browser';
-import { Calendar, MapPin, ArrowLeft, ArrowUpRight, Clock, Ticket, Minus, Plus, Users, Loader2, Sparkles, X, CheckCircle2, ShieldCheck } from 'lucide-react';
+import { Calendar, MapPin, ArrowLeft, ArrowUpRight, Clock, Ticket, Minus, Plus, Users, Loader2, X, CheckCircle2, ShieldAlert } from 'lucide-react';
 import Link from 'next/link';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements, PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js';
@@ -61,7 +61,7 @@ function CustomCheckoutForm({ slug, eventTitle, quantity, totalPrice, onSuccess 
       <PaymentElement options={{ layout: 'tabs' }} />
       
       {errorMessage && (
-        <div className="p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-xs font-serif">
+        <div className="p-3 bg-black text-white text-xs font-mono border-2 border-black">
           {errorMessage}
         </div>
       )}
@@ -69,14 +69,14 @@ function CustomCheckoutForm({ slug, eventTitle, quantity, totalPrice, onSuccess 
       <button
         type="submit"
         disabled={isProcessing || !stripe || !elements}
-        className="w-full h-12 rounded-full bg-[#721120] hover:bg-[#5c0e1a] text-[#FAF7F2] font-sans text-xs uppercase tracking-widest transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 shadow-xl"
+        className="w-full h-14 bg-black text-white font-mono text-xs uppercase tracking-widest transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 hover:bg-neutral-800"
       >
         {isProcessing ? (
           <Loader2 className="w-4 h-4 animate-spin" />
         ) : (
           <>
-            <span>Confirmer et régler</span>
-            <ArrowUpRight className="w-4 h-4 opacity-70" />
+            <span>Payer et valider</span>
+            <ArrowUpRight className="w-4 h-4" />
           </>
         )}
       </button>
@@ -178,7 +178,7 @@ export default function PublicEventPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#0A0507] flex items-center justify-center font-serif text-[#FAF7F2]/40 text-xs tracking-widest uppercase">
+      <div className="min-h-screen bg-[#F5F5F7] flex items-center justify-center font-mono text-xs uppercase tracking-widest text-black">
         Chargement...
       </div>
     );
@@ -189,7 +189,6 @@ export default function PublicEventPage() {
   }
 
   const basePrice = Number(event.price) || 0;
-  // Calcul de la ventilation transparente (Ex: 0.90€ de frais de plateforme fixes inclus, le reste pour l'orga)
   const platformFeePerTicket = basePrice > 0 ? 0.90 : 0;
   const organizerSharePerTicket = basePrice - platformFeePerTicket;
   const totalPrice = basePrice * quantity;
@@ -237,40 +236,40 @@ export default function PublicEventPage() {
   };
 
   return (
-    <main className="min-h-screen bg-[#0A0507] text-[#FAF7F2] font-serif flex flex-col justify-between p-6 sm:p-12 selection:bg-[#721120] selection:text-[#FAF7F2]">
+    <main className="min-h-screen bg-[#F5F5F7] text-black font-sans selection:bg-black selection:text-white flex flex-col justify-between">
       
-      {/* ─── HEADER MINIMALISTE ─── */}
-      <header className="flex items-center justify-between w-full max-w-5xl mx-auto z-10">
+      {/* ─── HEADER BRUTALISTE ─── */}
+      <header className="border-b-2 border-black bg-white px-6 py-4 flex items-center justify-between sticky top-0 z-40">
         <Link
           href="/"
-          className="font-sans text-xs tracking-widest uppercase text-[#FAF7F2]/60 hover:text-[#FAF7F2] transition-colors flex items-center gap-2 group"
+          className="font-mono text-xs uppercase tracking-wider flex items-center gap-2 hover:opacity-60 transition-opacity"
         >
-          <ArrowLeft className="w-3.5 h-3.5 group-hover:-translate-x-0.5 transition-transform" />
-          <span>Retour à l'accueil</span>
+          <ArrowLeft className="w-4 h-4" />
+          <span>Index</span>
         </Link>
-        <span className="font-sans text-[11px] tracking-[0.25em] uppercase text-[#FAF7F2]/40">
-          {event.organizations?.name || 'TYKS Live'}
+        <span className="font-mono text-xs uppercase tracking-widest font-bold bg-black text-white px-3 py-1">
+          {event.organizations?.name || 'TYKS LIVE'}
         </span>
       </header>
 
-      {/* ─── CONTENU PRINCIPAL ÉPURÉ ─── */}
-      <section className="w-full max-w-5xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center my-auto py-12">
+      {/* ─── CONTENU PRINCIPAL ASYMÉTRIQUE ─── */}
+      <section className="max-w-7xl mx-auto w-full px-6 py-12 lg:py-20 grid grid-cols-1 lg:grid-cols-12 gap-12 items-start my-auto">
         
-        {/* Infos de l'événement */}
-        <div className="lg:col-span-7 space-y-6 text-left">
-          <div className="space-y-2">
-            <span className="font-sans text-[10px] tracking-[0.3em] uppercase text-[#721120] font-semibold block">
-              {formattedDate} • {formattedTime}
-            </span>
-            <h1 className="text-4xl sm:text-6xl font-light tracking-tight leading-[0.95]">
+        {/* Bloc Texte & Infos à gauche */}
+        <div className="lg:col-span-7 space-y-8">
+          <div className="space-y-4">
+            <div className="inline-block font-mono text-xs uppercase tracking-widest border-2 border-black px-3 py-1 bg-white">
+              {formattedDate} — {formattedTime}
+            </div>
+            <h1 className="text-5xl sm:text-7xl lg:text-8xl font-bold tracking-tighter uppercase leading-[0.9]">
               {event.title}
             </h1>
           </div>
 
-          <div className="space-y-2 font-sans text-xs text-[#FAF7F2]/60 font-light">
-            <div className="flex items-center gap-2">
-              <MapPin className="w-3.5 h-3.5 text-[#721120]" />
-              <span>{event.location || 'Lieu communiqué après réservation'}</span>
+          <div className="border-l-4 border-black pl-6 py-2 space-y-2 font-mono text-sm">
+            <div className="flex items-center gap-2 text-neutral-800">
+              <MapPin className="w-4 h-4 text-black" />
+              <span>{event.location || 'Lieu communiqué après validation'}</span>
             </div>
           </div>
 
@@ -281,24 +280,24 @@ export default function PublicEventPage() {
                 setIsSuccess(false);
                 setIsCheckoutOpen(true);
               }}
-              className="px-8 py-4 rounded-full bg-[#721120] text-[#FAF7F2] font-sans text-xs font-medium uppercase tracking-widest hover:bg-[#5c0e1a] transition-colors flex items-center gap-3 shadow-2xl cursor-pointer"
+              className="w-full sm:w-auto px-10 py-5 bg-black text-white font-mono text-xs uppercase tracking-widest hover:bg-neutral-800 transition-colors flex items-center justify-center gap-3 cursor-pointer shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 hover:shadow-none"
             >
               <Ticket className="w-4 h-4" />
               <span>{basePrice === 0 ? 'Réserver ma place (Gratuit)' : `Réserver • ${basePrice.toFixed(2)} €`}</span>
-              <ArrowUpRight className="w-4 h-4 opacity-70" />
+              <ArrowUpRight className="w-4 h-4" />
             </button>
           </div>
         </div>
 
-        {/* Visuel minimaliste */}
+        {/* Visuel Brutaliste / Poster à droite */}
         <div className="lg:col-span-5">
-          <div className="relative w-full aspect-[4/5] rounded-3xl overflow-hidden border border-[#FAF7F2]/10 bg-[#120A0E]">
+          <div className="relative w-full aspect-[4/5] border-2 border-black bg-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] overflow-hidden">
             {event.image_url ? (
-              <img src={event.image_url} alt={event.title} className="w-full h-full object-cover" />
+              <img src={event.image_url} alt={event.title} className="w-full h-full object-cover grayscale contrast-125" />
             ) : (
-              <div className="w-full h-full p-8 flex flex-col justify-between">
-                <span className="font-sans text-[10px] uppercase tracking-widest text-[#FAF7F2]/30">TYKS</span>
-                <Sparkles className="w-5 h-5 text-[#FAF7F2]/20" />
+              <div className="w-full h-full p-8 flex flex-col justify-between bg-black text-white font-mono">
+                <span className="text-xs uppercase tracking-widest text-neutral-400">TYKS POSTER</span>
+                <span className="text-4xl font-bold tracking-tighter">LIVE</span>
               </div>
             )}
           </div>
@@ -306,33 +305,33 @@ export default function PublicEventPage() {
 
       </section>
 
-      {/* ─── FOOTER MINIMALISTE ─── */}
-      <footer className="w-full max-w-5xl mx-auto flex items-center justify-between text-[11px] font-sans text-[#FAF7F2]/40 z-10 pt-4 border-t border-[#FAF7F2]/10">
-        <div>TYKS Live Experience</div>
+      {/* ─── FOOTER ÉPURÉ ─── */}
+      <footer className="border-t-2 border-black bg-white px-6 py-6 flex flex-col sm:flex-row items-center justify-between text-xs font-mono uppercase tracking-wider gap-4">
+        <div>© {new Date().getFullYear()} TYKS. Tous droits réservés.</div>
         <div className="flex items-center gap-6">
-          <Link href="/legal" className="hover:text-[#FAF7F2] transition-colors">Mentions Légales</Link>
-          <Link href="/cgv" className="hover:text-[#FAF7F2] transition-colors">CGV</Link>
+          <Link href="/legal" className="hover:underline">Mentions Légales</Link>
+          <Link href="/cgv" className="hover:underline">CGV</Link>
         </div>
       </footer>
 
-      {/* ─── MODALES DE PAIEMENT & AUTH ─── */}
+      {/* ─── MODALES (AUTH & CHECKOUT) ─── */}
       {mounted && createPortal(
         <>
           {showAuthModal && (
-            <div className="fixed inset-0 z-50 bg-[#0A0507]/80 backdrop-blur-md flex items-center justify-center p-4">
-              <div className="bg-[#120A0E] border border-[#FAF7F2]/10 rounded-3xl p-8 max-w-md w-full space-y-6 relative shadow-2xl">
+            <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+              <div className="bg-white border-2 border-black p-8 max-w-md w-full space-y-6 relative shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
                 <button 
                   onClick={() => setShowAuthModal(false)}
-                  className="absolute top-6 right-6 w-8 h-8 rounded-full bg-[#FAF7F2]/5 flex items-center justify-center text-[#FAF7F2]/70 hover:text-[#FAF7F2] transition-all cursor-pointer"
+                  className="absolute top-6 right-6 w-8 h-8 border-2 border-black flex items-center justify-center hover:bg-black hover:text-white transition-colors cursor-pointer"
                 >
                   <X className="w-4 h-4" />
                 </button>
 
                 <div className="space-y-2">
-                  <span className="font-sans text-[10px] uppercase tracking-widest text-[#721120] font-semibold">Sécurité</span>
-                  <h3 className="text-2xl font-light tracking-tight">Connexion requise</h3>
-                  <p className="font-sans text-xs text-[#FAF7F2]/60 font-light leading-relaxed">
-                    Identifiez-vous pour sécuriser vos billets dans votre espace personnel.
+                  <span className="font-mono text-xs uppercase tracking-widest bg-black text-white px-2 py-0.5">Sécurité</span>
+                  <h3 className="text-2xl font-bold uppercase tracking-tight">Authentification</h3>
+                  <p className="font-mono text-xs text-neutral-600 leading-relaxed">
+                    Connectez-vous pour sécuriser vos billets et les retrouver instantanément.
                   </p>
                 </div>
 
@@ -340,15 +339,15 @@ export default function PublicEventPage() {
                   <div className="space-y-4 pt-2">
                     <button
                       onClick={handleGoogleLogin}
-                      className="w-full h-12 bg-[#FAF7F2]/5 hover:bg-[#FAF7F2]/10 text-[#FAF7F2] rounded-full font-sans text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-3 border border-[#FAF7F2]/10 cursor-pointer font-medium"
+                      className="w-full h-12 border-2 border-black hover:bg-black hover:text-white font-mono text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-3 cursor-pointer font-bold"
                     >
                       <span>Continuer avec Google</span>
                     </button>
 
                     <div className="relative flex py-2 items-center">
-                      <div className="flex-grow border-t border-[#FAF7F2]/10"></div>
-                      <span className="flex-shrink mx-4 text-[#FAF7F2]/30 font-sans text-[10px] uppercase">ou</span>
-                      <div className="flex-grow border-t border-[#FAF7F2]/10"></div>
+                      <div className="flex-grow border-t-2 border-black"></div>
+                      <span className="flex-shrink mx-4 font-mono text-xs uppercase">ou</span>
+                      <div className="flex-grow border-t-2 border-black"></div>
                     </div>
 
                     <form onSubmit={handleMagicLinkLogin} className="space-y-4">
@@ -358,22 +357,22 @@ export default function PublicEventPage() {
                         placeholder="votre@email.com"
                         value={authEmail}
                         onChange={(e) => setAuthEmail(e.target.value)}
-                        className="w-full h-12 bg-[#0A0507] border border-[#FAF7F2]/10 rounded-full px-5 font-sans text-xs text-[#FAF7F2] placeholder:text-[#FAF7F2]/30 focus:outline-none focus:border-[#721120] transition-colors"
+                        className="w-full h-12 border-2 border-black px-4 font-mono text-xs placeholder:text-neutral-400 focus:outline-none bg-[#F5F5F7]"
                       />
                       <button
                         type="submit"
                         disabled={authLoading}
-                        className="w-full h-12 bg-[#721120] text-[#FAF7F2] rounded-full font-sans text-xs uppercase tracking-widest font-medium hover:bg-[#5c0e1a] transition-all disabled:opacity-50 cursor-pointer flex items-center justify-center gap-2 shadow-lg"
+                        className="w-full h-12 bg-black text-white font-mono text-xs uppercase tracking-widest font-bold hover:bg-neutral-800 transition-all disabled:opacity-50 cursor-pointer flex items-center justify-center gap-2"
                       >
                         {authLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <span>Recevoir le lien magique</span>}
                       </button>
                     </form>
                   </div>
                 ) : (
-                  <div className="bg-[#721120]/10 border border-[#721120]/30 rounded-2xl p-6 text-center space-y-2 font-sans">
-                    <p className="text-xs font-medium text-[#FAF7F2]">Lien de connexion envoyé</p>
-                    <p className="text-[11px] text-[#FAF7F2]/60 leading-relaxed font-light">
-                      Vérifiez votre boîte mail pour valider votre accès.
+                  <div className="border-2 border-black p-6 bg-neutral-100 text-center space-y-2 font-mono">
+                    <p className="text-xs font-bold uppercase">Lien envoyé avec succès</p>
+                    <p className="text-[11px] text-neutral-600 leading-relaxed">
+                      Vérifiez votre boîte mail pour finaliser votre accès.
                     </p>
                   </div>
                 )}
@@ -382,15 +381,15 @@ export default function PublicEventPage() {
           )}
 
           {isCheckoutOpen && (
-            <div className="fixed inset-0 z-50 bg-[#0A0507]/80 backdrop-blur-md flex items-center justify-center p-4">
-              <div className="relative w-full max-w-lg rounded-3xl bg-[#120A0E] text-[#FAF7F2] p-8 space-y-6 shadow-2xl border border-[#FAF7F2]/10 max-h-[90vh] overflow-y-auto">
+            <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+              <div className="relative w-full max-w-lg bg-white border-2 border-black p-8 space-y-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] max-h-[90vh] overflow-y-auto">
                 <button
                   onClick={() => {
                     setIsCheckoutOpen(false);
                     setClientSecret(null);
                     setIsSuccess(false);
                   }}
-                  className="absolute top-6 right-6 w-8 h-8 rounded-full bg-[#FAF7F2]/5 flex items-center justify-center text-[#FAF7F2]/70 hover:text-[#FAF7F2] transition-all cursor-pointer z-10"
+                  className="absolute top-6 right-6 w-8 h-8 border-2 border-black flex items-center justify-center hover:bg-black hover:text-white transition-colors cursor-pointer z-10"
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -398,15 +397,15 @@ export default function PublicEventPage() {
                 {isSuccess ? (
                   <div className="py-6 space-y-6 text-center">
                     <div className="flex justify-center">
-                      <div className="w-16 h-16 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
+                      <div className="w-16 h-16 border-2 border-black bg-emerald-100 flex items-center justify-center text-emerald-700">
                         <CheckCircle2 className="w-8 h-8" />
                       </div>
                     </div>
-                    <div className="space-y-2 font-sans">
-                      <span className="text-[10px] uppercase tracking-widest text-emerald-400 font-semibold">Validé</span>
-                      <h3 className="text-2xl font-light tracking-tight font-serif">Places réservées avec succès</h3>
-                      <p className="text-xs text-[#FAF7F2]/60 font-light leading-relaxed">
-                        Retrouvez votre billet dans votre boîte mail.
+                    <div className="space-y-2 font-mono">
+                      <span className="text-xs uppercase tracking-widest bg-black text-white px-2 py-0.5">Confirmé</span>
+                      <h3 className="text-2xl font-bold uppercase tracking-tight">Places réservées</h3>
+                      <p className="text-xs text-neutral-600 leading-relaxed">
+                        Votre billet électronique a été envoyé par e-mail.
                       </p>
                     </div>
                     <button
@@ -415,7 +414,7 @@ export default function PublicEventPage() {
                         setClientSecret(null);
                         setIsSuccess(false);
                       }}
-                      className="w-full h-12 rounded-full bg-[#721120] hover:bg-[#5c0e1a] text-[#FAF7F2] font-sans text-xs uppercase tracking-widest font-medium transition-all cursor-pointer"
+                      className="w-full h-14 bg-black text-white font-mono text-xs uppercase tracking-widest font-bold hover:bg-neutral-800 transition-all cursor-pointer"
                     >
                       Fermer
                     </button>
@@ -423,88 +422,88 @@ export default function PublicEventPage() {
                 ) : !clientSecret ? (
                   <>
                     <div className="space-y-1">
-                      <span className="font-sans text-[10px] uppercase tracking-widest text-[#721120] font-semibold">Panier</span>
-                      <h3 className="text-xl font-light tracking-tight line-clamp-1">{event.title}</h3>
+                      <span className="font-mono text-xs uppercase tracking-widest bg-black text-white px-2 py-0.5">Panier</span>
+                      <h3 className="text-xl font-bold uppercase tracking-tight pt-2">{event.title}</h3>
                     </div>
 
-                    <div className="space-y-3 pt-2 font-sans">
-                      <div className="flex justify-between items-center text-xs text-[#FAF7F2]/60">
+                    <div className="space-y-3 pt-2 font-mono">
+                      <div className="flex justify-between items-center text-xs text-neutral-600">
                         <span>Quantité</span>
-                        <span className="text-[#FAF7F2] font-medium flex items-center gap-1">
-                          <Users className="w-3.5 h-3.5 text-[#721120]" /> {quantity}
+                        <span className="text-black font-bold flex items-center gap-1">
+                          <Users className="w-3.5 h-3.5" /> {quantity}
                         </span>
                       </div>
-                      <div className="flex items-center justify-between bg-[#0A0507] border border-[#FAF7F2]/10 rounded-full p-1.5">
+                      <div className="flex items-center justify-between border-2 border-black p-1 bg-[#F5F5F7]">
                         <button
                           onClick={() => setQuantity(Math.max(1, quantity - 1))}
                           disabled={quantity <= 1}
-                          className="w-10 h-10 rounded-full bg-[#FAF7F2]/5 flex items-center justify-center text-[#FAF7F2] hover:bg-[#FAF7F2]/10 disabled:opacity-30 transition-all cursor-pointer"
+                          className="w-10 h-10 border border-black bg-white flex items-center justify-center hover:bg-black hover:text-white disabled:opacity-30 transition-all cursor-pointer"
                         >
-                          <Minus className="w-3.5 h-3.5" />
+                          <Minus className="w-4 h-4" />
                         </button>
-                        <span className="font-sans text-sm font-medium">{quantity}</span>
+                        <span className="font-mono text-sm font-bold">{quantity}</span>
                         <button
                           onClick={() => setQuantity(Math.min(10, quantity + 1))}
                           disabled={quantity >= 10}
-                          className="w-10 h-10 rounded-full bg-[#FAF7F2]/5 flex items-center justify-center text-[#FAF7F2] hover:bg-[#FAF7F2]/10 disabled:opacity-30 transition-all cursor-pointer"
+                          className="w-10 h-10 border border-black bg-white flex items-center justify-center hover:bg-black hover:text-white disabled:opacity-30 transition-all cursor-pointer"
                         >
-                          <Plus className="w-3.5 h-3.5" />
+                          <Plus className="w-4 h-4" />
                         </button>
                       </div>
                     </div>
 
                     {/* ─── VENTILATION TRANSPARENTE DU PRIX ─── */}
                     {basePrice > 0 && (
-                      <div className="p-4 rounded-2xl bg-[#0A0507] border border-[#FAF7F2]/10 space-y-2.5 font-sans">
-                        <div className="flex items-center gap-2 text-[11px] text-[#721120] font-medium">
-                          <ShieldCheck className="w-3.5 h-3.5" />
-                          <span>Transparence tarifaire TYKS</span>
+                      <div className="border-2 border-black p-4 bg-[#F5F5F7] space-y-2 font-mono">
+                        <div className="flex items-center gap-2 text-xs font-bold uppercase text-black">
+                          <ShieldAlert className="w-4 h-4" />
+                          <span>Transparence tarifaire intégrale</span>
                         </div>
-                        <div className="space-y-1.5 text-xs text-[#FAF7F2]/60 font-light divide-y divide-[#FAF7F2]/5">
+                        <div className="space-y-1 text-xs text-neutral-600 divide-y divide-black/10">
                           <div className="flex justify-between pt-1">
                             <span>Part artiste / organisateur</span>
-                            <span className="text-[#FAF7F2] font-mono">{(organizerSharePerTicket * quantity).toFixed(2)} €</span>
+                            <span className="text-black font-bold">{(organizerSharePerTicket * quantity).toFixed(2)} €</span>
                           </div>
                           <div className="flex justify-between pt-1.5">
                             <span>Frais de plateforme fixes</span>
-                            <span className="text-[#FAF7F2] font-mono">{(platformFeePerTicket * quantity).toFixed(2)} €</span>
+                            <span className="text-black font-bold">{(platformFeePerTicket * quantity).toFixed(2)} €</span>
                           </div>
                         </div>
                       </div>
                     )}
 
-                    <div className="space-y-4 pt-4 border-t border-[#FAF7F2]/10">
-                      <div className="flex items-baseline justify-between font-sans">
-                        <span className="text-xs text-[#FAF7F2]/40 uppercase tracking-wider">Total</span>
-                        <p className="text-2xl font-light tracking-tight">{totalPrice.toFixed(2)} €</p>
+                    <div className="space-y-4 pt-4 border-t-2 border-black">
+                      <div className="flex items-baseline justify-between font-mono">
+                        <span className="text-xs uppercase tracking-wider text-neutral-600">Total net</span>
+                        <p className="text-3xl font-bold tracking-tight">{totalPrice.toFixed(2)} €</p>
                       </div>
 
                       <button 
                         onClick={handleInitCheckout}
                         disabled={isInitializingPayment}
-                        className="w-full h-12 rounded-full bg-[#721120] hover:bg-[#5c0e1a] text-[#FAF7F2] font-sans text-xs uppercase tracking-widest transition-all flex items-center justify-center gap-2 cursor-pointer shadow-xl font-medium disabled:opacity-50"
+                        className="w-full h-14 bg-black text-white font-mono text-xs uppercase tracking-widest transition-all flex items-center justify-center gap-2 cursor-pointer shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] font-bold disabled:opacity-50 hover:bg-neutral-800"
                       >
                         {isInitializingPayment ? (
                           <Loader2 className="w-4 h-4 animate-spin" />
                         ) : (
                           <>
                             <span>Procéder au paiement sécurisé</span>
-                            <ArrowUpRight className="w-4 h-4 opacity-70" />
+                            <ArrowUpRight className="w-4 h-4" />
                           </>
                         )}
                       </button>
                     </div>
                   </>
                 ) : (
-                  <div className="space-y-4 font-sans">
-                    <div className="flex items-center justify-between border-b border-[#FAF7F2]/10 pb-3">
+                  <div className="space-y-4 font-mono">
+                    <div className="flex items-center justify-between border-b-2 border-black pb-3">
                       <div>
-                        <span className="text-[10px] uppercase tracking-widest text-[#721120] font-semibold">Paiement</span>
-                        <h4 className="text-sm font-medium pt-0.5">{totalPrice.toFixed(2)} € • {quantity} place(s)</h4>
+                        <span className="text-xs uppercase tracking-widest bg-black text-white px-2 py-0.5">Paiement</span>
+                        <h4 className="text-sm font-bold pt-1">{totalPrice.toFixed(2)} € • {quantity} place(s)</h4>
                       </div>
                       <button 
                         onClick={() => setClientSecret(null)}
-                        className="text-xs text-[#FAF7F2]/50 hover:text-[#FAF7F2] cursor-pointer underline"
+                        className="text-xs underline hover:opacity-60 cursor-pointer"
                       >
                         Modifier
                       </button>
@@ -516,14 +515,14 @@ export default function PublicEventPage() {
                         clientSecret,
                         locale: 'fr',
                         appearance: {
-                          theme: 'night',
+                          theme: 'flat',
                           variables: {
-                            colorPrimary: '#721120',
-                            colorBackground: '#0A0507',
-                            colorText: '#FAF7F2',
+                            colorPrimary: '#000000',
+                            colorBackground: '#ffffff',
+                            colorText: '#000000',
                             colorDanger: '#ef4444',
-                            fontFamily: 'serif',
-                            borderRadius: '16px',
+                            fontFamily: 'monospace',
+                            borderRadius: '0px',
                           },
                         },
                       }}
