@@ -40,18 +40,28 @@ export default async function RootLayout({
   const headersList = await headers();
   const hostname = headersList.get('host') || '';
   
-  // Récupération de l'URL / chemin exact depuis les en-headers transmis par Next.js
-  const pathname = headersList.get('x-invoke-path') || headersList.get('referer') || '';
+  // Next.js transmet l'URL complète ou le chemin via ces en-têtes selon la configuration
+  const referer = headersList.get('referer') || '';
+  const xUrl = headersList.get('x-url') || '';
   
-  // On détecte si on est sur la page d'accueil racine (ex: chemin exact '/' ou équivalent)
-  const isPro = hostname.startsWith('pro.');
+  // On détecte si on est à la racine exacte de l'app publique
+  // (Par sécurité, on analyse si l'URL se termine par le domaine ou '/' sans sous-dossier de dashboard/pro)
   const isDashboard = hostname.startsWith('dashboard.');
-  
-  // Si tu utilises un routeur ou que la page d'accueil est la racine exacte :
-  // Astuce : Dans un Server Component racine, on peut aussi vérifier si c'est masqué par route en passant par un groupe (ex: app/(public)/page.tsx)
-  
-  // Masquer la navbar si c'est le dashboard OU si on est sur la home publique principale
-  const hideNavbarAndFooter = isDashboard; // Ajoute ta condition de route ici si besoin
+  const isPro = hostname.startsWith('pro.');
+
+  // Si tu utilises le fichier app/page.tsx comme racine publique :
+  // On peut s'assurer que c'est masqué si l'en-tête indique la racine (ou via un header de requête interne)
+  const path = headersList.get('x-invoke-path') || '';
+  const isRootPublicPage = path === '/' || (!isDashboard && !isPro && referer.endsWith('/')); // Ajustement selon ton infra
+
+  // Solution la plus propre et robuste en Server Component avec Next.js App Router :
+  // Next.js injecte souvent l'URL complète dans 'x-forwarded-url' ou 'x-invoke-url'
+  const fullUrl = headersList.get('x-invoke-url') || '';
+  const isHome = fullUrl === '/' || fullUrl === '' || hostname.includes('tyks.app') && !isDashboard && !isPro && !fullUrl.includes('/events');
+
+  // Alternative radicale si ta page PublicHome est dans app/page.tsx : 
+  // On peut masquer la navbar dès qu'on est sur le domaine principal racine (hors dashboard/pro)
+  const hideNavbarAndFooter = isDashboard || (!isPro && !isDashboard); // <--- Ajuste ici selon si tu veux garder la navbar sur les autres pages publiques (comme /events/[slug])
 
   return (
     <html
@@ -61,11 +71,12 @@ export default async function RootLayout({
       <body className="min-h-screen bg-onyx bg-night-glow text-bone flex flex-col selection:bg-bone/20 selection:text-bone font-sans">
         <div className="grain" aria-hidden="true" />
         
-        {!hideNavbarAndFooter && <Navbar isPro={isPro} />}
+        {/* Affichage conditionnel affiné */}
+        {!isDashboard && !isHome && <Navbar isPro={isPro} />}
 
         <main className="relative z-10 flex-1">{children}</main>
         
-        {!hideNavbarAndFooter && <Footer />}
+        {!isDashboard && !isHome && <Footer />}
       </body>
     </html>
   );
