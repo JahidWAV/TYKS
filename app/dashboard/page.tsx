@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { 
   ArrowUpRight, Plus, Loader2, Calendar, MapPin, Trash2, Edit3, 
-  Euro, Ticket, Search, RefreshCw, ShieldCheck
+  Euro, Ticket, Search, RefreshCw 
 } from 'lucide-react';
 import type { IortiEvent } from '@/types/event';
 import { supabaseBrowser } from '@/lib/supabase-browser';
@@ -263,13 +263,7 @@ export default function OrganizerDashboard() {
       
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 border-b-2 border-black">
         <div className="space-y-2">
-          <div className="flex items-center gap-2">
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 border-2 border-black text-xs font-mono bg-white font-bold uppercase tracking-wider shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
-              <ShieldCheck className="w-3.5 h-3.5" /> Accès Illimité (Sans Abonnement)
-            </span>
-          </div>
-          <h1 className="text-3xl lg:text-5xl font-bold tracking-tighter uppercase leading-none">Sales Overview</h1>
-          <p className="text-xs font-mono uppercase tracking-wider text-neutral-600">Analysez et optimisez vos ventes en temps réel</p>
+          <h1 className="text-3xl lg:text-5xl font-bold tracking-tighter uppercase leading-none">Dashboard</h1>
         </div>
 
         <div className="flex items-center gap-3">
