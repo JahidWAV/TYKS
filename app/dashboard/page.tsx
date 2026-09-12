@@ -261,7 +261,12 @@ export default function OrganizerDashboard() {
   return (
     <div className="max-w-7xl mx-auto px-6 lg:px-12 py-10 space-y-8 font-sans">
       
-      <div className="flex flex-col md:flex-row md:items-end justify-end gap-6 pb-6 border-b-2 border-black">
+      {/* 1. Bloc action haut aligné proprement */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b-2 border-black">
+        <div className="font-mono text-xs uppercase tracking-wider text-neutral-600 font-bold">
+          {filteredEvents.length} événement(s) trouvé(s)
+        </div>
+
         <div className="flex items-center gap-3">
           <button
             onClick={() => loadDashboard(user.id, true)}
@@ -281,7 +286,7 @@ export default function OrganizerDashboard() {
         </div>
       </div>
 
-      {/* Statistiques globales */}
+      {/* 2. Statistiques globales (Grid équilibrée) */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 font-mono">
         <div className="p-6 border-2 border-black bg-white shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] space-y-3">
           <div className="flex items-center justify-between">
@@ -328,41 +333,36 @@ export default function OrganizerDashboard() {
         </div>
       </div>
 
-      {/* Barre de recherche et filtres */}
-      <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4 pt-4">
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 flex-1">
-          <div className="relative flex-1 max-w-md">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-black" />
-            <input
-              type="text"
-              placeholder="Rechercher par titre ou lieu..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full h-12 border-2 border-black bg-white pl-11 pr-4 font-mono text-xs uppercase placeholder:text-neutral-400 focus:outline-none"
-            />
-          </div>
-          <div className="flex items-center gap-2 overflow-x-auto py-1">
-            {['all', 'published', 'draft', 'cancelled'].map((status) => (
-              <button
-                key={status}
-                onClick={() => setStatusFilter(status)}
-                className={`h-12 px-4 border-2 border-black font-mono text-xs uppercase tracking-wider transition-all whitespace-nowrap cursor-pointer font-bold ${
-                  statusFilter === status 
-                    ? 'bg-black text-white shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]' 
-                    : 'bg-white text-black hover:bg-neutral-100'
-                }`}
-              >
-                {status === 'all' ? 'Tous' : STATUS_LABEL[status] || status}
-              </button>
-            ))}
-          </div>
+      {/* 3. Barre de recherche et filtres harmonisés */}
+      <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4 bg-white border-2 border-black p-4 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
+        <div className="relative flex-1">
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-black" />
+          <input
+            type="text"
+            placeholder="Rechercher par titre ou lieu..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full h-12 border-2 border-black bg-[#F5F5F7] pl-11 pr-4 font-mono text-xs uppercase placeholder:text-neutral-400 focus:outline-none"
+          />
         </div>
-        <span className="font-mono text-xs uppercase tracking-wider text-neutral-600 text-right">
-          {filteredEvents.length} événement(s)
-        </span>
+        <div className="flex items-center gap-2 overflow-x-auto">
+          {['all', 'published', 'draft', 'cancelled'].map((status) => (
+            <button
+              key={status}
+              onClick={() => setStatusFilter(status)}
+              className={`h-12 px-4 border-2 border-black font-mono text-xs uppercase tracking-wider transition-all whitespace-nowrap cursor-pointer font-bold ${
+                statusFilter === status 
+                  ? 'bg-black text-white shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]' 
+                  : 'bg-white text-black hover:bg-neutral-100'
+              }`}
+            >
+              {status === 'all' ? 'Tous' : STATUS_LABEL[status] || status}
+            </button>
+          ))}
+        </div>
       </div>
 
-      {/* Liste des événements */}
+      {/* 4. Liste des événements */}
       <div className="space-y-6">
         {filteredEvents.length === 0 ? (
           <div className="border-2 border-black bg-white p-16 text-center space-y-4 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
