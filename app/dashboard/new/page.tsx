@@ -88,33 +88,33 @@ export default function NewEventPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#F7F5F0] text-[#111110] selection:bg-[#111110] selection:text-[#F7F5F0] py-12">
-      <div className="max-w-3xl mx-auto px-6 md:px-12 space-y-10">
+    <div className="w-full px-6 lg:px-12 py-10 space-y-8 font-sans text-white bg-[#0a0b0e] min-h-full">
+      <div className="max-w-3xl mx-auto space-y-10">
         
         {/* Bouton Retour */}
         <div>
           <Link
             href="/"
-            className="inline-flex items-center gap-2 text-xs font-mono opacity-60 hover:opacity-100 transition-opacity"
+            className="inline-flex items-center gap-2 font-mono text-xs uppercase tracking-widest text-neutral-400 hover:text-white transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
-            <span>Retour à l&apos;accueil</span>
+            <span>Retour au dashboard</span>
           </Link>
         </div>
 
         {/* En-tête & Indicateur d'étapes */}
-        <div className="space-y-6 pb-6 border-b border-[#111110]/10">
+        <div className="space-y-6 pb-6 border-b border-neutral-800">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div className="space-y-1">
-              <h1 className="font-display text-2xl md:text-3xl font-bold tracking-tight">Créer un événement</h1>
-              <p className="text-xs font-mono opacity-60 uppercase tracking-wider">Publication d&apos;un nouvel événement</p>
+              <h1 className="text-3xl lg:text-4xl font-bold tracking-tight uppercase leading-none text-white">Créer un événement</h1>
+              <p className="font-mono text-xs uppercase tracking-wider text-neutral-400">Publication d&apos;un nouvel événement</p>
             </div>
-            <span className="text-xs font-mono font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-white/80 border border-[#111110]/15 w-fit">
+            <span className="font-mono text-xs font-bold uppercase tracking-wider px-3.5 py-1.5 rounded-full bg-[#14171f] border border-neutral-800 text-[#E5D4B4] w-fit">
               Étape {step} sur 3
             </span>
           </div>
 
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-3 gap-3 font-mono">
             {stepsMeta.map((s) => {
               const Icon = s.icon;
               const isActive = step === s.number;
@@ -122,18 +122,18 @@ export default function NewEventPage() {
               return (
                 <div
                   key={s.number}
-                  className={`flex items-center gap-3 p-3.5 rounded-2xl border transition-all ${
+                  className={`flex items-center gap-3 p-4 rounded-2xl border transition-all ${
                     isActive
-                      ? "bg-[#111110] text-[#F7F5F0] border-[#111110] shadow-md scale-[1.01]"
+                      ? "bg-[#E5D4B4] text-black border-[#E5D4B4] shadow-lg"
                       : isPassed
-                      ? "bg-white/80 border-[#111110]/15 text-[#111110]"
-                      : "bg-white/40 border-[#111110]/10 opacity-50 text-[#111110]"
+                      ? "bg-[#14171f] border-neutral-800 text-white"
+                      : "bg-[#14171f]/50 border-neutral-800 opacity-50 text-neutral-400"
                   }`}
                 >
-                  <Icon className={`w-4 h-4 shrink-0 ${isActive ? "text-[#F7F5F0]" : "opacity-60"}`} />
+                  <Icon className={`w-4 h-4 shrink-0 ${isActive ? "text-black" : "text-[#E5D4B4]"}`} />
                   <div className="overflow-hidden hidden sm:block">
-                    <p className="text-xs font-bold font-mono truncate">{s.title}</p>
-                    <p className={`text-[10px] truncate ${isActive ? "text-[#F7F5F0]/70" : "opacity-50"}`}>{s.desc}</p>
+                    <p className="text-xs font-bold uppercase tracking-wider truncate">{s.title}</p>
+                    <p className={`text-[10px] uppercase truncate ${isActive ? "text-black/70" : "text-neutral-500"}`}>{s.desc}</p>
                   </div>
                 </div>
               );
@@ -142,58 +142,58 @@ export default function NewEventPage() {
         </div>
 
         {error && (
-          <div className="rounded-2xl border border-red-500/20 bg-red-500/10 px-5 py-3 text-xs text-red-600">
+          <div className="rounded-2xl border border-red-800 bg-red-950 px-5 py-3 font-mono text-xs text-red-300 uppercase tracking-wider">
             <span>{error}</span>
           </div>
         )}
 
-        {/* Formulaire principal englobé dans le panneau blanc texturé */}
-        <div className="rounded-3xl border border-[#111110]/15 bg-white/70 p-6 md:p-8 backdrop-blur-md shadow-sm transition-all">
+        {/* Formulaire principal */}
+        <div className="rounded-2xl border border-neutral-800 bg-[#14171f] p-6 md:p-8 shadow-xl transition-all">
           <form onSubmit={handleSubmit} className="space-y-6">
             
             {/* ÉTAPE 1 : GÉNÉRAL */}
             {step === 1 && (
-              <div className="space-y-5">
-                <div className="border-b border-[#111110]/10 pb-4">
-                  <h2 className="text-sm font-bold uppercase tracking-wider font-mono">Détails généraux</h2>
-                  <p className="text-xs opacity-60">Définissez le nom, la description et la localisation.</p>
+              <div className="space-y-5 font-mono">
+                <div className="border-b border-neutral-800 pb-4">
+                  <h2 className="text-xs font-bold uppercase tracking-wider text-white">Détails généraux</h2>
+                  <p className="text-[11px] text-neutral-500 uppercase">Définissez le nom, la description et la localisation.</p>
                 </div>
 
-                <div className="space-y-1.5">
-                  <label className="text-xs font-mono opacity-60">Titre *</label>
+                <div className="space-y-2">
+                  <label className="text-xs uppercase tracking-wider text-neutral-400 font-bold">Titre *</label>
                   <input
                     type="text"
                     name="title"
                     value={form.title}
                     onChange={handleChange}
                     placeholder="Nom de l'événement"
-                    className="w-full rounded-2xl border border-[#111110]/20 bg-[#F7F5F0] px-4 py-3 text-xs focus:outline-none focus:border-[#111110]/65 transition-colors"
+                    className="w-full rounded-xl border border-neutral-800 bg-[#101319] px-4 py-3 text-xs uppercase text-white placeholder:text-neutral-600 focus:outline-none focus:border-[#E5D4B4] transition-colors"
                   />
                 </div>
 
-                <div className="space-y-1.5">
-                  <label className="text-xs font-mono opacity-60">Description</label>
+                <div className="space-y-2">
+                  <label className="text-xs uppercase tracking-wider text-neutral-400 font-bold">Description</label>
                   <textarea
                     name="description"
                     rows={4}
                     value={form.description}
                     onChange={handleChange}
                     placeholder="Décrivez votre événement..."
-                    className="w-full rounded-2xl border border-[#111110]/20 bg-[#F7F5F0] px-4 py-3 text-xs focus:outline-none focus:border-[#111110]/65 transition-colors resize-none"
+                    className="w-full rounded-xl border border-neutral-800 bg-[#101319] px-4 py-3 text-xs uppercase text-white placeholder:text-neutral-600 focus:outline-none focus:border-[#E5D4B4] transition-colors resize-none"
                   />
                 </div>
 
-                <div className="space-y-1.5">
-                  <label className="text-xs font-mono opacity-60">Lieu / Adresse *</label>
+                <div className="space-y-2">
+                  <label className="text-xs uppercase tracking-wider text-neutral-400 font-bold">Lieu / Adresse *</label>
                   <div className="relative flex items-center">
-                    <MapPin className="absolute left-4 h-4 w-4 opacity-30 pointer-events-none" />
+                    <MapPin className="absolute left-4 h-4 w-4 text-[#E5D4B4] pointer-events-none" />
                     <input
                       type="text"
                       name="location"
                       value={form.location}
                       onChange={handleChange}
                       placeholder="Adresse ou nom du lieu"
-                      className="w-full rounded-2xl border border-[#111110]/20 bg-[#F7F5F0] px-4 py-3 pl-11 text-xs focus:outline-none focus:border-[#111110]/65 transition-colors"
+                      className="w-full rounded-xl border border-neutral-800 bg-[#101319] px-4 py-3 pl-11 text-xs uppercase text-white placeholder:text-neutral-600 focus:outline-none focus:border-[#E5D4B4] transition-colors"
                     />
                   </div>
                 </div>
@@ -202,56 +202,56 @@ export default function NewEventPage() {
 
             {/* ÉTAPE 2 : DATES & BILLETTERIE */}
             {step === 2 && (
-              <div className="space-y-5">
-                <div className="border-b border-[#111110]/10 pb-4">
-                  <h2 className="text-sm font-bold uppercase tracking-wider font-mono">Dates & Billetterie</h2>
-                  <p className="text-xs opacity-60">Indiquez les horaires et les conditions tarifaires.</p>
+              <div className="space-y-5 font-mono">
+                <div className="border-b border-neutral-800 pb-4">
+                  <h2 className="text-xs font-bold uppercase tracking-wider text-white">Dates & Billetterie</h2>
+                  <p className="text-[11px] text-neutral-500 uppercase">Indiquez les horaires et les conditions tarifaires.</p>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-mono opacity-60">Début *</label>
+                  <div className="space-y-2">
+                    <label className="text-xs uppercase tracking-wider text-neutral-400 font-bold">Début *</label>
                     <input
                       type="datetime-local"
                       name="starts_at"
                       value={form.starts_at}
                       onChange={handleChange}
-                      className="w-full rounded-2xl border border-[#111110]/20 bg-[#F7F5F0] px-4 py-3 text-xs focus:outline-none focus:border-[#111110]/65 font-mono transition-colors"
+                      className="w-full rounded-xl border border-neutral-800 bg-[#101319] px-4 py-3 text-xs uppercase text-white focus:outline-none focus:border-[#E5D4B4] transition-colors"
                     />
                   </div>
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-mono opacity-60">Fin</label>
+                  <div className="space-y-2">
+                    <label className="text-xs uppercase tracking-wider text-neutral-400 font-bold">Fin</label>
                     <input
                       type="datetime-local"
                       name="ends_at"
                       value={form.ends_at}
                       onChange={handleChange}
-                      className="w-full rounded-2xl border border-[#111110]/20 bg-[#F7F5F0] px-4 py-3 text-xs focus:outline-none focus:border-[#111110]/65 font-mono transition-colors"
+                      className="w-full rounded-xl border border-neutral-800 bg-[#101319] px-4 py-3 text-xs uppercase text-white focus:outline-none focus:border-[#E5D4B4] transition-colors"
                     />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-mono opacity-60">Prix (€)</label>
+                  <div className="space-y-2">
+                    <label className="text-xs uppercase tracking-wider text-neutral-400 font-bold">Prix (€)</label>
                     <input
                       type="number"
                       step="0.01"
                       name="price"
                       value={form.price}
                       onChange={handleChange}
-                      className="w-full rounded-2xl border border-[#111110]/20 bg-[#F7F5F0] px-4 py-3 text-xs focus:outline-none focus:border-[#111110]/65 font-mono transition-colors"
+                      className="w-full rounded-xl border border-neutral-800 bg-[#101319] px-4 py-3 text-xs uppercase text-white focus:outline-none focus:border-[#E5D4B4] transition-colors"
                     />
                   </div>
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-mono opacity-60">Jauge max</label>
+                  <div className="space-y-2">
+                    <label className="text-xs uppercase tracking-wider text-neutral-400 font-bold">Jauge max</label>
                     <input
                       type="number"
                       name="capacity"
                       value={form.capacity}
                       onChange={handleChange}
                       placeholder="Ex: 150"
-                      className="w-full rounded-2xl border border-[#111110]/20 bg-[#F7F5F0] px-4 py-3 text-xs focus:outline-none focus:border-[#111110]/65 font-mono transition-colors"
+                      className="w-full rounded-xl border border-neutral-800 bg-[#101319] px-4 py-3 text-xs uppercase text-white placeholder:text-neutral-600 focus:outline-none focus:border-[#E5D4B4] transition-colors"
                     />
                   </div>
                 </div>
@@ -260,26 +260,26 @@ export default function NewEventPage() {
 
             {/* ÉTAPE 3 : VISUEL */}
             {step === 3 && (
-              <div className="space-y-5">
-                <div className="border-b border-[#111110]/10 pb-4">
-                  <h2 className="text-sm font-bold uppercase tracking-wider font-mono">Visuel de l&apos;événement</h2>
-                  <p className="text-xs opacity-60">Ajoutez une image d&apos;illustration pour votre couverture.</p>
+              <div className="space-y-5 font-mono">
+                <div className="border-b border-neutral-800 pb-4">
+                  <h2 className="text-xs font-bold uppercase tracking-wider text-white">Visuel de l&apos;événement</h2>
+                  <p className="text-[11px] text-neutral-500 uppercase">Ajoutez une image d&apos;illustration pour votre couverture.</p>
                 </div>
 
-                <div className="space-y-1.5">
-                  <label className="text-xs font-mono opacity-60">URL de l&apos;image de couverture</label>
+                <div className="space-y-2">
+                  <label className="text-xs uppercase tracking-wider text-neutral-400 font-bold">URL de l&apos;image de couverture</label>
                   <input
                     type="url"
                     name="image_url"
                     value={form.image_url}
                     onChange={handleChange}
                     placeholder="https://example.com/image.jpg"
-                    className="w-full rounded-2xl border border-[#111110]/20 bg-[#F7F5F0] px-4 py-3 text-xs focus:outline-none focus:border-[#111110]/65 transition-colors"
+                    className="w-full rounded-xl border border-neutral-800 bg-[#101319] px-4 py-3 text-xs uppercase text-white placeholder:text-neutral-600 focus:outline-none focus:border-[#E5D4B4] transition-colors"
                   />
                 </div>
 
                 {form.image_url && (
-                  <div className="mt-4 rounded-2xl overflow-hidden border border-[#111110]/15 h-48 bg-[#F7F5F0] relative">
+                  <div className="mt-4 rounded-xl overflow-hidden border border-neutral-800 h-48 bg-[#101319] relative">
                     <img src={form.image_url} alt="Aperçu" className="w-full h-full object-cover" />
                   </div>
                 )}
@@ -287,14 +287,14 @@ export default function NewEventPage() {
             )}
 
             {/* Boutons de navigation */}
-            <div className="flex items-center justify-between pt-6 border-t border-[#111110]/10 mt-8">
+            <div className="flex items-center justify-between pt-6 border-t border-neutral-800 mt-8 font-mono">
               {step > 1 ? (
                 <button
                   type="button"
                   onClick={handlePrev}
-                  className="inline-flex items-center gap-2 rounded-full border border-[#111110]/20 bg-white/60 hover:bg-white px-5 py-2.5 text-xs font-semibold text-[#111110] transition-transform hover:scale-[1.02]"
+                  className="inline-flex items-center gap-2 rounded-xl border border-neutral-800 bg-[#14171f] hover:bg-neutral-800 px-5 py-3 text-xs font-bold uppercase tracking-widest text-neutral-200 transition-all cursor-pointer"
                 >
-                  <ArrowLeft className="w-3.5 h-3.5" />
+                  <ArrowLeft className="w-4 h-4" />
                   <span>Précédent</span>
                 </button>
               ) : (
@@ -305,18 +305,18 @@ export default function NewEventPage() {
                 <button
                   type="button"
                   onClick={handleNext}
-                  className="inline-flex items-center gap-2 rounded-full bg-[#111110] px-6 py-2.5 text-xs font-semibold text-[#F7F5F0] transition-transform hover:scale-[1.02] ml-auto"
+                  className="inline-flex items-center gap-2 rounded-xl bg-[#E5D4B4] px-6 py-3 text-xs font-bold uppercase tracking-widest text-black transition-all hover:bg-[#d8c39e] ml-auto cursor-pointer shadow-lg"
                 >
                   <span>Suivant</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
+                  <ArrowRight className="w-4 h-4" />
                 </button>
               ) : (
                 <button
                   type="submit"
                   disabled={loading}
-                  className="inline-flex items-center gap-2 rounded-full bg-[#111110] px-6 py-2.5 text-xs font-semibold text-[#F7F5F0] transition-transform hover:scale-[1.02] disabled:opacity-50 ml-auto"
+                  className="inline-flex items-center gap-2 rounded-xl bg-[#E5D4B4] px-6 py-3 text-xs font-bold uppercase tracking-widest text-black transition-all hover:bg-[#d8c39e] disabled:opacity-50 ml-auto cursor-pointer shadow-lg"
                 >
-                  {loading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Check className="w-3.5 h-3.5" />}
+                  {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
                   <span>{loading ? 'Création...' : "Créer l'événement"}</span>
                 </button>
               )}
