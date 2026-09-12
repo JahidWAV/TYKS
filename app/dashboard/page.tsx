@@ -5,11 +5,10 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { 
   ArrowUpRight, Plus, Loader2, Calendar, MapPin, Trash2, Edit3, 
-  Euro, Ticket, Search, RefreshCw, Zap, Database, ShieldCheck, Users, TrendingUp 
+  Euro, Ticket, Search, RefreshCw, BarChart3, Users, TrendingUp, Layers
 } from 'lucide-react';
 import type { IortiEvent } from '@/types/event';
 import { supabaseBrowser } from '@/lib/supabase-browser';
-import CustomAuthModal from '@/components/CustomAuthModal';
 
 const STATUS_LABEL: Record<string, string> = {
   draft: 'Brouillon',
@@ -25,7 +24,7 @@ interface DashboardStats {
   totalEventsCount: number;
 }
 
-export default function OrganizerDashboard() {
+export default function OrganizerOverviewDashboard() {
   const router = useRouter();
   const [user, setUser] = useState<any>(null);
   const [ready, setReady] = useState(false);
@@ -42,22 +41,27 @@ export default function OrganizerDashboard() {
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [refreshing, setRefreshing] = useState(false);
-  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
   useEffect(() => {
     async function getSession() {
       const { data: { session } } = await supabaseBrowser.auth.getSession();
       setUser(session?.user ?? null);
       setReady(true);
+      if (!session?.user) {
+        router.push('/login');
+      }
     }
     getSession();
 
     const { data: { subscription } } = supabaseBrowser.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
+      if (!session?.user) {
+        router.push('/login');
+      }
     });
 
     return () => subscription.unsubscribe();
-  }, []);
+  }, [router]);
 
   const loadDashboard = useCallback(async (userId: string, isRefresh = false) => {
     try {
@@ -146,85 +150,9 @@ export default function OrganizerDashboard() {
     }
   };
 
-  if (!ready) {
+  if (!ready || loading) {
     return (
-      <div className="flex min-h-[60vh] items-center justify-center">
-        <Loader2 className="h-6 w-6 animate-spin text-bone-muted" />
-      </div>
-    );
-  }
-
-  if (!user) {
-    return (
-      <div className="mx-auto max-w-5xl px-6 py-16 space-y-24">
-        {/* Hero Section */}
-        <div className="flex flex-col items-center text-center space-y-6">
-          <div className="inline-flex items-center gap-2 rounded-full border border-onyx-line bg-onyx-raised px-4 py-1.5 text-xs text-bone-muted">
-            <Zap className="w-3.5 h-3.5 text-bone" />
-            <span>L&apos;alternative moderne à Shotgun et DICE</span>
-          </div>
-
-          <h1 className="font-display text-4xl md:text-6xl font-bold text-bone tracking-tight max-w-3xl">
-            Reprenez le contrôle de votre billetterie et de vos marges.
-          </h1>
-
-          <p className="max-w-xl text-base text-bone-muted leading-relaxed">
-            Fins de commissions abusives et de données captives. Tyks Pro vous offre une plateforme sur-mesure, des frais réduits et l&apos;accès direct à votre communauté.
-          </p>
-
-          <button
-            onClick={() => setIsAuthModalOpen(true)}
-            className="inline-flex items-center gap-3 rounded-full bg-bone px-8 py-4 text-sm font-semibold text-onyx transition hover:bg-white shadow-lg shadow-bone/5 cursor-pointer"
-          >
-            <ArrowUpRight className="h-4 w-4" />
-            <span>Accéder à mon espace Pro</span>
-          </button>
-        </div>
-
-        {/* Grille Avantages / Comparatif rapide */}
-        <div className="grid md:grid-cols-3 gap-6 pt-10 border-t border-onyx-line">
-          <div className="p-8 rounded-2xl bg-onyx-raised/40 border border-onyx-line space-y-4">
-            <div className="w-10 h-10 rounded-xl bg-bone/10 flex items-center justify-center text-bone">
-              <Euro className="w-5 h-5" />
-            </div>
-            <h3 className="font-display text-lg font-bold text-bone">Marges maximales</h3>
-            <p className="text-xs text-bone-muted leading-relaxed">
-              Oubliez les grilles tarifaires rigides des grandes applications. Gardez un maximum de revenus sur chaque place vendue.
-            </p>
-          </div>
-
-          <div className="p-8 rounded-2xl bg-onyx-raised/40 border border-onyx-line space-y-4">
-            <div className="w-10 h-10 rounded-xl bg-bone/10 flex items-center justify-center text-bone">
-              <Database className="w-5 h-5" />
-            </div>
-            <h3 className="font-display text-lg font-bold text-bone">Données 100% vous</h3>
-            <p className="text-xs text-bone-muted leading-relaxed">
-              Contrairement aux plateformes qui conservent vos spectateurs captifs, accédez en temps réel aux emails et contacts de votre public.
-            </p>
-          </div>
-
-          <div className="p-8 rounded-2xl bg-onyx-raised/40 border border-onyx-line space-y-4">
-            <div className="w-10 h-10 rounded-xl bg-bone/10 flex items-center justify-center text-bone">
-              <ShieldCheck className="w-5 h-5" />
-            </div>
-            <h3 className="font-display text-lg font-bold text-bone">Image de marque</h3>
-            <p className="text-xs text-bone-muted leading-relaxed">
-              Profitez d&apos;un sous-domaine dédié et d&apos;une interface aux couleurs de votre univers artistique ou de votre structure.
-            </p>
-          </div>
-        </div>
-
-        <CustomAuthModal 
-          isOpen={isAuthModalOpen} 
-          onClose={() => setIsAuthModalOpen(false)} 
-        />
-      </div>
-    );
-  }
-
-  if (loading) {
-    return (
-      <div className="flex min-h-[60vh] items-center justify-center">
+      <div className="flex min-h-[80vh] items-center justify-center">
         <Loader2 className="h-6 w-6 animate-spin text-bone-muted" />
       </div>
     );
@@ -242,109 +170,127 @@ export default function OrganizerDashboard() {
     : 0;
 
   return (
-    <div className="mx-auto max-w-6xl px-6 py-10 space-y-10">
+    <div className="mx-auto max-w-7xl px-6 py-10 space-y-10">
       
-      {/* En-tête & Action */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      {/* En-tête de l'Overview Organisateur */}
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 border-b border-onyx-line pb-6">
         <div>
-          <h1 className="font-display text-3xl font-bold text-bone">Tableau de bord Pro</h1>
-          <p className="text-sm text-bone-muted">Pilotez vos événements et suivez vos performances en direct</p>
+          <div className="flex items-center gap-2 text-xs font-mono text-bone-muted uppercase tracking-wider mb-1">
+            <Layers className="w-3.5 h-3.5 text-bone" />
+            <span>Dashboard Organisateur · Overview</span>
+          </div>
+          <h1 className="font-display text-3xl font-bold text-bone tracking-tight">Vue d&apos;ensemble</h1>
         </div>
+
         <div className="flex items-center gap-3">
           <button
-            onClick={() => loadDashboard(user.id, true)}
+            onClick={() => user?.id && loadDashboard(user.id, true)}
             disabled={refreshing}
-            className="inline-flex items-center gap-2 rounded-full border border-onyx-line bg-onyx-raised/60 px-4 py-2.5 text-sm font-semibold text-bone transition hover:bg-onyx-raised disabled:opacity-50 cursor-pointer"
+            className="inline-flex items-center gap-2 rounded-full border border-onyx-line bg-onyx-raised/60 px-4 py-2.5 text-xs font-mono uppercase tracking-wider text-bone transition hover:bg-onyx-raised disabled:opacity-50 cursor-pointer"
           >
-            <RefreshCw className={`h-4 w-4 ${refreshing ? 'animate-spin' : ''}`} />
+            <RefreshCw className={`h-3.5 w-3.5 ${refreshing ? 'animate-spin' : ''}`} />
             <span>Actualiser</span>
           </button>
           <Link
             href="/new"
-            className="inline-flex items-center justify-center gap-2 rounded-full bg-bone px-5 py-2.5 text-sm font-semibold text-onyx transition hover:bg-white"
+            className="inline-flex items-center gap-2 rounded-full bg-bone px-5 py-2.5 text-xs font-mono uppercase tracking-wider font-semibold text-onyx transition hover:bg-white"
           >
             <Plus className="h-4 w-4" />
-            Créer un événement
+            <span>Nouvel événement</span>
           </Link>
         </div>
       </div>
 
-      {/* Statistiques Globales */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="p-6 rounded-2xl border border-onyx-line bg-onyx-raised/40 space-y-2">
+      {/* Blocs d'Overview chiffrés (KPIs) */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        <div className="p-6 rounded-2xl border border-onyx-line bg-onyx-raised/40 space-y-3">
           <div className="flex items-center justify-between text-bone-muted">
             <span className="text-xs uppercase tracking-wider font-mono">Chiffre d&apos;affaires</span>
-            <Euro className="w-4 h-4 text-bone-faint" />
+            <Euro className="w-4 h-4 text-bone" />
           </div>
-          <p className="font-display text-3xl font-bold text-bone">{stats.totalRevenue.toLocaleString('fr-FR')} €</p>
-        </div>
-
-        <div className="p-6 rounded-2xl border border-onyx-line bg-onyx-raised/40 space-y-2">
-          <div className="flex items-center justify-between text-bone-muted">
-            <span className="text-xs uppercase tracking-wider font-mono">Billets vendus</span>
-            <Ticket className="w-4 h-4 text-bone-faint" />
-          </div>
-          <p className="font-display text-3xl font-bold text-bone">{stats.totalTicketsSold} <span className="text-xs font-normal text-bone-muted">({fillRate}%)</span></p>
-        </div>
-
-        <div className="p-6 rounded-2xl border border-onyx-line bg-onyx-raised/40 space-y-2">
-          <div className="flex items-center justify-between text-bone-muted">
-            <span className="text-xs uppercase tracking-wider font-mono">Événements publiés</span>
-            <TrendingUp className="w-4 h-4 text-bone-faint" />
-          </div>
-          <p className="font-display text-3xl font-bold text-bone">{stats.publishedEventsCount} <span className="text-xs font-normal text-bone-muted">/ {stats.totalEventsCount}</span></p>
-        </div>
-
-        <div className="p-6 rounded-2xl border border-onyx-line bg-onyx-raised/40 space-y-2">
-          <div className="flex items-center justify-between text-bone-muted">
-            <span className="text-xs uppercase tracking-wider font-mono">Statut du compte</span>
-            <Users className="w-4 h-4 text-bone-faint" />
-          </div>
-          <p className="font-display text-sm font-semibold text-emerald-400 mt-2 flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-            Compte Vérifié & Actif
+          <p className="font-display text-3xl font-bold text-bone tracking-tight">
+            {stats.totalRevenue.toLocaleString('fr-FR')} <span className="text-lg">€</span>
           </p>
+          <p className="text-[11px] text-bone-muted font-mono">Volume brut global encaissé</p>
+        </div>
+
+        <div className="p-6 rounded-2xl border border-onyx-line bg-onyx-raised/40 space-y-3">
+          <div className="flex items-center justify-between text-bone-muted">
+            <span className="text-xs uppercase tracking-wider font-mono">Billets écoulés</span>
+            <Ticket className="w-4 h-4 text-bone" />
+          </div>
+          <p className="font-display text-3xl font-bold text-bone tracking-tight">
+            {stats.totalTicketsSold}
+          </p>
+          <p className="text-[11px] text-bone-muted font-mono">Taux de remplissage : {fillRate}%</p>
+        </div>
+
+        <div className="p-6 rounded-2xl border border-onyx-line bg-onyx-raised/40 space-y-3">
+          <div className="flex items-center justify-between text-bone-muted">
+            <span className="text-xs uppercase tracking-wider font-mono">Événements</span>
+            <Calendar className="w-4 h-4 text-bone" />
+          </div>
+          <p className="font-display text-3xl font-bold text-bone tracking-tight">
+            {stats.publishedEventsCount} <span className="text-sm font-normal text-bone-muted">/ {stats.totalEventsCount}</span>
+          </p>
+          <p className="text-[11px] text-bone-muted font-mono">Publiés / Total créés</p>
+        </div>
+
+        <div className="p-6 rounded-2xl border border-onyx-line bg-onyx-raised/40 space-y-3">
+          <div className="flex items-center justify-between text-bone-muted">
+            <span className="text-xs uppercase tracking-wider font-mono">Performance</span>
+            <TrendingUp className="w-4 h-4 text-emerald-400" />
+          </div>
+          <p className="font-display text-sm font-bold text-emerald-400 pt-1 tracking-wide uppercase">
+            Flux actifs & stables
+          </p>
+          <p className="text-[11px] text-bone-muted font-mono">Synchronisation temps réel</p>
         </div>
       </div>
 
-      {/* Barre de recherche et filtres */}
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 p-4 rounded-2xl border border-onyx-line bg-onyx-raised/40">
+      {/* Barre de recherche et filtres de l'overview */}
+      <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4 p-4 rounded-2xl border border-onyx-line bg-onyx-raised/40">
         <div className="relative flex-1">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-bone-faint" />
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-bone-muted" />
           <input
             type="text"
-            placeholder="Rechercher par titre ou lieu..."
+            placeholder="Filtrer les événements par titre ou lieu..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full h-11 rounded-xl border border-onyx-line bg-onyx px-11 text-xs text-bone placeholder:text-bone-faint focus:outline-none focus:border-bone/40"
+            className="w-full h-11 rounded-xl border border-onyx-line bg-onyx px-11 text-xs text-bone placeholder:text-bone-muted focus:outline-none focus:border-bone/40 font-mono"
           />
         </div>
-        <div className="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0">
+        <div className="flex items-center gap-2 overflow-x-auto pb-1 lg:pb-0">
           {['all', 'published', 'draft', 'cancelled'].map((status) => (
             <button
               key={status}
               onClick={() => setStatusFilter(status)}
               className={`px-4 py-2 rounded-xl text-xs font-mono uppercase tracking-wider transition-all whitespace-nowrap cursor-pointer ${
                 statusFilter === status 
-                  ? 'bg-bone text-onyx font-bold' 
+                  ? 'bg-bone text-onyx font-bold shadow-sm' 
                   : 'bg-onyx border border-onyx-line text-bone-muted hover:text-bone'
               }`}
             >
-              {status === 'all' ? 'Tous' : STATUS_LABEL[status] || status}
+              {status === 'all' ? 'Tous les statuts' : STATUS_LABEL[status] || status}
             </button>
           ))}
         </div>
       </div>
 
-      {/* Liste des Événements */}
+      {/* Liste des événements de l'organisateur */}
       <div className="space-y-4">
-        <h2 className="font-display text-xl font-bold text-bone">Vos Événements ({filteredEvents.length})</h2>
+        <div className="flex items-center justify-between">
+          <h2 className="font-display text-xl font-bold text-bone">Gestion des événements</h2>
+          <span className="text-xs font-mono text-bone-muted">{filteredEvents.length} résultat(s)</span>
+        </div>
 
         {filteredEvents.length === 0 ? (
-          <div className="rounded-2xl border border-onyx-line bg-onyx-raised/50 p-12 text-center space-y-3">
+          <div className="rounded-2xl border border-onyx-line bg-onyx-raised/30 p-16 text-center space-y-4">
             <Calendar className="h-8 w-8 text-bone-muted mx-auto" />
-            <p className="text-bone-muted text-sm">
-              {events.length === 0 ? "Aucun événement à votre actif pour le moment." : "Aucun événement ne correspond à vos filtres."}
+            <p className="text-bone-muted text-xs font-mono uppercase tracking-wider">
+              {events.length === 0 
+                ? "Aucun événement enregistré sur ce compte pour l'instant." 
+                : "Aucun événement ne correspond à vos critères de recherche."}
             </p>
           </div>
         ) : (
@@ -354,19 +300,26 @@ export default function OrganizerDashboard() {
               return (
                 <article
                   key={evt.id}
-                  className="group p-6 bg-onyx-raised/60 hover:bg-onyx-raised border border-onyx-line rounded-2xl transition-all duration-200 flex flex-col justify-between space-y-6"
+                  className="group p-6 bg-onyx-raised/50 hover:bg-onyx-raised border border-onyx-line rounded-2xl transition-all duration-200 flex flex-col justify-between space-y-6"
                 >
                   <div className="space-y-3">
                     <div className="flex items-center justify-between">
-                      <span className="font-mono text-[10px] text-bone-faint">
+                      <span className="font-mono text-[10px] text-bone-muted uppercase tracking-wider">
                         {evt.starts_at ? new Date(evt.starts_at).toLocaleDateString('fr-FR', {
                           day: '2-digit',
                           month: 'short',
+                          year: 'numeric',
                           hour: '2-digit',
                           minute: '2-digit',
                         }) : 'Date non définie'}
                       </span>
-                      <span className="text-[10px] font-mono text-bone-faint border border-onyx-line px-2 py-0.5 rounded">
+                      <span className={`text-[10px] font-mono px-2 py-0.5 rounded border uppercase tracking-wider ${
+                        evt.status === 'published' 
+                          ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400' 
+                          : evt.status === 'cancelled'
+                          ? 'bg-red-500/10 border-red-500/30 text-red-400'
+                          : 'bg-onyx border-onyx-line text-bone-muted'
+                      }`}>
                         {STATUS_LABEL[evt.status] ?? evt.status}
                       </span>
                     </div>
@@ -376,32 +329,34 @@ export default function OrganizerDashboard() {
                     </h3>
 
                     {evt.description && (
-                      <p className="text-xs text-bone-faint line-clamp-2 leading-relaxed">
+                      <p className="text-xs text-bone-muted line-clamp-2 leading-relaxed">
                         {evt.description}
                       </p>
+                    )}
+
+                    {evt.location && (
+                      <div className="flex items-center gap-1.5 text-xs text-bone-muted pt-1">
+                        <MapPin className="w-3.5 h-3.5 text-bone-faint shrink-0" />
+                        <span className="truncate">{evt.location}</span>
+                      </div>
                     )}
                   </div>
 
                   <div className="pt-4 border-t border-onyx-line flex items-center justify-between">
-                    <div className="flex items-center gap-1.5 text-xs text-bone-muted">
-                      <MapPin className="w-3.5 h-3.5 text-bone-faint" />
-                      <span className="truncate max-w-[140px]">{evt.location || 'Lieu non spécifié'}</span>
-                    </div>
-
+                    <span className="font-mono text-xs font-bold text-bone">
+                      {eventPrice > 0 ? `${eventPrice.toLocaleString('fr-FR')} €` : 'Gratuit'}
+                    </span>
                     <div className="flex items-center gap-2">
-                      <span className="font-mono text-xs text-bone font-semibold mr-1">
-                        {eventPrice > 0 ? `${eventPrice} €` : 'Gratuit'}
-                      </span>
                       <Link
                         href={`/events/${evt.slug || evt.id}/edit`}
-                        className="p-2 rounded-full border border-onyx-line hover:bg-white/10 text-bone transition-colors"
+                        className="p-2 rounded-xl border border-onyx-line hover:bg-white/10 text-bone transition-colors"
                         title="Modifier"
                       >
                         <Edit3 className="w-3.5 h-3.5" />
                       </Link>
                       <button
                         onClick={() => handleDeleteEvent(evt.id)}
-                        className="p-2 rounded-full border border-red-500/30 hover:bg-red-500/10 text-red-400 transition-colors cursor-pointer"
+                        className="p-2 rounded-xl border border-red-500/30 hover:bg-red-500/10 text-red-400 transition-colors cursor-pointer"
                         title="Supprimer"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
