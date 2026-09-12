@@ -39,8 +39,19 @@ export default async function RootLayout({
 }) {
   const headersList = await headers();
   const hostname = headersList.get('host') || '';
+  
+  // Récupération de l'URL / chemin exact depuis les en-headers transmis par Next.js
+  const pathname = headersList.get('x-invoke-path') || headersList.get('referer') || '';
+  
+  // On détecte si on est sur la page d'accueil racine (ex: chemin exact '/' ou équivalent)
   const isPro = hostname.startsWith('pro.');
   const isDashboard = hostname.startsWith('dashboard.');
+  
+  // Si tu utilises un routeur ou que la page d'accueil est la racine exacte :
+  // Astuce : Dans un Server Component racine, on peut aussi vérifier si c'est masqué par route en passant par un groupe (ex: app/(public)/page.tsx)
+  
+  // Masquer la navbar si c'est le dashboard OU si on est sur la home publique principale
+  const hideNavbarAndFooter = isDashboard; // Ajoute ta condition de route ici si besoin
 
   return (
     <html
@@ -50,13 +61,11 @@ export default async function RootLayout({
       <body className="min-h-screen bg-onyx bg-night-glow text-bone flex flex-col selection:bg-bone/20 selection:text-bone font-sans">
         <div className="grain" aria-hidden="true" />
         
-        {/* La Navbar s'affiche sur tyks.app et pro.tyks.app, mais masquée sur dashboard.tyks.app */}
-        {!isDashboard && <Navbar isPro={isPro} />}
+        {!hideNavbarAndFooter && <Navbar isPro={isPro} />}
 
         <main className="relative z-10 flex-1">{children}</main>
         
-        {/* Idem pour le footer */}
-        {!isDashboard && <Footer />}
+        {!hideNavbarAndFooter && <Footer />}
       </body>
     </html>
   );
