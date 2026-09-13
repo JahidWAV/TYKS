@@ -92,7 +92,7 @@ export default function AnalyticsDashboardPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-white text-[#1e3932]/60 font-mono text-xs uppercase tracking-widest flex items-center justify-center">
+      <div className="min-h-screen bg-white text-[#1e3932]/60 font-mono text-xs flex items-center justify-center">
         Chargement...
       </div>
     );
@@ -101,10 +101,9 @@ export default function AnalyticsDashboardPage() {
   return (
     <div className="w-full px-6 lg:px-12 py-10 space-y-8 font-sans text-[#1e3932] bg-white min-h-full">
       
-      {/* Filtres de période */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-6 border-b border-[#1e3932]/10 gap-4">
         <div className="flex items-center gap-2">
-          <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-mono bg-[#f8faf9] text-[#1e3932] font-bold border border-[#1e3932]/15 uppercase tracking-wider">
+          <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-mono bg-[#f8faf9] text-[#1e3932] font-bold border border-[#1e3932]/15">
             <BarChart3 className="w-4 h-4 text-[#1e3932]" /> Performance globale
           </span>
         </div>
@@ -113,7 +112,7 @@ export default function AnalyticsDashboardPage() {
             <button
               key={range}
               onClick={() => setTimeRange(range)}
-              className={`px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition cursor-pointer ${
+              className={`px-4 py-2 rounded-xl text-xs font-bold transition cursor-pointer ${
                 timeRange === range
                   ? 'bg-[#1e3932] text-white shadow-md'
                   : 'text-[#1e3932]/60 hover:text-[#1e3932]'
@@ -125,68 +124,65 @@ export default function AnalyticsDashboardPage() {
         </div>
       </div>
 
-      {/* Grille des KPI principaux */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 font-mono">
         
         <div className="p-6 rounded-2xl border border-[#1e3932]/10 bg-[#f8faf9] shadow-xs space-y-3">
           <div className="flex items-center justify-between">
-            <p className="text-xs uppercase tracking-wider text-[#1e3932]/60 font-bold">Chiffre d&apos;affaires</p>
+            <p className="text-xs text-[#1e3932]/60 font-bold">Chiffre d&apos;affaires</p>
             <Euro className="w-4 h-4 text-[#1e3932]" />
           </div>
           <p className="text-3xl font-bold tracking-tight text-[#1e3932]">
             {analyticsData.totalRevenue.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' })}
           </p>
-          <div className="flex items-center gap-1.5 text-[11px] text-emerald-700 font-bold uppercase">
+          <div className="flex items-center gap-1.5 text-[11px] text-emerald-700 font-bold">
             <TrendingUp className="w-3.5 h-3.5" /> +12.4% vs période préc.
           </div>
         </div>
 
         <div className="p-6 rounded-2xl border border-[#1e3932]/10 bg-[#f8faf9] shadow-xs space-y-3">
           <div className="flex items-center justify-between">
-            <p className="text-xs uppercase tracking-wider text-[#1e3932]/60 font-bold">Billets vendus</p>
+            <p className="text-xs text-[#1e3932]/60 font-bold">Billets vendus</p>
             <Ticket className="w-4 h-4 text-[#1e3932]" />
           </div>
           <p className="text-3xl font-bold tracking-tight text-[#1e3932]">
             {analyticsData.ticketsSold.toLocaleString('fr-FR')}
           </p>
-          <p className="text-[11px] text-[#1e3932]/50 uppercase">Total des places écoulées</p>
+          <p className="text-[11px] text-[#1e3932]/50">Total des places écoulées</p>
         </div>
 
         <div className="p-6 rounded-2xl border border-[#1e3932]/10 bg-[#f8faf9] shadow-xs space-y-3">
           <div className="flex items-center justify-between">
-            <p className="text-xs uppercase tracking-wider text-[#1e3932]/60 font-bold">Taux de conversion</p>
+            <p className="text-xs text-[#1e3932]/60 font-bold">Taux de conversion</p>
             <PieChart className="w-4 h-4 text-[#1e3932]" />
           </div>
           <p className="text-3xl font-bold tracking-tight text-[#1e3932]">
             {analyticsData.conversionRate}%
           </p>
-          <p className="text-[11px] text-[#1e3932]/50 uppercase">Visiteurs convertis en acheteurs</p>
+          <p className="text-[11px] text-[#1e3932]/50">Visiteurs convertis en acheteurs</p>
         </div>
 
         <div className="p-6 rounded-2xl border border-[#1e3932]/10 bg-[#f8faf9] shadow-xs space-y-3">
           <div className="flex items-center justify-between">
-            <p className="text-xs uppercase tracking-wider text-[#1e3932]/60 font-bold">Événements actifs</p>
+            <p className="text-xs text-[#1e3932]/60 font-bold">Événements actifs</p>
             <Calendar className="w-4 h-4 text-[#1e3932]" />
           </div>
           <p className="text-3xl font-bold tracking-tight text-[#1e3932]">
             {analyticsData.activeEvents}
           </p>
-          <p className="text-[11px] text-[#1e3932]/50 uppercase">Gérés sur la plateforme</p>
+          <p className="text-[11px] text-[#1e3932]/50">Gérés sur la plateforme</p>
         </div>
 
       </div>
 
-      {/* Section détaillée : Top Événements & Graphique visuel */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         
-        {/* Graphique simulé / Zone d'évolution */}
         <div className="lg:col-span-2 p-8 rounded-2xl border border-[#1e3932]/10 bg-[#f8faf9] shadow-xs space-y-6 flex flex-col justify-between font-mono">
           <div className="flex items-center justify-between">
             <div className="space-y-1">
-              <h2 className="text-xs font-bold uppercase tracking-wider text-[#1e3932]">Évolution des ventes</h2>
-              <p className="text-[11px] text-[#1e3932]/50 uppercase">Tendance des revenus sur la période sélectionnée</p>
+              <h2 className="text-xs font-bold text-[#1e3932]">Évolution des ventes</h2>
+              <p className="text-[11px] text-[#1e3932]/50">Tendance des revenus sur la période sélectionnée</p>
             </div>
-            <span className="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[#1e3932]/10 text-[#1e3932] border border-[#1e3932]/20">
+            <span className="px-3 py-1 rounded-full text-[10px] font-bold bg-[#1e3932]/10 text-[#1e3932] border border-[#1e3932]/20">
               Temps réel
             </span>
           </div>
@@ -202,30 +198,29 @@ export default function AnalyticsDashboardPage() {
             ))}
           </div>
 
-          <div className="flex items-center justify-between text-[11px] uppercase text-[#1e3932]/50">
+          <div className="flex items-center justify-between text-[11px] text-[#1e3932]/50">
             <span>Début de période</span>
             <span>Aujourd&apos;hui</span>
           </div>
         </div>
 
-        {/* Top Événements par CA */}
         <div className="p-8 rounded-2xl border border-[#1e3932]/10 bg-[#f8faf9] shadow-xs space-y-6 font-mono">
           <div className="space-y-1">
-            <h2 className="text-xs font-bold uppercase tracking-wider text-[#1e3932]">Top Événements</h2>
-            <p className="text-[11px] text-[#1e3932]/50 uppercase">Classement par chiffre d&apos;affaires</p>
+            <h2 className="text-xs font-bold text-[#1e3932]">Top événements</h2>
+            <p className="text-[11px] text-[#1e3932]/50">Classement par chiffre d&apos;affaires</p>
           </div>
 
           <div className="space-y-4">
             {analyticsData.topEvents.length === 0 ? (
-              <div className="py-12 text-center text-xs uppercase tracking-wider text-[#1e3932]/50">
+              <div className="py-12 text-center text-xs text-[#1e3932]/50">
                 Aucun événement avec ventes pour le moment.
               </div>
             ) : (
               analyticsData.topEvents.map((ev, index) => (
                 <div key={ev.id} className="flex items-center justify-between p-4 rounded-xl bg-white border border-[#1e3932]/10 hover:border-[#1e3932]/30 transition shadow-2xs">
                   <div className="space-y-0.5 pr-3 truncate">
-                    <p className="text-xs font-bold uppercase tracking-wider text-[#1e3932] truncate">#{index + 1} {ev.title}</p>
-                    <p className="text-[10px] text-[#1e3932]/50 uppercase">{ev.tickets} billets vendus</p>
+                    <p className="text-xs font-bold text-[#1e3932] truncate">#{index + 1} {ev.title}</p>
+                    <p className="text-[10px] text-[#1e3932]/50">{ev.tickets} billets vendus</p>
                   </div>
                   <span className="text-xs font-bold text-[#1e3932] shrink-0">
                     {ev.revenue.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' })}
