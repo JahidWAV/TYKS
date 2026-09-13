@@ -101,7 +101,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     const meta = user?.user_metadata || {};
     const first = meta.first_name || meta.given_name;
     const last = meta.last_name || meta.family_name;
-    if (first && last) return `${first[0]}${last[0]}`.toUpperCase(); // CORRIGÉ ICI
+    if (first && last) return `${first[0]}${last[0]}`.toUpperCase();
     const full = meta.full_name || meta.name;
     if (full) {
       const parts = full.trim().split(/\s+/);
@@ -117,7 +117,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   if (user === undefined) {
     return (
-      <div className="min-h-screen bg-white text-[#1e3932]/60 font-mono text-xs uppercase tracking-widest flex items-center justify-center">
+      <div className="min-h-screen bg-white text-[#1e3932]/60 font-mono text-xs tracking-wider flex items-center justify-center">
         Chargement...
       </div>
     );
@@ -144,7 +144,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             </Link>
           </div>
 
-          <div className="flex items-center gap-2 text-xs uppercase font-mono tracking-wider pl-6">
+          <div className="flex items-center gap-2 text-xs font-mono tracking-wide pl-6">
             {breadcrumbs.map((crumb, index) => (
               <div key={index} className="flex items-center gap-2">
                 {index > 0 && <ChevronRight className="w-3.5 h-3.5 text-[#1e3932]/40" />}
@@ -159,7 +159,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         <div className="relative pr-6" ref={profileMenuRef}>
           <button 
             onClick={() => setProfileOpen(!profileOpen)}
-            className="w-10 h-10 rounded-xl border border-[#1e3932]/15 bg-[#f8faf9] text-[#1e3932] flex items-center justify-center hover:bg-[#1e3932] hover:text-white transition-colors text-xs font-mono font-bold tracking-tighter cursor-pointer shadow-sm"
+            className="w-10 h-10 rounded-xl border border-[#1e3932]/15 bg-[#f8faf9] text-[#1e3932] flex items-center justify-center hover:bg-[#1e3932] hover:text-white transition-colors text-xs font-mono font-bold tracking-tight cursor-pointer shadow-sm"
             title="Mon profil"
           >
             {initials}
@@ -172,7 +172,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                   {initials}
                 </div>
                 <div className="min-w-0">
-                  <p className="font-bold truncate uppercase text-[#1e3932]">{displayName}</p>
+                  <p className="font-bold truncate text-[#1e3932]">{displayName}</p>
                   <p className="text-[10px] text-[#1e3932]/60 truncate">{user.email}</p>
                 </div>
               </div>
@@ -181,7 +181,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 <Link 
                   href="/settings" 
                   onClick={() => setProfileOpen(false)}
-                  className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-[#1e3932]/5 hover:text-[#1e3932] transition-colors uppercase tracking-wider font-bold text-[#1e3932]/80"
+                  className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-[#1e3932]/5 hover:text-[#1e3932] transition-colors tracking-wide font-bold text-[#1e3932]/80"
                 >
                   <User className="w-4 h-4 text-[#1e3932]" />
                   <span>Profil</span>
@@ -190,7 +190,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 <Link 
                   href="/settings/security" 
                   onClick={() => setProfileOpen(false)}
-                  className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-[#1e3932]/5 hover:text-[#1e3932] transition-colors uppercase tracking-wider font-bold text-[#1e3932]/80"
+                  className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-[#1e3932]/5 hover:text-[#1e3932] transition-colors tracking-wide font-bold text-[#1e3932]/80"
                 >
                   <Shield className="w-4 h-4 text-[#1e3932]" />
                   <span>Sécurité</span>
@@ -199,7 +199,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 <Link 
                   href="/settings/preferences" 
                   onClick={() => setProfileOpen(false)}
-                  className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-[#1e3932]/5 hover:text-[#1e3932] transition-colors uppercase tracking-wider font-bold text-[#1e3932]/80"
+                  className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-[#1e3932]/5 hover:text-[#1e3932] transition-colors tracking-wide font-bold text-[#1e3932]/80"
                 >
                   <Sliders className="w-4 h-4 text-[#1e3932]" />
                   <span>Préférences</span>
@@ -212,7 +212,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                     setProfileOpen(false);
                     handleLogout();
                   }}
-                  className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-red-600 hover:bg-red-50 transition-colors uppercase tracking-wider font-bold cursor-pointer"
+                  className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-red-600 hover:bg-red-50 transition-colors tracking-wide font-bold cursor-pointer"
                 >
                   <LogOut className="w-4 h-4" />
                   <span>Se déconnecter</span>
@@ -238,7 +238,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 key={item.href}
                 href={item.href}
                 title={isOpen ? undefined : item.label}
-                className={`flex items-center h-12 transition-all font-mono text-xs uppercase tracking-wider group rounded-xl ${
+                className={`flex items-center h-12 transition-all font-mono text-xs tracking-wide group rounded-xl ${
                   isOpen ? 'px-3 gap-3 border shadow-xs' : 'justify-center border border-transparent'
                 } ${
                   isActive
