@@ -136,7 +136,7 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
 
   return (
     <>
-      <header className="sticky top-0 z-50 bg-white border-b border-[#1e3932]/10 font-sans text-[#1e3932] py-2.5">
+      <header className="sticky top-0 z-50 bg-transparent font-sans text-[#1e3932] py-4">
         <div className="max-w-7xl mx-auto px-6 lg:px-12 flex items-center justify-between gap-4">
 
           {/* 1. LOGO */}
@@ -157,8 +157,8 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
             {!isPro && (
               <div className="relative" ref={searchRef}>
                 <div 
-                  className={`flex items-center transition-all duration-300 border border-[#1e3932]/15 bg-[#f8faf9] rounded-full h-10 ${
-                    isSearchExpanded || searchQuery.trim() ? 'w-64 px-3.5' : 'w-10 px-0 justify-center cursor-pointer hover:border-[#1e3932]/40'
+                  className={`flex items-center transition-all duration-300 bg-[#1e3932] text-white rounded-full h-10 shadow-md ${
+                    isSearchExpanded || searchQuery.trim() ? 'w-64 px-3.5' : 'w-10 px-0 justify-center cursor-pointer hover:bg-[#152a25]'
                   }`}
                   onClick={() => {
                     if (!isSearchExpanded) {
@@ -166,7 +166,7 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
                     }
                   }}
                 >
-                  <Search className={`h-3.5 w-3.5 text-[#1e3932]/60 shrink-0 ${!isSearchExpanded && !searchQuery.trim() ? 'mx-auto' : 'mr-2'}`} />
+                  <Search className={`h-3.5 w-3.5 text-white/80 shrink-0 ${!isSearchExpanded && !searchQuery.trim() ? 'mx-auto' : 'mr-2'}`} />
                   
                   {(isSearchExpanded || searchQuery.trim()) && (
                     <input
@@ -179,7 +179,7 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
                       }}
                       onFocus={() => setShowDropdown(true)}
                       placeholder="Rechercher..."
-                      className="w-full bg-transparent text-xs placeholder:text-[#1e3932]/40 focus:outline-none text-[#1e3932] truncate pr-1"
+                      className="w-full bg-transparent text-xs placeholder:text-white/60 focus:outline-none text-white truncate pr-1"
                     />
                   )}
 
@@ -190,7 +190,7 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
                         setSearchQuery("");
                         setResults([]);
                       }}
-                      className="p-1 text-[#1e3932]/40 hover:text-[#1e3932] shrink-0"
+                      className="p-1 text-white/60 hover:text-white shrink-0"
                     >
                       <X className="h-3 w-3" />
                     </button>
@@ -296,7 +296,7 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
             ) : (
               <button
                 onClick={() => setIsAuthOpen(true)}
-                className="inline-flex h-10 px-5 border border-[#1e3932]/15 bg-[#1e3932] hover:bg-[#152a25] text-white text-xs tracking-wider transition-all items-center justify-center font-medium cursor-pointer rounded-full shadow-md"
+                className="inline-flex h-10 px-5 bg-[#1e3932] hover:bg-[#152a25] text-white text-xs tracking-wider transition-all items-center justify-center font-medium cursor-pointer rounded-full shadow-md"
               >
                 <span className="truncate">{isPro ? "Connexion Pro" : "Connexion"}</span>
               </button>
@@ -306,7 +306,7 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
           {/* MOBILE TOGGLE */}
           <div className="flex items-center md:hidden">
             <button
-              className="inline-flex items-center justify-center border border-[#1e3932]/15 bg-[#f8faf9] p-2.5 text-[#1e3932] rounded-full"
+              className="inline-flex items-center justify-center bg-[#1e3932] text-white p-2.5 rounded-full shadow-md"
               onClick={() => setMobileOpen((open) => !open)}
               aria-label="Ouvrir le menu"
             >
@@ -317,17 +317,17 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
 
         {/* MOBILE PANEL */}
         {mobileOpen && (
-          <div className="px-6 py-4 md:hidden space-y-3 bg-white border-t border-[#1e3932]/10 text-[#1e3932]">
+          <div className="px-6 py-4 md:hidden space-y-3 bg-white/95 backdrop-blur-md border border-[#1e3932]/10 rounded-3xl mx-4 mt-2 shadow-xl text-[#1e3932]">
             {!isPro && (
               <>
                 <div className="relative flex items-center">
-                  <Search className="absolute left-4 h-3.5 w-3.5 pointer-events-none text-[#1e3932]/40 z-10" />
+                  <Search className="absolute left-4 h-3.5 w-3.5 pointer-events-none text-white/60 z-10" />
                   <input
                     type="text"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     placeholder="Rechercher un événement..."
-                    className="w-full h-10 border border-[#1e3932]/15 bg-[#f8faf9] pl-10 pr-4 text-xs placeholder:text-[#1e3932]/40 focus:outline-none focus:border-[#1e3932] text-[#1e3932] rounded-full"
+                    className="w-full h-10 bg-[#1e3932] pl-10 pr-4 text-xs placeholder:text-white/60 focus:outline-none text-white rounded-full shadow-md"
                   />
                 </div>
                 {searchQuery.trim().length > 0 && results.length > 0 && (
@@ -385,7 +385,7 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
                   setMobileOpen(false);
                   setIsAuthOpen(true);
                 }}
-                className="w-full h-10 border border-[#1e3932]/15 bg-[#1e3932] text-white text-xs tracking-wider font-medium rounded-full shadow-md"
+                className="w-full h-10 bg-[#1e3932] text-white text-xs tracking-wider font-medium rounded-full shadow-md"
               >
                 {isPro ? "Connexion Pro" : "Connexion"}
               </button>
