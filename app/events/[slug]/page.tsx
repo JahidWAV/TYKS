@@ -5,7 +5,6 @@ import { createPortal } from 'react-dom';
 import { notFound, useParams } from 'next/navigation';
 import { supabaseBrowser } from '@/lib/supabase-browser';
 import { ArrowUpRight, Ticket, Minus, Plus, Users, X, CheckCircle2, ShieldAlert, Loader2, Calendar, MapPin, Clock, Building2 } from 'lucide-react';
-import Link from 'next/link';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements, PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js';
 
@@ -187,7 +186,7 @@ export default function PublicEventPage() {
 
   if (loading) {
     return (
-      <div className="fixed inset-0 bg-white flex items-center justify-center font-sans text-xs uppercase tracking-widest text-[#1e3932]/60">
+      <div className="w-full min-h-[60vh] bg-[#f8faf9] flex items-center justify-center font-sans text-xs uppercase tracking-widest text-[#1e3932]/60">
         Chargement...
       </div>
     );
@@ -245,124 +244,107 @@ export default function PublicEventPage() {
   };
 
   return (
-    <main className="w-full min-h-screen bg-[#f8faf9] text-[#1e3932] font-sans selection:bg-[#1e3932] selection:text-white flex flex-col justify-between">
-      
-      {/* ─── NAVIGATION / HEADER DISCRET ─── */}
-      <header className="w-full max-w-7xl mx-auto px-6 sm:px-12 py-6 flex items-center justify-between border-b border-[#1e3932]/10">
-        <Link href="/" className="text-xs uppercase tracking-widest font-semibold flex items-center gap-2 text-[#1e3932]">
-          <span className="h-5 w-5 bg-[#1e3932] text-white flex items-center justify-center text-[10px] rounded">T</span>
-          TYKS Live
-        </Link>
-        {event.organizations?.name && (
-          <div className="flex items-center gap-1.5 text-xs text-[#1e3932]/70 font-medium">
-            <Building2 className="w-3.5 h-3.5" />
-            <span>{event.organizations.name}</span>
-          </div>
-        )}
-      </header>
-
-      {/* ─── CONTENU PRINCIPAL STRUCTURÉ ─── */}
-      <section className="w-full max-w-7xl mx-auto px-6 sm:px-12 py-12 grid grid-cols-1 lg:grid-cols-12 gap-12 items-start my-auto">
+    <main className="w-full bg-[#f8faf9] text-[#1e3932] font-sans selection:bg-[#1e3932] selection:text-white py-12 px-6 sm:px-12">
+      <div className="w-full max-w-5xl mx-auto space-y-12">
         
-        {/* Colonne Gauche : Visuel / Poster épuré */}
-        <div className="lg:col-span-6">
-          <div className="relative w-full aspect-[4/5] max-w-lg mx-auto border border-[#1e3932]/15 bg-white shadow-xl overflow-hidden rounded-3xl p-3">
-            {event.image_url ? (
-              <img src={event.image_url} alt={event.title} className="w-full h-full object-cover rounded-2xl" />
-            ) : (
-              <div className="w-full h-full p-8 flex flex-col justify-between bg-[#f8faf9] text-[#1e3932] rounded-2xl">
-                <span className="text-xs uppercase tracking-widest text-[#1e3932]/60">TYKS POSTER</span>
-                <span className="text-4xl font-bold tracking-tighter text-[#1e3932]">LIVE</span>
+        {/* En-tête éditorial sobre (Orga + Titre + Méta sur une même ligne dynamique) */}
+        <div className="space-y-6 border-b border-[#1e3932]/10 pb-10">
+          {event.organizations?.name && (
+            <div className="flex items-center gap-2 text-xs uppercase tracking-widest text-[#1e3932]/60 font-medium">
+              <Building2 className="w-3.5 h-3.5" />
+              <span>{event.organizations.name}</span>
+            </div>
+          )}
+
+          <h1 className="text-4xl sm:text-6xl font-bold tracking-tight uppercase leading-[1.05] text-[#1e3932]">
+            {event.title}
+          </h1>
+
+          {/* Date, Heure et Lieu alignés au même niveau */}
+          <div className="flex flex-wrap items-center gap-6 pt-2 text-xs font-medium uppercase tracking-wider text-[#1e3932]/80">
+            {formattedDate && (
+              <div className="flex items-center gap-2 bg-white border border-[#1e3932]/15 px-4 py-2 rounded-full shadow-sm">
+                <Calendar className="w-3.5 h-3.5 text-[#1e3932]" />
+                <span>{formattedDate}</span>
+              </div>
+            )}
+            {formattedTime && (
+              <div className="flex items-center gap-2 bg-white border border-[#1e3932]/15 px-4 py-2 rounded-full shadow-sm">
+                <Clock className="w-3.5 h-3.5 text-[#1e3932]" />
+                <span>{formattedTime}</span>
+              </div>
+            )}
+            {event.location && (
+              <div className="flex items-center gap-2 bg-white border border-[#1e3932]/15 px-4 py-2 rounded-full shadow-sm max-w-xs truncate">
+                <MapPin className="w-3.5 h-3.5 text-[#1e3932]" />
+                <span className="truncate">{event.location}</span>
               </div>
             )}
           </div>
         </div>
 
-        {/* Colonne Droite : Informations, Détails & Carte d'Achat */}
-        <div className="lg:col-span-6 space-y-8">
+        {/* Corps de page asymétrique : Visuel puissant à gauche, Détails & CTA à droite */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
           
-          {/* Titre et badges contextuels */}
-          <div className="space-y-4">
-            <div className="inline-flex items-center gap-2 text-xs uppercase tracking-widest border border-[#1e3932]/15 px-4 py-2 bg-white text-[#1e3932] rounded-full font-medium shadow-sm">
-              <Calendar className="w-3.5 h-3.5 text-[#1e3932]" />
-              {formattedDate}
-            </div>
-            <h1 className="text-4xl sm:text-5xl font-bold tracking-tight uppercase leading-[1.1] text-[#1e3932]">
-              {event.title}
-            </h1>
-          </div>
-
-          {/* Encadré des informations clés (Date, Heure, Lieu) */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-white border border-[#1e3932]/15 p-6 rounded-2xl shadow-sm">
-            <div className="flex items-start gap-3">
-              <div className="p-2 bg-[#f8faf9] border border-[#1e3932]/10 rounded-xl text-[#1e3932]">
-                <Clock className="w-4 h-4" />
-              </div>
-              <div>
-                <span className="block text-[10px] uppercase tracking-wider text-[#1e3932]/50 font-medium">Horaire</span>
-                <span className="text-xs font-semibold text-[#1e3932]">{formattedTime || 'Heure non définie'}</span>
-              </div>
-            </div>
-
-            <div className="flex items-start gap-3">
-              <div className="p-2 bg-[#f8faf9] border border-[#1e3932]/10 rounded-xl text-[#1e3932]">
-                <MapPin className="w-4 h-4" />
-              </div>
-              <div>
-                <span className="block text-[10px] uppercase tracking-wider text-[#1e3932]/50 font-medium">Lieu</span>
-                <span className="text-xs font-semibold text-[#1e3932] truncate block max-w-[200px]">{event.location || 'Communiqué après validation'}</span>
-              </div>
+          {/* Visuel / Poster */}
+          <div className="lg:col-span-5">
+            <div className="relative w-full aspect-[4/5] border border-[#1e3932]/15 bg-white shadow-xl overflow-hidden rounded-3xl p-3">
+              {event.image_url ? (
+                <img src={event.image_url} alt={event.title} className="w-full h-full object-cover rounded-2xl" />
+              ) : (
+                <div className="w-full h-full p-8 flex flex-col justify-between bg-[#f8faf9] text-[#1e3932] rounded-2xl">
+                  <span className="text-xs uppercase tracking-widest text-[#1e3932]/60">TYKS POSTER</span>
+                  <span className="text-4xl font-bold tracking-tighter text-[#1e3932]">LIVE</span>
+                </div>
+              )}
             </div>
           </div>
 
-          {/* Description de l'événement si disponible */}
-          {event.description && (
-            <div className="bg-white border border-[#1e3932]/15 p-6 rounded-2xl shadow-sm space-y-2">
-              <h3 className="text-xs font-bold uppercase tracking-widest text-[#1e3932]/50">À propos de l&apos;événement</h3>
-              <p className="text-xs leading-relaxed text-[#1e3932]/80 whitespace-pre-line font-light">
-                {event.description}
-              </p>
-            </div>
-          )}
+          {/* Détails et Action */}
+          <div className="lg:col-span-7 space-y-8">
+            {event.description && (
+              <div className="bg-white border border-[#1e3932]/15 p-8 rounded-3xl shadow-sm space-y-3">
+                <h3 className="text-xs font-bold uppercase tracking-widest text-[#1e3932]/40">À propos de l&apos;événement</h3>
+                <p className="text-xs leading-relaxed text-[#1e3932]/80 whitespace-pre-line font-light">
+                  {event.description}
+                </p>
+              </div>
+            )}
 
-          {/* Bloc d'Action / Réservation fixe ou mis en valeur */}
-          <div className="bg-white border border-[#1e3932]/15 p-6 rounded-2xl shadow-lg flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div>
-              <span className="text-[10px] uppercase tracking-wider text-[#1e3932]/50 font-medium block">Tarif par place</span>
-              <span className="text-2xl font-bold tracking-tight text-[#1e3932]">
-                {basePrice === 0 ? 'Gratuit' : `${basePrice.toFixed(2)} €`}
-              </span>
-            </div>
+            {/* Bloc d'achat épuré */}
+            <div className="bg-white border border-[#1e3932]/15 p-8 rounded-3xl shadow-lg flex flex-col sm:flex-row items-center justify-between gap-6">
+              <div>
+                <span className="text-[10px] uppercase tracking-wider text-[#1e3932]/50 font-medium block">Tarif unique</span>
+                <span className="text-3xl font-bold tracking-tight text-[#1e3932]">
+                  {basePrice === 0 ? 'Gratuit' : `${basePrice.toFixed(2)} €`}
+                </span>
+              </div>
 
-            <button
-              onClick={() => {
-                setClientSecret(null);
-                setIsSuccess(false);
-                setIsCheckoutOpen(true);
-              }}
-              className="w-full sm:w-auto px-8 py-4 border border-[#1e3932]/15 bg-[#1e3932] text-white text-xs uppercase tracking-widest hover:bg-[#152a25] transition-all flex items-center justify-center gap-3 cursor-pointer shadow-md font-medium rounded-xl"
-            >
-              <Ticket className="w-4 h-4" />
-              <span>{basePrice === 0 ? 'Réserver ma place' : 'Réserver mes places'}</span>
-              <ArrowUpRight className="w-4 h-4" />
-            </button>
+              <button
+                onClick={() => {
+                  setClientSecret(null);
+                  setIsSuccess(false);
+                  setIsCheckoutOpen(true);
+                }}
+                className="w-full sm:w-auto px-8 py-4 border border-[#1e3932]/15 bg-[#1e3932] text-white text-xs uppercase tracking-widest hover:bg-[#152a25] transition-all flex items-center justify-center gap-3 cursor-pointer shadow-md font-medium rounded-2xl"
+              >
+                <Ticket className="w-4 h-4" />
+                <span>{basePrice === 0 ? 'Réserver ma place' : 'Réserver mes places'}</span>
+                <ArrowUpRight className="w-4 h-4" />
+              </button>
+            </div>
           </div>
 
         </div>
 
-      </section>
-
-      {/* Footer minimaliste */}
-      <footer className="w-full max-w-7xl mx-auto px-6 sm:px-12 py-6 border-t border-[#1e3932]/10 text-center text-xs text-[#1e3932]/50">
-        © {new Date().getFullYear()} TYKS Live. Tous droits réservés.
-      </footer>
+      </div>
 
       {/* ─── MODALES INTÉGRÉES ─── */}
       {mounted && createPortal(
         <>
           {showAuthModal && (
             <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200">
-              <div className="bg-white border border-[#1e3932]/15 p-8 max-w-md w-full space-y-6 relative shadow-2xl text-[#1e3932] rounded-2xl">
+              <div className="bg-white border border-[#1e3932]/15 p-8 max-w-md w-full space-y-6 relative shadow-2xl text-[#1e3932] rounded-3xl">
                 <button 
                   onClick={() => setShowAuthModal(false)}
                   className="absolute top-5 right-5 w-8 h-8 border border-[#1e3932]/15 bg-[#f8faf9] text-[#1e3932]/60 flex items-center justify-center hover:bg-[#1e3932]/10 hover:text-[#1e3932] transition-colors cursor-pointer rounded-xl"
@@ -441,7 +423,7 @@ export default function PublicEventPage() {
 
           {isCheckoutOpen && (
             <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200">
-              <div className="relative w-full max-w-lg bg-white border border-[#1e3932]/15 p-8 space-y-6 shadow-2xl max-h-[90vh] overflow-y-auto text-[#1e3932] rounded-2xl">
+              <div className="relative w-full max-w-lg bg-white border border-[#1e3932]/15 p-8 space-y-6 shadow-2xl max-h-[90vh] overflow-y-auto text-[#1e3932] rounded-3xl">
                 <button
                   onClick={() => {
                     setIsCheckoutOpen(false);
@@ -511,7 +493,6 @@ export default function PublicEventPage() {
                       </div>
                     </div>
 
-                    {/* ─── VENTILATION TRANSPARENTE DU PRIX ─── */}
                     {basePrice > 0 && (
                       <div className="border border-[#1e3932]/15 p-4 bg-[#f8faf9] space-y-2 rounded-xl">
                         <div className="flex items-center gap-2 text-xs font-medium uppercase text-[#1e3932]">
