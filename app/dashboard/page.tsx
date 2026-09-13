@@ -148,7 +148,7 @@ export default function OrganizerDashboard() {
 
   if (!ready) {
     return (
-      <div className="min-h-screen bg-white text-[#1e3932]/60 font-mono text-xs uppercase tracking-widest flex items-center justify-center">
+      <div className="min-h-screen bg-white text-[#1e3932]/60 font-mono text-xs flex items-center justify-center">
         Chargement...
       </div>
     );
@@ -158,27 +158,26 @@ export default function OrganizerDashboard() {
     return (
       <div className="min-h-screen bg-white text-[#1e3932] flex flex-col lg:flex-row w-full overflow-hidden selection:bg-[#1e3932] selection:text-white font-sans">
         
-        {/* Colonne gauche : Branding & Connexion */}
         <div className="w-full lg:w-1/2 flex flex-col justify-between p-8 lg:p-16 z-10 bg-white border-b lg:border-b-0 lg:border-r border-[#1e3932]/10">
           <div className="flex items-center gap-3">
             <span className="h-9 w-9 rounded-lg bg-[#1e3932] text-white flex items-center justify-center font-mono font-bold text-xs">T</span>
-            <span className="font-mono text-xs font-bold uppercase tracking-widest text-[#1e3932]">TYKS Pro</span>
+            <span className="font-mono text-xs font-bold text-[#1e3932]">TYKS Pro</span>
           </div>
 
           <div className="space-y-6 my-auto py-12">
-            <span className="inline-block font-mono text-[11px] uppercase tracking-widest bg-[#1e3932]/10 border border-[#1e3932]/20 text-[#1e3932] px-3 py-1.5 rounded-full">
-              TYKS PRO · ESPACE ORGANISATEUR
+            <span className="inline-block font-mono text-[11px] bg-[#1e3932]/10 border border-[#1e3932]/20 text-[#1e3932] px-3 py-1.5 rounded-full">
+              TYKS Pro · Espace organisateur
             </span>
             <h1 className="text-4xl lg:text-6xl font-serif font-normal tracking-tight text-[#1e3932] leading-[1.05]">
               Reprenez le contrôle de votre billetterie et de vos marges.
             </h1>
             <p className="font-mono text-xs leading-relaxed text-[#1e3932]/70 max-w-md">
-              Fins de commissions abusives et de données captives. Tyks Pro vous offre une plateforme sur-mesure, des frais réduits et l&apos;accès direct à votre communauté.
+              Fins de commissions abusives et de données captives. Tyks Pro vous offre une plateforme sur-mesure, des frais réduits et l'accès direct à votre communauté.
             </p>
             <div>
               <button
                 onClick={() => setIsAuthModalOpen(true)}
-                className="w-full sm:w-auto px-8 py-4 bg-[#1e3932] text-white font-mono text-xs uppercase tracking-widest hover:bg-[#152a25] transition-colors flex items-center justify-center gap-3 cursor-pointer font-bold rounded-xl shadow-lg"
+                className="w-full sm:w-auto px-8 py-4 bg-[#1e3932] text-white font-mono text-xs hover:bg-[#152a25] transition-colors flex items-center justify-center gap-3 cursor-pointer font-bold rounded-xl shadow-lg"
               >
                 <span>Accéder à mon espace Pro</span>
                 <ArrowUpRight className="w-4 h-4" />
@@ -186,12 +185,11 @@ export default function OrganizerDashboard() {
             </div>
           </div>
 
-          <div className="font-mono text-xs uppercase tracking-wider text-[#1e3932]/40">
+          <div className="font-mono text-xs text-[#1e3932]/40">
             © TYKS Inc.
           </div>
         </div>
 
-        {/* Colonne droite : Aperçu élégant du Dashboard en arrière-plan */}
         <div className="hidden lg:flex w-1/2 bg-[#f8faf9] p-12 relative overflow-hidden items-center justify-center select-none pointer-events-none">
           <div className="w-full max-w-lg bg-white border border-[#1e3932]/15 rounded-3xl p-6 space-y-6 shadow-xl">
             <div className="flex items-center justify-between border-b border-[#1e3932]/10 pb-4">
@@ -200,7 +198,7 @@ export default function OrganizerDashboard() {
                 <span className="h-3 w-3 rounded-full bg-[#1e3932]/20"></span>
                 <span className="h-3 w-3 rounded-full bg-[#1e3932]/20"></span>
               </div>
-              <span className="text-xs font-mono uppercase tracking-wider text-[#1e3932]/50">dashboard.tyks.app</span>
+              <span className="text-xs font-mono text-[#1e3932]/50">dashboard.tyks.app</span>
             </div>
 
             <div className="grid grid-cols-3 gap-3 font-mono">
@@ -229,7 +227,6 @@ export default function OrganizerDashboard() {
           </div>
         </div>
 
-        {/* Modale d'authentification personnalisée */}
         <CustomAuthModal 
           isOpen={isAuthModalOpen} 
           onClose={() => setIsAuthModalOpen(false)} 
@@ -241,7 +238,7 @@ export default function OrganizerDashboard() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-white text-[#1e3932]/60 font-mono text-xs uppercase tracking-widest flex items-center justify-center">
+      <div className="min-h-screen bg-white text-[#1e3932]/60 font-mono text-xs flex items-center justify-center">
         Chargement...
       </div>
     );
@@ -264,26 +261,26 @@ export default function OrganizerDashboard() {
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 border-b border-[#1e3932]/10">
         <div className="space-y-2">
           <div className="flex items-center gap-2">
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-[#1e3932]/20 text-xs font-mono bg-[#1e3932]/10 font-bold uppercase tracking-wider text-[#1e3932]">
-              <ShieldCheck className="w-3.5 h-3.5 text-[#1e3932]" /> Accès Illimité (Sans Abonnement)
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-[#1e3932]/20 text-xs font-mono bg-[#1e3932]/10 font-bold text-[#1e3932]">
+              <ShieldCheck className="w-3.5 h-3.5 text-[#1e3932]" /> Accès illimité (sans abonnement)
             </span>
           </div>
-          <h1 className="text-3xl lg:text-5xl font-serif tracking-tight uppercase leading-none text-[#1e3932]">Sales Overview</h1>
-          <p className="text-xs font-mono uppercase tracking-wider text-[#1e3932]/60">Analysez et optimisez vos ventes en temps réel</p>
+          <h1 className="text-3xl lg:text-5xl font-serif tracking-tight leading-none text-[#1e3932]">Aperçu des ventes</h1>
+          <p className="text-xs font-mono text-[#1e3932]/60">Analysez et optimisez vos ventes en temps réel</p>
         </div>
 
         <div className="flex items-center gap-3">
           <button
             onClick={() => loadDashboard(user.id, true)}
             disabled={refreshing}
-            className="h-12 px-5 rounded-xl border border-[#1e3932]/15 bg-white hover:bg-[#f8faf9] text-[#1e3932] font-mono text-xs uppercase tracking-widest transition-all flex items-center gap-2 disabled:opacity-50 cursor-pointer font-bold shadow-xs"
+            className="h-12 px-5 rounded-xl border border-[#1e3932]/15 bg-white hover:bg-[#f8faf9] text-[#1e3932] font-mono text-xs transition-all flex items-center gap-2 disabled:opacity-50 cursor-pointer font-bold shadow-xs"
           >
             <RefreshCw className={`h-3.5 w-3.5 ${refreshing ? 'animate-spin' : ''}`} />
             <span className="hidden sm:inline">Actualiser</span>
           </button>
           <Link
             href="/new"
-            className="h-12 px-6 rounded-xl bg-[#1e3932] text-white hover:bg-[#152a25] font-mono text-xs uppercase tracking-widest transition-all flex items-center justify-center gap-2 cursor-pointer font-bold shadow-lg"
+            className="h-12 px-6 rounded-xl bg-[#1e3932] text-white hover:bg-[#152a25] font-mono text-xs transition-all flex items-center justify-center gap-2 cursor-pointer font-bold shadow-lg"
           >
             <Plus className="h-4 w-4" />
             <span>Créer un événement illimité</span>
@@ -291,54 +288,52 @@ export default function OrganizerDashboard() {
         </div>
       </div>
 
-      {/* Statistiques globales */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 font-mono">
         <div className="p-6 rounded-2xl border border-[#1e3932]/10 bg-[#f8faf9] space-y-3 shadow-xs">
           <div className="flex items-center justify-between">
-            <p className="text-xs uppercase tracking-wider text-[#1e3932]/60 font-bold">Chiffre d&apos;affaires</p>
+            <p className="text-xs text-[#1e3932]/60 font-bold">Chiffre d&apos;affaires</p>
             <Euro className="w-4 h-4 text-[#1e3932]" />
           </div>
           <p className="text-3xl font-bold tracking-tight text-[#1e3932]">
             {stats.totalRevenue.toLocaleString('fr-FR')} €
           </p>
-          <p className="text-[11px] text-[#1e3932]/50 uppercase">Volume brut encaissé</p>
+          <p className="text-[11px] text-[#1e3932]/50">Volume brut encaissé</p>
         </div>
 
         <div className="p-6 rounded-2xl border border-[#1e3932]/10 bg-[#f8faf9] space-y-3 shadow-xs">
           <div className="flex items-center justify-between">
-            <p className="text-xs uppercase tracking-wider text-[#1e3932]/60 font-bold">Billets vendus</p>
+            <p className="text-xs text-[#1e3932]/60 font-bold">Billets vendus</p>
             <Ticket className="w-4 h-4 text-[#1e3932]" />
           </div>
           <p className="text-3xl font-bold tracking-tight text-[#1e3932]">
             {stats.totalTicketsSold}
           </p>
-          <p className="text-[11px] text-[#1e3932]/50 uppercase">Taux de remplissage : {fillRate}%</p>
+          <p className="text-[11px] text-[#1e3932]/50">Taux de remplissage : {fillRate}%</p>
         </div>
 
         <div className="p-6 rounded-2xl border border-[#1e3932]/10 bg-[#f8faf9] space-y-3 shadow-xs">
           <div className="flex items-center justify-between">
-            <p className="text-xs uppercase tracking-wider text-[#1e3932]/60 font-bold">Événements publiés</p>
+            <p className="text-xs text-[#1e3932]/60 font-bold">Événements publiés</p>
             <Calendar className="w-4 h-4 text-[#1e3932]" />
           </div>
           <p className="text-3xl font-bold tracking-tight text-[#1e3932]">
             {stats.publishedEventsCount} <span className="text-xs font-normal text-[#1e3932]/50">({stats.totalEventsCount} total)</span>
           </p>
-          <p className="text-[11px] text-[#1e3932]/50 uppercase">Création illimitée</p>
+          <p className="text-[11px] text-[#1e3932]/50">Création illimitée</p>
         </div>
 
         <div className="p-6 rounded-2xl border border-[#1e3932]/10 bg-[#f8faf9] space-y-3 shadow-xs">
           <div className="flex items-center justify-between">
-            <p className="text-xs uppercase tracking-wider text-[#1e3932]/60 font-bold">Modèle tarifaire</p>
+            <p className="text-xs text-[#1e3932]/60 font-bold">Modèle tarifaire</p>
             <span className="h-3 w-3 rounded-full bg-[#1e3932] animate-pulse" />
           </div>
-          <p className="text-base font-bold tracking-tight pt-1 uppercase text-[#1e3932]">
+          <p className="text-base font-bold tracking-tight pt-1 text-[#1e3932]">
             Commission sur ventes
           </p>
-          <p className="text-[11px] text-[#1e3932]/50 uppercase">0 € d&apos;abonnement fixe</p>
+          <p className="text-[11px] text-[#1e3932]/50">0 € d&apos;abonnement fixe</p>
         </div>
       </div>
 
-      {/* Barre de recherche et filtres */}
       <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4 pt-4">
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 flex-1">
           <div className="relative flex-1 max-w-md">
@@ -348,7 +343,7 @@ export default function OrganizerDashboard() {
               placeholder="Rechercher par titre ou lieu..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full h-12 rounded-xl border border-[#1e3932]/15 bg-white pl-11 pr-4 font-mono text-xs uppercase text-[#1e3932] placeholder:text-[#1e3932]/40 focus:outline-none focus:border-[#1e3932] shadow-xs"
+              className="w-full h-12 rounded-xl border border-[#1e3932]/15 bg-white pl-11 pr-4 font-mono text-xs text-[#1e3932] placeholder:text-[#1e3932]/40 focus:outline-none focus:border-[#1e3932] shadow-xs"
             />
           </div>
           <div className="flex items-center gap-2 overflow-x-auto py-1">
@@ -356,7 +351,7 @@ export default function OrganizerDashboard() {
               <button
                 key={status}
                 onClick={() => setStatusFilter(status)}
-                className={`h-12 px-4 rounded-xl border font-mono text-xs uppercase tracking-wider transition-all whitespace-nowrap cursor-pointer font-bold shadow-xs ${
+                className={`h-12 px-4 rounded-xl border font-mono text-xs transition-all whitespace-nowrap cursor-pointer font-bold shadow-xs ${
                   statusFilter === status 
                     ? 'bg-[#1e3932] text-white border-[#1e3932]' 
                     : 'bg-white border-[#1e3932]/15 text-[#1e3932]/80 hover:bg-[#f8faf9]'
@@ -367,17 +362,16 @@ export default function OrganizerDashboard() {
             ))}
           </div>
         </div>
-        <span className="font-mono text-xs uppercase tracking-wider text-[#1e3932]/60 text-right">
+        <span className="font-mono text-xs text-[#1e3932]/60 text-right">
           {filteredEvents.length} événement(s)
         </span>
       </div>
 
-      {/* Liste des événements */}
       <div className="space-y-6">
         {filteredEvents.length === 0 ? (
           <div className="rounded-2xl border border-[#1e3932]/10 bg-[#f8faf9] p-16 text-center space-y-4 shadow-xs">
             <Calendar className="mx-auto h-8 w-8 text-[#1e3932]" />
-            <p className="font-mono text-xs uppercase tracking-wider text-[#1e3932]/60">
+            <p className="font-mono text-xs text-[#1e3932]/60">
               {events.length === 0 
                 ? "Vous n'avez pas encore créé d'événement. Lancez-vous, c'est illimité !" 
                 : "Aucun événement ne correspond à vos filtres."}
@@ -386,7 +380,7 @@ export default function OrganizerDashboard() {
               <div className="pt-2">
                 <Link
                   href="/new"
-                  className="inline-flex items-center gap-2 h-12 px-6 rounded-xl bg-[#1e3932] text-white font-mono text-xs uppercase tracking-widest font-bold hover:bg-[#152a25] transition-all shadow-md"
+                  className="inline-flex items-center gap-2 h-12 px-6 rounded-xl bg-[#1e3932] text-white font-mono text-xs font-bold hover:bg-[#152a25] transition-all shadow-md"
                 >
                   Créer mon premier événement
                 </Link>
@@ -404,7 +398,7 @@ export default function OrganizerDashboard() {
                 >
                   <div className="space-y-3 p-6 flex-1">
                     <div className="flex items-center justify-between font-mono">
-                      <span className="text-[10px] uppercase tracking-wider text-[#1e3932]/50 font-bold">
+                      <span className="text-[11px] text-[#1e3932]/50 font-bold">
                         {evt.starts_at ? new Date(evt.starts_at).toLocaleDateString('fr-FR', {
                           day: '2-digit',
                           month: 'short',
@@ -413,7 +407,7 @@ export default function OrganizerDashboard() {
                           minute: '2-digit',
                         }) : 'Date non définie'}
                       </span>
-                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full border text-[10px] font-bold uppercase tracking-wider ${
+                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full border text-[10px] font-bold ${
                         evt.status === 'published' 
                           ? 'bg-[#1e3932]/10 text-[#1e3932] border-[#1e3932]/20' 
                           : evt.status === 'cancelled'
@@ -424,7 +418,7 @@ export default function OrganizerDashboard() {
                       </span>
                     </div>
 
-                    <h3 className="text-xl font-serif font-medium uppercase tracking-tight leading-snug text-[#1e3932]">
+                    <h3 className="text-xl font-serif font-medium leading-snug text-[#1e3932]">
                       {evt.title}
                     </h3>
 
@@ -443,7 +437,7 @@ export default function OrganizerDashboard() {
                   </div>
 
                   <div className="flex items-center justify-between border-t border-[#1e3932]/10 px-6 py-4 bg-white">
-                    <span className="font-mono text-xs font-bold uppercase tracking-wider text-[#1e3932]">
+                    <span className="font-mono text-xs font-bold text-[#1e3932]">
                       {eventPrice > 0 ? `${eventPrice.toLocaleString('fr-FR')} €` : 'Gratuit'}
                     </span>
                     <div className="flex items-center gap-2">
