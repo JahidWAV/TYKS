@@ -212,7 +212,7 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
                       </div>
                     ) : (
                       <div className="px-4 py-6 text-center">
-                        <p className="text-[10px] font-medium uppercase tracking-wider text-[#1e3932]/50">Aucun résultat pour &quot;{searchQuery}&quot;</p>
+                        <p className="text-[10px] font-medium tracking-wide text-[#1e3932]/50">Aucun résultat pour &quot;{searchQuery}&quot;</p>
                       </div>
                     )}
                   </div>
@@ -244,7 +244,7 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
               <div className="relative w-full" ref={userMenuRef}>
                 <button
                   onClick={() => setUserMenuOpen(!userMenuOpen)}
-                  className="inline-flex h-11 w-full items-center justify-between border border-[#1e3932]/15 bg-[#f8faf9] px-3 text-xs font-medium uppercase tracking-wider transition-all hover:border-[#1e3932]/40 cursor-pointer text-[#1e3932] rounded-xl shadow-sm"
+                  className="inline-flex h-11 w-full items-center justify-between border border-[#1e3932]/15 bg-[#f8faf9] px-3 text-xs font-medium tracking-wide transition-all hover:border-[#1e3932]/40 cursor-pointer text-[#1e3932] rounded-xl shadow-sm"
                 >
                   <div className="flex items-center gap-2 min-w-0">
                     <UserIcon className="w-3.5 h-3.5 shrink-0 text-[#1e3932]" />
@@ -260,7 +260,7 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
                     <Link
                       href="/settings"
                       onClick={() => setUserMenuOpen(false)}
-                      className="w-full text-left px-4 py-2.5 text-xs uppercase tracking-wider flex items-center gap-2 transition-colors hover:bg-[#f8faf9] font-medium"
+                      className="w-full text-left px-4 py-2.5 text-xs tracking-wide flex items-center gap-2 transition-colors hover:bg-[#f8faf9] font-medium"
                     >
                       <Settings className="w-3.5 h-3.5 text-[#1e3932]" />
                       Paramètres
@@ -268,7 +268,7 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
 
                     <button
                       onClick={handleLogout}
-                      className="w-full text-left px-4 py-2.5 text-xs uppercase tracking-wider flex items-center gap-2 transition-colors hover:bg-red-50 font-medium text-red-600"
+                      className="w-full text-left px-4 py-2.5 text-xs tracking-wide flex items-center gap-2 transition-colors hover:bg-red-50 font-medium text-red-600"
                     >
                       <LogOut className="w-3.5 h-3.5" />
                       Déconnexion
@@ -279,7 +279,7 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
             ) : (
               <button
                 onClick={() => setIsAuthOpen(true)}
-                className="inline-flex h-11 w-full px-4 border border-[#1e3932]/15 bg-[#1e3932] hover:bg-[#152a25] text-white text-xs uppercase tracking-widest transition-all items-center justify-center font-medium cursor-pointer rounded-xl shadow-md"
+                className="inline-flex h-11 w-full px-4 border border-[#1e3932]/15 bg-[#1e3932] hover:bg-[#152a25] text-white text-xs tracking-wider transition-all items-center justify-center font-medium cursor-pointer rounded-xl shadow-md"
               >
                 <span className="truncate">{isPro ? "Connexion Pro" : "Connexion"}</span>
               </button>
@@ -310,7 +310,7 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     placeholder="Rechercher un événement..."
-                    className="w-full h-11 border border-[#1e3932]/15 bg-[#f8faf9] pl-10 pr-4 text-xs uppercase placeholder:text-[#1e3932]/40 focus:outline-none focus:border-[#1e3932] text-[#1e3932] rounded-xl"
+                    className="w-full h-11 border border-[#1e3932]/15 bg-[#f8faf9] pl-10 pr-4 text-xs placeholder:text-[#1e3932]/40 focus:outline-none focus:border-[#1e3932] text-[#1e3932] rounded-xl"
                   />
                 </div>
                 {searchQuery.trim().length > 0 && results.length > 0 && (
@@ -323,7 +323,7 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
                           setSearchQuery("");
                           router.push(`/events/${evt.slug || evt.id}`);
                         }}
-                        className="p-3 text-xs uppercase flex justify-between items-center cursor-pointer hover:bg-white text-[#1e3932]"
+                        className="p-3 text-xs flex justify-between items-center cursor-pointer hover:bg-white text-[#1e3932]"
                       >
                         <span className="font-medium truncate">{evt.title}</span>
                         <span className="font-medium text-[#1e3932]">{evt.price ? `${evt.price} €` : "Gratuit"}</span>
@@ -340,7 +340,7 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
               </div>
             ) : user ? (
               <div className="flex flex-col gap-3 pt-2">
-                <div className="flex items-center justify-between border border-[#1e3932]/15 bg-[#f8faf9] px-4 py-3 text-xs font-medium uppercase text-[#1e3932] rounded-xl">
+                <div className="flex items-center justify-between border border-[#1e3932]/15 bg-[#f8faf9] px-4 py-3 text-xs font-medium text-[#1e3932] rounded-xl">
                   <div className="flex items-center gap-2 truncate">
                     <UserIcon className="w-4 h-4 shrink-0 text-[#1e3932]" />
                     <span className="truncate">{firstName || user.email}</span>
@@ -349,14 +349,14 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
                 <Link
                   href="/settings"
                   onClick={() => setMobileOpen(false)}
-                  className="inline-flex items-center justify-center gap-2 border border-[#1e3932]/15 bg-[#f8faf9] px-4 py-3 text-xs font-medium uppercase tracking-wider hover:bg-white transition-colors rounded-xl"
+                  className="inline-flex items-center justify-center gap-2 border border-[#1e3932]/15 bg-[#f8faf9] px-4 py-3 text-xs font-medium tracking-wide hover:bg-white transition-colors rounded-xl"
                 >
                   <Settings className="h-4 w-4 text-[#1e3932]" />
                   Paramètres
                 </Link>
                 <button
                   onClick={handleLogout}
-                  className="inline-flex items-center justify-center gap-2 border border-[#1e3932]/15 bg-[#f8faf9] text-red-600 px-4 py-3 text-xs font-medium uppercase tracking-wider hover:bg-red-50 transition-colors rounded-xl"
+                  className="inline-flex items-center justify-center gap-2 border border-[#1e3932]/15 bg-[#f8faf9] text-red-600 px-4 py-3 text-xs font-medium tracking-wide hover:bg-red-50 transition-colors rounded-xl"
                 >
                   <LogOut className="h-4 w-4" />
                   Déconnexion
@@ -368,7 +368,7 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
                   setMobileOpen(false);
                   setIsAuthOpen(true);
                 }}
-                className="w-full h-11 border border-[#1e3932]/15 bg-[#1e3932] text-white text-xs uppercase tracking-widest font-medium rounded-xl shadow-md"
+                className="w-full h-11 border border-[#1e3932]/15 bg-[#1e3932] text-white text-xs tracking-wider font-medium rounded-xl shadow-md"
               >
                 {isPro ? "Connexion Pro" : "Connexion"}
               </button>
