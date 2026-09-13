@@ -245,10 +245,10 @@ export default function PublicEventPage() {
 
   return (
     <main className="w-full bg-[#f8faf9] text-[#1e3932] font-sans selection:bg-[#1e3932] selection:text-white py-12 px-6 sm:px-12">
-      <div className="w-full max-w-6xl mx-auto space-y-10">
+      <div className="w-full max-w-6xl mx-auto space-y-12">
         
-        {/* En-tête : Orga, Titre & Méta alignés */}
-        <div className="space-y-6 border-b border-[#1e3932]/10 pb-8">
+        {/* Titre et infos centrés en haut */}
+        <div className="flex flex-col items-center text-center space-y-6 border-b border-[#1e3932]/10 pb-10">
           {event.organizations?.name && (
             <div className="flex items-center gap-2 text-xs uppercase tracking-widest text-[#1e3932]/60 font-medium">
               <Building2 className="w-3.5 h-3.5" />
@@ -256,11 +256,11 @@ export default function PublicEventPage() {
             </div>
           )}
 
-          <h1 className="text-4xl sm:text-6xl font-bold tracking-tight uppercase leading-[1.05] text-[#1e3932]">
+          <h1 className="text-4xl sm:text-6xl font-bold tracking-tight uppercase leading-[1.05] text-[#1e3932] max-w-4xl">
             {event.title}
           </h1>
 
-          <div className="flex flex-wrap items-center gap-4 pt-1 text-xs font-medium uppercase tracking-wider text-[#1e3932]/80">
+          <div className="flex flex-wrap items-center justify-center gap-4 pt-1 text-xs font-medium uppercase tracking-wider text-[#1e3932]/80">
             {formattedDate && (
               <div className="flex items-center gap-2 bg-white border border-[#1e3932]/15 px-4 py-2 rounded-full shadow-sm">
                 <Calendar className="w-3.5 h-3.5 text-[#1e3932]" />
@@ -282,12 +282,12 @@ export default function PublicEventPage() {
           </div>
         </div>
 
-        {/* Disposition Côte à Côte : Affiche horizontale à gauche, Carte complète à droite */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        {/* Ligne complète : Affiche horizontale à gauche (65%) et Carte verticale à droite (35%) */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch w-full">
           
           {/* Affiche au format horizontal (bannière) à gauche */}
-          <div className="lg:col-span-6">
-            <div className="w-full aspect-[16/10] border border-[#1e3932]/15 bg-white shadow-xl overflow-hidden rounded-3xl p-3 sticky top-6">
+          <div className="lg:col-span-8 flex flex-col">
+            <div className="w-full h-full min-h-[400px] border border-[#1e3932]/15 bg-white shadow-xl overflow-hidden rounded-3xl p-3 flex">
               {event.image_url ? (
                 <img src={event.image_url} alt={event.title} className="w-full h-full object-cover rounded-2xl" />
               ) : (
@@ -299,22 +299,22 @@ export default function PublicEventPage() {
             </div>
           </div>
 
-          {/* Carte unique contenant description, tarifs et action à droite */}
-          <div className="lg:col-span-6">
-            <div className="bg-white border border-[#1e3932]/15 p-8 sm:p-10 rounded-3xl shadow-xl space-y-8 flex flex-col justify-between">
+          {/* Carte au format vertical à droite */}
+          <div className="lg:col-span-4 flex flex-col">
+            <div className="w-full h-full bg-white border border-[#1e3932]/15 p-6 sm:p-8 rounded-3xl shadow-xl flex flex-col justify-between space-y-6">
               
-              <div className="space-y-6">
+              <div className="space-y-4">
                 {event.description && (
-                  <div className="space-y-3">
-                    <h3 className="text-xs font-bold uppercase tracking-widest text-[#1e3932]/40">À propos de l&apos;événement</h3>
-                    <p className="text-xs sm:text-sm leading-relaxed text-[#1e3932]/80 whitespace-pre-line font-light">
+                  <div className="space-y-2">
+                    <h3 className="text-[10px] font-bold uppercase tracking-widest text-[#1e3932]/40">À propos de l&apos;événement</h3>
+                    <p className="text-xs leading-relaxed text-[#1e3932]/80 whitespace-pre-line font-light">
                       {event.description}
                     </p>
                   </div>
                 )}
               </div>
 
-              <div className="border-t border-[#1e3932]/10 pt-6 flex flex-col sm:flex-row items-center justify-between gap-6">
+              <div className="border-t border-[#1e3932]/10 pt-6 space-y-6">
                 <div>
                   <span className="text-[10px] uppercase tracking-wider text-[#1e3932]/50 font-medium block">Tarif unique</span>
                   <span className="text-3xl font-bold tracking-tight text-[#1e3932]">
@@ -328,7 +328,7 @@ export default function PublicEventPage() {
                     setIsSuccess(false);
                     setIsCheckoutOpen(true);
                   }}
-                  className="w-full sm:w-auto px-8 py-4 border border-[#1e3932]/15 bg-[#1e3932] text-white text-xs uppercase tracking-widest hover:bg-[#152a25] transition-all flex items-center justify-center gap-3 cursor-pointer shadow-md font-medium rounded-2xl"
+                  className="w-full py-4 border border-[#1e3932]/15 bg-[#1e3932] text-white text-xs uppercase tracking-widest hover:bg-[#152a25] transition-all flex items-center justify-center gap-3 cursor-pointer shadow-md font-medium rounded-2xl"
                 >
                   <Ticket className="w-4 h-4" />
                   <span>{basePrice === 0 ? 'Réserver ma place' : 'Réserver mes places'}</span>
