@@ -166,7 +166,7 @@ export default function OrganizerDashboard() {
           </div>
 
           <div className="space-y-6 my-auto py-12">
-            <span className="inline-block font-mono text-[11px] uppercase tracking-widest bg-neutral-900 border border-neutral-800 text-[#E5D4B4] px-3 py-1.5 rounded-full">
+            <span className="inline-block font-mono text-[11px] uppercase tracking-widest bg-[#14171f] border border-neutral-800 text-[#E5D4B4] px-3 py-1.5 rounded-full">
               TYKS PRO · ESPACE ORGANISATEUR
             </span>
             <h1 className="text-4xl lg:text-6xl font-bold tracking-tight text-white leading-[1.05]">
@@ -178,7 +178,7 @@ export default function OrganizerDashboard() {
             <div>
               <button
                 onClick={() => setIsAuthModalOpen(true)}
-                className="w-full sm:w-auto px-8 py-4 bg-[#E5D4B4] text-black font-mono text-xs uppercase tracking-widest hover:bg-[#d8c39e] transition-colors flex items-center justify-center gap-3 cursor-pointer font-bold rounded-full shadow-lg"
+                className="w-full sm:w-auto px-8 py-4 bg-[#E5D4B4] text-black font-mono text-xs uppercase tracking-widest hover:bg-[#d8c39e] transition-colors flex items-center justify-center gap-3 cursor-pointer font-bold rounded-xl shadow-lg"
               >
                 <span>Accéder à mon espace Pro</span>
                 <ArrowUpRight className="w-4 h-4" />
@@ -193,7 +193,7 @@ export default function OrganizerDashboard() {
 
         {/* Colonne droite : Aperçu élégant du Dashboard en arrière-plan */}
         <div className="hidden lg:flex w-1/2 bg-[#050608] p-12 relative overflow-hidden items-center justify-center select-none pointer-events-none">
-          <div className="w-full max-w-lg bg-[#0e1015] border border-neutral-800 rounded-2xl p-6 space-y-6 shadow-2xl">
+          <div className="w-full max-w-lg bg-[#14171f] border border-neutral-800 rounded-2xl p-6 space-y-6 shadow-2xl">
             <div className="flex items-center justify-between border-b border-neutral-800 pb-4">
               <div className="flex items-center gap-2">
                 <span className="h-3 w-3 rounded-full bg-neutral-700"></span>
@@ -204,21 +204,21 @@ export default function OrganizerDashboard() {
             </div>
 
             <div className="grid grid-cols-3 gap-3 font-mono">
-              <div className="bg-[#14171f] border border-neutral-800 rounded-xl p-4 space-y-2">
+              <div className="bg-[#101319] border border-neutral-800 rounded-xl p-4 space-y-2">
                 <div className="h-2 w-12 bg-neutral-800 rounded"></div>
                 <div className="h-6 w-16 bg-[#E5D4B4] rounded opacity-80"></div>
               </div>
-              <div className="bg-[#14171f] border border-neutral-800 rounded-xl p-4 space-y-2">
+              <div className="bg-[#101319] border border-neutral-800 rounded-xl p-4 space-y-2">
                 <div className="h-2 w-12 bg-neutral-800 rounded"></div>
                 <div className="h-6 w-12 bg-[#E5D4B4] rounded opacity-80"></div>
               </div>
-              <div className="bg-[#14171f] border border-neutral-800 rounded-xl p-4 space-y-2">
+              <div className="bg-[#101319] border border-neutral-800 rounded-xl p-4 space-y-2">
                 <div className="h-2 w-12 bg-neutral-800 rounded"></div>
                 <div className="h-6 w-10 bg-[#E5D4B4] rounded opacity-80"></div>
               </div>
             </div>
 
-            <div className="h-40 bg-[#14171f] border border-neutral-800 rounded-xl flex items-end p-4 gap-2">
+            <div className="h-40 bg-[#101319] border border-neutral-800 rounded-xl flex items-end p-4 gap-2">
               <div className="w-1/6 h-1/2 bg-neutral-700 rounded-t"></div>
               <div className="w-1/6 h-3/4 bg-[#E5D4B4] rounded-t"></div>
               <div className="w-1/6 h-2/3 bg-neutral-700 rounded-t"></div>
@@ -229,7 +229,6 @@ export default function OrganizerDashboard() {
           </div>
         </div>
 
-        {/* Modale d'authentification personnalisée */}
         <CustomAuthModal 
           isOpen={isAuthModalOpen} 
           onClose={() => setIsAuthModalOpen(false)} 
@@ -259,7 +258,7 @@ export default function OrganizerDashboard() {
     : 0;
 
   return (
-    <div className="w-full px-6 lg:px-12 py-10 space-y-8 font-sans text-white bg-[#0a0b0e] min-h-full">
+    <div className="w-full px-6 lg:px-12 py-10 space-y-8 font-sans text-white bg-[#0a0b0e] min-h-screen">
       
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 border-b border-neutral-800">
         <div className="space-y-2">
