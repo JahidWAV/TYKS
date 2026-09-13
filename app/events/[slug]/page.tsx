@@ -600,7 +600,7 @@ export default function PublicEventPage() {
             </div>
           )}
         </>,
-        document.box || document.body
+        document.body
       )}
     </main>
   );
