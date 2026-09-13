@@ -35,113 +35,115 @@ export default function PublicHome() {
   });
 
   return (
-    <main className="min-h-screen bg-[#0a0b0e] text-white font-sans selection:bg-[#E5D4B4] selection:text-black">
+    <main className="min-h-screen bg-[#121214] text-[#FDFBF7] selection:bg-[#D4AF37] selection:text-black">
       
       {/* ─── HERO SECTION ─── */}
-      <section className="max-w-7xl mx-auto px-6 lg:px-12 py-16 lg:py-24 border-b border-neutral-800 space-y-8">
+      <section className="max-w-7xl mx-auto px-6 lg:px-12 pt-24 pb-16 border-b border-white/10 space-y-10">
         <div className="max-w-3xl space-y-6">
-          <span className="inline-block font-mono text-xs uppercase tracking-widest bg-[#14171f] text-[#E5D4B4] border border-neutral-800 px-3 py-1.5 rounded-full font-bold">
-            BILLETTERIE OFFICIELLE & INDÉPENDANTE
-          </span>
-          <h1 className="text-5xl sm:text-7xl lg:text-8xl font-bold tracking-tighter uppercase leading-[0.95] text-white">
-            L&apos;art du spectacle, sans artifice.
+          <div className="inline-flex items-center gap-2 text-xs font-medium uppercase tracking-[0.25em] text-[#D4AF37]">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#D4AF37]"></span>
+            Billetterie Officielle & Indépendante
+          </div>
+          
+          <h1 className="text-4xl sm:text-6xl lg:text-7xl font-serif font-normal tracking-tight leading-[1.1] text-[#FDFBF7]">
+            L&apos;art du spectacle, <br />
+            <span className="italic font-light text-[#D4AF37]">sans artifice.</span>
           </h1>
-          <p className="font-mono text-xs sm:text-sm leading-relaxed text-neutral-400 max-w-xl">
-            Zéro frais cachés, revente officielle instantanée, et une sélection pointue de la scène live. Réservez vos places en toute simplicité.
+          
+          <p className="text-base sm:text-lg text-white/60 max-w-xl font-light leading-relaxed">
+            Zéro frais cachés, revente officielle instantanée et sélection pointue de la scène live. Réservez vos places en toute sérénité.
           </p>
         </div>
 
-        {/* Barre de recherche intégrée au Hero */}
-        <div className="pt-4 max-w-xl">
-          <div className="relative">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-neutral-400" />
+        {/* Barre de recherche élégante */}
+        <div className="max-w-xl pt-2">
+          <div className="relative flex items-center">
+            <Search className="absolute left-4 h-4 w-4 text-white/40" />
             <input
               type="text"
               placeholder="Rechercher un artiste, un lieu, un événement..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full h-14 border border-neutral-800 bg-[#14171f] pl-11 pr-4 font-mono text-xs uppercase placeholder:text-neutral-500 focus:outline-none focus:border-[#E5D4B4] rounded-2xl shadow-xl text-white"
+              className="w-full h-13 bg-[#18181b] border border-white/10 pl-11 pr-4 text-sm text-[#FDFBF7] placeholder:text-white/30 focus:outline-none focus:border-[#D4AF37] transition-all rounded-xl shadow-inner"
             />
           </div>
         </div>
       </section>
 
       {/* ─── LISTE DES ÉVÉNEMENTS ─── */}
-      <section className="max-w-7xl mx-auto px-6 lg:px-12 py-16 space-y-8">
-        <div className="flex items-center justify-between border-b border-neutral-800 pb-4 font-mono">
-          <h2 className="text-xs uppercase tracking-widest font-bold text-white">
+      <section className="max-w-7xl mx-auto px-6 lg:px-12 py-16 space-y-10">
+        <div className="flex items-center justify-between border-b border-white/10 pb-4">
+          <h2 className="text-xs font-semibold uppercase tracking-[0.2em] text-[#D4AF37]">
             Programmation à l&apos;affiche
           </h2>
-          <span className="text-xs uppercase tracking-wider text-neutral-500 font-bold">
-            {filteredEvents.length} événement(s)
+          <span className="text-xs uppercase tracking-wider text-white/40 font-medium">
+            {filteredEvents.length} événement{filteredEvents.length > 1 ? 's' : ''}
           </span>
         </div>
 
         {loading ? (
-          <div className="border border-neutral-800 bg-[#14171f] p-16 text-center font-mono text-xs uppercase tracking-widest text-neutral-400 rounded-2xl shadow-xl">
-            Chargement des ondes...
+          <div className="bg-[#18181b] border border-white/10 p-16 text-center text-sm text-white/50 rounded-2xl">
+            Chargement des expériences...
           </div>
         ) : filteredEvents.length === 0 ? (
-          <div className="border border-neutral-800 bg-[#14171f] p-16 text-center space-y-4 rounded-2xl shadow-xl">
-            <Calendar className="mx-auto h-8 w-8 text-neutral-500" />
-            <p className="font-mono text-xs uppercase tracking-wider text-neutral-400">
+          <div className="bg-[#18181b] border border-white/10 p-16 text-center space-y-3 rounded-2xl">
+            <Calendar className="mx-auto h-8 w-8 text-[#D4AF37]" />
+            <p className="text-sm text-white/60">
               Aucun événement ne correspond à votre recherche.
             </p>
           </div>
         ) : (
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
             {filteredEvents.map((evt: any) => {
               const eventPrice = Number(evt.price || evt.ticket_price || 0);
               const dateStr = evt.starts_at
                 ? new Date(evt.starts_at).toLocaleDateString('fr-FR', {
-                    day: '2-digit',
-                    month: 'short',
+                    day: 'numeric',
+                    month: 'long',
                     year: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit',
                   })
-                : 'Date non définie';
+                : 'Date à venir';
 
               return (
                 <article
                   key={evt.id}
-                  className="group flex flex-col border border-neutral-800 bg-[#14171f] rounded-2xl shadow-xl transition-all hover:border-neutral-700 overflow-hidden"
+                  className="group flex flex-col bg-[#18181b] border border-white/10 rounded-2xl overflow-hidden transition-all duration-300 hover:border-[#D4AF37]/50 hover:shadow-2xl hover:shadow-black/50"
                 >
-                  <div className="space-y-3 p-6 flex-1">
-                    <div className="flex items-center justify-between font-mono">
-                      <span className="text-[10px] uppercase tracking-wider text-neutral-400 font-bold">
+                  <div className="p-6 flex-1 space-y-4">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-medium text-[#D4AF37] tracking-wide">
                         {dateStr}
                       </span>
-                      <span className="inline-flex items-center px-3 py-1 border border-neutral-800 bg-[#101319] text-[#E5D4B4] text-[10px] font-bold uppercase tracking-wider rounded-full">
-                        {evt.organizations?.name || 'Live'}
+                      <span className="text-[11px] font-medium px-2.5 py-1 bg-white/5 border border-white/10 text-white/70 rounded-full">
+                        {evt.organizations?.name || 'Exclusivité'}
                       </span>
                     </div>
 
-                    <h3 className="text-xl font-bold uppercase tracking-tight leading-snug text-white">
+                    <h3 className="text-xl font-serif font-medium text-[#FDFBF7] tracking-tight group-hover:text-[#D4AF37] transition-colors">
                       {evt.title}
                     </h3>
 
                     {evt.description && (
-                      <p className="line-clamp-2 text-xs font-mono text-neutral-400 leading-relaxed">
+                      <p className="line-clamp-2 text-xs text-white/50 font-light leading-relaxed">
                         {evt.description}
                       </p>
                     )}
 
                     {evt.location && (
-                      <div className="flex items-center gap-2 font-mono text-xs text-neutral-400 pt-1">
-                        <MapPin className="h-3.5 w-3.5 shrink-0 text-[#E5D4B4]" />
+                      <div className="flex items-center gap-2 text-xs text-white/60 pt-2">
+                        <MapPin className="h-3.5 w-3.5 text-[#D4AF37] shrink-0" />
                         <span className="truncate">{evt.location}</span>
                       </div>
                     )}
                   </div>
 
-                  <div className="flex items-center justify-between border-t border-neutral-800 px-6 py-4 bg-[#101319] font-mono">
-                    <span className="text-xs font-bold uppercase tracking-wider text-[#E5D4B4]">
-                      {eventPrice > 0 ? `${eventPrice.toLocaleString('fr-FR')} €` : 'Gratuit'}
+                  <div className="flex items-center justify-between border-t border-white/10 px-6 py-4 bg-[#141416]">
+                    <span className="text-sm font-semibold tracking-wide text-[#FDFBF7]">
+                      {eventPrice > 0 ? `${eventPrice.toLocaleString('fr-FR')} €` : 'Entrée libre'}
                     </span>
                     <Link
                       href={`/events/${evt.slug || evt.id}`}
-                      className="h-10 px-5 border border-neutral-800 bg-[#E5D4B4] hover:bg-white text-black font-mono text-xs uppercase tracking-widest transition-all flex items-center gap-2 cursor-pointer font-bold rounded-xl shadow-lg"
+                      className="h-10 px-5 bg-[#D4AF37] hover:bg-[#c29e2f] text-black font-medium text-xs uppercase tracking-wider transition-all flex items-center gap-2 rounded-xl shadow-md cursor-pointer"
                     >
                       <span>Réserver</span>
                       <ArrowUpRight className="w-3.5 h-3.5" />
