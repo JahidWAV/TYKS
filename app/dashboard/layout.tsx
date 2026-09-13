@@ -101,7 +101,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     const meta = user?.user_metadata || {};
     const first = meta.first_name || meta.given_name;
     const last = meta.last_name || meta.family_name;
-    if (first && last) return `${first[0]${last[0]}`.toUpperCase();
+    if (first && last) return `${first[0]}${last[0]}`.toUpperCase(); // CORRIGÉ ICI
     const full = meta.full_name || meta.name;
     if (full) {
       const parts = full.trim().split(/\s+/);
