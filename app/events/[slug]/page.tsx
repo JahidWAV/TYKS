@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { notFound, useParams } from 'next/navigation';
 import { supabaseBrowser } from '@/lib/supabase-browser';
-import { ArrowLeft, ArrowUpRight, Ticket, Minus, Plus, Users, X, CheckCircle2, ShieldAlert, Loader2 } from 'lucide-react';
+import { ArrowUpRight, Ticket, Minus, Plus, Users, X, CheckCircle2, ShieldAlert, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements, PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js';
@@ -245,22 +245,8 @@ export default function PublicEventPage() {
   };
 
   return (
-    <main className="fixed inset-0 w-full h-[100dvh] bg-white text-[#1e3932] font-sans selection:bg-[#1e3932] selection:text-white flex flex-col justify-between p-6 sm:p-12 overflow-y-auto">
+    <main className="w-full min-h-screen bg-white text-[#1e3932] font-sans selection:bg-[#1e3932] selection:text-white flex flex-col justify-between p-6 sm:p-12">
       
-      {/* ─── NAVIGATION FLOTTANTE MINIMALISTE (PAS DE COMPOSANT EXTERNE) ─── */}
-      <div className="flex items-center justify-between w-full max-w-7xl mx-auto z-10">
-        <Link
-          href="/"
-          className="text-xs uppercase tracking-wider flex items-center gap-2 hover:opacity-75 transition-opacity bg-[#f8faf9] border border-[#1e3932]/15 text-[#1e3932] px-4 py-2.5 rounded-xl shadow-sm"
-        >
-          <ArrowLeft className="w-3.5 h-3.5" />
-          <span>Retour Index</span>
-        </Link>
-        <span className="text-xs uppercase tracking-widest font-medium bg-[#f8faf9] border border-[#1e3932]/15 text-[#1e3932] px-4 py-2.5 rounded-xl shadow-sm">
-          {event.organizations?.name || 'TYKS LIVE'}
-        </span>
-      </div>
-
       {/* ─── MISE EN PAGE CENTRÉE / PLEIN ÉCRAN TYPE FLYER ─── */}
       <section className="w-full max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 items-center my-auto py-8">
         
@@ -310,15 +296,6 @@ export default function PublicEventPage() {
         </div>
 
       </section>
-
-      {/* ─── BAS DE PAGE INTÉGRÉ (DISCRET) ─── */}
-      <div className="w-full max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between text-[11px] uppercase tracking-wider text-[#1e3932]/60 gap-2 z-10 pt-4 border-t border-[#1e3932]/15">
-        <div>TYKS Experience</div>
-        <div className="flex items-center gap-4">
-          <Link href="/legal" className="hover:text-[#1e3932] transition-colors">Mentions Légales</Link>
-          <Link href="/cgv" className="hover:text-[#1e3932] transition-colors">CGV</Link>
-        </div>
-      </div>
 
       {/* ─── MODALES INTÉGRÉES ─── */}
       {mounted && createPortal(
