@@ -245,9 +245,9 @@ export default function PublicEventPage() {
 
   return (
     <main className="w-full bg-[#f8faf9] text-[#1e3932] font-sans selection:bg-[#1e3932] selection:text-white py-12 px-6 sm:px-12">
-      <div className="w-full max-w-7xl mx-auto space-y-12">
+      <div className="w-full max-w-6xl mx-auto space-y-10">
         
-        {/* En-tête éditorial sobre (Organisation + Titre + Méta au même niveau) */}
+        {/* En-tête : Orga, Titre & Méta alignés */}
         <div className="space-y-6 border-b border-[#1e3932]/10 pb-8">
           {event.organizations?.name && (
             <div className="flex items-center gap-2 text-xs uppercase tracking-widest text-[#1e3932]/60 font-medium">
@@ -282,35 +282,37 @@ export default function PublicEventPage() {
           </div>
         </div>
 
-        {/* Disposition côte à côte : Affiche horizontale à gauche, Carte interactive à droite */}
+        {/* Disposition Côte à Côte : Affiche horizontale à gauche, Carte complète à droite */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           
-          {/* Colonne Gauche : Affiche au format horizontal */}
-          <div className="lg:col-span-6 sticky top-8">
-            <div className="w-full aspect-[16/10] border border-[#1e3932]/15 bg-white shadow-xl overflow-hidden rounded-3xl p-3 flex items-center justify-center">
+          {/* Affiche au format horizontal (bannière) à gauche */}
+          <div className="lg:col-span-6">
+            <div className="w-full aspect-[16/10] border border-[#1e3932]/15 bg-white shadow-xl overflow-hidden rounded-3xl p-3 sticky top-6">
               {event.image_url ? (
                 <img src={event.image_url} alt={event.title} className="w-full h-full object-cover rounded-2xl" />
               ) : (
                 <div className="w-full h-full p-8 flex flex-col justify-between bg-[#f8faf9] text-[#1e3932] rounded-2xl">
-                  <span className="text-xs uppercase tracking-widest text-[#1e3932]/60">TYKS BANNER</span>
+                  <span className="text-xs uppercase tracking-widest text-[#1e3932]/65">TYKS BANNER</span>
                   <span className="text-4xl font-bold tracking-tighter text-[#1e3932]">LIVE</span>
                 </div>
               )}
             </div>
           </div>
 
-          {/* Colonne Droite : Carte unifiée (Description + Tarifs + Bouton Checkout) */}
+          {/* Carte unique contenant description, tarifs et action à droite */}
           <div className="lg:col-span-6">
-            <div className="bg-white border border-[#1e3932]/15 p-8 sm:p-10 rounded-3xl shadow-xl space-y-8">
+            <div className="bg-white border border-[#1e3932]/15 p-8 sm:p-10 rounded-3xl shadow-xl space-y-8 flex flex-col justify-between">
               
-              {event.description && (
-                <div className="space-y-3">
-                  <h3 className="text-xs font-bold uppercase tracking-widest text-[#1e3932]/40">À propos de l&apos;événement</h3>
-                  <p className="text-xs sm:text-sm leading-relaxed text-[#1e3932]/80 whitespace-pre-line font-light">
-                    {event.description}
-                  </p>
-                </div>
-              )}
+              <div className="space-y-6">
+                {event.description && (
+                  <div className="space-y-3">
+                    <h3 className="text-xs font-bold uppercase tracking-widest text-[#1e3932]/40">À propos de l&apos;événement</h3>
+                    <p className="text-xs sm:text-sm leading-relaxed text-[#1e3932]/80 whitespace-pre-line font-light">
+                      {event.description}
+                    </p>
+                  </div>
+                )}
+              </div>
 
               <div className="border-t border-[#1e3932]/10 pt-6 flex flex-col sm:flex-row items-center justify-between gap-6">
                 <div>
