@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { notFound, useParams } from 'next/navigation';
 import { supabaseBrowser } from '@/lib/supabase-browser';
-import { ArrowUpRight, Ticket, Minus, Plus, Users, X, CheckCircle2, ShieldAlert, Loader2, Calendar, MapPin, Clock, Building2 } from 'lucide-react';
+import { ArrowUpRight, Ticket, Minus, Plus, Users, X, CheckCircle2, ShieldAlert, Loader2, Calendar, MapPin, Clock, Building2, Eye } from 'lucide-react';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements, PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js';
 
@@ -60,7 +60,7 @@ function CustomCheckoutForm({ slug, eventTitle, quantity, totalPrice, onSuccess 
       <PaymentElement options={{ layout: 'tabs' }} />
       
       {errorMessage && (
-        <div className="p-3 bg-[#f8faf9] text-red-600 text-xs font-medium border border-[#1e3932]/15 rounded-xl">
+        <div className="p-3 bg-white text-red-600 text-xs font-medium border border-[#1e3932]/15 rounded-xl">
           {errorMessage}
         </div>
       )}
@@ -90,6 +90,7 @@ export default function PublicEventPage() {
   const [event, setEvent] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
+  const [isDescriptionModalOpen, setIsDescriptionModalOpen] = useState(false);
   const [quantity, setQuantity] = useState<number>(1);
   const [clientSecret, setClientSecret] = useState<string | null>(null);
   const [isInitializingPayment, setIsInitializingPayment] = useState(false);
@@ -186,7 +187,7 @@ export default function PublicEventPage() {
 
   if (loading) {
     return (
-      <div className="w-full min-h-[60vh] bg-[#f8faf9] flex items-center justify-center font-sans text-xs uppercase tracking-widest text-[#1e3932]/60">
+      <div className="w-full min-h-[60vh] bg-white flex items-center justify-center font-sans text-xs uppercase tracking-widest text-[#1e3932]/60">
         Chargement...
       </div>
     );
@@ -244,23 +245,22 @@ export default function PublicEventPage() {
   };
 
   return (
-    <main className="w-full bg-[#f8faf9] text-[#1e3932] font-sans selection:bg-[#1e3932] selection:text-white py-12 px-6 sm:px-12">
+    <main className="w-full bg-white text-[#1e3932] font-sans selection:bg-[#1e3932] selection:text-white py-12 px-6 sm:px-12">
       <div className="w-full max-w-6xl mx-auto space-y-12">
         
-        {/* Titre et infos centrés en haut */}
+        {/* Titre et infos centrés en haut (Organisateur inclus sur la même ligne) */}
         <div className="flex flex-col items-center text-center space-y-6 border-b border-[#1e3932]/10 pb-10">
-          {event.organizations?.name && (
-            <div className="flex items-center gap-2 text-xs uppercase tracking-widest text-[#1e3932]/60 font-medium">
-              <Building2 className="w-3.5 h-3.5" />
-              <span>{event.organizations.name}</span>
-            </div>
-          )}
-
           <h1 className="text-4xl sm:text-6xl font-bold tracking-tight uppercase leading-[1.05] text-[#1e3932] max-w-4xl">
             {event.title}
           </h1>
 
-          <div className="flex flex-wrap items-center justify-center gap-4 pt-1 text-xs font-medium uppercase tracking-wider text-[#1e3932]/80">
+          <div className="flex flex-wrap items-center justify-center gap-3 pt-1 text-xs font-medium uppercase tracking-wider text-[#1e3932]/80">
+            {event.organizations?.name && (
+              <div className="flex items-center gap-2 bg-white border border-[#1e3932]/15 px-4 py-2 rounded-full shadow-sm">
+                <Building2 className="w-3.5 h-3.5 text-[#1e3932]" />
+                <span>{event.organizations.name}</span>
+              </div>
+            )}
             {formattedDate && (
               <div className="flex items-center gap-2 bg-white border border-[#1e3932]/15 px-4 py-2 rounded-full shadow-sm">
                 <Calendar className="w-3.5 h-3.5 text-[#1e3932]" />
@@ -282,16 +282,16 @@ export default function PublicEventPage() {
           </div>
         </div>
 
-        {/* Ligne complète : Affiche horizontale à gauche (65%) et Carte verticale à droite (35%) */}
+        {/* Grille principale */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch w-full">
           
-          {/* Affiche au format horizontal (bannière) à gauche */}
+          {/* Affiche à gauche */}
           <div className="lg:col-span-8 flex flex-col">
             <div className="w-full h-full min-h-[400px] border border-[#1e3932]/15 bg-white shadow-xl overflow-hidden rounded-3xl p-3 flex">
               {event.image_url ? (
                 <img src={event.image_url} alt={event.title} className="w-full h-full object-cover rounded-2xl" />
               ) : (
-                <div className="w-full h-full p-8 flex flex-col justify-between bg-[#f8faf9] text-[#1e3932] rounded-2xl">
+                <div className="w-full h-full p-8 flex flex-col justify-between bg-white text-[#1e3932] rounded-2xl border border-[#1e3932]/10">
                   <span className="text-xs uppercase tracking-widest text-[#1e3932]/65">TYKS BANNER</span>
                   <span className="text-4xl font-bold tracking-tighter text-[#1e3932]">LIVE</span>
                 </div>
@@ -299,15 +299,24 @@ export default function PublicEventPage() {
             </div>
           </div>
 
-          {/* Carte au format vertical à droite */}
+          {/* Carte à droite avec switch/bouton pour ouvrir la popup description */}
           <div className="lg:col-span-4 flex flex-col">
             <div className="w-full h-full bg-white border border-[#1e3932]/15 p-6 sm:p-8 rounded-3xl shadow-xl flex flex-col justify-between space-y-6">
               
               <div className="space-y-4">
                 {event.description && (
                   <div className="space-y-2">
-                    <h3 className="text-[10px] font-bold uppercase tracking-widest text-[#1e3932]/40">À propos de l&apos;événement</h3>
-                    <p className="text-xs leading-relaxed text-[#1e3932]/80 whitespace-pre-line font-light">
+                    <div className="flex items-center justify-between">
+                      <h3 className="text-[10px] font-bold uppercase tracking-widest text-[#1e3932]/40">À propos de l&apos;événement</h3>
+                      <button
+                        onClick={() => setIsDescriptionModalOpen(true)}
+                        className="flex items-center gap-1.5 text-[10px] uppercase tracking-wider font-semibold text-[#1e3932] bg-white border border-[#1e3932]/15 hover:bg-[#1e3932]/5 px-2.5 py-1 rounded-full transition-all cursor-pointer shadow-sm"
+                      >
+                        <Eye className="w-3 h-3" />
+                        <span>Détails</span>
+                      </button>
+                    </div>
+                    <p className="text-xs leading-relaxed text-[#1e3932]/80 line-clamp-4 font-light">
                       {event.description}
                     </p>
                   </div>
@@ -346,18 +355,42 @@ export default function PublicEventPage() {
       {/* ─── MODALES INTÉGRÉES ─── */}
       {mounted && createPortal(
         <>
-          {showAuthModal && (
+          {/* Modal de description complète */}
+          {isDescriptionModalOpen && (
             <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200">
-              <div className="bg-white border border-[#1e3932]/15 p-8 max-w-md w-full space-y-6 relative shadow-2xl text-[#1e3932] rounded-3xl">
+              <div className="bg-white border border-[#1e3932]/15 p-8 max-w-lg w-full space-y-6 relative shadow-2xl max-h-[85vh] overflow-y-auto text-[#1e3932] rounded-3xl">
                 <button 
-                  onClick={() => setShowAuthModal(false)}
-                  className="absolute top-5 right-5 w-8 h-8 border border-[#1e3932]/15 bg-[#f8faf9] text-[#1e3932]/60 flex items-center justify-center hover:bg-[#1e3932]/10 hover:text-[#1e3932] transition-colors cursor-pointer rounded-xl"
+                  onClick={() => setIsDescriptionModalOpen(false)}
+                  className="absolute top-5 right-5 w-8 h-8 border border-[#1e3932]/15 bg-white text-[#1e3932]/60 flex items-center justify-center hover:bg-[#1e3932]/10 hover:text-[#1e3932] transition-colors cursor-pointer rounded-xl"
                 >
                   <X className="w-4 h-4" />
                 </button>
 
                 <div className="space-y-2">
-                  <span className="inline-block text-[10px] uppercase tracking-widest bg-[#f8faf9] border border-[#1e3932]/15 text-[#1e3932] px-2.5 py-1 rounded-full font-medium">Sécurité</span>
+                  <span className="inline-block text-[10px] uppercase tracking-widest bg-white border border-[#1e3932]/15 text-[#1e3932] px-2.5 py-1 rounded-full font-medium">Description complète</span>
+                  <h3 className="text-2xl font-bold uppercase tracking-tight text-[#1e3932]">{event.title}</h3>
+                </div>
+
+                <div className="pt-2 text-xs leading-relaxed text-[#1e3932]/80 whitespace-pre-line font-light border-t border-[#1e3932]/10">
+                  {event.description}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Modal d'authentification */}
+          {showAuthModal && (
+            <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200">
+              <div className="bg-white border border-[#1e3932]/15 p-8 max-w-md w-full space-y-6 relative shadow-2xl text-[#1e3932] rounded-3xl">
+                <button 
+                  onClick={() => setShowAuthModal(false)}
+                  className="absolute top-5 right-5 w-8 h-8 border border-[#1e3932]/15 bg-white text-[#1e3932]/60 flex items-center justify-center hover:bg-[#1e3932]/10 hover:text-[#1e3932] transition-colors cursor-pointer rounded-xl"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+
+                <div className="space-y-2">
+                  <span className="inline-block text-[10px] uppercase tracking-widest bg-white border border-[#1e3932]/15 text-[#1e3932] px-2.5 py-1 rounded-full font-medium">Sécurité</span>
                   <h3 className="text-2xl font-bold uppercase tracking-tight text-[#1e3932]">Authentification</h3>
                   <p className="text-xs text-[#1e3932]/60 leading-relaxed font-light">
                     Connectez-vous pour sécuriser vos billets et les retrouver instantanément.
@@ -368,7 +401,7 @@ export default function PublicEventPage() {
                   <div className="space-y-4 pt-2">
                     <button
                       onClick={handleGoogleLogin}
-                      className="w-full h-12 border border-[#1e3932]/15 bg-[#f8faf9] hover:bg-[#1e3932]/5 text-[#1e3932] text-xs font-medium uppercase tracking-wider transition-all flex items-center justify-center gap-3 cursor-pointer rounded-xl shadow-sm"
+                      className="w-full h-12 border border-[#1e3932]/15 bg-white hover:bg-[#1e3932]/5 text-[#1e3932] text-xs font-medium uppercase tracking-wider transition-all flex items-center justify-center gap-3 cursor-pointer rounded-xl shadow-sm"
                     >
                       <svg className="w-4 h-4" viewBox="0 0 24 24">
                         <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
@@ -381,7 +414,7 @@ export default function PublicEventPage() {
 
                     <button
                       onClick={handleAppleLogin}
-                      className="w-full h-12 border border-[#1e3932]/15 bg-[#f8faf9] hover:bg-[#1e3932]/5 text-[#1e3932] text-xs font-medium uppercase tracking-wider transition-all flex items-center justify-center gap-3 cursor-pointer rounded-xl shadow-sm"
+                      className="w-full h-12 border border-[#1e3932]/15 bg-white hover:bg-[#1e3932]/5 text-[#1e3932] text-xs font-medium uppercase tracking-wider transition-all flex items-center justify-center gap-3 cursor-pointer rounded-xl shadow-sm"
                     >
                       <svg className="w-4 h-4 fill-current text-black" viewBox="0 0 24 24">
                         <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 6.01c.65-.79 1.09-1.89.97-2.99-.96.04-2.13.64-2.82 1.43-.6.68-1.13 1.78-.99 2.85 1.08.08 2.19-.53 2.84-1.29z"/>
@@ -402,7 +435,7 @@ export default function PublicEventPage() {
                         placeholder="votre@email.com"
                         value={authEmail}
                         onChange={(e) => setAuthEmail(e.target.value)}
-                        className="w-full h-12 border border-[#1e3932]/15 bg-[#f8faf9] px-4 text-xs uppercase placeholder:text-[#1e3932]/40 focus:outline-none focus:border-[#1e3932] text-[#1e3932] rounded-xl"
+                        className="w-full h-12 border border-[#1e3932]/15 bg-white px-4 text-xs uppercase placeholder:text-[#1e3932]/40 focus:outline-none focus:border-[#1e3932] text-[#1e3932] rounded-xl"
                       />
                       <button
                         type="submit"
@@ -414,7 +447,7 @@ export default function PublicEventPage() {
                     </form>
                   </div>
                 ) : (
-                  <div className="border border-[#1e3932]/15 p-6 bg-[#f8faf9] text-center space-y-2 rounded-xl">
+                  <div className="border border-[#1e3932]/15 p-6 bg-white text-center space-y-2 rounded-xl">
                     <p className="text-xs font-medium uppercase text-[#1e3932]">Lien envoyé avec succès</p>
                     <p className="text-[11px] text-[#1e3932]/60 leading-relaxed">
                       Vérifiez votre boîte mail pour finaliser votre accès.
@@ -425,6 +458,7 @@ export default function PublicEventPage() {
             </div>
           )}
 
+          {/* Modal de checkout / paiement */}
           {isCheckoutOpen && (
             <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200">
               <div className="relative w-full max-w-lg bg-white border border-[#1e3932]/15 p-8 space-y-6 shadow-2xl max-h-[90vh] overflow-y-auto text-[#1e3932] rounded-3xl">
@@ -434,7 +468,7 @@ export default function PublicEventPage() {
                     setClientSecret(null);
                     setIsSuccess(false);
                   }}
-                  className="absolute top-5 right-5 w-8 h-8 border border-[#1e3932]/15 bg-[#f8faf9] text-[#1e3932]/60 flex items-center justify-center hover:bg-[#1e3932]/10 hover:text-[#1e3932] transition-colors cursor-pointer z-10 rounded-xl"
+                  className="absolute top-5 right-5 w-8 h-8 border border-[#1e3932]/15 bg-white text-[#1e3932]/60 flex items-center justify-center hover:bg-[#1e3932]/10 hover:text-[#1e3932] transition-colors cursor-pointer z-10 rounded-xl"
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -467,7 +501,7 @@ export default function PublicEventPage() {
                 ) : !clientSecret ? (
                   <>
                     <div className="space-y-1">
-                      <span className="inline-block text-[10px] uppercase tracking-widest bg-[#f8faf9] border border-[#1e3932]/15 text-[#1e3932] px-2.5 py-1 rounded-full font-medium">Panier</span>
+                      <span className="inline-block text-[10px] uppercase tracking-widest bg-white border border-[#1e3932]/15 text-[#1e3932] px-2.5 py-1 rounded-full font-medium">Panier</span>
                       <h3 className="text-xl font-bold uppercase tracking-tight pt-2 text-[#1e3932]">{event.title}</h3>
                     </div>
 
@@ -478,7 +512,7 @@ export default function PublicEventPage() {
                           <Users className="w-3.5 h-3.5 text-[#1e3932]" /> {quantity}
                         </span>
                       </div>
-                      <div className="flex items-center justify-between border border-[#1e3932]/15 p-1.5 bg-[#f8faf9] rounded-xl">
+                      <div className="flex items-center justify-between border border-[#1e3932]/15 p-1.5 bg-white rounded-xl">
                         <button
                           onClick={() => setQuantity(Math.max(1, quantity - 1))}
                           disabled={quantity <= 1}
@@ -498,7 +532,7 @@ export default function PublicEventPage() {
                     </div>
 
                     {basePrice > 0 && (
-                      <div className="border border-[#1e3932]/15 p-4 bg-[#f8faf9] space-y-2 rounded-xl">
+                      <div className="border border-[#1e3932]/15 p-4 bg-white space-y-2 rounded-xl">
                         <div className="flex items-center gap-2 text-xs font-medium uppercase text-[#1e3932]">
                           <ShieldAlert className="w-4 h-4" />
                           <span>Transparence tarifaire intégrale</span>
@@ -542,7 +576,7 @@ export default function PublicEventPage() {
                   <div className="space-y-4">
                     <div className="flex items-center justify-between border-b border-[#1e3932]/15 pb-3">
                       <div>
-                        <span className="inline-block text-[10px] uppercase tracking-widest bg-[#f8faf9] border border-[#1e3932]/15 text-[#1e3932] px-2.5 py-1 rounded-full font-medium mb-1">Paiement</span>
+                        <span className="inline-block text-[10px] uppercase tracking-widest bg-white border border-[#1e3932]/15 text-[#1e3932] px-2.5 py-1 rounded-full font-medium mb-1">Paiement</span>
                         <h4 className="text-sm font-medium pt-1 text-[#1e3932]">{totalPrice.toFixed(2)} € • {quantity} place(s)</h4>
                       </div>
                       <button 
