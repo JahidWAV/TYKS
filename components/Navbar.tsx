@@ -252,40 +252,40 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
               </div>
             )}
 
-            {/* Bouton Compte / Connexion ultra-arrondi */}
+            {/* Bouton Compte / Connexion vert */}
             {loadingUser ? (
-              <div className="h-10 w-28 border border-[#1e3932]/15 bg-[#f8faf9] rounded-full flex items-center justify-center">
-                <Loader2 className="h-3.5 w-3.5 animate-spin text-[#1e3932]/60" />
+              <div className="h-10 w-28 bg-[#1e3932]/10 rounded-full flex items-center justify-center">
+                <Loader2 className="h-3.5 w-3.5 animate-spin text-[#1e3932]" />
               </div>
             ) : user ? (
               <div className="relative" ref={userMenuRef}>
                 <button
                   onClick={() => setUserMenuOpen(!userMenuOpen)}
-                  className="inline-flex h-10 items-center justify-between gap-2 border border-[#1e3932]/15 bg-[#f8faf9] px-4 text-xs font-medium tracking-wide transition-all hover:border-[#1e3932]/40 cursor-pointer text-[#1e3932] rounded-full shadow-sm"
+                  className="inline-flex h-10 items-center justify-between gap-2 bg-[#1e3932] hover:bg-[#152a25] px-4 text-xs font-medium tracking-wide transition-all cursor-pointer text-white rounded-full shadow-md"
                 >
                   <div className="flex items-center gap-2 min-w-0">
-                    <UserIcon className="w-3.5 h-3.5 shrink-0 text-[#1e3932]" />
+                    <UserIcon className="w-3.5 h-3.5 shrink-0 text-white/80" />
                     <span className="truncate text-left max-w-[100px]">
                       {firstName || user.email.split('@')[0]}
                     </span>
                   </div>
-                  <ChevronDown className={`w-3 h-3 transition-transform shrink-0 text-[#1e3932]/60 ${userMenuOpen ? 'rotate-180' : ''}`} />
+                  <ChevronDown className={`w-3 h-3 transition-transform shrink-0 text-white/70 ${userMenuOpen ? 'rotate-180' : ''}`} />
                 </button>
 
                 {userMenuOpen && (
-                  <div className="absolute right-0 top-full mt-2 w-48 bg-white border border-[#1e3932]/15 rounded-3xl py-2 shadow-xl z-50 text-[#1e3932] overflow-hidden">
+                  <div className="absolute right-0 top-full mt-2 w-48 bg-[#1e3932] border border-white/10 rounded-3xl py-2 shadow-xl z-50 text-white overflow-hidden">
                     <Link
                       href="/settings"
                       onClick={() => setUserMenuOpen(false)}
-                      className="w-full text-left px-5 py-2.5 text-xs tracking-wide flex items-center gap-2 transition-colors hover:bg-[#f8faf9] font-medium"
+                      className="w-full text-left px-5 py-2.5 text-xs tracking-wide flex items-center gap-2 transition-colors hover:bg-white/10 font-medium"
                     >
-                      <Settings className="w-3.5 h-3.5 text-[#1e3932]" />
+                      <Settings className="w-3.5 h-3.5 text-white/80" />
                       Paramètres
                     </Link>
 
                     <button
                       onClick={handleLogout}
-                      className="w-full text-left px-5 py-2.5 text-xs tracking-wide flex items-center gap-2 transition-colors hover:bg-red-50 font-medium text-red-600"
+                      className="w-full text-left px-5 py-2.5 text-xs tracking-wide flex items-center gap-2 transition-colors hover:bg-red-500/20 font-medium text-red-300"
                     >
                       <LogOut className="w-3.5 h-3.5" />
                       Déconnexion
@@ -317,7 +317,7 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
 
         {/* MOBILE PANEL */}
         {mobileOpen && (
-          <div className="px-6 py-4 md:hidden space-y-3 bg-white/95 backdrop-blur-md border border-[#1e3932]/10 rounded-3xl mx-4 mt-2 shadow-xl text-[#1e3932]">
+          <div className="px-6 py-4 md:hidden space-y-3 bg-[#1e3932] text-white border border-white/10 rounded-3xl mx-4 mt-2 shadow-xl">
             {!isPro && (
               <>
                 <div className="relative flex items-center">
@@ -327,11 +327,11 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     placeholder="Rechercher un événement..."
-                    className="w-full h-10 bg-[#1e3932] pl-10 pr-4 text-xs placeholder:text-white/60 focus:outline-none text-white rounded-full shadow-md"
+                    className="w-full h-10 bg-black/20 pl-10 pr-4 text-xs placeholder:text-white/60 focus:outline-none text-white rounded-full border border-white/10 shadow-inner"
                   />
                 </div>
                 {searchQuery.trim().length > 0 && results.length > 0 && (
-                  <div className="border border-[#1e3932]/15 bg-[#f8faf9] rounded-3xl divide-y divide-[#1e3932]/10 overflow-hidden">
+                  <div className="border border-white/10 bg-black/20 rounded-3xl divide-y divide-white/10 overflow-hidden">
                     {results.map((evt) => (
                       <div
                         key={evt.id}
@@ -340,10 +340,10 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
                           setSearchQuery("");
                           router.push(`/events/${evt.slug || evt.id}`);
                         }}
-                        className="p-3.5 text-xs flex justify-between items-center cursor-pointer hover:bg-white text-[#1e3932]"
+                        className="p-3.5 text-xs flex justify-between items-center cursor-pointer hover:bg-white/10 text-white"
                       >
                         <span className="font-medium truncate">{evt.title}</span>
-                        <span className="font-medium text-[#1e3932]">{evt.price ? `${evt.price} €` : "Gratuit"}</span>
+                        <span className="font-medium text-white/80">{evt.price ? `${evt.price} €` : "Gratuit"}</span>
                       </div>
                     ))}
                   </div>
@@ -352,28 +352,28 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
             )}
 
             {loadingUser ? (
-              <div className="flex h-10 items-center justify-center border border-[#1e3932]/15 bg-[#f8faf9] rounded-full">
-                <Loader2 className="h-3.5 w-3.5 animate-spin text-[#1e3932]/60" />
+              <div className="flex h-10 items-center justify-center bg-black/20 rounded-full">
+                <Loader2 className="h-3.5 w-3.5 animate-spin text-white" />
               </div>
             ) : user ? (
               <div className="flex flex-col gap-2.5 pt-1">
-                <div className="flex items-center justify-between border border-[#1e3932]/15 bg-[#f8faf9] px-4 py-2.5 text-xs font-medium text-[#1e3932] rounded-full">
+                <div className="flex items-center justify-between bg-black/20 px-4 py-2.5 text-xs font-medium text-white rounded-full">
                   <div className="flex items-center gap-2 truncate">
-                    <UserIcon className="w-3.5 h-3.5 shrink-0 text-[#1e3932]" />
+                    <UserIcon className="w-3.5 h-3.5 shrink-0 text-white/80" />
                     <span className="truncate">{firstName || user.email}</span>
                   </div>
                 </div>
                 <Link
                   href="/settings"
                   onClick={() => setMobileOpen(false)}
-                  className="inline-flex items-center justify-center gap-2 border border-[#1e3932]/15 bg-[#f8faf9] px-4 py-2.5 text-xs font-medium tracking-wide hover:bg-white transition-colors rounded-full"
+                  className="inline-flex items-center justify-center gap-2 bg-white/10 hover:bg-white/20 px-4 py-2.5 text-xs font-medium tracking-wide transition-colors rounded-full"
                 >
-                  <Settings className="h-3.5 w-3.5 text-[#1e3932]" />
+                  <Settings className="h-3.5 w-3.5 text-white/80" />
                   Paramètres
                 </Link>
                 <button
                   onClick={handleLogout}
-                  className="inline-flex items-center justify-center gap-2 border border-[#1e3932]/15 bg-[#f8faf9] text-red-600 px-4 py-2.5 text-xs font-medium tracking-wide hover:bg-red-50 transition-colors rounded-full"
+                  className="inline-flex items-center justify-center gap-2 bg-red-500/20 text-red-200 px-4 py-2.5 text-xs font-medium tracking-wide hover:bg-red-500/30 transition-colors rounded-full"
                 >
                   <LogOut className="h-3.5 w-3.5" />
                   Déconnexion
@@ -385,7 +385,7 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
                   setMobileOpen(false);
                   setIsAuthOpen(true);
                 }}
-                className="w-full h-10 bg-[#1e3932] text-white text-xs tracking-wider font-medium rounded-full shadow-md"
+                className="w-full h-10 bg-white text-[#1e3932] hover:bg-white/90 text-xs tracking-wider font-medium rounded-full shadow-md"
               >
                 {isPro ? "Connexion Pro" : "Connexion"}
               </button>
