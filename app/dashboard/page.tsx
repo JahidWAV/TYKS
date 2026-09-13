@@ -148,7 +148,7 @@ export default function OrganizerDashboard() {
 
   if (!ready) {
     return (
-      <div className="min-h-screen bg-[#0a0b0e] text-neutral-400 font-mono text-xs uppercase tracking-widest flex items-center justify-center">
+      <div className="min-h-screen bg-white text-neutral-500 font-mono text-xs uppercase tracking-widest flex items-center justify-center">
         Chargement...
       </div>
     );
@@ -156,29 +156,29 @@ export default function OrganizerDashboard() {
 
   if (!user) {
     return (
-      <div className="min-h-screen bg-[#0a0b0e] text-white flex flex-col lg:flex-row w-full overflow-hidden selection:bg-[#E5D4B4] selection:text-black font-sans">
+      <div className="min-h-screen bg-white text-neutral-900 flex flex-col lg:flex-row w-full overflow-hidden selection:bg-emerald-600 selection:text-white font-sans">
         
         {/* Colonne gauche : Branding & Connexion */}
-        <div className="w-full lg:w-1/2 flex flex-col justify-between p-8 lg:p-16 z-10 bg-[#0a0b0e] border-b lg:border-b-0 lg:border-r border-neutral-800">
+        <div className="w-full lg:w-1/2 flex flex-col justify-between p-8 lg:p-16 z-10 bg-white border-b lg:border-b-0 lg:border-r border-neutral-200">
           <div className="flex items-center gap-3">
-            <span className="h-9 w-9 rounded-lg bg-[#E5D4B4] text-black flex items-center justify-center font-mono font-bold text-xs">T</span>
-            <span className="font-mono text-xs font-bold uppercase tracking-widest text-[#E5D4B4]">TYKS Pro</span>
+            <span className="h-9 w-9 rounded-lg bg-emerald-600 text-white flex items-center justify-center font-mono font-bold text-xs">T</span>
+            <span className="font-mono text-xs font-bold uppercase tracking-widest text-emerald-700">TYKS Pro</span>
           </div>
 
           <div className="space-y-6 my-auto py-12">
-            <span className="inline-block font-mono text-[11px] uppercase tracking-widest bg-[#14171f] border border-neutral-800 text-[#E5D4B4] px-3 py-1.5 rounded-full">
+            <span className="inline-block font-mono text-[11px] uppercase tracking-widest bg-emerald-50 border border-emerald-200 text-emerald-800 px-3 py-1.5 rounded-full">
               TYKS PRO · ESPACE ORGANISATEUR
             </span>
-            <h1 className="text-4xl lg:text-6xl font-bold tracking-tight text-white leading-[1.05]">
+            <h1 className="text-4xl lg:text-6xl font-bold tracking-tight text-neutral-900 leading-[1.05]">
               Reprenez le contrôle de votre billetterie et de vos marges.
             </h1>
-            <p className="font-mono text-xs leading-relaxed text-neutral-400 max-w-md">
+            <p className="font-mono text-xs leading-relaxed text-neutral-600 max-w-md">
               Fins de commissions abusives et de données captives. Tyks Pro vous offre une plateforme sur-mesure, des frais réduits et l&apos;accès direct à votre communauté.
             </p>
             <div>
               <button
                 onClick={() => setIsAuthModalOpen(true)}
-                className="w-full sm:w-auto px-8 py-4 bg-[#E5D4B4] text-black font-mono text-xs uppercase tracking-widest hover:bg-[#d8c39e] transition-colors flex items-center justify-center gap-3 cursor-pointer font-bold rounded-xl shadow-lg"
+                className="w-full sm:w-auto px-8 py-4 bg-emerald-600 text-white font-mono text-xs uppercase tracking-widest hover:bg-emerald-700 transition-colors flex items-center justify-center gap-3 cursor-pointer font-bold rounded-full shadow-lg"
               >
                 <span>Accéder à mon espace Pro</span>
                 <ArrowUpRight className="w-4 h-4" />
@@ -186,49 +186,50 @@ export default function OrganizerDashboard() {
             </div>
           </div>
 
-          <div className="font-mono text-xs uppercase tracking-wider text-neutral-500">
+          <div className="font-mono text-xs uppercase tracking-wider text-neutral-400">
             © TYKS Inc.
           </div>
         </div>
 
         {/* Colonne droite : Aperçu élégant du Dashboard en arrière-plan */}
-        <div className="hidden lg:flex w-1/2 bg-[#050608] p-12 relative overflow-hidden items-center justify-center select-none pointer-events-none">
-          <div className="w-full max-w-lg bg-[#14171f] border border-neutral-800 rounded-2xl p-6 space-y-6 shadow-2xl">
-            <div className="flex items-center justify-between border-b border-neutral-800 pb-4">
+        <div className="hidden lg:flex w-1/2 bg-neutral-50 p-12 relative overflow-hidden items-center justify-center select-none pointer-events-none">
+          <div className="w-full max-w-lg bg-white border border-neutral-200 rounded-2xl p-6 space-y-6 shadow-xl">
+            <div className="flex items-center justify-between border-b border-neutral-100 pb-4">
               <div className="flex items-center gap-2">
-                <span className="h-3 w-3 rounded-full bg-neutral-700"></span>
-                <span className="h-3 w-3 rounded-full bg-neutral-700"></span>
-                <span className="h-3 w-3 rounded-full bg-neutral-700"></span>
+                <span className="h-3 w-3 rounded-full bg-neutral-200"></span>
+                <span className="h-3 w-3 rounded-full bg-neutral-200"></span>
+                <span className="h-3 w-3 rounded-full bg-neutral-200"></span>
               </div>
-              <span className="text-xs font-mono uppercase tracking-wider text-neutral-500">dashboard.tyks.app</span>
+              <span className="text-xs font-mono uppercase tracking-wider text-neutral-400">dashboard.tyks.app</span>
             </div>
 
             <div className="grid grid-cols-3 gap-3 font-mono">
-              <div className="bg-[#101319] border border-neutral-800 rounded-xl p-4 space-y-2">
-                <div className="h-2 w-12 bg-neutral-800 rounded"></div>
-                <div className="h-6 w-16 bg-[#E5D4B4] rounded opacity-80"></div>
+              <div className="bg-neutral-50 border border-neutral-200 rounded-xl p-4 space-y-2">
+                <div className="h-2 w-12 bg-neutral-200 rounded"></div>
+                <div className="h-6 w-16 bg-emerald-600 rounded opacity-90"></div>
               </div>
-              <div className="bg-[#101319] border border-neutral-800 rounded-xl p-4 space-y-2">
-                <div className="h-2 w-12 bg-neutral-800 rounded"></div>
-                <div className="h-6 w-12 bg-[#E5D4B4] rounded opacity-80"></div>
+              <div className="bg-neutral-50 border border-neutral-200 rounded-xl p-4 space-y-2">
+                <div className="h-2 w-12 bg-neutral-200 rounded"></div>
+                <div className="h-6 w-12 bg-emerald-600 rounded opacity-90"></div>
               </div>
-              <div className="bg-[#101319] border border-neutral-800 rounded-xl p-4 space-y-2">
-                <div className="h-2 w-12 bg-neutral-800 rounded"></div>
-                <div className="h-6 w-10 bg-[#E5D4B4] rounded opacity-80"></div>
+              <div className="bg-neutral-50 border border-neutral-200 rounded-xl p-4 space-y-2">
+                <div className="h-2 w-12 bg-neutral-200 rounded"></div>
+                <div className="h-6 w-10 bg-emerald-600 rounded opacity-90"></div>
               </div>
             </div>
 
-            <div className="h-40 bg-[#101319] border border-neutral-800 rounded-xl flex items-end p-4 gap-2">
-              <div className="w-1/6 h-1/2 bg-neutral-700 rounded-t"></div>
-              <div className="w-1/6 h-3/4 bg-[#E5D4B4] rounded-t"></div>
-              <div className="w-1/6 h-2/3 bg-neutral-700 rounded-t"></div>
-              <div className="w-1/6 h-full bg-[#E5D4B4] rounded-t"></div>
-              <div className="w-1/6 h-4/5 bg-neutral-700 rounded-t"></div>
-              <div className="w-1/6 h-5/6 bg-[#E5D4B4] rounded-t"></div>
+            <div className="h-40 bg-neutral-50 border border-neutral-200 rounded-xl flex items-end p-4 gap-2">
+              <div className="w-1/6 h-1/2 bg-neutral-300 rounded-t"></div>
+              <div className="w-1/6 h-3/4 bg-emerald-600 rounded-t"></div>
+              <div className="w-1/6 h-2/3 bg-neutral-300 rounded-t"></div>
+              <div className="w-1/6 h-full bg-emerald-600 rounded-t"></div>
+              <div className="w-1/6 h-4/5 bg-neutral-300 rounded-t"></div>
+              <div className="w-1/6 h-5/6 bg-emerald-600 rounded-t"></div>
             </div>
           </div>
         </div>
 
+        {/* Modale d'authentification personnalisée */}
         <CustomAuthModal 
           isOpen={isAuthModalOpen} 
           onClose={() => setIsAuthModalOpen(false)} 
@@ -240,7 +241,7 @@ export default function OrganizerDashboard() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#0a0b0e] text-neutral-400 font-mono text-xs uppercase tracking-widest flex items-center justify-center">
+      <div className="min-h-screen bg-white text-neutral-500 font-mono text-xs uppercase tracking-widest flex items-center justify-center">
         Chargement...
       </div>
     );
@@ -258,31 +259,31 @@ export default function OrganizerDashboard() {
     : 0;
 
   return (
-    <div className="w-full px-6 lg:px-12 py-10 space-y-8 font-sans text-white bg-[#0a0b0e] min-h-screen">
+    <div className="w-full px-6 lg:px-12 py-10 space-y-8 font-sans text-neutral-900 bg-white min-h-full">
       
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 border-b border-neutral-800">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 border-b border-neutral-200">
         <div className="space-y-2">
           <div className="flex items-center gap-2">
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-neutral-800 text-xs font-mono bg-[#14171f] font-bold uppercase tracking-wider text-[#E5D4B4]">
-              <ShieldCheck className="w-3.5 h-3.5" /> Accès Illimité (Sans Abonnement)
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-emerald-200 text-xs font-mono bg-emerald-50 font-bold uppercase tracking-wider text-emerald-800">
+              <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" /> Accès Illimité (Sans Abonnement)
             </span>
           </div>
-          <h1 className="text-3xl lg:text-5xl font-bold tracking-tight uppercase leading-none text-white">Sales Overview</h1>
-          <p className="text-xs font-mono uppercase tracking-wider text-neutral-400">Analysez et optimisez vos ventes en temps réel</p>
+          <h1 className="text-3xl lg:text-5xl font-bold tracking-tight uppercase leading-none text-neutral-900">Sales Overview</h1>
+          <p className="text-xs font-mono uppercase tracking-wider text-neutral-500">Analysez et optimisez vos ventes en temps réel</p>
         </div>
 
         <div className="flex items-center gap-3">
           <button
             onClick={() => loadDashboard(user.id, true)}
             disabled={refreshing}
-            className="h-12 px-5 rounded-xl border border-neutral-800 bg-[#14171f] hover:bg-neutral-800 text-neutral-200 font-mono text-xs uppercase tracking-widest transition-all flex items-center gap-2 disabled:opacity-50 cursor-pointer font-bold"
+            className="h-12 px-5 rounded-xl border border-neutral-200 bg-white hover:bg-neutral-50 text-neutral-700 font-mono text-xs uppercase tracking-widest transition-all flex items-center gap-2 disabled:opacity-50 cursor-pointer font-bold shadow-sm"
           >
             <RefreshCw className={`h-3.5 w-3.5 ${refreshing ? 'animate-spin' : ''}`} />
             <span className="hidden sm:inline">Actualiser</span>
           </button>
           <Link
             href="/new"
-            className="h-12 px-6 rounded-xl bg-[#E5D4B4] text-black hover:bg-[#d8c39e] font-mono text-xs uppercase tracking-widest transition-all flex items-center justify-center gap-2 cursor-pointer font-bold shadow-lg"
+            className="h-12 px-6 rounded-xl bg-emerald-600 text-white hover:bg-emerald-700 font-mono text-xs uppercase tracking-widest transition-all flex items-center justify-center gap-2 cursor-pointer font-bold shadow-lg"
           >
             <Plus className="h-4 w-4" />
             <span>Créer un événement illimité</span>
@@ -292,48 +293,48 @@ export default function OrganizerDashboard() {
 
       {/* Statistiques globales */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 font-mono">
-        <div className="p-6 rounded-2xl border border-neutral-800 bg-[#14171f] space-y-3 shadow-lg">
+        <div className="p-6 rounded-2xl border border-neutral-200 bg-neutral-50 space-y-3 shadow-sm">
           <div className="flex items-center justify-between">
-            <p className="text-xs uppercase tracking-wider text-neutral-400 font-bold">Chiffre d&apos;affaires</p>
-            <Euro className="w-4 h-4 text-[#E5D4B4]" />
+            <p className="text-xs uppercase tracking-wider text-neutral-500 font-bold">Chiffre d&apos;affaires</p>
+            <Euro className="w-4 h-4 text-emerald-600" />
           </div>
-          <p className="text-3xl font-bold tracking-tight text-white">
+          <p className="text-3xl font-bold tracking-tight text-neutral-900">
             {stats.totalRevenue.toLocaleString('fr-FR')} €
           </p>
-          <p className="text-[11px] text-neutral-500 uppercase">Volume brut encaissé</p>
+          <p className="text-[11px] text-neutral-400 uppercase">Volume brut encaissé</p>
         </div>
 
-        <div className="p-6 rounded-2xl border border-neutral-800 bg-[#14171f] space-y-3 shadow-lg">
+        <div className="p-6 rounded-2xl border border-neutral-200 bg-neutral-50 space-y-3 shadow-sm">
           <div className="flex items-center justify-between">
-            <p className="text-xs uppercase tracking-wider text-neutral-400 font-bold">Billets vendus</p>
-            <Ticket className="w-4 h-4 text-[#E5D4B4]" />
+            <p className="text-xs uppercase tracking-wider text-neutral-500 font-bold">Billets vendus</p>
+            <Ticket className="w-4 h-4 text-emerald-600" />
           </div>
-          <p className="text-3xl font-bold tracking-tight text-white">
+          <p className="text-3xl font-bold tracking-tight text-neutral-900">
             {stats.totalTicketsSold}
           </p>
-          <p className="text-[11px] text-neutral-500 uppercase">Taux de remplissage : {fillRate}%</p>
+          <p className="text-[11px] text-neutral-400 uppercase">Taux de remplissage : {fillRate}%</p>
         </div>
 
-        <div className="p-6 rounded-2xl border border-neutral-800 bg-[#14171f] space-y-3 shadow-lg">
+        <div className="p-6 rounded-2xl border border-neutral-200 bg-neutral-50 space-y-3 shadow-sm">
           <div className="flex items-center justify-between">
-            <p className="text-xs uppercase tracking-wider text-neutral-400 font-bold">Événements publiés</p>
-            <Calendar className="w-4 h-4 text-[#E5D4B4]" />
+            <p className="text-xs uppercase tracking-wider text-neutral-500 font-bold">Événements publiés</p>
+            <Calendar className="w-4 h-4 text-emerald-600" />
           </div>
-          <p className="text-3xl font-bold tracking-tight text-white">
-            {stats.publishedEventsCount} <span className="text-xs font-normal text-neutral-500">({stats.totalEventsCount} total)</span>
+          <p className="text-3xl font-bold tracking-tight text-neutral-900">
+            {stats.publishedEventsCount} <span className="text-xs font-normal text-neutral-400">({stats.totalEventsCount} total)</span>
           </p>
-          <p className="text-[11px] text-neutral-500 uppercase">Création illimitée</p>
+          <p className="text-[11px] text-neutral-400 uppercase">Création illimitée</p>
         </div>
 
-        <div className="p-6 rounded-2xl border border-neutral-800 bg-[#14171f] space-y-3 shadow-lg">
+        <div className="p-6 rounded-2xl border border-neutral-200 bg-neutral-50 space-y-3 shadow-sm">
           <div className="flex items-center justify-between">
-            <p className="text-xs uppercase tracking-wider text-neutral-400 font-bold">Modèle tarifaire</p>
-            <span className="h-3 w-3 rounded-full bg-[#E5D4B4] animate-pulse" />
+            <p className="text-xs uppercase tracking-wider text-neutral-500 font-bold">Modèle tarifaire</p>
+            <span className="h-3 w-3 rounded-full bg-emerald-600 animate-pulse" />
           </div>
-          <p className="text-base font-bold tracking-tight pt-1 uppercase text-white">
+          <p className="text-base font-bold tracking-tight pt-1 uppercase text-neutral-900">
             Commission sur ventes
           </p>
-          <p className="text-[11px] text-neutral-500 uppercase">0 € d&apos;abonnement fixe</p>
+          <p className="text-[11px] text-neutral-400 uppercase">0 € d&apos;abonnement fixe</p>
         </div>
       </div>
 
@@ -347,7 +348,7 @@ export default function OrganizerDashboard() {
               placeholder="Rechercher par titre ou lieu..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full h-12 rounded-xl border border-neutral-800 bg-[#14171f] pl-11 pr-4 font-mono text-xs uppercase text-white placeholder:text-neutral-500 focus:outline-none focus:border-[#E5D4B4]"
+              className="w-full h-12 rounded-xl border border-neutral-200 bg-white pl-11 pr-4 font-mono text-xs uppercase text-neutral-900 placeholder:text-neutral-400 focus:outline-none focus:border-emerald-600 shadow-sm"
             />
           </div>
           <div className="flex items-center gap-2 overflow-x-auto py-1">
@@ -355,10 +356,10 @@ export default function OrganizerDashboard() {
               <button
                 key={status}
                 onClick={() => setStatusFilter(status)}
-                className={`h-12 px-4 rounded-xl border border-neutral-800 font-mono text-xs uppercase tracking-wider transition-all whitespace-nowrap cursor-pointer font-bold ${
+                className={`h-12 px-4 rounded-xl border font-mono text-xs uppercase tracking-wider transition-all whitespace-nowrap cursor-pointer font-bold shadow-sm ${
                   statusFilter === status 
-                    ? 'bg-[#E5D4B4] text-black border-[#E5D4B4]' 
-                    : 'bg-[#14171f] text-neutral-300 hover:bg-neutral-800'
+                    ? 'bg-emerald-600 text-white border-emerald-600' 
+                    : 'bg-white border-neutral-200 text-neutral-700 hover:bg-neutral-50'
                 }`}
               >
                 {status === 'all' ? 'Tous' : STATUS_LABEL[status] || status}
@@ -366,7 +367,7 @@ export default function OrganizerDashboard() {
             ))}
           </div>
         </div>
-        <span className="font-mono text-xs uppercase tracking-wider text-neutral-400 text-right">
+        <span className="font-mono text-xs uppercase tracking-wider text-neutral-500 text-right">
           {filteredEvents.length} événement(s)
         </span>
       </div>
@@ -374,9 +375,9 @@ export default function OrganizerDashboard() {
       {/* Liste des événements */}
       <div className="space-y-6">
         {filteredEvents.length === 0 ? (
-          <div className="rounded-2xl border border-neutral-800 bg-[#14171f] p-16 text-center space-y-4 shadow-xl">
-            <Calendar className="mx-auto h-8 w-8 text-[#E5D4B4]" />
-            <p className="font-mono text-xs uppercase tracking-wider text-neutral-400">
+          <div className="rounded-2xl border border-neutral-200 bg-neutral-50 p-16 text-center space-y-4 shadow-sm">
+            <Calendar className="mx-auto h-8 w-8 text-emerald-600" />
+            <p className="font-mono text-xs uppercase tracking-wider text-neutral-500">
               {events.length === 0 
                 ? "Vous n'avez pas encore créé d'événement. Lancez-vous, c'est illimité !" 
                 : "Aucun événement ne correspond à vos filtres."}
@@ -385,7 +386,7 @@ export default function OrganizerDashboard() {
               <div className="pt-2">
                 <Link
                   href="/new"
-                  className="inline-flex items-center gap-2 h-12 px-6 rounded-xl bg-[#E5D4B4] text-black font-mono text-xs uppercase tracking-widest font-bold hover:bg-[#d8c39e] transition-all shadow-lg"
+                  className="inline-flex items-center gap-2 h-12 px-6 rounded-xl bg-emerald-600 text-white font-mono text-xs uppercase tracking-widest font-bold hover:bg-emerald-700 transition-all shadow-md"
                 >
                   Créer mon premier événement
                 </Link>
@@ -399,7 +400,7 @@ export default function OrganizerDashboard() {
               return (
                 <article
                   key={evt.id}
-                  className="group flex flex-col rounded-2xl border border-neutral-800 bg-[#14171f] shadow-lg transition-all hover:border-neutral-700 overflow-hidden"
+                  className="group flex flex-col rounded-2xl border border-neutral-200 bg-white shadow-sm transition-all hover:border-neutral-300 hover:shadow-md overflow-hidden"
                 >
                   <div className="space-y-3 p-6 flex-1">
                     <div className="flex items-center justify-between font-mono">
@@ -414,48 +415,48 @@ export default function OrganizerDashboard() {
                       </span>
                       <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full border text-[10px] font-bold uppercase tracking-wider ${
                         evt.status === 'published' 
-                          ? 'bg-emerald-950 text-emerald-300 border-emerald-800' 
+                          ? 'bg-emerald-50 text-emerald-700 border-emerald-200' 
                           : evt.status === 'cancelled'
-                          ? 'bg-red-950 text-red-300 border-red-800'
-                          : 'bg-neutral-900 text-neutral-300 border-neutral-800'
+                          ? 'bg-red-50 text-red-700 border-red-200'
+                          : 'bg-neutral-100 text-neutral-600 border-neutral-200'
                       }`}>
                         {STATUS_LABEL[evt.status] ?? evt.status}
                       </span>
                     </div>
 
-                    <h3 className="text-xl font-bold uppercase tracking-tight leading-snug text-white">
+                    <h3 className="text-xl font-bold uppercase tracking-tight leading-snug text-neutral-900">
                       {evt.title}
                     </h3>
 
                     {evt.description && (
-                      <p className="line-clamp-2 text-xs font-mono text-neutral-400 leading-relaxed">
+                      <p className="line-clamp-2 text-xs font-mono text-neutral-600 leading-relaxed">
                         {evt.description}
                       </p>
                     )}
 
                     {evt.location && (
-                      <div className="flex items-center gap-2 font-mono text-xs text-neutral-400 pt-1">
-                        <MapPin className="h-3.5 w-3.5 shrink-0 text-[#E5D4B4]" />
+                      <div className="flex items-center gap-2 font-mono text-xs text-neutral-600 pt-1">
+                        <MapPin className="h-3.5 w-3.5 shrink-0 text-emerald-600" />
                         <span className="truncate">{evt.location}</span>
                       </div>
                     )}
                   </div>
 
-                  <div className="flex items-center justify-between border-t border-neutral-800 px-6 py-4 bg-[#101319]">
-                    <span className="font-mono text-xs font-bold uppercase tracking-wider text-[#E5D4B4]">
+                  <div className="flex items-center justify-between border-t border-neutral-100 px-6 py-4 bg-neutral-50">
+                    <span className="font-mono text-xs font-bold uppercase tracking-wider text-emerald-700">
                       {eventPrice > 0 ? `${eventPrice.toLocaleString('fr-FR')} €` : 'Gratuit'}
                     </span>
                     <div className="flex items-center gap-2">
                       <Link
                         href={`/events/${evt.slug || evt.id}/edit`}
-                        className="w-10 h-10 rounded-xl border border-neutral-800 bg-[#14171f] text-neutral-300 flex items-center justify-center hover:bg-[#E5D4B4] hover:text-black hover:border-[#E5D4B4] transition-colors cursor-pointer"
+                        className="w-10 h-10 rounded-xl border border-neutral-200 bg-white text-neutral-700 flex items-center justify-center hover:bg-emerald-600 hover:text-white hover:border-emerald-600 transition-colors cursor-pointer shadow-sm"
                         title="Modifier"
                       >
                         <Edit3 className="h-4 w-4" />
                       </Link>
                       <button
                         onClick={() => handleDeleteEvent(evt.id)}
-                        className="w-10 h-10 rounded-xl border border-neutral-800 bg-[#14171f] text-red-400 flex items-center justify-center hover:bg-red-600 hover:text-white hover:border-red-600 transition-colors cursor-pointer"
+                        className="w-10 h-10 rounded-xl border border-neutral-200 bg-white text-red-600 flex items-center justify-center hover:bg-red-600 hover:text-white hover:border-red-600 transition-colors cursor-pointer shadow-sm"
                         title="Supprimer"
                       >
                         <Trash2 className="h-4 w-4" />
