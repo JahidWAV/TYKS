@@ -4,8 +4,8 @@ import { useEffect, useState, useRef } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { 
-  LayoutDashboard, Calendar, BarChart3, Megaphone, 
-  Users, Wallet, Globe, LogOut, Loader2, User, ChevronRight, Shield, Sliders, X 
+  LayoutDashboard, Calendar, BarChart3, 
+  Wallet, LogOut, User, ChevronRight, Shield, Sliders 
 } from 'lucide-react';
 import { supabaseBrowser } from '@/lib/supabase-browser';
 
@@ -34,13 +34,12 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     return () => subscription.unsubscribe();
   }, []);
 
-  // Charge l'état ouvert/fermé du menu depuis le stockage local
   useEffect(() => {
     try {
       const stored = window.localStorage.getItem(SIDEBAR_STORAGE_KEY);
       if (stored !== null) setIsOpen(stored === 'true');
     } catch {
-      // stockage indisponible, on garde la valeur par défaut
+      // stockage indisponible
     }
     setMounted(true);
   }, []);
@@ -50,7 +49,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     try {
       window.localStorage.setItem(SIDEBAR_STORAGE_KEY, String(isOpen));
     } catch {
-      // stockage indisponible, on ignore
+      // stockage indisponible
     }
   }, [isOpen, mounted]);
 
@@ -125,7 +124,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   }
 
   if (!user) {
-    return <main className="min-h-screen w-full">{children}</main>;
+    return <main className="min-h-screen w-full bg-[#0a0b0e]">{children}</main>;
   }
 
   const SIDEBAR_WIDTH = isOpen ? 'w-64' : 'w-16';
@@ -134,16 +133,14 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   return (
     <div className="min-h-screen bg-[#0a0b0e] text-white font-sans selection:bg-[#E5D4B4] selection:text-black flex overflow-x-hidden">
 
-      {/* 0. Barre horizontale fixe en haut : design élégant sombre / gold */}
+      {/* Barre supérieure fixe */}
       <header className="fixed top-0 left-0 right-0 h-16 border-b border-neutral-800 bg-[#0a0b0e] flex items-center justify-between shrink-0 z-50 select-none">
         <div className="flex items-center h-full">
           <div className="w-16 h-full flex items-center justify-center shrink-0 border-r border-neutral-800 bg-[#101319]">
             <Link href="/" className="w-9 h-9 flex items-center justify-center group">
-              <img
-                src="/icon.svg"
-                alt="TYKS"
-                className="w-8 h-8 object-contain transition-transform group-hover:scale-105"
-              />
+              <span className="h-8 w-8 rounded-lg bg-[#E5D4B4] text-black flex items-center justify-center font-mono font-bold text-xs transition-transform group-hover:scale-105">
+                T
+              </span>
             </Link>
           </div>
 
@@ -226,7 +223,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         </div>
       </header>
 
-      {/* 1. Sidebar unique */}
+      {/* Sidebar de navigation */}
       <aside className={`fixed top-16 left-0 h-[calc(100vh-4rem)] ${SIDEBAR_WIDTH} border-r border-neutral-800 bg-[#0a0b0e] flex flex-col py-6 z-40 select-none overflow-hidden ${
         mounted ? 'transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]' : ''
       }`}>
@@ -262,7 +259,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           })}
         </div>
 
-        {/* Interrupteur pour ouvrir/fermer le menu */}
+        {/* Bouton de bascule de la sidebar */}
         <div className={`w-full flex items-center border-t border-neutral-800 pt-4 px-3 ${isOpen ? '' : 'justify-center'}`}>
           <button
             onClick={() => setIsOpen(prev => !prev)}
@@ -276,7 +273,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         </div>
       </aside>
 
-      {/* 2. Contenu principal */}
+      {/* Conteneur principal */}
       <div 
         className={`flex-1 min-w-0 flex flex-col h-screen pt-16 overflow-hidden ${CONTENT_MARGIN} ${
           mounted ? 'transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]' : ''
