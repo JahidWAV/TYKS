@@ -48,8 +48,7 @@ export default async function RootLayout({
       lang="fr"
       className={`${fontBody.variable} ${fontDisplay.variable} ${fontMono.variable}`}
     >
-      <body className="min-h-screen bg-onyx bg-night-glow text-bone flex flex-col selection:bg-bone/20 selection:text-bone font-sans">
-        <div className="grain" aria-hidden="true" />
+      <body className="min-h-screen bg-white text-[#1e3932] flex flex-col selection:bg-[#1e3932]/20 selection:text-[#1e3932] font-sans">
         
         {/* Navbar affichée partout sauf sur le dashboard */}
         {!isDashboard && <Navbar isPro={isPro} />}
