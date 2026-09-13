@@ -13,17 +13,17 @@ export default function Footer({}: FooterProps) {
         
         {/* Logo & Copyright */}
         <div className="flex flex-col items-center md:items-start gap-1">
-          <Link href="/" className="font-medium uppercase tracking-widest text-sm flex items-center gap-2 text-[#1e3932]">
+          <Link href="/" className="font-medium tracking-wider text-sm flex items-center gap-2 text-[#1e3932]">
             <span className="h-5 w-5 border border-[#1e3932]/20 bg-[#1e3932] text-white flex items-center justify-center text-[10px] font-medium rounded">T</span>
             TYKS Live
           </Link>
-          <p className="text-xs text-[#1e3932]/60 uppercase tracking-wider font-light">
+          <p className="text-xs text-[#1e3932]/60 tracking-wide font-light">
             © {new Date().getFullYear()} TYKS. Tous droits réservés.
           </p>
         </div>
 
         {/* Liens utiles */}
-        <div className="flex items-center gap-6 text-xs uppercase tracking-widest font-medium text-[#1e3932]/70">
+        <div className="flex items-center gap-6 text-xs tracking-wide font-medium text-[#1e3932]/70">
           <Link href="/legal" className="hover:text-[#1e3932] transition-colors">
             Mentions légales
           </Link>
