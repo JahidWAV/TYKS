@@ -136,7 +136,7 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
 
   return (
     <>
-      <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-[#1e3932]/10 font-sans text-[#1e3932] py-2.5">
+      <header className="sticky top-0 z-50 bg-white border-b border-[#1e3932]/10 font-sans text-[#1e3932] py-2.5">
         <div className="max-w-7xl mx-auto px-6 lg:px-12 flex items-center justify-between gap-4">
 
           {/* 1. LOGO */}
