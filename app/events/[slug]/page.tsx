@@ -245,10 +245,10 @@ export default function PublicEventPage() {
 
   return (
     <main className="w-full bg-[#f8faf9] text-[#1e3932] font-sans selection:bg-[#1e3932] selection:text-white py-12 px-6 sm:px-12">
-      <div className="w-full max-w-5xl mx-auto space-y-12">
+      <div className="w-full max-w-5xl mx-auto space-y-10">
         
-        {/* En-tête éditorial sobre (Orga + Titre + Méta sur une même ligne dynamique) */}
-        <div className="space-y-6 border-b border-[#1e3932]/10 pb-10">
+        {/* 1. En-tête : Orga, Titre & Méta alignés */}
+        <div className="space-y-6 border-b border-[#1e3932]/10 pb-8">
           {event.organizations?.name && (
             <div className="flex items-center gap-2 text-xs uppercase tracking-widest text-[#1e3932]/60 font-medium">
               <Building2 className="w-3.5 h-3.5" />
@@ -260,8 +260,7 @@ export default function PublicEventPage() {
             {event.title}
           </h1>
 
-          {/* Date, Heure et Lieu alignés au même niveau */}
-          <div className="flex flex-wrap items-center gap-6 pt-2 text-xs font-medium uppercase tracking-wider text-[#1e3932]/80">
+          <div className="flex flex-wrap items-center gap-4 pt-1 text-xs font-medium uppercase tracking-wider text-[#1e3932]/80">
             {formattedDate && (
               <div className="flex items-center gap-2 bg-white border border-[#1e3932]/15 px-4 py-2 rounded-full shadow-sm">
                 <Calendar className="w-3.5 h-3.5 text-[#1e3932]" />
@@ -283,58 +282,50 @@ export default function PublicEventPage() {
           </div>
         </div>
 
-        {/* Corps de page asymétrique : Visuel puissant à gauche, Détails & CTA à droite */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
-          
-          {/* Visuel / Poster */}
-          <div className="lg:col-span-5">
-            <div className="relative w-full aspect-[4/5] border border-[#1e3932]/15 bg-white shadow-xl overflow-hidden rounded-3xl p-3">
-              {event.image_url ? (
-                <img src={event.image_url} alt={event.title} className="w-full h-full object-cover rounded-2xl" />
-              ) : (
-                <div className="w-full h-full p-8 flex flex-col justify-between bg-[#f8faf9] text-[#1e3932] rounded-2xl">
-                  <span className="text-xs uppercase tracking-widest text-[#1e3932]/60">TYKS POSTER</span>
-                  <span className="text-4xl font-bold tracking-tighter text-[#1e3932]">LIVE</span>
-                </div>
-              )}
+        {/* 2. Affiche au format horizontal (bannière panoramique) */}
+        <div className="w-full aspect-[21/9] max-h-[450px] border border-[#1e3932]/15 bg-white shadow-xl overflow-hidden rounded-3xl p-3">
+          {event.image_url ? (
+            <img src={event.image_url} alt={event.title} className="w-full h-full object-cover rounded-2xl" />
+          ) : (
+            <div className="w-full h-full p-8 flex items-center justify-between bg-[#f8faf9] text-[#1e3932] rounded-2xl">
+              <span className="text-xs uppercase tracking-widest text-[#1e3932]/65">TYKS BANNER</span>
+              <span className="text-4xl font-bold tracking-tighter text-[#1e3932]">LIVE</span>
             </div>
-          </div>
+          )}
+        </div>
 
-          {/* Détails et Action */}
-          <div className="lg:col-span-7 space-y-8">
-            {event.description && (
-              <div className="bg-white border border-[#1e3932]/15 p-8 rounded-3xl shadow-sm space-y-3">
-                <h3 className="text-xs font-bold uppercase tracking-widest text-[#1e3932]/40">À propos de l&apos;événement</h3>
-                <p className="text-xs leading-relaxed text-[#1e3932]/80 whitespace-pre-line font-light">
-                  {event.description}
-                </p>
-              </div>
-            )}
-
-            {/* Bloc d'achat épuré */}
-            <div className="bg-white border border-[#1e3932]/15 p-8 rounded-3xl shadow-lg flex flex-col sm:flex-row items-center justify-between gap-6">
-              <div>
-                <span className="text-[10px] uppercase tracking-wider text-[#1e3932]/50 font-medium block">Tarif unique</span>
-                <span className="text-3xl font-bold tracking-tight text-[#1e3932]">
-                  {basePrice === 0 ? 'Gratuit' : `${basePrice.toFixed(2)} €`}
-                </span>
-              </div>
-
-              <button
-                onClick={() => {
-                  setClientSecret(null);
-                  setIsSuccess(false);
-                  setIsCheckoutOpen(true);
-                }}
-                className="w-full sm:w-auto px-8 py-4 border border-[#1e3932]/15 bg-[#1e3932] text-white text-xs uppercase tracking-widest hover:bg-[#152a25] transition-all flex items-center justify-center gap-3 cursor-pointer shadow-md font-medium rounded-2xl"
-              >
-                <Ticket className="w-4 h-4" />
-                <span>{basePrice === 0 ? 'Réserver ma place' : 'Réserver mes places'}</span>
-                <ArrowUpRight className="w-4 h-4" />
-              </button>
+        {/* 3. Carte unifiée contenant la description, les tarifs et l'action d'achat */}
+        <div className="bg-white border border-[#1e3932]/15 p-8 sm:p-12 rounded-3xl shadow-xl space-y-8">
+          {event.description && (
+            <div className="space-y-3">
+              <h3 className="text-xs font-bold uppercase tracking-widest text-[#1e3932]/40">À propos de l&apos;événement</h3>
+              <p className="text-xs sm:text-sm leading-relaxed text-[#1e3932]/80 whitespace-pre-line font-light">
+                {event.description}
+              </p>
             </div>
-          </div>
+          )}
 
+          <div className="border-t border-[#1e3932]/10 pt-8 flex flex-col sm:flex-row items-center justify-between gap-6">
+            <div>
+              <span className="text-[10px] uppercase tracking-wider text-[#1e3932]/50 font-medium block">Tarif unique</span>
+              <span className="text-3xl font-bold tracking-tight text-[#1e3932]">
+                {basePrice === 0 ? 'Gratuit' : `${basePrice.toFixed(2)} €`}
+              </span>
+            </div>
+
+            <button
+              onClick={() => {
+                setClientSecret(null);
+                setIsSuccess(false);
+                setIsCheckoutOpen(true);
+              }}
+              className="w-full sm:w-auto px-8 py-4 border border-[#1e3932]/15 bg-[#1e3932] text-white text-xs uppercase tracking-widest hover:bg-[#152a25] transition-all flex items-center justify-center gap-3 cursor-pointer shadow-md font-medium rounded-2xl"
+            >
+              <Ticket className="w-4 h-4" />
+              <span>{basePrice === 0 ? 'Réserver ma place' : 'Réserver mes places'}</span>
+              <ArrowUpRight className="w-4 h-4" />
+            </button>
+          </div>
         </div>
 
       </div>
