@@ -136,11 +136,11 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
 
   return (
     <>
-      <header className="sticky top-0 z-50 bg-white border-b border-[#1e3932]/10 font-sans text-[#1e3932]">
-        <div className="max-w-7xl mx-auto px-6 lg:px-12 h-14 flex items-center justify-between gap-4">
+      <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-[#1e3932]/10 font-sans text-[#1e3932] py-2.5">
+        <div className="max-w-7xl mx-auto px-6 lg:px-12 flex items-center justify-between gap-4">
 
-          {/* 1. LOGO (Agrandit et positionné à gauche) */}
-          <Link href="/" className="flex items-center justify-start shrink-0">
+          {/* 1. LOGO */}
+          <Link href="/" className="flex items-center justify-start shrink-0 px-2">
             <Image 
               src="/tyks.svg" 
               alt="TYKS" 
@@ -153,12 +153,12 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
           </Link>
 
           {/* 2. ZONE DROITE : PILULE DE RECHERCHE & BOUTON CONNEXION / COMPTE */}
-          <div className="hidden md:flex items-center gap-3">
+          <div className="hidden md:flex items-center gap-2">
             {!isPro && (
               <div className="relative" ref={searchRef}>
                 <div 
-                  className={`flex items-center transition-all duration-300 border border-[#1e3932]/15 bg-[#f8faf9] rounded-full h-9 ${
-                    isSearchExpanded || searchQuery.trim() ? 'w-64 px-3' : 'w-9 px-0 justify-center cursor-pointer hover:border-[#1e3932]/40'
+                  className={`flex items-center transition-all duration-300 border border-[#1e3932]/15 bg-[#f8faf9] rounded-full h-10 ${
+                    isSearchExpanded || searchQuery.trim() ? 'w-64 px-3.5' : 'w-10 px-0 justify-center cursor-pointer hover:border-[#1e3932]/40'
                   }`}
                   onClick={() => {
                     if (!isSearchExpanded) {
@@ -198,7 +198,7 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
                 </div>
 
                 {showDropdown && searchQuery.trim().length > 0 && (
-                  <div className="absolute top-full right-0 w-80 mt-2 bg-white border border-[#1e3932]/15 rounded-xl divide-y divide-[#1e3932]/10 z-50 text-[#1e3932] shadow-xl">
+                  <div className="absolute top-full right-0 w-80 mt-2 bg-white border border-[#1e3932]/15 rounded-3xl divide-y divide-[#1e3932]/10 z-50 text-[#1e3932] shadow-xl overflow-hidden">
                     {results.length > 0 ? (
                       <div className="py-2">
                         {results.map((evt) => {
@@ -215,7 +215,7 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
                                 setIsSearchExpanded(false);
                                 router.push(`/events/${evt.slug || evt.id}`);
                               }}
-                              className="w-full text-left px-4 py-3 transition-all flex items-center justify-between group hover:bg-[#f8faf9]"
+                              className="w-full text-left px-5 py-3 transition-all flex items-center justify-between group hover:bg-[#f8faf9]"
                             >
                               <div className="space-y-1 pr-3 truncate">
                                 <p className="text-xs font-medium truncate text-[#1e3932]">
@@ -233,7 +233,7 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
                                 </div>
                               </div>
                               <div className="flex items-center gap-2 shrink-0">
-                                <span className="text-[10px] font-medium px-2 py-1 border border-[#1e3932]/15 bg-[#f8faf9] text-[#1e3932] rounded-md">
+                                <span className="text-[10px] font-medium px-2.5 py-1 border border-[#1e3932]/15 bg-[#f8faf9] text-[#1e3932] rounded-full">
                                   {priceFormatted}
                                 </span>
                                 <ArrowUpRight className="w-3.5 h-3.5 text-[#1e3932]/40 group-hover:text-[#1e3932] transition-colors" />
@@ -252,16 +252,16 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
               </div>
             )}
 
-            {/* Bouton Compte / Connexion */}
+            {/* Bouton Compte / Connexion ultra-arrondi */}
             {loadingUser ? (
-              <div className="h-9 w-28 border border-[#1e3932]/15 bg-[#f8faf9] rounded-xl flex items-center justify-center">
+              <div className="h-10 w-28 border border-[#1e3932]/15 bg-[#f8faf9] rounded-full flex items-center justify-center">
                 <Loader2 className="h-3.5 w-3.5 animate-spin text-[#1e3932]/60" />
               </div>
             ) : user ? (
               <div className="relative" ref={userMenuRef}>
                 <button
                   onClick={() => setUserMenuOpen(!userMenuOpen)}
-                  className="inline-flex h-9 items-center justify-between gap-2 border border-[#1e3932]/15 bg-[#f8faf9] px-3 text-xs font-medium tracking-wide transition-all hover:border-[#1e3932]/40 cursor-pointer text-[#1e3932] rounded-xl shadow-sm"
+                  className="inline-flex h-10 items-center justify-between gap-2 border border-[#1e3932]/15 bg-[#f8faf9] px-4 text-xs font-medium tracking-wide transition-all hover:border-[#1e3932]/40 cursor-pointer text-[#1e3932] rounded-full shadow-sm"
                 >
                   <div className="flex items-center gap-2 min-w-0">
                     <UserIcon className="w-3.5 h-3.5 shrink-0 text-[#1e3932]" />
@@ -273,11 +273,11 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
                 </button>
 
                 {userMenuOpen && (
-                  <div className="absolute right-0 top-full mt-2 w-44 bg-white border border-[#1e3932]/15 rounded-xl py-1.5 shadow-xl z-50 text-[#1e3932]">
+                  <div className="absolute right-0 top-full mt-2 w-48 bg-white border border-[#1e3932]/15 rounded-3xl py-2 shadow-xl z-50 text-[#1e3932] overflow-hidden">
                     <Link
                       href="/settings"
                       onClick={() => setUserMenuOpen(false)}
-                      className="w-full text-left px-4 py-2 text-xs tracking-wide flex items-center gap-2 transition-colors hover:bg-[#f8faf9] font-medium"
+                      className="w-full text-left px-5 py-2.5 text-xs tracking-wide flex items-center gap-2 transition-colors hover:bg-[#f8faf9] font-medium"
                     >
                       <Settings className="w-3.5 h-3.5 text-[#1e3932]" />
                       Paramètres
@@ -285,7 +285,7 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
 
                     <button
                       onClick={handleLogout}
-                      className="w-full text-left px-4 py-2 text-xs tracking-wide flex items-center gap-2 transition-colors hover:bg-red-50 font-medium text-red-600"
+                      className="w-full text-left px-5 py-2.5 text-xs tracking-wide flex items-center gap-2 transition-colors hover:bg-red-50 font-medium text-red-600"
                     >
                       <LogOut className="w-3.5 h-3.5" />
                       Déconnexion
@@ -296,7 +296,7 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
             ) : (
               <button
                 onClick={() => setIsAuthOpen(true)}
-                className="inline-flex h-9 px-4 border border-[#1e3932]/15 bg-[#1e3932] hover:bg-[#152a25] text-white text-xs tracking-wider transition-all items-center justify-center font-medium cursor-pointer rounded-xl shadow-md"
+                className="inline-flex h-10 px-5 border border-[#1e3932]/15 bg-[#1e3932] hover:bg-[#152a25] text-white text-xs tracking-wider transition-all items-center justify-center font-medium cursor-pointer rounded-full shadow-md"
               >
                 <span className="truncate">{isPro ? "Connexion Pro" : "Connexion"}</span>
               </button>
@@ -306,7 +306,7 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
           {/* MOBILE TOGGLE */}
           <div className="flex items-center md:hidden">
             <button
-              className="inline-flex items-center justify-center border border-[#1e3932]/15 bg-[#f8faf9] p-2 text-[#1e3932] rounded-xl"
+              className="inline-flex items-center justify-center border border-[#1e3932]/15 bg-[#f8faf9] p-2.5 text-[#1e3932] rounded-full"
               onClick={() => setMobileOpen((open) => !open)}
               aria-label="Ouvrir le menu"
             >
@@ -321,17 +321,17 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
             {!isPro && (
               <>
                 <div className="relative flex items-center">
-                  <Search className="absolute left-3.5 h-3.5 w-3.5 pointer-events-none text-[#1e3932]/40 z-10" />
+                  <Search className="absolute left-4 h-3.5 w-3.5 pointer-events-none text-[#1e3932]/40 z-10" />
                   <input
                     type="text"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     placeholder="Rechercher un événement..."
-                    className="w-full h-10 border border-[#1e3932]/15 bg-[#f8faf9] pl-10 pr-4 text-xs placeholder:text-[#1e3932]/40 focus:outline-none focus:border-[#1e3932] text-[#1e3932] rounded-xl"
+                    className="w-full h-10 border border-[#1e3932]/15 bg-[#f8faf9] pl-10 pr-4 text-xs placeholder:text-[#1e3932]/40 focus:outline-none focus:border-[#1e3932] text-[#1e3932] rounded-full"
                   />
                 </div>
                 {searchQuery.trim().length > 0 && results.length > 0 && (
-                  <div className="border border-[#1e3932]/15 bg-[#f8faf9] rounded-xl divide-y divide-[#1e3932]/10">
+                  <div className="border border-[#1e3932]/15 bg-[#f8faf9] rounded-3xl divide-y divide-[#1e3932]/10 overflow-hidden">
                     {results.map((evt) => (
                       <div
                         key={evt.id}
@@ -340,7 +340,7 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
                           setSearchQuery("");
                           router.push(`/events/${evt.slug || evt.id}`);
                         }}
-                        className="p-3 text-xs flex justify-between items-center cursor-pointer hover:bg-white text-[#1e3932]"
+                        className="p-3.5 text-xs flex justify-between items-center cursor-pointer hover:bg-white text-[#1e3932]"
                       >
                         <span className="font-medium truncate">{evt.title}</span>
                         <span className="font-medium text-[#1e3932]">{evt.price ? `${evt.price} €` : "Gratuit"}</span>
@@ -352,12 +352,12 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
             )}
 
             {loadingUser ? (
-              <div className="flex h-10 items-center justify-center border border-[#1e3932]/15 bg-[#f8faf9] rounded-xl">
+              <div className="flex h-10 items-center justify-center border border-[#1e3932]/15 bg-[#f8faf9] rounded-full">
                 <Loader2 className="h-3.5 w-3.5 animate-spin text-[#1e3932]/60" />
               </div>
             ) : user ? (
               <div className="flex flex-col gap-2.5 pt-1">
-                <div className="flex items-center justify-between border border-[#1e3932]/15 bg-[#f8faf9] px-4 py-2.5 text-xs font-medium text-[#1e3932] rounded-xl">
+                <div className="flex items-center justify-between border border-[#1e3932]/15 bg-[#f8faf9] px-4 py-2.5 text-xs font-medium text-[#1e3932] rounded-full">
                   <div className="flex items-center gap-2 truncate">
                     <UserIcon className="w-3.5 h-3.5 shrink-0 text-[#1e3932]" />
                     <span className="truncate">{firstName || user.email}</span>
@@ -366,14 +366,14 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
                 <Link
                   href="/settings"
                   onClick={() => setMobileOpen(false)}
-                  className="inline-flex items-center justify-center gap-2 border border-[#1e3932]/15 bg-[#f8faf9] px-4 py-2.5 text-xs font-medium tracking-wide hover:bg-white transition-colors rounded-xl"
+                  className="inline-flex items-center justify-center gap-2 border border-[#1e3932]/15 bg-[#f8faf9] px-4 py-2.5 text-xs font-medium tracking-wide hover:bg-white transition-colors rounded-full"
                 >
                   <Settings className="h-3.5 w-3.5 text-[#1e3932]" />
                   Paramètres
                 </Link>
                 <button
                   onClick={handleLogout}
-                  className="inline-flex items-center justify-center gap-2 border border-[#1e3932]/15 bg-[#f8faf9] text-red-600 px-4 py-2.5 text-xs font-medium tracking-wide hover:bg-red-50 transition-colors rounded-xl"
+                  className="inline-flex items-center justify-center gap-2 border border-[#1e3932]/15 bg-[#f8faf9] text-red-600 px-4 py-2.5 text-xs font-medium tracking-wide hover:bg-red-50 transition-colors rounded-full"
                 >
                   <LogOut className="h-3.5 w-3.5" />
                   Déconnexion
@@ -385,7 +385,7 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
                   setMobileOpen(false);
                   setIsAuthOpen(true);
                 }}
-                className="w-full h-10 border border-[#1e3932]/15 bg-[#1e3932] text-white text-xs tracking-wider font-medium rounded-xl shadow-md"
+                className="w-full h-10 border border-[#1e3932]/15 bg-[#1e3932] text-white text-xs tracking-wider font-medium rounded-full shadow-md"
               >
                 {isPro ? "Connexion Pro" : "Connexion"}
               </button>
