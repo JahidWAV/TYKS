@@ -91,7 +91,7 @@ export default function BankingDashboardPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-white text-[#1e3932]/60 font-mono text-xs uppercase tracking-widest flex items-center justify-center">
+      <div className="min-h-screen bg-white text-[#1e3932]/60 font-mono text-xs flex items-center justify-center">
         Chargement...
       </div>
     );
@@ -99,20 +99,19 @@ export default function BankingDashboardPage() {
 
   return (
     <div className="w-full px-6 lg:px-12 py-10 space-y-8 font-sans text-[#1e3932] bg-white min-h-full">
-      {/* Alerte si pas de compte bancaire lié avec bouton d'action intégré */}
       {!hasBankAccount && (
         <div className="p-6 rounded-2xl border border-amber-500/30 bg-amber-500/5 flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-sm">
           <div className="flex items-start gap-3">
             <AlertCircle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
             <div className="space-y-1 font-mono">
-              <p className="text-xs font-bold text-amber-900 uppercase tracking-wider">Compte bancaire non configuré</p>
+              <p className="text-xs font-bold text-amber-900">Compte bancaire non configuré</p>
               <p className="text-xs text-amber-800/80">Associez vos coordonnées bancaires pour permettre les virements automatiques de vos ventes.</p>
             </div>
           </div>
           <button
             onClick={handleStripeRedirect}
             disabled={connectingStripe}
-            className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#1e3932] px-5 py-3 text-xs font-mono font-bold text-white uppercase tracking-widest transition hover:bg-[#152a25] shadow-lg disabled:opacity-50 shrink-0 cursor-pointer"
+            className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#1e3932] px-5 py-3 text-xs font-mono font-bold text-white transition hover:bg-[#152a25] shadow-lg disabled:opacity-50 shrink-0 cursor-pointer"
           >
             {connectingStripe ? (
               <Loader2 className="h-4 w-4 animate-spin" />
@@ -124,13 +123,12 @@ export default function BankingDashboardPage() {
         </div>
       )}
 
-      {/* Si le compte est déjà configuré, on affiche le bouton de gestion en haut à droite */}
       {hasBankAccount && (
         <div className="flex items-center justify-end">
           <button
             onClick={handleStripeRedirect}
             disabled={connectingStripe}
-            className="inline-flex items-center gap-2 rounded-xl bg-[#1e3932] px-5 py-3 text-xs font-mono font-bold text-white uppercase tracking-widest transition hover:bg-[#152a25] shadow-lg disabled:opacity-50 cursor-pointer"
+            className="inline-flex items-center gap-2 rounded-xl bg-[#1e3932] px-5 py-3 text-xs font-mono font-bold text-white transition hover:bg-[#152a25] shadow-lg disabled:opacity-50 cursor-pointer"
           >
             {connectingStripe ? (
               <Loader2 className="h-4 w-4 animate-spin" />
@@ -142,41 +140,39 @@ export default function BankingDashboardPage() {
         </div>
       )}
 
-      {/* Cartes de soldes */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 font-mono">
         <div className="p-6 rounded-2xl border border-[#1e3932]/10 bg-[#f8faf9] space-y-3 shadow-xs">
           <div className="flex items-center justify-between">
-            <p className="text-xs uppercase tracking-wider text-[#1e3932]/60 font-bold">Solde disponible</p>
+            <p className="text-xs text-[#1e3932]/60 font-bold">Solde disponible</p>
             <Euro className="w-4 h-4 text-[#1e3932]" />
           </div>
           <p className="text-3xl font-bold tracking-tight text-[#1e3932]">
             {balance.available.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' })}
           </p>
-          <p className="text-[11px] text-[#1e3932]/50 uppercase">Fonds prêts à être versés vers votre compte.</p>
+          <p className="text-[11px] text-[#1e3932]/50">Fonds prêts à être versés vers votre compte.</p>
         </div>
 
         <div className="p-6 rounded-2xl border border-[#1e3932]/10 bg-[#f8faf9] space-y-3 shadow-xs">
           <div className="flex items-center justify-between">
-            <p className="text-xs uppercase tracking-wider text-[#1e3932]/60 font-bold">En cours de traitement</p>
+            <p className="text-xs text-[#1e3932]/60 font-bold">En cours de traitement</p>
             <CreditCard className="w-4 h-4 text-[#1e3932]" />
           </div>
           <p className="text-3xl font-bold tracking-tight text-[#1e3932]">
             {balance.pending.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' })}
           </p>
-          <p className="text-[11px] text-[#1e3932]/50 uppercase">Fonds liés aux ventes en cours.</p>
+          <p className="text-[11px] text-[#1e3932]/50">Fonds liés aux ventes en cours.</p>
         </div>
       </div>
 
-      {/* Historique des versements */}
       <div className="space-y-4 pt-4">
         <div className="flex items-center gap-2">
           <History className="w-4 h-4 text-[#1e3932]" />
-          <h2 className="text-xl font-serif font-medium uppercase tracking-tight text-[#1e3932]">Historique des virements</h2>
+          <h2 className="text-xl font-serif font-medium text-[#1e3932]">Historique des virements</h2>
         </div>
 
         <div className="rounded-2xl border border-[#1e3932]/10 bg-[#f8faf9] overflow-hidden shadow-xs font-mono">
           {payouts.length === 0 ? (
-            <div className="p-12 text-center text-xs uppercase tracking-wider text-[#1e3932]/60">
+            <div className="p-12 text-center text-xs text-[#1e3932]/60">
               Aucun virement enregistré pour le moment.
             </div>
           ) : (
@@ -184,8 +180,8 @@ export default function BankingDashboardPage() {
               {payouts.map((payout) => (
                 <div key={payout.id} className="flex items-center justify-between p-6 hover:bg-[#1e3932]/5 transition">
                   <div className="space-y-1">
-                    <p className="text-xs font-bold uppercase tracking-wider text-[#1e3932]">{payout.reference || payout.id}</p>
-                    <p className="text-[10px] text-[#1e3932]/50 uppercase">
+                    <p className="text-xs font-bold text-[#1e3932]">{payout.reference || payout.id}</p>
+                    <p className="text-[10px] text-[#1e3932]/50">
                       {payout.created_at ? `Versé le ${new Date(payout.created_at).toLocaleDateString('fr-FR', { dateStyle: 'long' })}` : ''}
                     </p>
                   </div>
@@ -193,7 +189,7 @@ export default function BankingDashboardPage() {
                     <span className="text-sm font-bold text-[#1e3932]">
                       {Number(payout.amount || 0).toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' })}
                     </span>
-                    <span className="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[#1e3932]/10 text-[#1e3932] border border-[#1e3932]/20">
+                    <span className="px-3 py-1 rounded-full text-[10px] font-bold bg-[#1e3932]/10 text-[#1e3932] border border-[#1e3932]/20">
                       {payout.status || 'Versé'}
                     </span>
                   </div>
