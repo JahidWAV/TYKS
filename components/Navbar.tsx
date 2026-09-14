@@ -259,41 +259,47 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
                 <Loader2 className="h-3.5 w-3.5 animate-spin text-[#1e3932]" />
               </div>
             ) : user ? (
-              <div className="relative" ref={userMenuRef}>
-                <button
-                  ref={profileButtonRef}
-                  onClick={() => setUserMenuOpen(!userMenuOpen)}
-                  className="inline-flex h-10 items-center justify-between gap-2 bg-[#1e3932] hover:bg-[#152a25] px-4 text-xs font-medium tracking-wide transition-all cursor-pointer text-white rounded-full shadow-md"
-                >
-                  <div className="flex items-center gap-2 min-w-0">
-                    <UserIcon className="w-3.5 h-3.5 shrink-0 text-white/80" />
-                    <span className="truncate text-left max-w-[100px]">
-                      {firstName || user.email.split('@')[0]}
-                    </span>
-                  </div>
-                  <ChevronDown className={`w-3 h-3 transition-transform shrink-0 text-white/70 ${userMenuOpen ? 'rotate-180' : ''}`} />
-                </button>
+              <div className="flex items-center gap-2">
+                {/* Menu déroulant indépendant placé sous la loupe (à gauche) */}
+                <div className="relative" ref={searchRef}>
+                  {userMenuOpen && (
+                    <div className="absolute left-0 top-full mt-2 flex flex-col gap-2 z-50">
+                      <Link
+                        href="/settings"
+                        onClick={() => setUserMenuOpen(false)}
+                        className="h-10 bg-[#1e3932] border border-white/10 hover:bg-[#152a25] px-4 text-xs font-medium tracking-wide transition-all flex items-center gap-2 text-white rounded-full shadow-xl"
+                      >
+                        <Settings className="w-3.5 h-3.5 shrink-0 text-white/80" />
+                        <span className="truncate">Paramètres</span>
+                      </Link>
 
-                {userMenuOpen && (
-                  <div className="absolute right-0 top-full mt-2 flex flex-col gap-2 z-50">
-                    <Link
-                      href="/settings"
-                      onClick={() => setUserMenuOpen(false)}
-                      className="w-10 h-10 bg-[#1e3932] border border-white/10 hover:bg-[#152a25] transition-all flex items-center justify-center text-white rounded-full shadow-xl"
-                      title="Paramètres"
-                    >
-                      <Settings className="w-3.5 h-3.5 text-white/80" />
-                    </Link>
+                      <button
+                        onClick={handleLogout}
+                        className="h-10 bg-[#1e3932] border border-white/10 hover:bg-red-500/20 px-4 text-xs font-medium tracking-wide transition-all flex items-center gap-2 text-red-300 rounded-full shadow-xl"
+                      >
+                        <LogOut className="w-3.5 h-3.5 shrink-0" />
+                        <span className="truncate">Déconnexion</span>
+                      </button>
+                    </div>
+                  )}
+                </div>
 
-                    <button
-                      onClick={handleLogout}
-                      className="w-10 h-10 bg-[#1e3932] border border-white/10 hover:bg-red-500/20 transition-all flex items-center justify-center text-red-300 rounded-full shadow-xl"
-                      title="Déconnexion"
-                    >
-                      <LogOut className="w-3.5 h-3.5" />
-                    </button>
-                  </div>
-                )}
+                {/* Bouton du profil à droite */}
+                <div className="relative" ref={userMenuRef}>
+                  <button
+                    ref={profileButtonRef}
+                    onClick={() => setUserMenuOpen(!userMenuOpen)}
+                    className="inline-flex h-10 items-center justify-between gap-2 bg-[#1e3932] hover:bg-[#152a25] px-4 text-xs font-medium tracking-wide transition-all cursor-pointer text-white rounded-full shadow-md"
+                  >
+                    <div className="flex items-center gap-2 min-w-0">
+                      <UserIcon className="w-3.5 h-3.5 shrink-0 text-white/80" />
+                      <span className="truncate text-left max-w-[100px]">
+                        {firstName || user.email.split('@')[0]}
+                      </span>
+                    </div>
+                    <ChevronDown className={`w-3 h-3 transition-transform shrink-0 text-white/70 ${userMenuOpen ? 'rotate-180' : ''}`} />
+                  </button>
+                </div>
               </div>
             ) : (
               <button
