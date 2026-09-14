@@ -135,11 +135,6 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
     return () => clearTimeout(timer);
   }, [searchQuery, isPro]);
 
-  // Calcul dynamique de la largeur totale (recherche repliée + gap 8px + bouton profil)
-  const totalMenuWidth = searchRef.current && profileButtonRef.current
-    ? searchRef.current.offsetWidth + 8 + profileButtonRef.current.offsetWidth
-    : 200;
-
   return (
     <>
       <header className="sticky top-0 z-50 bg-transparent font-sans text-[#1e3932] py-4">
@@ -280,33 +275,22 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
                 </button>
 
                 {userMenuOpen && (
-                  <div 
-                    className="absolute right-0 top-full mt-2 flex flex-col gap-2 z-50"
-                    style={{ width: `${totalMenuWidth}px` }}
-                  >
+                  <div className="absolute right-0 top-full mt-2 flex flex-col gap-2 z-50">
                     <Link
                       href="/settings"
                       onClick={() => setUserMenuOpen(false)}
-                      className="w-full h-10 bg-[#1e3932] border border-white/10 hover:bg-[#152a25] px-4 text-xs font-medium tracking-wide transition-all flex items-center text-white rounded-full shadow-xl"
+                      className="w-10 h-10 bg-[#1e3932] border border-white/10 hover:bg-[#152a25] transition-all flex items-center justify-center text-white rounded-full shadow-xl"
+                      title="Paramètres"
                     >
-                      <div className="flex items-center w-full" style={{ paddingLeft: '2px' }}>
-                        <div className="w-3.5 shrink-0 flex items-center justify-center mr-2">
-                          <Settings className="w-3.5 h-3.5 text-white/80" />
-                        </div>
-                        <span className="truncate">Paramètres</span>
-                      </div>
+                      <Settings className="w-3.5 h-3.5 text-white/80" />
                     </Link>
 
                     <button
                       onClick={handleLogout}
-                      className="w-full h-10 bg-[#1e3932] border border-white/10 hover:bg-red-500/20 px-4 text-xs font-medium tracking-wide transition-all flex items-center text-red-300 rounded-full shadow-xl"
+                      className="w-10 h-10 bg-[#1e3932] border border-white/10 hover:bg-red-500/20 transition-all flex items-center justify-center text-red-300 rounded-full shadow-xl"
+                      title="Déconnexion"
                     >
-                      <div className="flex items-center w-full" style={{ paddingLeft: '2px' }}>
-                        <div className="w-3.5 shrink-0 flex items-center justify-center mr-2">
-                          <LogOut className="w-3.5 h-3.5" />
-                        </div>
-                        <span className="truncate">Déconnexion</span>
-                      </div>
+                      <LogOut className="w-3.5 h-3.5" />
                     </button>
                   </div>
                 )}
