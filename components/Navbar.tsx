@@ -25,6 +25,7 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
   // États pour le menu utilisateur
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const userMenuRef = useRef<HTMLDivElement>(null);
+  const accountButtonRef = useRef<HTMLButtonElement>(null);
 
   // États pour la recherche (pilule expansible)
   const [isSearchExpanded, setIsSearchExpanded] = useState(false);
@@ -133,6 +134,11 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
     const timer = setTimeout(fetchResults, 250);
     return () => clearTimeout(timer);
   }, [searchQuery, isPro]);
+
+  // Calcul de la largeur totale (recherche repliée + gap 8px + bouton compte)
+  const totalMenuWidth = searchRef.current && accountButtonRef.current
+    ? searchRef.current.offsetWidth + 8 + accountButtonRef.current.offsetWidth
+    : 200;
 
   return (
     <>
@@ -260,6 +266,7 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
             ) : user ? (
               <div className="relative" ref={userMenuRef}>
                 <button
+                  ref={accountButtonRef}
                   onClick={() => setUserMenuOpen(!userMenuOpen)}
                   className="inline-flex h-10 items-center justify-between gap-2 bg-[#1e3932] hover:bg-[#152a25] px-4 text-xs font-medium tracking-wide transition-all cursor-pointer text-white rounded-full shadow-md"
                 >
@@ -273,7 +280,10 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
                 </button>
 
                 {userMenuOpen && (
-                  <div className="absolute right-0 top-full mt-2 w-48 bg-[#1e3932] border border-white/10 rounded-3xl py-2 shadow-xl z-50 text-white overflow-hidden">
+                  <div 
+                    className="absolute right-0 top-full mt-2 bg-[#1e3932] border border-white/10 rounded-3xl py-2 shadow-xl z-50 text-white overflow-hidden"
+                    style={{ width: `${totalMenuWidth}px` }}
+                  >
                     <Link
                       href="/settings"
                       onClick={() => setUserMenuOpen(false)}
@@ -295,6 +305,7 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
               </div>
             ) : (
               <button
+                ref={accountButtonRef}
                 onClick={() => setIsAuthOpen(true)}
                 className="inline-flex h-10 px-5 bg-[#1e3932] hover:bg-[#152a25] text-white text-xs tracking-wider transition-all items-center justify-center font-medium cursor-pointer rounded-full shadow-md"
               >
