@@ -11,7 +11,6 @@ export default function SettingsPage() {
   const router = useRouter();
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const [profile, setProfile] = useState<any>(null);
   const [saving, setSaving] = useState(false);
   const [firstName, setFirstName] = useState("");
   const [message, setMessage] = useState("");
@@ -36,7 +35,6 @@ export default function SettingsPage() {
 
       if (data?.first_name) {
         setFirstName(data.first_name);
-        setProfile(data);
       }
       setLoading(false);
     };
@@ -52,7 +50,7 @@ export default function SettingsPage() {
 
     const { error } = await supabaseBrowser
       .from("profiles")
-      update({ first_name: firstName })
+      .update({ first_name: firstName })
       .eq("id", user.id);
 
     if (error) {
