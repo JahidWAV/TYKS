@@ -93,7 +93,8 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
 
   return (
     <>
-      <header className="fixed top-0 left-0 right-0 z-50 bg-transparent font-sans text-[#1e3932] py-4">
+      {/* Utilisation de relative pour qu'elle défile avec la page */}
+      <header className="relative z-50 bg-transparent font-sans text-[#1e3932] py-4">
         <div className="max-w-7xl mx-auto px-6 lg:px-12 flex items-center justify-between gap-4">
 
           {/* 1. LOGO */}
@@ -211,7 +212,7 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
               </div>
             )}
 
-            {/* BOUTON PROFIL (Redirige vers /settings si connecté, sinon ouvre la modale de connexion) */}
+            {/* BOUTON PROFIL */}
             {loadingUser ? (
               <div className="h-10 w-10 bg-[#1e3932]/10 rounded-full flex items-center justify-center">
                 <Loader2 className="h-3.5 w-3.5 animate-spin text-[#1e3932]" />
