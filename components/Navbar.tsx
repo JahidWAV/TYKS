@@ -287,9 +287,9 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
                     <Link
                       href="/settings"
                       onClick={() => setUserMenuOpen(false)}
-                      className="w-full h-10 bg-[#1e3932] border border-white/10 hover:bg-[#152a25] px-4 text-xs font-medium tracking-wide transition-all flex items-center justify-start text-white rounded-full shadow-xl"
+                      className="w-full h-10 bg-[#1e3932] border border-white/10 hover:bg-[#152a25] px-4 text-xs font-medium tracking-wide transition-all flex items-center text-white rounded-full shadow-xl"
                     >
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center" style={{ paddingLeft: '2px', gap: '14px' }}>
                         <Settings className="w-3.5 h-3.5 text-white/80 shrink-0" />
                         <span className="truncate">Paramètres</span>
                       </div>
@@ -297,9 +297,9 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
 
                     <button
                       onClick={handleLogout}
-                      className="w-full h-10 bg-[#1e3932] border border-white/10 hover:bg-red-500/20 px-4 text-xs font-medium tracking-wide transition-all flex items-center justify-start text-red-300 rounded-full shadow-xl"
+                      className="w-full h-10 bg-[#1e3932] border border-white/10 hover:bg-red-500/20 px-4 text-xs font-medium tracking-wide transition-all flex items-center text-red-300 rounded-full shadow-xl"
                     >
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center" style={{ paddingLeft: '2px', gap: '14px' }}>
                         <LogOut className="w-3.5 h-3.5 shrink-0" />
                         <span className="truncate">Déconnexion</span>
                       </div>
