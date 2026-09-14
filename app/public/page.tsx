@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { ArrowUpRight, Calendar, MapPin, ShieldCheck, Ticket, Sparkles, Smartphone, QrCode } from 'lucide-react';
 import { supabaseBrowser } from '@/lib/supabase-browser';
 
@@ -114,6 +115,111 @@ export default function PublicHome() {
 
       </section>
 
+      {/* ─── LISTE DES ÉVÉNEMENTS (PLACÉE AU-DESSUS) ─── */}
+      <section id="evenements" className="max-w-7xl mx-auto px-6 lg:px-12 py-20 space-y-10 border-b border-[#1e3932]/10">
+        <div className="flex items-center justify-between border-b border-[#1e3932]/10 pb-4">
+          <h2 className="text-xs font-semibold uppercase tracking-[0.2em] text-[#1e3932]">
+            Programmation à l&apos;affiche
+          </h2>
+          <span className="text-xs uppercase tracking-wider text-[#1e3932]/60 font-medium">
+            {events.length} événement{events.length > 1 ? 's' : ''}
+          </span>
+        </div>
+
+        {loading ? (
+          <div className="bg-[#f8faf9] border border-[#1e3932]/10 p-16 text-center text-sm text-[#1e3932]/60 rounded-[2rem]">
+            Chargement des expériences...
+          </div>
+        ) : events.length === 0 ? (
+          <div className="bg-[#f8faf9] border border-[#1e3932]/10 p-16 text-center space-y-3 rounded-[2rem]">
+            <Calendar className="mx-auto h-8 w-8 text-[#1e3932]" />
+            <p className="text-sm text-[#1e3932]/70">
+              Aucun événement disponible pour le moment.
+            </p>
+          </div>
+        ) : (
+          <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+            {events.map((evt: any) => {
+              const eventPrice = Number(evt.price || evt.ticket_price || 0);
+              const eventImage = evt.image_url || evt.image;
+              const dateStr = evt.starts_at
+                ? new Date(evt.starts_at).toLocaleDateString('fr-FR', {
+                    day: 'numeric',
+                    month: 'long',
+                    year: 'numeric',
+                  })
+                : 'Date à venir';
+
+              return (
+                <article
+                  key={evt.id}
+                  className="group flex flex-col bg-[#f8faf9] border border-[#1e3932]/10 rounded-[2rem] overflow-hidden transition-all duration-300 hover:border-[#1e3932]/40 hover:shadow-xl hover:shadow-[#1e3932]/5"
+                >
+                  {/* Affichage de l'affiche de l'événement */}
+                  <div className="relative w-full h-48 bg-[#1e3932]/5 overflow-hidden border-b border-[#1e3932]/10">
+                    {eventImage ? (
+                      <Image
+                        src={eventImage}
+                        alt={evt.title || 'Événement'}
+                        fill
+                        className="object-cover group-hover:scale-105 transition-transform duration-500"
+                      />
+                    ) : (
+                      <div className="absolute inset-0 flex items-center justify-center text-[#1e3932]/30">
+                        <Calendar className="w-10 h-10" />
+                      </div>
+                    )}
+                    <div className="absolute top-3 right-3">
+                      <span className="text-[11px] font-medium px-2.5 py-1 bg-white/90 backdrop-blur-md border border-[#1e3932]/10 text-[#1e3932]/80 rounded-full shadow-sm">
+                        {evt.organizations?.name || 'Exclusivité'}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="p-6 flex-1 space-y-4">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-medium text-[#1e3932]/70 tracking-wide">
+                        {dateStr}
+                      </span>
+                    </div>
+
+                    <h3 className="text-xl font-serif font-medium text-[#1e3932] tracking-tight group-hover:text-[#152a25] transition-colors">
+                      {evt.title}
+                    </h3>
+
+                    {evt.description && (
+                      <p className="line-clamp-2 text-xs text-[#1e3932]/60 font-light leading-relaxed">
+                        {evt.description}
+                      </p>
+                    )}
+
+                    {evt.location && (
+                      <div className="flex items-center gap-2 text-xs text-[#1e3932]/70 pt-2">
+                        <MapPin className="h-3.5 w-3.5 text-[#1e3932] shrink-0" />
+                        <span className="truncate">{evt.location}</span>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="flex items-center justify-between border-t border-[#1e3932]/10 px-6 py-4 bg-white">
+                    <span className="text-sm font-semibold tracking-wide text-[#1e3932]">
+                      {eventPrice > 0 ? `${eventPrice.toLocaleString('fr-FR')} €` : 'Entrée libre'}
+                    </span>
+                    <Link
+                      href={`/events/${evt.slug || evt.id}`}
+                      className="h-10 px-5 bg-[#1e3932] hover:bg-[#152a25] text-white font-medium text-xs uppercase tracking-wider transition-all flex items-center gap-2 rounded-2xl shadow-md cursor-pointer"
+                    >
+                      <span>Réserver</span>
+                      <ArrowUpRight className="w-3.5 h-3.5" />
+                    </Link>
+                  </div>
+                </article>
+              );
+            })}
+          </div>
+        )}
+      </section>
+
       {/* ─── SECTION EXPLICATION & AVANTAGES ─── */}
       <section className="max-w-7xl mx-auto px-6 lg:px-12 py-20 border-b border-[#1e3932]/10">
         <div className="text-center max-w-2xl mx-auto space-y-4 mb-16">
@@ -156,92 +262,6 @@ export default function PublicHome() {
             </p>
           </div>
         </div>
-      </section>
-
-      {/* ─── LISTE DES ÉVÉNEMENTS ─── */}
-      <section id="evenements" className="max-w-7xl mx-auto px-6 lg:px-12 py-20 space-y-10">
-        <div className="flex items-center justify-between border-b border-[#1e3932]/10 pb-4">
-          <h2 className="text-xs font-semibold uppercase tracking-[0.2em] text-[#1e3932]">
-            Programmation à l&apos;affiche
-          </h2>
-          <span className="text-xs uppercase tracking-wider text-[#1e3932]/60 font-medium">
-            {events.length} événement{events.length > 1 ? 's' : ''}
-          </span>
-        </div>
-
-        {loading ? (
-          <div className="bg-[#f8faf9] border border-[#1e3932]/10 p-16 text-center text-sm text-[#1e3932]/60 rounded-[2rem]">
-            Chargement des expériences...
-          </div>
-        ) : events.length === 0 ? (
-          <div className="bg-[#f8faf9] border border-[#1e3932]/10 p-16 text-center space-y-3 rounded-[2rem]">
-            <Calendar className="mx-auto h-8 w-8 text-[#1e3932]" />
-            <p className="text-sm text-[#1e3932]/70">
-              Aucun événement disponible pour le moment.
-            </p>
-          </div>
-        ) : (
-          <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-            {events.map((evt: any) => {
-              const eventPrice = Number(evt.price || evt.ticket_price || 0);
-              const dateStr = evt.starts_at
-                ? new Date(evt.starts_at).toLocaleDateString('fr-FR', {
-                    day: 'numeric',
-                    month: 'long',
-                    year: 'numeric',
-                  })
-                : 'Date à venir';
-
-              return (
-                <article
-                  key={evt.id}
-                  className="group flex flex-col bg-[#f8faf9] border border-[#1e3932]/10 rounded-[2rem] overflow-hidden transition-all duration-300 hover:border-[#1e3932]/40 hover:shadow-xl hover:shadow-[#1e3932]/5"
-                >
-                  <div className="p-6 flex-1 space-y-4">
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs font-medium text-[#1e3932]/70 tracking-wide">
-                        {dateStr}
-                      </span>
-                      <span className="text-[11px] font-medium px-2.5 py-1 bg-white border border-[#1e3932]/10 text-[#1e3932]/80 rounded-full">
-                        {evt.organizations?.name || 'Exclusivité'}
-                      </span>
-                    </div>
-
-                    <h3 className="text-xl font-serif font-medium text-[#1e3932] tracking-tight group-hover:text-[#152a25] transition-colors">
-                      {evt.title}
-                    </h3>
-
-                    {evt.description && (
-                      <p className="line-clamp-2 text-xs text-[#1e3932]/60 font-light leading-relaxed">
-                        {evt.description}
-                      </p>
-                    )}
-
-                    {evt.location && (
-                      <div className="flex items-center gap-2 text-xs text-[#1e3932]/70 pt-2">
-                        <MapPin className="h-3.5 w-3.5 text-[#1e3932] shrink-0" />
-                        <span className="truncate">{evt.location}</span>
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="flex items-center justify-between border-t border-[#1e3932]/10 px-6 py-4 bg-white">
-                    <span className="text-sm font-semibold tracking-wide text-[#1e3932]">
-                      {eventPrice > 0 ? `${eventPrice.toLocaleString('fr-FR')} €` : 'Entrée libre'}
-                    </span>
-                    <Link
-                      href={`/events/${evt.slug || evt.id}`}
-                      className="h-10 px-5 bg-[#1e3932] hover:bg-[#152a25] text-white font-medium text-xs uppercase tracking-wider transition-all flex items-center gap-2 rounded-2xl shadow-md cursor-pointer"
-                    >
-                      <span>Réserver</span>
-                      <ArrowUpRight className="w-3.5 h-3.5" />
-                    </Link>
-                  </div>
-                </article>
-              );
-            })}
-          </div>
-        )}
       </section>
 
       {/* ─── ENCART ORGANISATEURS (BAS DE PAGE) ─── */}
