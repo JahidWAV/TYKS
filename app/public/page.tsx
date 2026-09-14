@@ -102,7 +102,7 @@ export default function PublicHome() {
               </div>
 
               {/* Simulation QR Code épurée */}
-              <div className="bg-white border border-[#1e3932]/10 p-4 rounded-3xl flex flex-col items-center justify-center text-center space-y-2 shadow-sm">
+              <div className="bg-white border border-[#1e3932]/10 p-4 rounded-2xl flex flex-col items-center justify-center text-center space-y-2 shadow-sm">
                 <div className="w-24 h-24 bg-[#f8faf9] rounded-2xl border border-[#1e3932]/10 flex items-center justify-center text-[#1e3932]">
                   <QrCode className="w-16 h-16 opacity-90" />
                 </div>
@@ -126,7 +126,7 @@ export default function PublicHome() {
         </div>
 
         <div className="grid md:grid-cols-3 gap-8">
-          <div className="bg-[#f8faf9] border border-[#1e3932]/10 p-8 rounded-3xl space-y-4 shadow-sm">
+          <div className="bg-[#f8faf9] border border-[#1e3932]/10 p-8 rounded-2xl space-y-4">
             <div className="w-12 h-12 rounded-2xl bg-[#1e3932]/10 border border-[#1e3932]/20 flex items-center justify-center text-[#1e3932]">
               <ShieldCheck className="w-6 h-6" />
             </div>
@@ -136,7 +136,7 @@ export default function PublicHome() {
             </p>
           </div>
 
-          <div className="bg-[#f8faf9] border border-[#1e3932]/10 p-8 rounded-3xl space-y-4 shadow-sm">
+          <div className="bg-[#f8faf9] border border-[#1e3932]/10 p-8 rounded-2xl space-y-4">
             <div className="w-12 h-12 rounded-2xl bg-[#1e3932]/10 border border-[#1e3932]/20 flex items-center justify-center text-[#1e3932]">
               <Ticket className="w-6 h-6" />
             </div>
@@ -146,7 +146,7 @@ export default function PublicHome() {
             </p>
           </div>
 
-          <div className="bg-[#f8faf9] border border-[#1e3932]/10 p-8 rounded-3xl space-y-4 shadow-sm">
+          <div className="bg-[#f8faf9] border border-[#1e3932]/10 p-8 rounded-2xl space-y-4">
             <div className="w-12 h-12 rounded-2xl bg-[#1e3932]/10 border border-[#1e3932]/20 flex items-center justify-center text-[#1e3932]">
               <Sparkles className="w-6 h-6" />
             </div>
@@ -170,11 +170,11 @@ export default function PublicHome() {
         </div>
 
         {loading ? (
-          <div className="bg-[#f8faf9] border border-[#1e3932]/10 p-16 text-center text-sm text-[#1e3932]/60 rounded-3xl">
+          <div className="bg-[#f8faf9] border border-[#1e3932]/10 p-16 text-center text-sm text-[#1e3932]/60 rounded-2xl">
             Chargement des expériences...
           </div>
         ) : events.length === 0 ? (
-          <div className="bg-[#f8faf9] border border-[#1e3932]/10 p-16 text-center space-y-3 rounded-3xl">
+          <div className="bg-[#f8faf9] border border-[#1e3932]/10 p-16 text-center space-y-3 rounded-2xl">
             <Calendar className="mx-auto h-8 w-8 text-[#1e3932]" />
             <p className="text-sm text-[#1e3932]/70">
               Aucun événement disponible pour le moment.
@@ -195,7 +195,7 @@ export default function PublicHome() {
               return (
                 <article
                   key={evt.id}
-                  className="group flex flex-col bg-[#f8faf9] border border-[#1e3932]/10 rounded-3xl overflow-hidden transition-all duration-300 hover:border-[#1e3932]/40 hover:shadow-xl hover:shadow-[#1e3932]/5"
+                  className="group flex flex-col bg-[#f8faf9] border border-[#1e3932]/10 rounded-2xl overflow-hidden transition-all duration-300 hover:border-[#1e3932]/40 hover:shadow-xl hover:shadow-[#1e3932]/5"
                 >
                   <div className="p-6 flex-1 space-y-4">
                     <div className="flex items-center justify-between">
