@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { LogOut, Loader2, Menu, X, Search, Calendar, MapPin, ArrowUpRight, User as UserIcon, Settings } from "lucide-react";
+import { LogOut, Loader2, Menu, X, Search, Calendar, MapPin, ArrowUpRight, User as UserIcon } from "lucide-react";
 import CustomAuthModal from "@/components/CustomAuthModal";
 import { supabaseBrowser } from "@/lib/supabase-browser";
 
@@ -21,7 +21,7 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
   const [user, setUser] = useState<any>(null);
   const [loadingUser, setLoadingUser] = useState(true);
 
-  // États pour le menu utilisateur / paramètres
+  // États pour le menu utilisateur (déconnexion)
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const userMenuRef = useRef<HTMLDivElement>(null);
 
@@ -107,23 +107,23 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
 
   return (
     <>
-      <header className="sticky top-0 z-50 bg-transparent font-sans text-[#1e3932] py-4">
+      <header className="fixed top-0 left-0 right-0 z-50 bg-transparent font-sans text-[#1e3932] py-4">
         <div className="max-w-7xl mx-auto px-6 lg:px-12 flex items-center justify-between gap-4">
 
-          {/* 1. LOGO */}
+          {/* 1. LOGO (hauteur augmentée à 40px pour correspondre à la taille des pilules) */}
           <Link href="/" className="flex items-center justify-start shrink-0 px-2">
             <Image 
               src="/tyks.svg" 
               alt="TYKS" 
-              width={220} 
-              height={70} 
+              width={260} 
+              height={85} 
               priority 
-              className="h-8 sm:h-9 w-auto object-contain text-[#1e3932]" 
+              className="h-10 sm:h-[40px] w-auto object-contain text-[#1e3932]" 
               style={{ filter: 'brightness(0) saturate(100%) invert(18%) sepia(21%) saturate(1210%) hue-rotate(124deg) brightness(94%) contrast(92%)' }}
             />
           </Link>
 
-          {/* 2. ZONE DROITE : LES TROIS BOUTONS CÔTE À CÔTE (Loupe, Paramètres, Profil/Connexion) */}
+          {/* 2. ZONE DROITE : LES ÉLÉMENTS CÔTE À CÔTE */}
           <div className="hidden md:flex items-center gap-2">
             
             {/* LOUPE (À gauche) */}
@@ -225,18 +225,7 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
               </div>
             )}
 
-            {/* BOUTON PARAMÈTRES (Au milieu - affiché uniquement si connecté) */}
-            {user && (
-              <Link
-                href="/settings"
-                className="w-10 h-10 bg-[#1e3932] hover:bg-[#152a25] transition-all flex items-center justify-center text-white rounded-full shadow-md shrink-0"
-                title="Paramètres"
-              >
-                <Settings className="w-3.5 h-3.5 text-white/80" />
-              </Link>
-            )}
-
-            {/* BOUTON PROFIL / CONNEXION / DÉCONNEXION (À droite) */}
+            {/* BOUTON PROFIL / CONNEXION (À droite) */}
             {loadingUser ? (
               <div className="h-10 w-10 bg-[#1e3932]/10 rounded-full flex items-center justify-center">
                 <Loader2 className="h-3.5 w-3.5 animate-spin text-[#1e3932]" />
@@ -329,14 +318,6 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
               </div>
             ) : user ? (
               <div className="flex flex-col gap-2.5 pt-1">
-                <Link
-                  href="/settings"
-                  onClick={() => setMobileOpen(false)}
-                  className="inline-flex items-center justify-center gap-2 bg-white/10 hover:bg-white/20 px-4 py-2.5 text-xs font-medium tracking-wide transition-colors rounded-full"
-                >
-                  <Settings className="h-3.5 w-3.5 text-white/80" />
-                  Paramètres
-                </Link>
                 <button
                   onClick={handleLogout}
                   className="inline-flex items-center justify-center gap-2 bg-red-500/20 text-red-200 px-4 py-2.5 text-xs font-medium tracking-wide hover:bg-red-500/30 transition-colors rounded-full"
