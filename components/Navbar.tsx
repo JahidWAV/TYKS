@@ -287,18 +287,18 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
                     <Link
                       href="/settings"
                       onClick={() => setUserMenuOpen(false)}
-                      className="w-full h-10 bg-[#1e3932] border border-white/10 hover:bg-[#152a25] px-4 text-xs font-medium tracking-wide transition-all flex items-center justify-between text-white rounded-full shadow-xl"
+                      className="w-full h-10 bg-[#1e3932] border border-white/10 hover:bg-[#152a25] px-4 text-xs font-medium tracking-wide transition-all flex items-center justify-start gap-3 text-white rounded-full shadow-xl"
                     >
                       <Settings className="w-3.5 h-3.5 text-white/80 shrink-0" />
-                      <span className="truncate text-right pr-1">Paramètres</span>
+                      <span className="truncate">Paramètres</span>
                     </Link>
 
                     <button
                       onClick={handleLogout}
-                      className="w-full h-10 bg-[#1e3932] border border-white/10 hover:bg-red-500/20 px-4 text-xs font-medium tracking-wide transition-all flex items-center justify-between text-red-300 rounded-full shadow-xl"
+                      className="w-full h-10 bg-[#1e3932] border border-white/10 hover:bg-red-500/20 px-4 text-xs font-medium tracking-wide transition-all flex items-center justify-start gap-3 text-red-300 rounded-full shadow-xl"
                     >
                       <LogOut className="w-3.5 h-3.5 shrink-0" />
-                      <span className="truncate text-right pr-1">Déconnexion</span>
+                      <span className="truncate">Déconnexion</span>
                     </button>
                   </div>
                 )}
