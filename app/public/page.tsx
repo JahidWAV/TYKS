@@ -155,21 +155,25 @@ export default function PublicHome() {
                   key={evt.id}
                   className="group flex flex-col bg-[#f8faf9] border border-[#1e3932]/10 rounded-[2rem] overflow-hidden transition-all duration-300 hover:border-[#1e3932]/40 hover:shadow-xl hover:shadow-[#1e3932]/5"
                 >
-                  {/* Affichage de l'affiche de l'événement */}
-                  <div className="relative w-full h-48 bg-[#1e3932]/5 overflow-hidden border-b border-[#1e3932]/10">
+                  {/* Encart Image / Affiche sécurisé */}
+                  <div className="relative w-full h-48 bg-[#1e3932]/5 overflow-hidden border-b border-[#1e3932]/10 flex items-center justify-center">
                     {eventImage ? (
                       <Image
                         src={eventImage}
                         alt={evt.title || 'Événement'}
                         fill
                         className="object-cover group-hover:scale-105 transition-transform duration-500"
+                        unoptimized={eventImage.startsWith('http')}
                       />
                     ) : (
-                      <div className="absolute inset-0 flex items-center justify-center text-[#1e3932]/30">
-                        <Calendar className="w-10 h-10" />
+                      <div className="flex flex-col items-center justify-center text-[#1e3932]/30 space-y-1">
+                        <Calendar className="w-8 h-8" />
+                        <span className="text-[10px] uppercase tracking-wider font-medium">TYKS Live</span>
                       </div>
                     )}
-                    <div className="absolute top-3 right-3">
+                    
+                    {/* Badge Organisation */}
+                    <div className="absolute top-3 right-3 z-10">
                       <span className="text-[11px] font-medium px-2.5 py-1 bg-white/90 backdrop-blur-md border border-[#1e3932]/10 text-[#1e3932]/80 rounded-full shadow-sm">
                         {evt.organizations?.name || 'Exclusivité'}
                       </span>
