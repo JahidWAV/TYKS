@@ -51,8 +51,8 @@ export async function middleware(request: NextRequest) {
     return NextResponse.rewrite(url)
   }
 
-  // 3. Site Public (`tyks.app`) : Laisser passer les événements publics directement
-  if (url.pathname.startsWith('/events')) {
+  // 3. Site Public (`tyks.app`) : Laisser passer les événements publics et la page settings directement
+  if (url.pathname.startsWith('/events') || url.pathname.startsWith('/settings')) {
     return NextResponse.next()
   }
 
@@ -73,3 +73,4 @@ export const config = {
     '/((?!_next/static|_next/image|favicon.ico|auth/callback|.*\\..*).*)',
   ],
 }
+```[cite: 1]
