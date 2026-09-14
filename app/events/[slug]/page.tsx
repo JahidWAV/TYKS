@@ -203,9 +203,12 @@ export default function PublicEventPage() {
   const totalPrice = basePrice * quantity;
 
   const startDate = event.starts_at ? new Date(event.starts_at) : null;
-  const formattedDate = startDate
+  const rawDate = startDate
     ? startDate.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
     : '';
+  
+  // Remplacement pour afficher "1er" au lieu de "1"
+  const formattedDate = rawDate ? rawDate.replace(/\b1\s/, '1er ') : '';
 
   const formattedTime = startDate
     ? startDate.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })
