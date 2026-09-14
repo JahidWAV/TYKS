@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { LogOut, Loader2, Menu, X, Search, Calendar, MapPin, ArrowUpRight, User as UserIcon, Settings, ChevronDown } from "lucide-react";
+import { LogOut, Loader2, Menu, X, Search, Calendar, MapPin, ArrowUpRight, User as UserIcon, Settings } from "lucide-react";
 import CustomAuthModal from "@/components/CustomAuthModal";
 import { supabaseBrowser } from "@/lib/supabase-browser";
 
@@ -19,13 +19,11 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
   const [mobileOpen, setMobileOpen] = useState(false);
   const [isAuthOpen, setIsAuthOpen] = useState(false);
   const [user, setUser] = useState<any>(null);
-  const [firstName, setFirstName] = useState<string>("");
   const [loadingUser, setLoadingUser] = useState(true);
 
-  // États pour le menu utilisateur
+  // États pour le menu utilisateur / paramètres
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const userMenuRef = useRef<HTMLDivElement>(null);
-  const profileButtonRef = useRef<HTMLButtonElement>(null);
 
   // États pour la recherche (pilule expansible)
   const [isSearchExpanded, setIsSearchExpanded] = useState(false);
@@ -38,41 +36,14 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
   useEffect(() => {
     const fetchUserData = async () => {
       const { data: { session } } = await supabaseBrowser.auth.getSession();
-      const currentUser = session?.user ?? null;
-      setUser(currentUser);
-
-      if (currentUser) {
-        const { data: profile } = await supabaseBrowser
-          .from("profiles")
-          .select("first_name")
-          .eq("id", currentUser.id)
-          .single();
-
-        if (profile?.first_name) {
-          setFirstName(profile.first_name);
-        }
-      }
+      setUser(session?.user ?? null);
       setLoadingUser(false);
     };
 
     fetchUserData();
 
-    const { data: { subscription } } = supabaseBrowser.auth.onAuthStateChange(async (_event, session) => {
-      const currentUser = session?.user ?? null;
-      setUser(currentUser);
-      if (currentUser) {
-        const { data: profile } = await supabaseBrowser
-          .from("profiles")
-          .select("first_name")
-          .eq("id", currentUser.id)
-          .single();
-
-        if (profile?.first_name) {
-          setFirstName(profile.first_name);
-        }
-      } else {
-        setFirstName("");
-      }
+    const { data: { subscription } } = supabaseBrowser.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
     });
 
     return () => subscription.unsubscribe();
@@ -82,7 +53,6 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
     setUserMenuOpen(false);
     await supabaseBrowser.auth.signOut();
     setUser(null);
-    setFirstName("");
     router.refresh();
   };
 
@@ -153,8 +123,10 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
             />
           </Link>
 
-          {/* 2. ZONE DROITE : PILULE DE RECHERCHE & BOUTON CONNEXION / COMPTE */}
+          {/* 2. ZONE DROITE : LES TROIS BOUTONS CÔTE À CÔTE (Loupe, Paramètres, Profil/Connexion) */}
           <div className="hidden md:flex items-center gap-2">
+            
+            {/* LOUPE (À gauche) */}
             {!isPro && (
               <div className="relative" ref={searchRef}>
                 <div 
@@ -197,38 +169,6 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
                     </button>
                   )}
                 </div>
-
-                {/* Menu déroulant avec l'icône seule à gauche et la pilule de texte à droite */}
-                {userMenuOpen && (
-                  <div className="absolute left-0 top-full mt-2 flex flex-col gap-2 z-50">
-                    {/* Option Paramètres */}
-                    <Link
-                      href="/settings"
-                      onClick={() => setUserMenuOpen(false)}
-                      className="flex items-center gap-2 group"
-                    >
-                      <div className="w-10 h-10 bg-[#1e3932] border border-white/10 hover:bg-[#152a25] flex items-center justify-center text-white rounded-full shadow-md shrink-0">
-                        <Settings className="w-3.5 h-3.5 text-white/80" />
-                      </div>
-                      <div className="h-10 bg-[#1e3932] border border-white/10 hover:bg-[#152a25] px-5 flex items-center text-xs font-medium tracking-wide text-white rounded-full shadow-md">
-                        Paramètres
-                      </div>
-                    </Link>
-
-                    {/* Option Déconnexion */}
-                    <button
-                      onClick={handleLogout}
-                      className="flex items-center gap-2 group text-left"
-                    >
-                      <div className="w-10 h-10 bg-[#1e3932] border border-white/10 hover:bg-red-500/20 flex items-center justify-center text-red-300 rounded-full shadow-md shrink-0">
-                        <LogOut className="w-3.5 h-3.5" />
-                      </div>
-                      <div className="h-10 bg-[#1e3932] border border-white/10 hover:bg-red-500/20 px-5 flex items-center text-xs font-medium tracking-wide text-red-300 rounded-full shadow-md">
-                        Déconnexion
-                      </div>
-                    </button>
-                  </div>
-                )}
 
                 {showDropdown && searchQuery.trim().length > 0 && (
                   <div className="absolute top-full right-0 w-80 mt-2 bg-white border border-[#1e3932]/15 rounded-3xl divide-y divide-[#1e3932]/10 z-50 text-[#1e3932] shadow-xl overflow-hidden">
@@ -285,35 +225,54 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
               </div>
             )}
 
-            {/* Bouton Compte / Connexion vert */}
+            {/* BOUTON PARAMÈTRES (Au milieu - affiché uniquement si connecté) */}
+            {user && (
+              <Link
+                href="/settings"
+                className="w-10 h-10 bg-[#1e3932] hover:bg-[#152a25] transition-all flex items-center justify-center text-white rounded-full shadow-md shrink-0"
+                title="Paramètres"
+              >
+                <Settings className="w-3.5 h-3.5 text-white/80" />
+              </Link>
+            )}
+
+            {/* BOUTON PROFIL / CONNEXION / DÉCONNEXION (À droite) */}
             {loadingUser ? (
-              <div className="h-10 w-28 bg-[#1e3932]/10 rounded-full flex items-center justify-center">
+              <div className="h-10 w-10 bg-[#1e3932]/10 rounded-full flex items-center justify-center">
                 <Loader2 className="h-3.5 w-3.5 animate-spin text-[#1e3932]" />
               </div>
             ) : user ? (
               <div className="relative" ref={userMenuRef}>
                 <button
-                  ref={profileButtonRef}
                   onClick={() => setUserMenuOpen(!userMenuOpen)}
-                  className="inline-flex h-10 items-center justify-between gap-2 bg-[#1e3932] hover:bg-[#152a25] px-4 text-xs font-medium tracking-wide transition-all cursor-pointer text-white rounded-full shadow-md"
+                  className="w-10 h-10 bg-[#1e3932] hover:bg-[#152a25] transition-all flex items-center justify-center text-white rounded-full shadow-md shrink-0 cursor-pointer"
+                  title="Menu compte"
                 >
-                  <div className="flex items-center gap-2 min-w-0">
-                    <UserIcon className="w-3.5 h-3.5 shrink-0 text-white/80" />
-                    <span className="truncate text-left max-w-[100px]">
-                      {firstName || user.email.split('@')[0]}
-                    </span>
-                  </div>
-                  <ChevronDown className={`w-3 h-3 transition-transform shrink-0 text-white/70 ${userMenuOpen ? 'rotate-180' : ''}`} />
+                  <UserIcon className="w-3.5 h-3.5 text-white/80" />
                 </button>
+
+                {userMenuOpen && (
+                  <div className="absolute right-0 top-full mt-2 flex flex-col gap-2 z-50">
+                    <button
+                      onClick={handleLogout}
+                      className="w-10 h-10 bg-[#1e3932] border border-white/10 hover:bg-red-500/20 transition-all flex items-center justify-center text-red-300 rounded-full shadow-xl"
+                      title="Déconnexion"
+                    >
+                      <LogOut className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                )}
               </div>
             ) : (
               <button
                 onClick={() => setIsAuthOpen(true)}
-                className="inline-flex h-10 px-5 bg-[#1e3932] hover:bg-[#152a25] text-white text-xs tracking-wider transition-all items-center justify-center font-medium cursor-pointer rounded-full shadow-md"
+                className="w-10 h-10 bg-[#1e3932] hover:bg-[#152a25] transition-all flex items-center justify-center text-white rounded-full shadow-md shrink-0 cursor-pointer"
+                title={isPro ? "Connexion Pro" : "Connexion"}
               >
-                <span className="truncate">{isPro ? "Connexion Pro" : "Connexion"}</span>
+                <UserIcon className="w-3.5 h-3.5 text-white/80" />
               </button>
             )}
+
           </div>
 
           {/* MOBILE TOGGLE */}
@@ -370,12 +329,6 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
               </div>
             ) : user ? (
               <div className="flex flex-col gap-2.5 pt-1">
-                <div className="flex items-center justify-between bg-black/20 px-4 py-2.5 text-xs font-medium text-white rounded-full">
-                  <div className="flex items-center gap-2 truncate">
-                    <UserIcon className="w-3.5 h-3.5 shrink-0 text-white/80" />
-                    <span className="truncate">{firstName || user.email}</span>
-                  </div>
-                </div>
                 <Link
                   href="/settings"
                   onClick={() => setMobileOpen(false)}
