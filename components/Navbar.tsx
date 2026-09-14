@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { LogOut, Loader2, Menu, X, Search, Calendar, MapPin, ArrowUpRight, User as UserIcon } from "lucide-react";
+import { Loader2, Menu, X, Search, Calendar, MapPin, ArrowUpRight, User as UserIcon } from "lucide-react";
 import CustomAuthModal from "@/components/CustomAuthModal";
 import { supabaseBrowser } from "@/lib/supabase-browser";
 
@@ -20,10 +20,6 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
   const [isAuthOpen, setIsAuthOpen] = useState(false);
   const [user, setUser] = useState<any>(null);
   const [loadingUser, setLoadingUser] = useState(true);
-
-  // États pour le menu utilisateur (déconnexion)
-  const [userMenuOpen, setUserMenuOpen] = useState(false);
-  const userMenuRef = useRef<HTMLDivElement>(null);
 
   // États pour la recherche (pilule expansible)
   const [isSearchExpanded, setIsSearchExpanded] = useState(false);
@@ -49,13 +45,6 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
     return () => subscription.unsubscribe();
   }, []);
 
-  const handleLogout = async () => {
-    setUserMenuOpen(false);
-    await supabaseBrowser.auth.signOut();
-    setUser(null);
-    router.refresh();
-  };
-
   // Fermeture des menus au clic extérieur
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -64,9 +53,6 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
         if (!searchQuery.trim()) {
           setIsSearchExpanded(false);
         }
-      }
-      if (userMenuRef.current && !userMenuRef.current.contains(event.target as Node)) {
-        setUserMenuOpen(false);
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
@@ -110,7 +96,7 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
       <header className="fixed top-0 left-0 right-0 z-50 bg-transparent font-sans text-[#1e3932] py-4">
         <div className="max-w-7xl mx-auto px-6 lg:px-12 flex items-center justify-between gap-4">
 
-          {/* 1. LOGO (hauteur augmentée à 40px pour correspondre à la taille des pilules) */}
+          {/* 1. LOGO */}
           <Link href="/" className="flex items-center justify-start shrink-0 px-2">
             <Image 
               src="/tyks.svg" 
@@ -225,33 +211,19 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
               </div>
             )}
 
-            {/* BOUTON PROFIL / CONNEXION (À droite) */}
+            {/* BOUTON PROFIL (Redirige vers /settings si connecté, sinon ouvre la modale de connexion) */}
             {loadingUser ? (
               <div className="h-10 w-10 bg-[#1e3932]/10 rounded-full flex items-center justify-center">
                 <Loader2 className="h-3.5 w-3.5 animate-spin text-[#1e3932]" />
               </div>
             ) : user ? (
-              <div className="relative" ref={userMenuRef}>
-                <button
-                  onClick={() => setUserMenuOpen(!userMenuOpen)}
-                  className="w-10 h-10 bg-[#1e3932] hover:bg-[#152a25] transition-all flex items-center justify-center text-white rounded-full shadow-md shrink-0 cursor-pointer"
-                  title="Menu compte"
-                >
-                  <UserIcon className="w-3.5 h-3.5 text-white/80" />
-                </button>
-
-                {userMenuOpen && (
-                  <div className="absolute right-0 top-full mt-2 flex flex-col gap-2 z-50">
-                    <button
-                      onClick={handleLogout}
-                      className="w-10 h-10 bg-[#1e3932] border border-white/10 hover:bg-red-500/20 transition-all flex items-center justify-center text-red-300 rounded-full shadow-xl"
-                      title="Déconnexion"
-                    >
-                      <LogOut className="w-3.5 h-3.5" />
-                    </button>
-                  </div>
-                )}
-              </div>
+              <Link
+                href="/settings"
+                className="w-10 h-10 bg-[#1e3932] hover:bg-[#152a25] transition-all flex items-center justify-center text-white rounded-full shadow-md shrink-0 cursor-pointer"
+                title="Paramètres / Profil"
+              >
+                <UserIcon className="w-3.5 h-3.5 text-white/80" />
+              </Link>
             ) : (
               <button
                 onClick={() => setIsAuthOpen(true)}
@@ -317,15 +289,14 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
                 <Loader2 className="h-3.5 w-3.5 animate-spin text-white" />
               </div>
             ) : user ? (
-              <div className="flex flex-col gap-2.5 pt-1">
-                <button
-                  onClick={handleLogout}
-                  className="inline-flex items-center justify-center gap-2 bg-red-500/20 text-red-200 px-4 py-2.5 text-xs font-medium tracking-wide hover:bg-red-500/30 transition-colors rounded-full"
-                >
-                  <LogOut className="h-3.5 w-3.5" />
-                  Déconnexion
-                </button>
-              </div>
+              <Link
+                href="/settings"
+                onClick={() => setMobileOpen(false)}
+                className="w-full h-10 bg-white/10 hover:bg-white/20 text-white text-xs tracking-wider font-medium rounded-full shadow-md flex items-center justify-center gap-2"
+              >
+                <UserIcon className="h-3.5 w-3.5 text-white/80" />
+                Paramètres
+              </Link>
             ) : (
               <button
                 onClick={() => {
