@@ -52,13 +52,13 @@ export default function PublicHome() {
           <div className="flex flex-wrap items-center gap-4 pt-2">
             <a
               href="#evenements"
-              className="h-12 px-7 bg-[#1e3932] hover:bg-[#152a25] text-white font-medium text-xs uppercase tracking-wider transition-all flex items-center justify-center rounded-2xl shadow-lg cursor-pointer"
+              className="h-12 px-7 bg-[#1e3932] hover:bg-[#152a25] text-white font-medium text-xs uppercase tracking-wider transition-all flex items-center justify-center rounded-[2rem] shadow-lg cursor-pointer"
             >
               Voir la programmation
             </a>
             <a
               href="https://pro.tyks.app"
-              className="h-12 px-7 bg-[#1e3932]/5 hover:bg-[#1e3932]/10 border border-[#1e3932]/15 text-[#1e3932] font-medium text-xs uppercase tracking-wider transition-all flex items-center justify-center rounded-2xl cursor-pointer"
+              className="h-12 px-7 bg-[#1e3932]/5 hover:bg-[#1e3932]/10 border border-[#1e3932]/15 text-[#1e3932] font-medium text-xs uppercase tracking-wider transition-all flex items-center justify-center rounded-[2rem] cursor-pointer"
             >
               Espace Organisateur
             </a>
@@ -67,7 +67,7 @@ export default function PublicHome() {
 
         {/* Colonne Droite : Animation / Encart de téléchargement Application Mobile & QR Code */}
         <div className="lg:col-span-5">
-          <div className="relative bg-[#f8faf9] border border-[#1e3932]/15 p-8 rounded-3xl shadow-xl space-y-6 overflow-hidden">
+          <div className="relative bg-[#f8faf9] border border-[#1e3932]/15 p-8 rounded-[2.5rem] shadow-xl space-y-6 overflow-hidden">
             <div className="absolute -top-24 -right-24 w-48 h-48 bg-[#1e3932]/5 rounded-full blur-3xl pointer-events-none"></div>
 
             <div className="flex items-center justify-between border-b border-[#1e3932]/10 pb-4">
@@ -102,7 +102,7 @@ export default function PublicHome() {
               </div>
 
               {/* Simulation QR Code épurée */}
-              <div className="bg-white border border-[#1e3932]/10 p-4 rounded-2xl flex flex-col items-center justify-center text-center space-y-2 shadow-sm">
+              <div className="bg-white border border-[#1e3932]/10 p-4 rounded-[2rem] flex flex-col items-center justify-center text-center space-y-2 shadow-sm">
                 <div className="w-24 h-24 bg-[#f8faf9] rounded-2xl border border-[#1e3932]/10 flex items-center justify-center text-[#1e3932]">
                   <QrCode className="w-16 h-16 opacity-90" />
                 </div>
@@ -126,7 +126,7 @@ export default function PublicHome() {
         </div>
 
         <div className="grid md:grid-cols-3 gap-8">
-          <div className="bg-[#f8faf9] border border-[#1e3932]/10 p-8 rounded-2xl space-y-4">
+          <div className="bg-[#f8faf9] border border-[#1e3932]/10 p-8 rounded-[2rem] space-y-4">
             <div className="w-12 h-12 rounded-2xl bg-[#1e3932]/10 border border-[#1e3932]/20 flex items-center justify-center text-[#1e3932]">
               <ShieldCheck className="w-6 h-6" />
             </div>
@@ -136,7 +136,7 @@ export default function PublicHome() {
             </p>
           </div>
 
-          <div className="bg-[#f8faf9] border border-[#1e3932]/10 p-8 rounded-2xl space-y-4">
+          <div className="bg-[#f8faf9] border border-[#1e3932]/10 p-8 rounded-[2rem] space-y-4">
             <div className="w-12 h-12 rounded-2xl bg-[#1e3932]/10 border border-[#1e3932]/20 flex items-center justify-center text-[#1e3932]">
               <Ticket className="w-6 h-6" />
             </div>
@@ -146,7 +146,7 @@ export default function PublicHome() {
             </p>
           </div>
 
-          <div className="bg-[#f8faf9] border border-[#1e3932]/10 p-8 rounded-2xl space-y-4">
+          <div className="bg-[#f8faf9] border border-[#1e3932]/10 p-8 rounded-[2rem] space-y-4">
             <div className="w-12 h-12 rounded-2xl bg-[#1e3932]/10 border border-[#1e3932]/20 flex items-center justify-center text-[#1e3932]">
               <Sparkles className="w-6 h-6" />
             </div>
@@ -170,11 +170,11 @@ export default function PublicHome() {
         </div>
 
         {loading ? (
-          <div className="bg-[#f8faf9] border border-[#1e3932]/10 p-16 text-center text-sm text-[#1e3932]/60 rounded-2xl">
+          <div className="bg-[#f8faf9] border border-[#1e3932]/10 p-16 text-center text-sm text-[#1e3932]/60 rounded-[2rem]">
             Chargement des expériences...
           </div>
         ) : events.length === 0 ? (
-          <div className="bg-[#f8faf9] border border-[#1e3932]/10 p-16 text-center space-y-3 rounded-2xl">
+          <div className="bg-[#f8faf9] border border-[#1e3932]/10 p-16 text-center space-y-3 rounded-[2rem]">
             <Calendar className="mx-auto h-8 w-8 text-[#1e3932]" />
             <p className="text-sm text-[#1e3932]/70">
               Aucun événement disponible pour le moment.
@@ -195,7 +195,7 @@ export default function PublicHome() {
               return (
                 <article
                   key={evt.id}
-                  className="group flex flex-col bg-[#f8faf9] border border-[#1e3932]/10 rounded-2xl overflow-hidden transition-all duration-300 hover:border-[#1e3932]/40 hover:shadow-xl hover:shadow-[#1e3932]/5"
+                  className="group flex flex-col bg-[#f8faf9] border border-[#1e3932]/10 rounded-[2rem] overflow-hidden transition-all duration-300 hover:border-[#1e3932]/40 hover:shadow-xl hover:shadow-[#1e3932]/5"
                 >
                   <div className="p-6 flex-1 space-y-4">
                     <div className="flex items-center justify-between">
@@ -246,7 +246,7 @@ export default function PublicHome() {
 
       {/* ─── ENCART ORGANISATEURS (BAS DE PAGE) ─── */}
       <section className="max-w-7xl mx-auto px-6 lg:px-12 py-16">
-        <div className="bg-[#f8faf9] border border-[#1e3932]/20 rounded-3xl p-8 sm:p-12 flex flex-col md:flex-row items-center justify-between gap-8 shadow-xl">
+        <div className="bg-[#f8faf9] border border-[#1e3932]/20 rounded-[2.5rem] p-8 sm:p-12 flex flex-col md:flex-row items-center justify-between gap-8 shadow-xl">
           <div className="space-y-3 max-w-xl text-center md:text-left">
             <span className="text-xs font-semibold uppercase tracking-[0.2em] text-[#1e3932]">
               Espace Professionnel
@@ -261,7 +261,7 @@ export default function PublicHome() {
 
           <a
             href="https://pro.tyks.app"
-            className="h-12 px-8 bg-[#1e3932] hover:bg-[#152a25] text-white font-medium text-xs uppercase tracking-wider transition-all flex items-center justify-center rounded-2xl shadow-lg shrink-0 cursor-pointer"
+            className="h-12 px-8 bg-[#1e3932] hover:bg-[#152a25] text-white font-medium text-xs uppercase tracking-wider transition-all flex items-center justify-center rounded-[2rem] shadow-lg shrink-0 cursor-pointer"
           >
             Accéder à l&apos;espace Pro
           </a>
