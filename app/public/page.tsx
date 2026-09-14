@@ -52,13 +52,13 @@ export default function PublicHome() {
           <div className="flex flex-wrap items-center gap-4 pt-2">
             <a
               href="#evenements"
-              className="h-12 px-7 bg-[#1e3932] hover:bg-[#152a25] text-white font-medium text-xs uppercase tracking-wider transition-all flex items-center justify-center rounded-xl shadow-lg cursor-pointer"
+              className="h-12 px-7 bg-[#1e3932] hover:bg-[#152a25] text-white font-medium text-xs uppercase tracking-wider transition-all flex items-center justify-center rounded-2xl shadow-lg cursor-pointer"
             >
               Voir la programmation
             </a>
             <a
               href="https://pro.tyks.app"
-              className="h-12 px-7 bg-[#1e3932]/5 hover:bg-[#1e3932]/10 border border-[#1e3932]/15 text-[#1e3932] font-medium text-xs uppercase tracking-wider transition-all flex items-center justify-center rounded-xl cursor-pointer"
+              className="h-12 px-7 bg-[#1e3932]/5 hover:bg-[#1e3932]/10 border border-[#1e3932]/15 text-[#1e3932] font-medium text-xs uppercase tracking-wider transition-all flex items-center justify-center rounded-2xl cursor-pointer"
             >
               Espace Organisateur
             </a>
@@ -72,7 +72,7 @@ export default function PublicHome() {
 
             <div className="flex items-center justify-between border-b border-[#1e3932]/10 pb-4">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-[#1e3932]/10 border border-[#1e3932]/20 flex items-center justify-center text-[#1e3932]">
+                <div className="w-10 h-10 rounded-2xl bg-[#1e3932]/10 border border-[#1e3932]/20 flex items-center justify-center text-[#1e3932]">
                   <Smartphone className="w-5 h-5" />
                 </div>
                 <div>
@@ -102,8 +102,8 @@ export default function PublicHome() {
               </div>
 
               {/* Simulation QR Code épurée */}
-              <div className="bg-white border border-[#1e3932]/10 p-4 rounded-2xl flex flex-col items-center justify-center text-center space-y-2 shadow-sm">
-                <div className="w-24 h-24 bg-[#f8faf9] rounded-xl border border-[#1e3932]/10 flex items-center justify-center text-[#1e3932]">
+              <div className="bg-white border border-[#1e3932]/10 p-4 rounded-3xl flex flex-col items-center justify-center text-center space-y-2 shadow-sm">
+                <div className="w-24 h-24 bg-[#f8faf9] rounded-2xl border border-[#1e3932]/10 flex items-center justify-center text-[#1e3932]">
                   <QrCode className="w-16 h-16 opacity-90" />
                 </div>
                 <span className="text-[10px] uppercase tracking-wider text-[#1e3932]/50 font-medium">Scannez pour installer</span>
@@ -126,8 +126,8 @@ export default function PublicHome() {
         </div>
 
         <div className="grid md:grid-cols-3 gap-8">
-          <div className="bg-[#f8faf9] border border-[#1e3932]/10 p-8 rounded-2xl space-y-4">
-            <div className="w-12 h-12 rounded-xl bg-[#1e3932]/10 border border-[#1e3932]/20 flex items-center justify-center text-[#1e3932]">
+          <div className="bg-[#f8faf9] border border-[#1e3932]/10 p-8 rounded-3xl space-y-4 shadow-sm">
+            <div className="w-12 h-12 rounded-2xl bg-[#1e3932]/10 border border-[#1e3932]/20 flex items-center justify-center text-[#1e3932]">
               <ShieldCheck className="w-6 h-6" />
             </div>
             <h3 className="text-lg font-serif text-[#1e3932]">Zéro frais cachés</h3>
@@ -136,8 +136,8 @@ export default function PublicHome() {
             </p>
           </div>
 
-          <div className="bg-[#f8faf9] border border-[#1e3932]/10 p-8 rounded-2xl space-y-4">
-            <div className="w-12 h-12 rounded-xl bg-[#1e3932]/10 border border-[#1e3932]/20 flex items-center justify-center text-[#1e3932]">
+          <div className="bg-[#f8faf9] border border-[#1e3932]/10 p-8 rounded-3xl space-y-4 shadow-sm">
+            <div className="w-12 h-12 rounded-2xl bg-[#1e3932]/10 border border-[#1e3932]/20 flex items-center justify-center text-[#1e3932]">
               <Ticket className="w-6 h-6" />
             </div>
             <h3 className="text-lg font-serif text-[#1e3932]">Revente officielle sécurisée</h3>
@@ -146,8 +146,8 @@ export default function PublicHome() {
             </p>
           </div>
 
-          <div className="bg-[#f8faf9] border border-[#1e3932]/10 p-8 rounded-2xl space-y-4">
-            <div className="w-12 h-12 rounded-xl bg-[#1e3932]/10 border border-[#1e3932]/20 flex items-center justify-center text-[#1e3932]">
+          <div className="bg-[#f8faf9] border border-[#1e3932]/10 p-8 rounded-3xl space-y-4 shadow-sm">
+            <div className="w-12 h-12 rounded-2xl bg-[#1e3932]/10 border border-[#1e3932]/20 flex items-center justify-center text-[#1e3932]">
               <Sparkles className="w-6 h-6" />
             </div>
             <h3 className="text-lg font-serif text-[#1e3932]">Sélection pointue</h3>
@@ -170,11 +170,11 @@ export default function PublicHome() {
         </div>
 
         {loading ? (
-          <div className="bg-[#f8faf9] border border-[#1e3932]/10 p-16 text-center text-sm text-[#1e3932]/60 rounded-2xl">
+          <div className="bg-[#f8faf9] border border-[#1e3932]/10 p-16 text-center text-sm text-[#1e3932]/60 rounded-3xl">
             Chargement des expériences...
           </div>
         ) : events.length === 0 ? (
-          <div className="bg-[#f8faf9] border border-[#1e3932]/10 p-16 text-center space-y-3 rounded-2xl">
+          <div className="bg-[#f8faf9] border border-[#1e3932]/10 p-16 text-center space-y-3 rounded-3xl">
             <Calendar className="mx-auto h-8 w-8 text-[#1e3932]" />
             <p className="text-sm text-[#1e3932]/70">
               Aucun événement disponible pour le moment.
@@ -195,7 +195,7 @@ export default function PublicHome() {
               return (
                 <article
                   key={evt.id}
-                  className="group flex flex-col bg-[#f8faf9] border border-[#1e3932]/10 rounded-2xl overflow-hidden transition-all duration-300 hover:border-[#1e3932]/40 hover:shadow-xl hover:shadow-[#1e3932]/5"
+                  className="group flex flex-col bg-[#f8faf9] border border-[#1e3932]/10 rounded-3xl overflow-hidden transition-all duration-300 hover:border-[#1e3932]/40 hover:shadow-xl hover:shadow-[#1e3932]/5"
                 >
                   <div className="p-6 flex-1 space-y-4">
                     <div className="flex items-center justify-between">
@@ -231,7 +231,7 @@ export default function PublicHome() {
                     </span>
                     <Link
                       href={`/events/${evt.slug || evt.id}`}
-                      className="h-10 px-5 bg-[#1e3932] hover:bg-[#152a25] text-white font-medium text-xs uppercase tracking-wider transition-all flex items-center gap-2 rounded-xl shadow-md cursor-pointer"
+                      className="h-10 px-5 bg-[#1e3932] hover:bg-[#152a25] text-white font-medium text-xs uppercase tracking-wider transition-all flex items-center gap-2 rounded-2xl shadow-md cursor-pointer"
                     >
                       <span>Réserver</span>
                       <ArrowUpRight className="w-3.5 h-3.5" />
@@ -261,7 +261,7 @@ export default function PublicHome() {
 
           <a
             href="https://pro.tyks.app"
-            className="h-12 px-8 bg-[#1e3932] hover:bg-[#152a25] text-white font-medium text-xs uppercase tracking-wider transition-all flex items-center justify-center rounded-xl shadow-lg shrink-0 cursor-pointer"
+            className="h-12 px-8 bg-[#1e3932] hover:bg-[#152a25] text-white font-medium text-xs uppercase tracking-wider transition-all flex items-center justify-center rounded-2xl shadow-lg shrink-0 cursor-pointer"
           >
             Accéder à l&apos;espace Pro
           </a>
