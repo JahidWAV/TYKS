@@ -135,7 +135,7 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
     return () => clearTimeout(timer);
   }, [searchQuery, isPro]);
 
-  // Calcul dynamique de la largeur (recherche repliée + gap 8px + bouton profil)
+  // Calcul dynamique de la largeur totale (recherche repliée + gap 8px + bouton profil)
   const totalMenuWidth = searchRef.current && profileButtonRef.current
     ? searchRef.current.offsetWidth + 8 + profileButtonRef.current.offsetWidth
     : 200;
@@ -281,28 +281,24 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
 
                 {userMenuOpen && (
                   <div 
-                    className="absolute right-0 top-full mt-2 bg-[#1e3932] border border-white/10 rounded-3xl py-2 shadow-xl z-50 text-white overflow-hidden"
+                    className="absolute right-0 top-full mt-2 flex flex-col gap-2 z-50"
                     style={{ width: `${totalMenuWidth}px` }}
                   >
                     <Link
                       href="/settings"
                       onClick={() => setUserMenuOpen(false)}
-                      className="w-full text-left px-4 py-2.5 text-xs tracking-wide flex items-center transition-colors hover:bg-white/10 font-medium"
+                      className="w-full h-10 bg-[#1e3932] border border-white/10 hover:bg-[#152a25] px-4 text-xs font-medium tracking-wide transition-all flex items-center justify-between text-white rounded-full shadow-xl"
                     >
-                      <span className="w-6 shrink-0 flex items-center">
-                        <Settings className="w-3.5 h-3.5 text-white/80" />
-                      </span>
-                      <span className="truncate">Paramètres</span>
+                      <Settings className="w-3.5 h-3.5 text-white/80 shrink-0" />
+                      <span className="truncate text-right">Paramètres</span>
                     </Link>
 
                     <button
                       onClick={handleLogout}
-                      className="w-full text-left px-4 py-2.5 text-xs tracking-wide flex items-center transition-colors hover:bg-red-500/20 font-medium text-red-300"
+                      className="w-full h-10 bg-[#1e3932] border border-white/10 hover:bg-red-500/20 px-4 text-xs font-medium tracking-wide transition-all flex items-center justify-between text-red-300 rounded-full shadow-xl"
                     >
-                      <span className="w-6 shrink-0 flex items-center">
-                        <LogOut className="w-3.5 h-3.5 text-red-300" />
-                      </span>
-                      <span className="truncate">Déconnexion</span>
+                      <LogOut className="w-3.5 h-3.5 shrink-0" />
+                      <span className="truncate text-right">Déconnexion</span>
                     </button>
                   </div>
                 )}
