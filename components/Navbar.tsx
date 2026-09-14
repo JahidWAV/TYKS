@@ -287,22 +287,22 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
                     <Link
                       href="/settings"
                       onClick={() => setUserMenuOpen(false)}
-                      className="w-full h-10 bg-[#1e3932] border border-white/10 hover:bg-[#152a25] px-4 text-xs font-medium tracking-wide transition-all grid grid-cols-[20px_1fr] items-center gap-2 text-white rounded-full shadow-xl"
+                      className="w-full h-10 bg-[#1e3932] border border-white/10 hover:bg-[#152a25] px-4 text-xs font-medium tracking-wide transition-all flex items-center justify-start text-white rounded-full shadow-xl"
                     >
-                      <div className="flex justify-center">
+                      <div className="flex items-center gap-2">
                         <Settings className="w-3.5 h-3.5 text-white/80 shrink-0" />
+                        <span className="truncate">Paramètres</span>
                       </div>
-                      <span className="truncate text-left">Paramètres</span>
                     </Link>
 
                     <button
                       onClick={handleLogout}
-                      className="w-full h-10 bg-[#1e3932] border border-white/10 hover:bg-red-500/20 px-4 text-xs font-medium tracking-wide transition-all grid grid-cols-[20px_1fr] items-center gap-2 text-red-300 rounded-full shadow-xl"
+                      className="w-full h-10 bg-[#1e3932] border border-white/10 hover:bg-red-500/20 px-4 text-xs font-medium tracking-wide transition-all flex items-center justify-start text-red-300 rounded-full shadow-xl"
                     >
-                      <div className="flex justify-center">
+                      <div className="flex items-center gap-2">
                         <LogOut className="w-3.5 h-3.5 shrink-0" />
+                        <span className="truncate">Déconnexion</span>
                       </div>
-                      <span className="truncate text-left">Déconnexion</span>
                     </button>
                   </div>
                 )}
