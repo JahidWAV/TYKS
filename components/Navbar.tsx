@@ -19,7 +19,6 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
   const [mobileOpen, setMobileOpen] = useState(false);
   const [isAuthOpen, setIsAuthOpen] = useState(false);
   const [user, setUser] = useState<any>(null);
-  const [loadingUser, setLoadingUser] = useState(true);
 
   // États pour la recherche (pilule expansible)
   const [isSearchExpanded, setIsSearchExpanded] = useState(false);
@@ -33,7 +32,6 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
     const fetchUserData = async () => {
       const { data: { session } } = await supabaseBrowser.auth.getSession();
       setUser(session?.user ?? null);
-      setLoadingUser(false);
     };
 
     fetchUserData();
@@ -91,21 +89,31 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
     return () => clearTimeout(timer);
   }, [searchQuery, isPro]);
 
+  // Si l'utilisateur est connecté -> lien vers /settings, sinon -> ouvre la modale de connexion.
+  // Le rendu est direct sans passer par un état de chargement visuel qui fait clignoter l'icône.
+  const handleProfileClick = () => {
+    if (user) {
+      router.push("/settings");
+    } else {
+      setIsAuthOpen(true);
+    }
+  };
+
   return (
     <>
       {/* Utilisation de relative pour qu'elle défile avec la page */}
       <header className="relative z-50 bg-transparent font-sans text-[#1e3932] py-4">
         <div className="max-w-7xl mx-auto px-6 lg:px-12 flex items-center justify-between gap-4">
 
-          {/* 1. LOGO */}
+          {/* 1. LOGO AGRANDI */}
           <Link href="/" className="flex items-center justify-start shrink-0 px-2">
             <Image 
               src="/tyks.svg" 
               alt="TYKS" 
-              width={260} 
-              height={85} 
+              width={340} 
+              height={110} 
               priority 
-              className="h-10 sm:h-[40px] w-auto object-contain text-[#1e3932]" 
+              className="h-12 sm:h-16 w-auto object-contain text-[#1e3932]" 
               style={{ filter: 'brightness(0) saturate(100%) invert(18%) sepia(21%) saturate(1210%) hue-rotate(124deg) brightness(94%) contrast(92%)' }}
             />
           </Link>
@@ -212,28 +220,14 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
               </div>
             )}
 
-            {/* BOUTON PROFIL */}
-            {loadingUser ? (
-              <div className="h-10 w-10 bg-[#1e3932]/10 rounded-full flex items-center justify-center">
-                <Loader2 className="h-3.5 w-3.5 animate-spin text-[#1e3932]" />
-              </div>
-            ) : user ? (
-              <Link
-                href="/settings"
-                className="w-10 h-10 bg-[#1e3932] hover:bg-[#152a25] transition-all flex items-center justify-center text-white rounded-full shadow-md shrink-0 cursor-pointer"
-                title="Paramètres / Profil"
-              >
-                <UserIcon className="w-3.5 h-3.5 text-white/80" />
-              </Link>
-            ) : (
-              <button
-                onClick={() => setIsAuthOpen(true)}
-                className="w-10 h-10 bg-[#1e3932] hover:bg-[#152a25] transition-all flex items-center justify-center text-white rounded-full shadow-md shrink-0 cursor-pointer"
-                title={isPro ? "Connexion Pro" : "Connexion"}
-              >
-                <UserIcon className="w-3.5 h-3.5 text-white/80" />
-              </button>
-            )}
+            {/* BOUTON PROFIL (Sans flash de chargement) */}
+            <button
+              onClick={handleProfileClick}
+              className="w-10 h-10 bg-[#1e3932] hover:bg-[#152a25] transition-all flex items-center justify-center text-white rounded-full shadow-md shrink-0 cursor-pointer"
+              title={user ? "Paramètres / Profil" : (isPro ? "Connexion Pro" : "Connexion")}
+            >
+              <UserIcon className="w-3.5 h-3.5 text-white/80" />
+            </button>
 
           </div>
 
@@ -285,11 +279,7 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
               </>
             )}
 
-            {loadingUser ? (
-              <div className="flex h-10 items-center justify-center bg-black/20 rounded-full">
-                <Loader2 className="h-3.5 w-3.5 animate-spin text-white" />
-              </div>
-            ) : user ? (
+            {user ? (
               <Link
                 href="/settings"
                 onClick={() => setMobileOpen(false)}
