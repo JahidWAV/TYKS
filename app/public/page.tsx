@@ -117,9 +117,9 @@ export default function PublicHome() {
       {/* ─── LISTE DES ÉVÉNEMENTS ─── */}
       <section id="evenements" className="max-w-7xl mx-auto px-6 lg:px-12 py-24 space-y-12 border-b border-[#1e3932]/10">
         <div className="flex flex-col sm:flex-row sm:items-end justify-between border-b border-[#1e3932]/10 pb-6 gap-4">
-          <h2 className="text-3xl font-grotesque font-normal text-[#1e3932]">Programmation à l&apos;affiche</h2>
+          <h2 className="text-3xl font-grotesque font-normal text-[#1e3932]">Prochains événements</h2>
           <span className="text-xs uppercase tracking-wider text-[#1e3932]/70 font-medium px-4 py-1.5 rounded-full bg-[#1e3932]/5 border border-[#1e3932]/10 w-fit">
-            {events.length} événement{events.length > 1 ? 's' : ''} disponible{events.length > 1 ? 's' : ''}
+            {events.length} disponible{events.length > 1 ? 's' : ''}
           </span>
         </div>
 
