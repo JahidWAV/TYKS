@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Calendar, MapPin, ArrowUpRight, Ticket, ShieldAlert, Edit3, Trash2, Loader2 } from 'lucide-react';
+import { Calendar, MapPin, ArrowUpRight, Ticket, Edit3, Trash2, Loader2, Image as ImageIcon } from 'lucide-react';
 import Link from 'next/link';
 import { supabaseBrowser } from '@/lib/supabase-browser';
 
@@ -57,18 +57,11 @@ export default function AdminEventsPage() {
 
   return (
     <div className="w-full px-6 lg:px-12 py-8 space-y-8 font-grotesque text-white bg-[#0f0f0f] min-h-full uppercase">
-      {/* Conteneur plein écran sans limitation de largeur max */}
       <div className="w-full space-y-8">
         
-        {/* En-tête */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between pb-6 border-b border-white/10 gap-4">
-          <div className="space-y-1">
-            <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs bg-neutral-900 text-white font-bold border border-white/15 shadow-xs w-fit">
-              <ShieldAlert className="w-3.5 h-3.5" /> ADMINISTRATION GLOBALE
-            </span>
-            <h1 className="text-3xl lg:text-4xl font-normal tracking-tight leading-none text-white pt-2">TOUS LES ÉVÉNEMENTS</h1>
-          </div>
-          <span className="text-xs font-bold px-3.5 py-1.5 rounded-full bg-neutral-900 border border-white/15 text-white w-fit shadow-xs">
+        {/* Compteur discret en haut à droite */}
+        <div className="flex justify-end">
+          <span className="text-xs font-bold px-3.5 py-1.5 rounded-full bg-neutral-900 border border-white/15 text-white shadow-xs">
             {events.length} ÉVÉNEMENT(S)
           </span>
         </div>
@@ -96,34 +89,54 @@ export default function AdminEventsPage() {
               return (
                 <div
                   key={event.id}
-                  className="rounded-2xl border border-white/10 bg-neutral-900 p-6 space-y-4 shadow-xs flex flex-col justify-between hover:border-white transition"
+                  className="rounded-2xl border border-white/10 bg-neutral-900 overflow-hidden shadow-xs flex flex-col justify-between hover:border-white transition group"
                 >
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between text-[11px] text-white/50 font-bold">
-                      <span>{formattedDate}</span>
-                      <span className="px-2.5 py-0.5 rounded-full bg-neutral-950 border border-white/15 text-white text-[10px]">
-                        {event.status?.toUpperCase() || 'ACTIF'}
-                      </span>
+                  <div>
+                    {/* Affiche de l'événement */}
+                    <div className="w-full h-44 bg-neutral-950 border-b border-white/10 relative overflow-hidden">
+                      {event.image_url ? (
+                        <img 
+                          src={event.image_url} 
+                          alt={event.title} 
+                          className="w-full h-full object-cover group-hover:scale-105 transition duration-300" 
+                        />
+                      ) : (
+                        <div className="w-full h-full flex flex-col items-center justify-center text-white/30 gap-1">
+                          <ImageIcon className="w-6 h-6" />
+                          <span className="text-[10px]">AUCUN VISUEL</span>
+                        </div>
+                      )}
                     </div>
 
-                    <h3 className="text-xl font-normal text-white leading-snug">
-                      {event.title}
-                    </h3>
-
-                    <p className="text-xs text-white/60 font-bold">
-                      {event.organizations?.name || 'ORGANISATEUR INDÉPENDANT'}
-                    </p>
-
-                    {event.location && (
-                      <div className="flex items-center gap-2 text-xs text-white/70 pt-1">
-                        <MapPin className="w-3.5 h-3.5 text-white shrink-0" />
-                        <span className="truncate">{event.location}</span>
+                    {/* Contenu textuel */}
+                    <div className="p-6 space-y-3">
+                      <div className="flex items-center justify-between text-[11px] text-white/50 font-bold">
+                        <span>{formattedDate}</span>
+                        <span className="px-2.5 py-0.5 rounded-full bg-neutral-950 border border-white/15 text-white text-[10px]">
+                          {event.status?.toUpperCase() || 'ACTIF'}
+                        </span>
                       </div>
-                    )}
+
+                      <h3 className="text-xl font-normal text-white leading-snug line-clamp-1">
+                        {event.title}
+                      </h3>
+
+                      <p className="text-xs text-white/60 font-bold truncate">
+                        {event.organizations?.name || 'ORGANISATEUR INDÉPENDANT'}
+                      </p>
+
+                      {event.location && (
+                        <div className="flex items-center gap-2 text-xs text-white/70 pt-1">
+                          <MapPin className="w-3.5 h-3.5 text-white shrink-0" />
+                          <span className="truncate">{event.location}</span>
+                        </div>
+                      )}
+                    </div>
                   </div>
 
-                  <div className="space-y-4 pt-4 border-t border-white/10">
-                    <div className="flex items-center justify-between">
+                  {/* Boutons d'actions et prix */}
+                  <div className="p-6 pt-0 space-y-4">
+                    <div className="flex items-center justify-between pt-4 border-t border-white/10">
                       <span className="text-xs font-bold text-white">
                         {priceFormatted}
                       </span>
@@ -132,7 +145,6 @@ export default function AdminEventsPage() {
                       </span>
                     </div>
 
-                    {/* Boutons d'actions groupés */}
                     <div className="flex items-center gap-2">
                       <a
                         href={publicUrl}
