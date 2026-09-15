@@ -148,7 +148,7 @@ export default function OrganizerDashboard() {
 
   if (!ready) {
     return (
-      <div className="min-h-screen bg-white text-[#1e3932]/60 font-grotesque text-xs flex items-center justify-center uppercase">
+      <div className="min-h-screen bg-white text-black/60 font-grotesque text-xs flex items-center justify-center uppercase">
         CHARGEMENT...
       </div>
     );
@@ -156,28 +156,28 @@ export default function OrganizerDashboard() {
 
   if (!user) {
     return (
-      <div className="min-h-screen bg-white text-[#1e3932] flex flex-col lg:flex-row w-full overflow-hidden selection:bg-[#1e3932] selection:text-white font-grotesque uppercase">
+      <div className="min-h-screen bg-white text-black flex flex-col lg:flex-row w-full overflow-hidden selection:bg-black selection:text-white font-grotesque uppercase">
         
-        <div className="w-full lg:w-1/2 flex flex-col justify-between p-8 lg:p-16 z-10 bg-white border-b lg:border-b-0 lg:border-r border-[#1e3932]/10">
+        <div className="w-full lg:w-1/2 flex flex-col justify-between p-8 lg:p-16 z-10 bg-white border-b lg:border-b-0 lg:border-r border-black/15">
           <div className="flex items-center gap-3">
-            <span className="h-9 w-9 rounded-lg bg-[#1e3932] text-white flex items-center justify-center font-grotesque font-bold text-xs">T</span>
-            <span className="font-grotesque text-xs font-bold text-[#1e3932]">TYKS PRO</span>
+            <span className="h-9 w-9 rounded-lg bg-black text-white flex items-center justify-center font-grotesque font-bold text-xs">T</span>
+            <span className="font-grotesque text-xs font-bold text-black">TYKS PRO</span>
           </div>
 
           <div className="space-y-6 my-auto py-12">
-            <span className="inline-block font-grotesque text-[11px] bg-[#1e3932]/10 border border-[#1e3932]/20 text-[#1e3932] px-3 py-1.5 rounded-full">
+            <span className="inline-block font-grotesque text-[11px] bg-black/10 border border-black/20 text-black px-3 py-1.5 rounded-full">
               TYKS PRO · ESPACE ORGANISATEUR
             </span>
-            <h1 className="text-4xl lg:text-6xl font-grotesque font-normal tracking-tight text-[#1e3932] leading-[1.05]">
+            <h1 className="text-4xl lg:text-6xl font-grotesque font-normal tracking-tight text-black leading-[1.05]">
               REPRENEZ LE CONTRÔLE DE VOTRE BILLETTERIE ET DE VOS MARGES.
             </h1>
-            <p className="font-grotesque text-xs leading-relaxed text-[#1e3932]/70 max-w-md">
+            <p className="font-grotesque text-xs leading-relaxed text-black/70 max-w-md">
               FINS DE COMMISSIONS ABUSIVES ET DE DONNÉES CAPTIVES. TYKS PRO VOUS OFFRE UNE PLATEFORME SUR-MESURE, DES FRAIS RÉDUITS ET L&apos;ACCÈS DIRECT À VOTRE COMMUNAUTÉ.
             </p>
             <div>
               <button
                 onClick={() => setIsAuthModalOpen(true)}
-                className="w-full sm:w-auto px-8 py-4 bg-[#1e3932] text-white font-grotesque text-xs hover:bg-[#152a25] transition-colors flex items-center justify-center gap-3 cursor-pointer font-bold rounded-xl shadow-lg"
+                className="w-full sm:w-auto px-8 py-4 bg-black text-white font-grotesque text-xs hover:bg-neutral-800 transition-colors flex items-center justify-center gap-3 cursor-pointer font-bold rounded-xl shadow-lg"
               >
                 <span>ACCÉDER À MON ESPACE PRO</span>
                 <ArrowUpRight className="w-4 h-4" />
@@ -185,20 +185,20 @@ export default function OrganizerDashboard() {
             </div>
           </div>
 
-          <div className="font-grotesque text-xs text-[#1e3932]/40">
+          <div className="font-grotesque text-xs text-black/40">
             © TYKS INC.
           </div>
         </div>
 
-        <div className="hidden lg:flex w-1/2 bg-[#f8faf9] p-12 relative overflow-hidden items-center justify-center select-none pointer-events-none">
-          <div className="w-full max-w-lg bg-white border border-[#1e3932]/15 rounded-3xl p-6 space-y-6 shadow-xl font-grotesque">
-            <div className="flex items-center justify-between border-b border-[#1e3932]/10 pb-4">
+        <div className="hidden lg:flex w-1/2 bg-neutral-50 p-12 relative overflow-hidden items-center justify-center select-none pointer-events-none">
+          <div className="w-full max-w-lg bg-white border border-black/20 rounded-3xl p-6 space-y-6 shadow-xl font-grotesque">
+            <div className="flex items-center justify-between border-b border-black/10 pb-4">
               <div className="flex items-center gap-2">
-                <span className="h-3 w-3 rounded-full bg-[#1e3932]/20"></span>
-                <span className="h-3 w-3 rounded-full bg-[#1e3932]/20"></span>
-                <span className="h-3 w-3 rounded-full bg-[#1e3932]/20"></span>
+                <span className="h-3 w-3 rounded-full bg-black/20"></span>
+                <span className="h-3 w-3 rounded-full bg-black/20"></span>
+                <span className="h-3 w-3 rounded-full bg-black/20"></span>
               </div>
-              <span className="text-xs font-grotesque text-[#1e3932]/50 lowercase">dashboard.tyks.app</span>
+              <span className="text-xs font-grotesque text-black/50 lowercase">dashboard.tyks.app</span>
             </div>
           </div>
         </div>
@@ -214,7 +214,7 @@ export default function OrganizerDashboard() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-white text-[#1e3932]/60 font-grotesque text-xs flex items-center justify-center uppercase">
+      <div className="min-h-screen bg-white text-black/60 font-grotesque text-xs flex items-center justify-center uppercase">
         CHARGEMENT...
       </div>
     );
@@ -232,31 +232,31 @@ export default function OrganizerDashboard() {
     : 0;
 
   return (
-    <div className="w-full px-6 lg:px-12 pt-4 pb-12 space-y-8 font-grotesque text-[#1e3932] bg-white min-h-full uppercase">
+    <div className="w-full px-6 lg:px-12 pt-4 pb-12 space-y-8 font-grotesque text-black bg-white min-h-full uppercase">
       
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 border-b border-[#1e3932]/10">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 border-b border-black/15">
         <div className="space-y-2">
           <div className="flex items-center gap-2">
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-[#1e3932]/20 text-xs font-grotesque bg-[#1e3932]/10 font-bold text-[#1e3932]">
-              <ShieldCheck className="w-3.5 h-3.5 text-[#1e3932]" /> ACCÈS ILLIMITÉ (SANS ABONNEMENT)
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-black/20 text-xs font-grotesque bg-black/10 font-bold text-black">
+              <ShieldCheck className="w-3.5 h-3.5 text-black" /> ACCÈS ILLIMITÉ (SANS ABONNEMENT)
             </span>
           </div>
-          <h1 className="text-3xl lg:text-5xl font-grotesque font-normal tracking-tight leading-none text-[#1e3932]">APERÇU DES VENTES</h1>
-          <p className="text-xs font-grotesque text-[#1e3932]/60">ANALYSEZ ET OPTIMISEZ VOS VENTES EN TEMPS RÉEL</p>
+          <h1 className="text-3xl lg:text-5xl font-grotesque font-normal tracking-tight leading-none text-black">APERÇU DES VENTES</h1>
+          <p className="text-xs font-grotesque text-black/60">ANALYSEZ ET OPTIMISEZ VOS VENTES EN TEMPS RÉEL</p>
         </div>
 
         <div className="flex items-center gap-3">
           <button
             onClick={() => loadDashboard(user.id, true)}
             disabled={refreshing}
-            className="h-12 px-5 rounded-xl border border-[#1e3932]/15 bg-white hover:bg-[#f8faf9] text-[#1e3932] font-grotesque text-xs transition-all flex items-center gap-2 disabled:opacity-50 cursor-pointer font-bold shadow-xs"
+            className="h-12 px-5 rounded-xl border border-black/20 bg-white hover:bg-neutral-50 text-black font-grotesque text-xs transition-all flex items-center gap-2 disabled:opacity-50 cursor-pointer font-bold shadow-xs"
           >
             <RefreshCw className={`h-3.5 w-3.5 ${refreshing ? 'animate-spin' : ''}`} />
             <span className="hidden sm:inline">ACTUALISER</span>
           </button>
           <Link
             href="/new"
-            className="h-12 px-6 rounded-xl bg-[#1e3932] text-white hover:bg-[#152a25] font-grotesque text-xs transition-all flex items-center justify-center gap-2 cursor-pointer font-bold shadow-lg"
+            className="h-12 px-6 rounded-xl bg-black text-white hover:bg-neutral-800 font-grotesque text-xs transition-all flex items-center justify-center gap-2 cursor-pointer font-bold shadow-lg"
           >
             <Plus className="h-4 w-4" />
             <span>CRÉER UN ÉVÉNEMENT ILLIMITÉ</span>
@@ -265,61 +265,61 @@ export default function OrganizerDashboard() {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 font-grotesque">
-        <div className="p-6 rounded-2xl border border-[#1e3932]/10 bg-[#f8faf9] space-y-3 shadow-xs">
+        <div className="p-6 rounded-2xl border border-black/15 bg-neutral-50 space-y-3 shadow-xs">
           <div className="flex items-center justify-between">
-            <p className="text-xs text-[#1e3932]/60 font-bold">CHIFFRE D&apos;AFFAIRES</p>
-            <Euro className="w-4 h-4 text-[#1e3932]" />
+            <p className="text-xs text-black/60 font-bold">CHIFFRE D&apos;AFFAIRES</p>
+            <Euro className="w-4 h-4 text-black" />
           </div>
-          <p className="text-3xl font-bold tracking-tight text-[#1e3932]">
+          <p className="text-3xl font-bold tracking-tight text-black">
             {stats.totalRevenue.toLocaleString('fr-FR')} €
           </p>
-          <p className="text-[11px] text-[#1e3932]/50">VOLUME BRUT ENCAISSÉ</p>
+          <p className="text-[11px] text-black/50">VOLUME BRUT ENCAISSÉ</p>
         </div>
 
-        <div className="p-6 rounded-2xl border border-[#1e3932]/10 bg-[#f8faf9] space-y-3 shadow-xs">
+        <div className="p-6 rounded-2xl border border-black/15 bg-neutral-50 space-y-3 shadow-xs">
           <div className="flex items-center justify-between">
-            <p className="text-xs text-[#1e3932]/60 font-bold">BILLETS VENDUS</p>
-            <Ticket className="w-4 h-4 text-[#1e3932]" />
+            <p className="text-xs text-black/60 font-bold">BILLETS VENDUS</p>
+            <Ticket className="w-4 h-4 text-black" />
           </div>
-          <p className="text-3xl font-bold tracking-tight text-[#1e3932]">
+          <p className="text-3xl font-bold tracking-tight text-black">
             {stats.totalTicketsSold}
           </p>
-          <p className="text-[11px] text-[#1e3932]/50">TAUX DE REMPLISSAGE : {fillRate}%</p>
+          <p className="text-[11px] text-black/50">TAUX DE REMPLISSAGE : {fillRate}%</p>
         </div>
 
-        <div className="p-6 rounded-2xl border border-[#1e3932]/10 bg-[#f8faf9] space-y-3 shadow-xs">
+        <div className="p-6 rounded-2xl border border-black/15 bg-neutral-50 space-y-3 shadow-xs">
           <div className="flex items-center justify-between">
-            <p className="text-xs text-[#1e3932]/60 font-bold">ÉVÉNEMENTS PUBLIÉS</p>
-            <Calendar className="w-4 h-4 text-[#1e3932]" />
+            <p className="text-xs text-black/60 font-bold">ÉVÉNEMENTS PUBLIÉS</p>
+            <Calendar className="w-4 h-4 text-black" />
           </div>
-          <p className="text-3xl font-bold tracking-tight text-[#1e3932]">
-            {stats.publishedEventsCount} <span className="text-xs font-normal text-[#1e3932]/50">({stats.totalEventsCount} TOTAL)</span>
+          <p className="text-3xl font-bold tracking-tight text-black">
+            {stats.publishedEventsCount} <span className="text-xs font-normal text-black/50">({stats.totalEventsCount} TOTAL)</span>
           </p>
-          <p className="text-[11px] text-[#1e3932]/50">CRÉATION ILLIMITÉE</p>
+          <p className="text-[11px] text-black/50">CRÉATION ILLIMITÉE</p>
         </div>
 
-        <div className="p-6 rounded-2xl border border-[#1e3932]/10 bg-[#f8faf9] space-y-3 shadow-xs">
+        <div className="p-6 rounded-2xl border border-black/15 bg-neutral-50 space-y-3 shadow-xs">
           <div className="flex items-center justify-between">
-            <p className="text-xs text-[#1e3932]/60 font-bold">MODÈLE TARIFAIRE</p>
-            <span className="h-3 w-3 rounded-full bg-[#1e3932] animate-pulse" />
+            <p className="text-xs text-black/60 font-bold">MODÈLE TARIFAIRE</p>
+            <span className="h-3 w-3 rounded-full bg-black animate-pulse" />
           </div>
-          <p className="text-base font-bold tracking-tight pt-1 text-[#1e3932]">
+          <p className="text-base font-bold tracking-tight pt-1 text-black">
             COMMISSION SUR VENTES
           </p>
-          <p className="text-[11px] text-[#1e3932]/50">0 € D&apos;ABONNEMENT FIXE</p>
+          <p className="text-[11px] text-black/50">0 € D&apos;ABONNEMENT FIXE</p>
         </div>
       </div>
 
       <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4 pt-4">
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 flex-1">
           <div className="relative flex-1 max-w-md">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-[#1e3932]/40" />
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-black/40" />
             <input
               type="text"
               placeholder="RECHERCHER PAR TITRE OU LIEU..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full h-12 rounded-xl border border-[#1e3932]/15 bg-white pl-11 pr-4 font-grotesque text-xs text-[#1e3932] placeholder:text-[#1e3932]/40 focus:outline-none focus:border-[#1e3932] shadow-xs"
+              className="w-full h-12 rounded-xl border border-black/25 bg-white pl-11 pr-4 font-grotesque text-xs text-black placeholder:text-black/40 focus:outline-none focus:border-black shadow-xs"
             />
           </div>
           <div className="flex items-center gap-2 overflow-x-auto py-1 font-grotesque">
@@ -329,8 +329,8 @@ export default function OrganizerDashboard() {
                 onClick={() => setStatusFilter(status)}
                 className={`h-12 px-4 rounded-xl border font-grotesque text-xs transition-all whitespace-nowrap cursor-pointer font-bold shadow-xs ${
                   statusFilter === status 
-                    ? 'bg-[#1e3932] text-white border-[#1e3932]' 
-                    : 'bg-white border-[#1e3932]/15 text-[#1e3932]/80 hover:bg-[#f8faf9]'
+                    ? 'bg-black text-white border-black' 
+                    : 'bg-white border-black/20 text-black/80 hover:bg-neutral-50'
                 }`}
               >
                 {status === 'all' ? 'TOUS' : STATUS_LABEL[status] || status}
@@ -338,16 +338,16 @@ export default function OrganizerDashboard() {
             ))}
           </div>
         </div>
-        <span className="font-grotesque text-xs text-[#1e3932]/60 text-right">
+        <span className="font-grotesque text-xs text-black/60 text-right">
           {filteredEvents.length} ÉVÉNEMENT(S)
         </span>
       </div>
 
       <div className="space-y-6">
         {filteredEvents.length === 0 ? (
-          <div className="rounded-2xl border border-[#1e3932]/10 bg-[#f8faf9] p-16 text-center space-y-4 shadow-xs font-grotesque">
-            <Calendar className="mx-auto h-8 w-8 text-[#1e3932]" />
-            <p className="font-grotesque text-xs text-[#1e3932]/60">
+          <div className="rounded-2xl border border-black/15 bg-neutral-50 p-16 text-center space-y-4 shadow-xs font-grotesque">
+            <Calendar className="mx-auto h-8 w-8 text-black" />
+            <p className="font-grotesque text-xs text-black/60">
               {events.length === 0 
                 ? "VOUS N'AVEZ PAS ENCORE CRÉÉ D'ÉVÉNEMENT. LANCEZ-VOUS, C'EST ILLIMITÉ !" 
                 : "AUCUN ÉVÉNEMENT NE CORRESPOND À VOS FILTRES."}
@@ -356,7 +356,7 @@ export default function OrganizerDashboard() {
               <div className="pt-2">
                 <Link
                   href="/new"
-                  className="inline-flex items-center gap-2 h-12 px-6 rounded-xl bg-[#1e3932] text-white font-grotesque text-xs font-bold hover:bg-[#152a25] transition-all shadow-md"
+                  className="inline-flex items-center gap-2 h-12 px-6 rounded-xl bg-black text-white font-grotesque text-xs font-bold hover:bg-neutral-800 transition-all shadow-md"
                 >
                   CRÉER MON PREMIER ÉVÉNEMENT
                 </Link>
@@ -370,11 +370,11 @@ export default function OrganizerDashboard() {
               return (
                 <article
                   key={evt.id}
-                  className="group flex flex-col rounded-2xl border border-[#1e3932]/15 bg-[#f8faf9] shadow-xs transition-all hover:border-[#1e3932]/40 hover:shadow-md overflow-hidden font-grotesque"
+                  className="group flex flex-col rounded-2xl border border-black/20 bg-neutral-50 shadow-xs transition-all hover:border-black hover:shadow-md overflow-hidden font-grotesque"
                 >
                   <div className="space-y-3 p-6 flex-1">
                     <div className="flex items-center justify-between font-grotesque">
-                      <span className="text-[11px] text-[#1e3932]/50 font-bold">
+                      <span className="text-[11px] text-black/50 font-bold">
                         {evt.starts_at ? new Date(evt.starts_at).toLocaleDateString('fr-FR', {
                           day: '2-digit',
                           month: 'short',
@@ -385,48 +385,48 @@ export default function OrganizerDashboard() {
                       </span>
                       <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full border text-[10px] font-bold ${
                         evt.status === 'published' 
-                          ? 'bg-[#1e3932]/10 text-[#1e3932] border-[#1e3932]/20' 
+                          ? 'bg-black/10 text-black border-black/20' 
                           : evt.status === 'cancelled'
-                          ? 'bg-red-50 text-red-700 border-red-200'
-                          : 'bg-white text-[#1e3932]/60 border-[#1e3932]/15'
+                          ? 'bg-neutral-200 text-black border-black/30 line-through'
+                          : 'bg-white text-black/60 border-black/20'
                       }`}>
                         {STATUS_LABEL[evt.status] ?? evt.status}
                       </span>
                     </div>
 
-                    <h3 className="text-xl font-grotesque font-normal leading-snug text-[#1e3932]">
+                    <h3 className="text-xl font-grotesque font-normal leading-snug text-black">
                       {evt.title}
                     </h3>
 
                     {evt.description && (
-                      <p className="line-clamp-2 text-xs font-grotesque text-[#1e3932]/70 leading-relaxed font-light">
+                      <p className="line-clamp-2 text-xs font-grotesque text-black/70 leading-relaxed font-light">
                         {evt.description}
                       </p>
                     )}
 
                     {evt.location && (
-                      <div className="flex items-center gap-2 font-grotesque text-xs text-[#1e3932]/70 pt-1">
-                        <MapPin className="h-3.5 w-3.5 shrink-0 text-[#1e3932]" />
+                      <div className="flex items-center gap-2 font-grotesque text-xs text-black/70 pt-1">
+                        <MapPin className="h-3.5 w-3.5 shrink-0 text-black" />
                         <span className="truncate">{evt.location}</span>
                       </div>
                     )}
                   </div>
 
-                  <div className="flex items-center justify-between border-t border-[#1e3932]/10 px-6 py-4 bg-white font-grotesque">
-                    <span className="font-grotesque text-xs font-bold text-[#1e3932]">
+                  <div className="flex items-center justify-between border-t border-black/15 px-6 py-4 bg-white font-grotesque">
+                    <span className="font-grotesque text-xs font-bold text-black">
                       {eventPrice > 0 ? `${eventPrice.toLocaleString('fr-FR')} €` : 'GRATUIT'}
                     </span>
                     <div className="flex items-center gap-2">
                       <Link
                         href={`/events/${evt.slug || evt.id}/edit`}
-                        className="w-10 h-10 rounded-xl border border-[#1e3932]/15 bg-white text-[#1e3932] flex items-center justify-center hover:bg-[#1e3932] hover:text-white transition-colors cursor-pointer shadow-xs"
+                        className="w-10 h-10 rounded-xl border border-black/20 bg-white text-black flex items-center justify-center hover:bg-black hover:text-white transition-colors cursor-pointer shadow-xs"
                         title="MODIFIER"
                       >
                         <Edit3 className="h-4 w-4" />
                       </Link>
                       <button
                         onClick={() => handleDeleteEvent(evt.id)}
-                        className="w-10 h-10 rounded-xl border border-[#1e3932]/15 bg-white text-red-600 flex items-center justify-center hover:bg-red-600 hover:text-white transition-colors cursor-pointer shadow-xs"
+                        className="w-10 h-10 rounded-xl border border-black/20 bg-white text-black flex items-center justify-center hover:bg-black hover:text-white transition-colors cursor-pointer shadow-xs"
                         title="SUPPRIMER"
                       >
                         <Trash2 className="h-4 w-4" />
