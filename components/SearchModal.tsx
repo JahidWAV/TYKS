@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { Search, Calendar, MapPin, ArrowUpRight, X } from "lucide-react";
+import { Search, Calendar, MapPin, ArrowUpRight, X, User } from "lucide-react";
 import { supabaseBrowser } from "@/lib/supabase-browser";
 
 interface SearchModalProps {
@@ -30,7 +30,7 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
     }
   }, [isOpen]);
 
-  // Logique de recherche en temps réel
+  // Logique de recherche globale (Événements + Organisateurs)
   useEffect(() => {
     if (!isOpen) return;
 
@@ -42,12 +42,15 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
       }
 
       setIsSearching(true);
+      const query = searchQuery.trim();
+
       try {
+        // Recherche large sur le titre, le lieu, la description OU le nom de l'organisateur
         const { data, error } = await supabaseBrowser
           .from("events")
           .select("*")
-          .ilike("title", `%${searchQuery}%`)
-          .limit(6);
+          .or(`title.ilike.%${query}%,location.ilike.%${query}%,organizer_name.ilike.%${query}%,description.ilike.%${query}%`)
+          .limit(8);
 
         if (!error && data) {
           setResults(data);
@@ -55,21 +58,21 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
           setResults([]);
         }
       } catch (err) {
-        console.error("Erreur de recherche :", err);
+        console.error("Erreur lors de la recherche globale :", err);
         setResults([]);
       } finally {
         setIsSearching(false);
       }
     };
 
-    const timer = setTimeout(fetchResults, 250);
+    const timer = setTimeout(fetchResults, 300);
     return () => clearTimeout(timer);
   }, [searchQuery, isOpen]);
 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center pt-16 md:pt-24 px-4 bg-black/50 backdrop-blur-md animate-in fade-in duration-200 font-grotesque uppercase">
+    <div className="fixed inset-0 z-50 flex items-start justify-center pt-16 md:pt-24 px-4 bg-black/60 backdrop-blur-md animate-in fade-in duration-200 font-grotesque uppercase">
       <div className="relative w-full max-w-3xl bg-white/90 backdrop-blur-2xl border border-black/15 p-6 md:p-8 shadow-2xl text-black rounded-[2.5rem] animate-in zoom-in-95 duration-200">
         
         {/* Barre de recherche */}
@@ -81,7 +84,7 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="RECHERCHER UN ÉVÉNEMENT, UN ARTISTE, UN LIEU..."
+              placeholder="RECHERCHER UN ÉVÉNEMENT, UN ARTISTE, UN LIEU, UN ORGANISATEUR..."
               className="w-full h-14 bg-white/60 border border-black/15 pl-12 pr-4 text-xs font-bold placeholder:text-black/40 focus:outline-none focus:border-black text-black rounded-full shadow-inner uppercase"
             />
           </div>
@@ -99,7 +102,7 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
         <div className="mt-6 max-h-[60vh] overflow-y-auto space-y-3 pr-1">
           {searchQuery.trim().length === 0 ? (
             <div className="py-16 text-center text-black/40 text-xs font-bold tracking-wider">
-              TAPEZ QUELQUES CARACTÈRES POUR LANCER LA RECHERCHE...
+              TAPEZ UN MOT-CLÉ POUR LANCER LA RECHERCHE...
             </div>
           ) : isSearching ? (
             <div className="py-16 text-center text-black/40 text-xs font-bold tracking-wider animate-pulse">
@@ -121,10 +124,11 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
                       onClose();
                       router.push(`/events/${evt.slug || evt.id}`);
                     }}
-                    className="w-full text-left p-3.5 bg-white/60 hover:bg-black hover:text-white border border-black/15 rounded-3xl transition-all duration-300 flex items-center justify-between group cursor-pointer shadow-sm gap-4"
+                    className="w-full text-left p-4 bg-white/70 hover:bg-black hover:text-white border border-black/15 rounded-3xl transition-all duration-300 flex items-center justify-between group cursor-pointer shadow-sm gap-4"
                   >
                     <div className="flex items-center gap-4 truncate">
-                      <div className="relative w-14 h-14 shrink-0 rounded-2xl overflow-hidden border border-black/10 bg-neutral-100">
+                      {/* Affiche de l'événement */}
+                      <div className="relative w-16 h-16 shrink-0 rounded-2xl overflow-hidden border border-black/10 bg-neutral-100 shadow-sm">
                         {flyer ? (
                           <Image 
                             src={flyer} 
@@ -139,15 +143,16 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
                         )}
                       </div>
 
-                      <div className="space-y-1 truncate pr-2">
-                        <p className="text-xs font-bold truncate">
+                      <div className="space-y-1.5 truncate pr-2">
+                        <p className="text-xs font-bold tracking-wide truncate">
                           {evt.title}
                         </p>
-                        <div className="flex items-center gap-3 text-[10px] text-black/60 group-hover:text-white/70 font-bold">
+                        
+                        <div className="flex flex-wrap items-center gap-3 text-[10px] text-black/60 group-hover:text-white/70 font-bold">
                           {evt.starts_at && (
                             <span className="flex items-center gap-1">
                               <Calendar className="w-3 h-3 shrink-0" />
-                              {new Date(evt.starts_at).toLocaleDateString("fr-FR", { day: "numeric", month: "short" })}
+                              {new Date(evt.starts_at).toLocaleDateString("fr-FR", { day: "numeric", month: "short", year: "numeric" })}
                             </span>
                           )}
                           {evt.location && (
@@ -156,12 +161,18 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
                               {evt.location}
                             </span>
                           )}
+                          {evt.organizer_name && (
+                            <span className="flex items-center gap-1 truncate text-black/80 group-hover:text-white/90">
+                              <User className="w-3 h-3 shrink-0" />
+                              {evt.organizer_name}
+                            </span>
+                          )}
                         </div>
                       </div>
                     </div>
 
                     <div className="flex items-center gap-3 shrink-0">
-                      <span className="text-[10px] font-bold px-3 py-1.5 border border-black/15 bg-white group-hover:bg-neutral-800 group-hover:text-white group-hover:border-white/20 text-black rounded-full transition-colors shadow-xs">
+                      <span className="text-[10px] font-bold px-3.5 py-2 border border-black/15 bg-white group-hover:bg-neutral-800 group-hover:text-white group-hover:border-white/20 text-black rounded-full transition-colors shadow-xs">
                         {priceFormatted}
                       </span>
                       <ArrowUpRight className="w-4 h-4 text-black/40 group-hover:text-white transition-colors" />
@@ -172,7 +183,7 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
             </div>
           ) : (
             <div className="py-16 text-center text-black/50 text-xs font-bold tracking-wider">
-              AUCUN ÉVÉNEMENT TROUVÉ POUR &quot;{searchQuery}&quot;
+              AUCUN RÉSULTAT TROUVÉ POUR &quot;{searchQuery}&quot;
             </div>
           )}
         </div>
