@@ -9,7 +9,6 @@ import CustomAuthModal from "@/components/CustomAuthModal";
 import SearchModal from "@/components/SearchModal";
 import { supabaseBrowser } from "@/lib/supabase-browser";
 
-// Ajout de isPro?: boolean ici pour corriger l'erreur de build
 interface NavbarProps {
   isPro?: boolean;
   isDarkMode?: boolean;
@@ -65,7 +64,7 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
 
           <Link 
             href="/" 
-            className="group flex items-center justify-center shrink-0 h-11 px-5 bg-white/80 hover:bg-black backdrop-blur-md border border-black/15 rounded-full shadow-lg shadow-black/5 transition-all duration-300"
+            className="group flex items-center justify-center shrink-0 h-11 px-5 bg-neutral-900 hover:bg-white border border-white/15 rounded-full shadow-lg transition-all duration-300"
           >
             <Image 
               src="/tyks.svg" 
@@ -73,7 +72,7 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
               width={340} 
               height={110} 
               priority 
-              className="h-8 sm:h-10 w-auto object-contain text-black group-hover:brightness-0 group-hover:invert transition-all duration-300" 
+              className="h-8 sm:h-10 w-auto object-contain brightness-0 invert group-hover:invert-0 transition-all duration-300" 
             />
           </Link>
 
@@ -81,7 +80,7 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
             {!isPro && (
               <button
                 onClick={() => setIsSearchModalOpen(true)}
-                className="h-11 w-11 bg-white/80 hover:bg-black text-black hover:text-white backdrop-blur-md border border-black/15 transition-all duration-300 rounded-full shadow-lg shadow-black/5 flex items-center justify-center shrink-0 cursor-pointer"
+                className="h-11 w-11 bg-neutral-900 hover:bg-white text-white hover:text-black border border-white/15 transition-all duration-300 rounded-full shadow-lg flex items-center justify-center shrink-0 cursor-pointer"
                 aria-label="Rechercher"
               >
                 <Search className="h-4 w-4 shrink-0" />
@@ -90,7 +89,7 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
 
             <button
               onClick={handleMainButtonClick}
-              className="h-11 px-7 bg-white/80 hover:bg-black text-black hover:text-white backdrop-blur-md border border-black/15 transition-all duration-300 text-xs tracking-wider font-bold rounded-full shadow-lg shadow-black/5 flex items-center justify-center shrink-0 cursor-pointer"
+              className="h-11 px-7 bg-neutral-900 hover:bg-white text-white hover:text-black border border-white/15 transition-all duration-300 text-xs tracking-wider font-bold rounded-full shadow-lg flex items-center justify-center shrink-0 cursor-pointer"
             >
               {user ? userName : "SE CONNECTER / S'INSCRIRE"}
             </button>
@@ -98,7 +97,7 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
 
           <div className="flex items-center md:hidden">
             <button
-              className="inline-flex items-center justify-center bg-white/80 hover:bg-black text-black hover:text-white backdrop-blur-md border border-black/15 p-3 rounded-full shadow-lg transition-all duration-300 cursor-pointer"
+              className="inline-flex items-center justify-center bg-neutral-900 hover:bg-white text-white hover:text-black border border-white/15 p-3 rounded-full shadow-lg transition-all duration-300 cursor-pointer"
               onClick={() => setMobileOpen((open) => !open)}
               aria-label="Ouvrir le menu"
             >
@@ -108,14 +107,14 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
         </header>
 
         {mobileOpen && (
-          <div className="px-6 py-6 md:hidden space-y-4 bg-white/90 backdrop-blur-xl border border-black/15 rounded-[2.5rem] mt-3 shadow-2xl text-black">
+          <div className="px-6 py-6 md:hidden space-y-4 bg-neutral-900 border border-white/15 rounded-[2.5rem] mt-3 shadow-2xl text-white">
             {!isPro && (
               <button
                 onClick={() => {
                   setMobileOpen(false);
                   setIsSearchModalOpen(true);
                 }}
-                className="w-full h-11 bg-neutral-50 px-4 text-xs font-bold text-black/60 flex items-center justify-center gap-2 rounded-full border border-black/15 shadow-inner"
+                className="w-full h-11 bg-neutral-950 px-4 text-xs font-bold text-white/60 flex items-center justify-center gap-2 rounded-full border border-white/15 shadow-inner"
               >
                 <Search className="h-4 w-4" />
                 <span>RECHERCHER UN ÉVÉNEMENT...</span>
@@ -127,7 +126,7 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
                 setMobileOpen(false);
                 handleMainButtonClick();
               }}
-              className="w-full h-12 bg-black text-white hover:bg-neutral-800 text-xs tracking-wider font-bold rounded-full shadow-md flex items-center justify-center cursor-pointer"
+              className="w-full h-12 bg-white text-black hover:bg-neutral-200 text-xs tracking-wider font-bold rounded-full shadow-md flex items-center justify-center cursor-pointer"
             >
               {user ? userName : "SE CONNECTER / S'INSCRIRE"}
             </button>
