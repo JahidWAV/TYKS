@@ -150,7 +150,7 @@ export default function CustomAuthModal({ isOpen, onClose }: CustomAuthModalProp
         </div>
 
         {error && (
-          <div className="mb-4 p-3 border border-red-500/30 bg-red-950/50 text-red-400 text-[10px] tracking-wider text-center rounded-2xl font-bold">
+          <div className="mb-4 p-3 border border-red-500/30 bg-red-950 text-red-400 text-[10px] tracking-wider text-center rounded-2xl font-bold">
             {error}
           </div>
         )}
@@ -160,6 +160,7 @@ export default function CustomAuthModal({ isOpen, onClose }: CustomAuthModalProp
           <>
             <div className="space-y-3 mb-6">
               <button
+                type="button"
                 onClick={handleLoginWithGoogle}
                 disabled={loading}
                 className="w-full h-12 flex items-center justify-center gap-3 px-4 border border-white/15 bg-neutral-800 hover:bg-white text-white hover:text-black text-xs font-bold tracking-wider transition-all duration-300 disabled:opacity-50 cursor-pointer rounded-full shadow-sm"
@@ -174,6 +175,7 @@ export default function CustomAuthModal({ isOpen, onClose }: CustomAuthModalProp
               </button>
 
               <button
+                type="button"
                 onClick={handleLoginWithApple}
                 disabled={loading}
                 className="w-full h-12 flex items-center justify-center gap-3 px-4 border border-white/15 bg-neutral-800 hover:bg-white text-white hover:text-black text-xs font-bold tracking-wider transition-all duration-300 disabled:opacity-50 cursor-pointer rounded-full shadow-sm"
