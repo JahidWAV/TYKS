@@ -43,17 +43,11 @@ export default function PublicHome() {
   return (
     <main className="min-h-screen bg-white text-[#1e3932] selection:bg-[#1e3932] selection:text-white font-sans antialiased">
       
-      {/* ─── HERO SECTION : ACCROCHE + VISUEL APP / WALLET ─── */}
-      <section className="relative overflow-hidden max-w-7xl mx-auto px-6 lg:px-12 pt-16 pb-24 border-b border-[#1e3932]/10 grid lg:grid-cols-12 gap-12 items-center">
+      {/* ─── HERO SECTION ─── */}
+      <section className="relative overflow-hidden max-w-7xl mx-auto px-6 lg:px-12 pt-20 pb-24 border-b border-[#1e3932]/10 grid lg:grid-cols-12 gap-12 items-center">
         
-        {/* Colonne Gauche : Message principal & Proposition de valeur */}
         <div className="lg:col-span-7 space-y-8 z-10">
-          <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-[#1e3932]/5 border border-[#1e3932]/10 text-xs font-medium uppercase tracking-[0.2em] text-[#1e3932]">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#1e3932] animate-pulse"></span>
-            Billetterie Officielle & Indépendante
-          </div>
-          
-          <h1 className="text-4xl sm:text-6xl lg:text-7xl font-serif font-normal tracking-tight leading-[1.08] text-[#1e3932]">
+          <h1 className="text-4xl sm:text-6xl lg:text-7xl font-grotesque font-normal tracking-tight leading-[1.08] text-[#1e3932]">
             L&apos;art du spectacle, <br />
             <span className="italic font-light text-[#1e3932]/60">sans artifice.</span>
           </h1>
@@ -78,7 +72,6 @@ export default function PublicHome() {
           </div>
         </div>
 
-        {/* Colonne Droite : Encart Application Mobile & Apple Wallet / QR Code */}
         <div className="lg:col-span-5 z-10">
           <div className="relative bg-gradient-to-b from-[#f8faf9] to-[#f0f4f2] border border-[#1e3932]/10 p-8 sm:p-10 rounded-[2.5rem] shadow-2xl shadow-[#1e3932]/5 space-y-6 overflow-hidden">
             <div className="absolute -top-24 -right-24 w-56 h-56 bg-[#1e3932]/5 rounded-full blur-3xl pointer-events-none"></div>
@@ -124,10 +117,7 @@ export default function PublicHome() {
       {/* ─── LISTE DES ÉVÉNEMENTS ─── */}
       <section id="evenements" className="max-w-7xl mx-auto px-6 lg:px-12 py-24 space-y-12 border-b border-[#1e3932]/10">
         <div className="flex flex-col sm:flex-row sm:items-end justify-between border-b border-[#1e3932]/10 pb-6 gap-4">
-          <div className="space-y-1">
-            <span className="text-xs font-semibold uppercase tracking-[0.2em] text-[#1e3932]/60">Agenda Live</span>
-            <h2 className="text-3xl font-serif text-[#1e3932]">Programmation à l&apos;affiche</h2>
-          </div>
+          <h2 className="text-3xl font-grotesque font-normal text-[#1e3932]">Programmation à l&apos;affiche</h2>
           <span className="text-xs uppercase tracking-wider text-[#1e3932]/70 font-medium px-4 py-1.5 rounded-full bg-[#1e3932]/5 border border-[#1e3932]/10 w-fit">
             {events.length} événement{events.length > 1 ? 's' : ''} disponible{events.length > 1 ? 's' : ''}
           </span>
@@ -164,7 +154,6 @@ export default function PublicHome() {
                   key={evt.id}
                   className="group flex flex-col bg-[#f8faf9] border border-[#1e3932]/10 rounded-[2.5rem] overflow-hidden transition-all duration-500 hover:border-[#1e3932]/30 hover:shadow-2xl hover:shadow-[#1e3932]/10 hover:-translate-y-1"
                 >
-                  {/* Visuel / Affiche */}
                   <div className="relative w-full h-56 bg-[#1e3932]/5 overflow-hidden border-b border-[#1e3932]/10 flex items-center justify-center">
                     {eventImage ? (
                       <Image
@@ -181,7 +170,6 @@ export default function PublicHome() {
                       </div>
                     )}
                     
-                    {/* Badge Organisation */}
                     <div className="absolute top-4 right-4 z-10">
                       <span className="text-[11px] font-medium px-3 py-1 bg-white/90 backdrop-blur-md border border-[#1e3932]/10 text-[#1e3932] rounded-full shadow-sm">
                         {evt.organizations?.name || 'Exclusivité'}
@@ -189,14 +177,13 @@ export default function PublicHome() {
                     </div>
                   </div>
 
-                  {/* Corps de la carte */}
                   <div className="p-7 flex-1 space-y-4 flex flex-col justify-between">
                     <div className="space-y-3">
                       <span className="text-xs font-medium text-[#1e3932]/60 uppercase tracking-wider block">
                         {dateStr}
                       </span>
 
-                      <h3 className="text-xl font-serif font-normal text-[#1e3932] tracking-tight group-hover:text-[#152a25] transition-colors line-clamp-1">
+                      <h3 className="text-xl font-grotesque font-normal text-[#1e3932] tracking-tight group-hover:text-[#152a25] transition-colors line-clamp-1">
                         {evt.title}
                       </h3>
 
@@ -215,7 +202,6 @@ export default function PublicHome() {
                     )}
                   </div>
 
-                  {/* Pied de carte avec prix et action */}
                   <div className="flex items-center justify-between border-t border-[#1e3932]/10 px-7 py-4 bg-white">
                     <span className="text-sm font-medium tracking-wide text-[#1e3932]">
                       {eventPrice > 0 ? `${eventPrice.toLocaleString('fr-FR')} €` : 'Entrée libre'}
@@ -238,8 +224,7 @@ export default function PublicHome() {
       {/* ─── SECTION ENGAGEMENTS & VALEURS ─── */}
       <section className="max-w-7xl mx-auto px-6 lg:px-12 py-24 border-b border-[#1e3932]/10">
         <div className="text-center max-w-2xl mx-auto space-y-4 mb-16">
-          <span className="text-xs font-semibold uppercase tracking-[0.2em] text-[#1e3932]/60">Valeurs & Engagements</span>
-          <h2 className="text-3xl sm:text-4xl font-serif text-[#1e3932]">
+          <h2 className="text-3xl sm:text-4xl font-grotesque font-normal text-[#1e3932]">
             Une billetterie pensée pour le public et la culture.
           </h2>
           <p className="text-sm text-[#1e3932]/70 font-light">
@@ -252,7 +237,7 @@ export default function PublicHome() {
             <div className="w-12 h-12 rounded-2xl bg-[#1e3932]/10 border border-[#1e3932]/15 flex items-center justify-center text-[#1e3932]">
               <ShieldCheck className="w-6 h-6 stroke-[1.5]" />
             </div>
-            <h3 className="text-xl font-serif text-[#1e3932]">Zéro frais cachés</h3>
+            <h3 className="text-xl font-grotesque font-normal text-[#1e3932]">Zéro frais cachés</h3>
             <p className="text-xs sm:text-sm text-[#1e3932]/70 font-light leading-relaxed">
               Le prix affiché est le prix payé. Pas de frais de dossier surprise ou de majorations masquées au moment de régler votre panier.
             </p>
@@ -262,7 +247,7 @@ export default function PublicHome() {
             <div className="w-12 h-12 rounded-2xl bg-[#1e3932]/10 border border-[#1e3932]/15 flex items-center justify-center text-[#1e3932]">
               <Ticket className="w-6 h-6 stroke-[1.5]" />
             </div>
-            <h3 className="text-xl font-serif text-[#1e3932]">Revente officielle sécurisée</h3>
+            <h3 className="text-xl font-grotesque font-normal text-[#1e3932]">Revente officielle sécurisée</h3>
             <p className="text-xs sm:text-sm text-[#1e3932]/70 font-light leading-relaxed">
               Empêchez la spéculation et le marché noir. Revendez ou achetez des billets en toute confiance entre particuliers au prix juste, avec intégration Apple Wallet.
             </p>
@@ -272,7 +257,7 @@ export default function PublicHome() {
             <div className="w-12 h-12 rounded-2xl bg-[#1e3932]/10 border border-[#1e3932]/15 flex items-center justify-center text-[#1e3932]">
               <Sparkles className="w-6 h-6 stroke-[1.5]" />
             </div>
-            <h3 className="text-xl font-serif text-[#1e3932]">Sélection pointue</h3>
+            <h3 className="text-xl font-grotesque font-normal text-[#1e3932]">Sélection pointue</h3>
             <p className="text-xs sm:text-sm text-[#1e3932]/70 font-light leading-relaxed">
               Une programmation artistique rigoureuse, indépendante et de grande qualité pour vous offrir des expériences mémorables et authentiques.
             </p>
@@ -283,8 +268,7 @@ export default function PublicHome() {
       {/* ─── SECTION ÉCOSYSTÈME INTELLIGENT ─── */}
       <section className="max-w-7xl mx-auto px-6 lg:px-12 py-24 border-b border-[#1e3932]/15 grid lg:grid-cols-2 gap-12 items-center">
         <div className="space-y-6">
-          <span className="text-xs font-semibold uppercase tracking-[0.2em] text-[#1e3932]/60">Écosystème Intelligent</span>
-          <h2 className="text-3xl sm:text-4xl font-serif text-[#1e3932]">
+          <h2 className="text-3xl sm:text-4xl font-grotesque font-normal text-[#1e3932]">
             Bien plus qu&apos;une billetterie : un véritable outil de croissance.
           </h2>
           <p className="text-sm text-[#1e3932]/70 font-light leading-relaxed">
@@ -295,20 +279,20 @@ export default function PublicHome() {
               <div className="w-10 h-10 rounded-xl bg-[#1e3932]/5 border border-[#1e3932]/10 flex items-center justify-center text-[#1e3932]">
                 <Users className="w-5 h-5" />
               </div>
-              <h4 className="font-serif text-base text-[#1e3932]">Propriété des données</h4>
+              <h4 className="font-grotesque text-base text-[#1e3932]">Propriété des données</h4>
               <p className="text-xs text-[#1e3932]/60 font-light">Gardez le contact direct avec votre public et vos fidèles spectateurs.</p>
             </div>
             <div className="space-y-2">
               <div className="w-10 h-10 rounded-xl bg-[#1e3932]/5 border border-[#1e3932]/10 flex items-center justify-center text-[#1e3932]">
                 <Zap className="w-5 h-5" />
               </div>
-              <h4 className="font-serif text-base text-[#1e3932]">Expérience fluide</h4>
+              <h4 className="font-grotesque text-base text-[#1e3932]">Expérience fluide</h4>
               <p className="text-xs text-[#1e3932]/60 font-light">Encaissement instantané et génération automatique des e-billets et passes Wallet.</p>
             </div>
           </div>
         </div>
         <div className="bg-[#f8faf9] border border-[#1e3932]/10 p-8 sm:p-12 rounded-[3rem] space-y-6 shadow-inner">
-          <h3 className="text-xl font-serif text-[#1e3932]">Vous organisez un événement ?</h3>
+          <h3 className="text-xl font-grotesque font-normal text-[#1e3932]">Vous organisez un événement ?</h3>
           <p className="text-xs sm:text-sm text-[#1e3932]/70 font-light leading-relaxed">
             Rejoignez les collectifs, théâtres et petits festivals qui font confiance à TYKS pour simplifier leur gestion quotidienne sans contraintes superflues.
           </p>
@@ -327,10 +311,7 @@ export default function PublicHome() {
       <section className="max-w-7xl mx-auto px-6 lg:px-12 py-20">
         <div className="bg-gradient-to-br from-[#f8faf9] to-[#f0f4f2] border border-[#1e3932]/15 rounded-[3rem] p-8 sm:p-14 flex flex-col md:flex-row items-center justify-between gap-10 shadow-2xl shadow-[#1e3932]/5">
           <div className="space-y-4 max-w-xl text-center md:text-left">
-            <span className="text-xs font-semibold uppercase tracking-[0.2em] text-[#1e3932]/60">
-              Prêt à franchir le pas ?
-            </span>
-            <h2 className="text-3xl sm:text-4xl font-serif text-[#1e3932]">
+            <h2 className="text-3xl sm:text-4xl font-grotesque font-normal text-[#1e3932]">
               Donnez vie à vos projets culturels dès aujourd&apos;hui.
             </h2>
             <p className="text-xs sm:text-sm text-[#1e3932]/70 font-light leading-relaxed">
