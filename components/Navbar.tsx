@@ -111,31 +111,34 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
 
   return (
     <>
-      {/* NAVBAR FLOTTANTE DANS LE VIDE */}
-      <div className="fixed top-6 left-0 right-0 z-50 max-w-7xl mx-auto px-6 font-grotesque uppercase">
+      {/* NAVBAR FLOTTANTE NON FIXE */}
+      <div className="absolute top-6 left-0 right-0 z-50 max-w-7xl mx-auto px-6 font-grotesque uppercase">
         <header className="w-full flex items-center justify-between gap-4">
 
-          {/* 1. LOGO FLOTTANT */}
-          <Link href="/" className="flex items-center justify-start shrink-0 px-3 py-2 bg-white/80 backdrop-blur-md border border-black/15 rounded-full shadow-lg shadow-black/5">
+          {/* 1. LOGO FLOTTANT GLASS -> HOVER NOIR */}
+          <Link 
+            href="/" 
+            className="group flex items-center justify-start shrink-0 px-3.5 py-2.5 bg-white/80 hover:bg-black backdrop-blur-md border border-black/15 rounded-full shadow-lg shadow-black/5 transition-all duration-300"
+          >
             <Image 
               src="/tyks.svg" 
               alt="TYKS" 
               width={340} 
               height={110} 
               priority 
-              className="h-7 sm:h-9 w-auto object-contain text-black" 
+              className="h-7 sm:h-9 w-auto object-contain text-black group-hover:brightness-0 group-hover:invert transition-all duration-300" 
             />
           </Link>
 
           {/* 2. ZONE DROITE FLOTTANTE */}
           <div className="hidden md:flex items-center gap-3">
             
-            {/* LOUPE DE RECHERCHE */}
+            {/* LOUPE DE RECHERCHE GLASS -> HOVER NOIR */}
             {!isPro && (
               <div className="relative" ref={searchRef}>
                 <div 
-                  className={`flex items-center transition-all duration-300 bg-black text-white rounded-full h-11 shadow-lg shadow-black/10 ${
-                    isSearchExpanded || searchQuery.trim() ? 'w-64 px-4' : 'w-11 px-0 justify-center cursor-pointer hover:bg-neutral-800'
+                  className={`flex items-center transition-all duration-300 bg-white/80 hover:bg-black text-black hover:text-white backdrop-blur-md border border-black/15 rounded-full h-11 shadow-lg shadow-black/5 ${
+                    isSearchExpanded || searchQuery.trim() ? 'w-64 px-4 bg-black text-white' : 'w-11 px-0 justify-center cursor-pointer'
                   }`}
                   onClick={() => {
                     if (!isSearchExpanded) {
@@ -143,7 +146,7 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
                     }
                   }}
                 >
-                  <Search className={`h-4 w-4 text-white/80 shrink-0 ${!isSearchExpanded && !searchQuery.trim() ? 'mx-auto' : 'mr-2'}`} />
+                  <Search className={`h-4 w-4 shrink-0 ${!isSearchExpanded && !searchQuery.trim() ? 'mx-auto' : 'mr-2'}`} />
                   
                   {(isSearchExpanded || searchQuery.trim()) && (
                     <input
@@ -156,7 +159,7 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
                       }}
                       onFocus={() => setShowDropdown(true)}
                       placeholder="RECHERCHER..."
-                      className="w-full bg-transparent text-[11px] font-bold placeholder:text-white/60 focus:outline-none text-white truncate pr-1 uppercase"
+                      className="w-full bg-transparent text-[11px] font-bold placeholder:text-current/60 focus:outline-none truncate pr-1 uppercase"
                     />
                   )}
 
@@ -167,7 +170,7 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
                         setSearchQuery("");
                         setResults([]);
                       }}
-                      className="p-1 text-white/60 hover:text-white shrink-0"
+                      className="p-1 opacity-60 hover:opacity-100 shrink-0"
                     >
                       <X className="h-3.5 w-3.5" />
                     </button>
@@ -229,20 +232,20 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
               </div>
             )}
 
-            {/* BOUTON DYNAMIQUE : PRÉNOM OU SE CONNECTER */}
+            {/* BOUTON DYNAMIQUE GLASS -> HOVER NOIR */}
             <button
               onClick={handleMainButtonClick}
-              className="h-11 px-7 bg-black hover:bg-neutral-800 transition-all text-white text-xs tracking-wider font-bold rounded-full shadow-lg shadow-black/10 flex items-center justify-center shrink-0 cursor-pointer"
+              className="h-11 px-7 bg-white/80 hover:bg-black text-black hover:text-white backdrop-blur-md border border-black/15 transition-all duration-300 text-xs tracking-wider font-bold rounded-full shadow-lg shadow-black/5 flex items-center justify-center shrink-0 cursor-pointer"
             >
               {user ? userName : "SE CONNECTER / S'INSCRIRE"}
             </button>
 
           </div>
 
-          {/* MOBILE TOGGLE */}
+          {/* MOBILE TOGGLE GLASS -> HOVER NOIR */}
           <div className="flex items-center md:hidden">
             <button
-              className="inline-flex items-center justify-center bg-black text-white p-3 rounded-full shadow-lg cursor-pointer"
+              className="inline-flex items-center justify-center bg-white/80 hover:bg-black text-black hover:text-white backdrop-blur-md border border-black/15 p-3 rounded-full shadow-lg transition-all duration-300 cursor-pointer"
               onClick={() => setMobileOpen((open) => !open)}
               aria-label="Ouvrir le menu"
             >
