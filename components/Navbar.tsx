@@ -60,12 +60,15 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
       setTimeout(() => {
         searchInputRef.current?.focus();
       }, 100);
+    } else {
+      setSearchQuery("");
+      setResults([]);
     }
   }, [isSearchModalOpen]);
 
-  // Logique de recherche en temps réel (SELECT * pour récupérer toutes les colonnes et éviter tout blocage de schéma)
+  // Logique de recherche en temps réel
   useEffect(() => {
-    if (isPro) return;
+    if (!isSearchModalOpen || isPro) return;
 
     const fetchResults = async () => {
       if (!searchQuery.trim()) {
@@ -97,7 +100,7 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
 
     const timer = setTimeout(fetchResults, 250);
     return () => clearTimeout(timer);
-  }, [searchQuery, isPro]);
+  }, [searchQuery, isSearchModalOpen, isPro]);
 
   const handleMainButtonClick = () => {
     if (user) {
@@ -113,7 +116,7 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
       <div className="absolute top-6 left-0 right-0 z-50 max-w-7xl mx-auto px-6 font-grotesque uppercase">
         <header className="w-full flex items-center justify-between gap-4">
 
-          {/* 1. LOGO FLOTTANT GLASS -> HOVER NOIR */}
+          {/* 1. LOGO FLOTTANT GLASS -> HOVER NOIR (Taille d'origine respectée) */}
           <Link 
             href="/" 
             className="group flex items-center justify-center shrink-0 h-11 px-5 bg-white/80 hover:bg-black backdrop-blur-md border border-black/15 rounded-full shadow-lg shadow-black/5 transition-all duration-300"
@@ -193,7 +196,7 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
         )}
       </div>
 
-      {/* MODALE DE RECHERCHE */}
+      {/* MODALE DE RECHERCHE RETRAVAILLÉE AVEC AFFICHES */}
       {isSearchModalOpen && (
         <div className="fixed inset-0 z-50 flex items-start justify-center pt-16 md:pt-24 px-4 bg-black/50 backdrop-blur-md animate-in fade-in duration-200 font-grotesque uppercase">
           <div className="relative w-full max-w-3xl bg-white/90 backdrop-blur-2xl border border-black/15 p-6 md:p-8 shadow-2xl text-black rounded-[2.5rem] animate-in zoom-in-95 duration-200">
@@ -213,11 +216,7 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
               </div>
 
               <button
-                onClick={() => {
-                  setIsSearchModalOpen(false);
-                  setSearchQuery("");
-                  setResults([]);
-                }}
+                onClick={() => setIsSearchModalOpen(false)}
                 className="h-14 w-14 shrink-0 border border-black/15 bg-white/80 hover:bg-black text-black hover:text-white backdrop-blur-md flex items-center justify-center transition-all duration-300 cursor-pointer rounded-full shadow-sm"
                 aria-label="Fermer"
               >
@@ -225,7 +224,7 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
               </button>
             </div>
 
-            {/* Résultats de recherche */}
+            {/* Résultats de recherche avec affiches */}
             <div className="mt-6 max-h-[60vh] overflow-y-auto space-y-3 pr-1">
               {searchQuery.trim().length === 0 ? (
                 <div className="py-16 text-center text-black/40 text-xs font-bold tracking-wider">
@@ -242,7 +241,6 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
                       ? `${parseFloat(evt.price).toFixed(2)} €`
                       : 'GRATUIT';
 
-                    // Récupération souple de l'image parmi les champs possibles
                     const flyer = evt.image_url || evt.cover_image || evt.flyer_url || evt.poster;
 
                     return (
@@ -250,8 +248,6 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
                         key={evt.id}
                         onClick={() => {
                           setIsSearchModalOpen(false);
-                          setSearchQuery("");
-                          setResults([]);
                           router.push(`/events/${evt.slug || evt.id}`);
                         }}
                         className="w-full text-left p-3.5 bg-white/60 hover:bg-black hover:text-white border border-black/15 rounded-3xl transition-all duration-300 flex items-center justify-between group cursor-pointer shadow-sm gap-4"
