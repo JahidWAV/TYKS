@@ -64,10 +64,10 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
   return (
     <>
       <div className="absolute top-6 left-0 right-0 z-50 max-w-7xl mx-auto px-6 lg:px-12 font-grotesque uppercase">
-        <header className="w-full grid grid-cols-3 items-center gap-4">
+        <header className="w-full flex items-center justify-between gap-4">
 
-          {/* COLONNE GAUCHE : RECHERCHE */}
-          <div className="flex items-center justify-start">
+          {/* BLOC GAUCHE (Recherche) */}
+          <div className="flex-1 flex items-center justify-start">
             {!isPro && (
               <button
                 onClick={() => setIsSearchModalOpen(true)}
@@ -79,8 +79,8 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
             )}
           </div>
 
-          {/* COLONNE CENTRE : LOGO AGRANDI */}
-          <div className="flex items-center justify-center">
+          {/* BLOC CENTRE (Logo parfaitement centré) */}
+          <div className="shrink-0 flex items-center justify-center">
             <Link 
               href="/" 
               className="group flex items-center justify-center shrink-0 transition-opacity duration-300 hover:opacity-75"
@@ -96,8 +96,8 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
             </Link>
           </div>
 
-          {/* COLONNE DROITE : COMPTE / CONNEXION (Masqué tant que non initialisé pour éviter le flash) */}
-          <div className="hidden md:flex items-center justify-end">
+          {/* BLOC DROITE (Compte / Connexion - Desktop) */}
+          <div className="flex-1 hidden md:flex items-center justify-end">
             <button
               onClick={handleMainButtonClick}
               className={`h-11 px-7 bg-transparent hover:bg-white/10 text-white border border-white/15 transition-all duration-300 text-xs tracking-wider font-bold rounded-full flex items-center justify-center shrink-0 cursor-pointer ${
@@ -109,7 +109,7 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
           </div>
 
           {/* MENU MOBILE (DROITE) */}
-          <div className="flex items-center justify-end md:hidden">
+          <div className="flex-1 flex items-center justify-end md:hidden">
             <button
               className="inline-flex items-center justify-center bg-transparent text-white border border-white/15 p-3 rounded-full transition-all duration-300 cursor-pointer hover:bg-white/10"
               onClick={() => setMobileOpen((open) => !open)}
