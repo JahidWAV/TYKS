@@ -9,7 +9,6 @@ export default function AdminEventsPage() {
   const [events, setEvents] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   
-  // États pour gérer la modale de suppression personnalisée
   const [eventToDelete, setEventToDelete] = useState<any | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
@@ -57,26 +56,26 @@ export default function AdminEventsPage() {
 
   if (loading) {
     return (
-      <div className="w-full px-6 lg:px-12 py-8 bg-[#0f0f0f] min-h-full flex items-center justify-center font-grotesque text-xs text-white/60 uppercase">
+      <div className="w-full px-6 lg:px-12 py-8 bg-black min-h-full flex items-center justify-center font-grotesque text-xs text-white/60 uppercase">
         <Loader2 className="w-5 h-5 animate-spin mr-2" /> CHARGEMENT...
       </div>
     );
   }
 
   return (
-    <div className="w-full px-6 lg:px-12 py-8 space-y-8 font-grotesque text-white bg-[#0f0f0f] min-h-full uppercase relative">
+    <div className="w-full px-6 lg:px-12 py-8 space-y-8 font-grotesque text-white bg-black min-h-full uppercase relative">
       <div className="w-full space-y-8">
         
         {/* Compteur discret en haut à droite */}
         <div className="flex justify-end">
-          <span className="text-xs font-bold px-3.5 py-1.5 rounded-full bg-neutral-900 border border-white/15 text-white shadow-xs">
+          <span className="text-xs font-bold px-3.5 py-1.5 rounded-full bg-neutral-950 border border-white/15 text-white shadow-xs">
             {events.length} ÉVÉNEMENT(S)
           </span>
         </div>
 
         {/* Grille pleine largeur */}
         {events.length === 0 ? (
-          <div className="rounded-2xl border border-white/10 bg-neutral-900 p-16 text-center text-xs text-white/60 shadow-xs">
+          <div className="rounded-2xl border border-white/10 bg-neutral-950 p-16 text-center text-xs text-white/60 shadow-xs">
             AUCUN ÉVÉNEMENT TROUVÉ DANS LA BASE DE DONNÉES.
           </div>
         ) : (
@@ -97,11 +96,11 @@ export default function AdminEventsPage() {
               return (
                 <div
                   key={event.id}
-                  className="rounded-2xl border border-white/10 bg-neutral-900 overflow-hidden shadow-xs flex flex-col justify-between hover:border-white transition group"
+                  className="rounded-2xl border border-white/10 bg-neutral-950 overflow-hidden shadow-xs flex flex-col justify-between hover:border-white transition group"
                 >
                   <div>
                     {/* Affiche de l'événement */}
-                    <div className="w-full h-44 bg-neutral-950 border-b border-white/10 relative overflow-hidden">
+                    <div className="w-full h-44 bg-black border-b border-white/10 relative overflow-hidden">
                       {event.image_url ? (
                         <img 
                           src={event.image_url} 
@@ -120,7 +119,7 @@ export default function AdminEventsPage() {
                     <div className="p-6 space-y-3">
                       <div className="flex items-center justify-between text-[11px] text-white/50 font-bold">
                         <span>{formattedDate}</span>
-                        <span className="px-2.5 py-0.5 rounded-full bg-neutral-950 border border-white/15 text-white text-[10px]">
+                        <span className="px-2.5 py-0.5 rounded-full bg-black border border-white/15 text-white text-[10px]">
                           {event.status?.toUpperCase() || 'ACTIF'}
                         </span>
                       </div>
@@ -166,7 +165,7 @@ export default function AdminEventsPage() {
 
                       <Link
                         href={`/events/${event.slug || event.id}/edit`}
-                        className="w-10 h-10 rounded-xl border border-white/20 bg-neutral-950 text-white flex items-center justify-center hover:bg-white hover:text-black transition-colors cursor-pointer shadow-xs"
+                        className="w-10 h-10 rounded-xl border border-white/20 bg-black text-white flex items-center justify-center hover:bg-white hover:text-black transition-colors cursor-pointer shadow-xs"
                         title="MODIFIER"
                       >
                         <Edit3 className="w-4 h-4" />
@@ -174,7 +173,7 @@ export default function AdminEventsPage() {
 
                       <button
                         onClick={() => setEventToDelete(event)}
-                        className="w-10 h-10 rounded-xl border border-white/20 bg-neutral-950 text-white flex items-center justify-center hover:bg-white hover:text-black transition-colors cursor-pointer shadow-xs"
+                        className="w-10 h-10 rounded-xl border border-white/20 bg-black text-white flex items-center justify-center hover:bg-white hover:text-black transition-colors cursor-pointer shadow-xs"
                         title="SUPPRIMER"
                       >
                         <Trash2 className="w-4 h-4" />
@@ -192,7 +191,7 @@ export default function AdminEventsPage() {
       {/* MODALE DE CONFIRMATION DE SUPPRESSION SUR MESURE */}
       {eventToDelete && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-xs px-4">
-          <div className="w-full max-w-md rounded-2xl border border-white/20 bg-neutral-900 p-6 md:p-8 space-y-6 shadow-2xl font-grotesque">
+          <div className="w-full max-w-md rounded-2xl border border-white/20 bg-neutral-950 p-6 md:p-8 space-y-6 shadow-2xl font-grotesque">
             
             <div className="flex items-center justify-between border-b border-white/10 pb-4">
               <div className="flex items-center gap-2 text-white">
@@ -211,7 +210,7 @@ export default function AdminEventsPage() {
               <p className="text-xs text-white/70">
                 ÊTES-VOUS SÛR DE VOULOIR SUPPRIMER DÉFINITIVEMENT CET ÉVÉNEMENT ?
               </p>
-              <p className="text-sm font-bold text-white bg-neutral-950 p-3 rounded-xl border border-white/10 truncate">
+              <p className="text-sm font-bold text-white bg-black p-3 rounded-xl border border-white/10 truncate">
                 {eventToDelete.title}
               </p>
             </div>
@@ -221,7 +220,7 @@ export default function AdminEventsPage() {
                 type="button"
                 onClick={() => setEventToDelete(null)}
                 disabled={isDeleting}
-                className="px-5 py-3 rounded-xl border border-white/20 bg-neutral-950 text-white text-xs font-bold hover:bg-neutral-800 transition cursor-pointer shadow-xs"
+                className="px-5 py-3 rounded-xl border border-white/20 bg-black text-white text-xs font-bold hover:bg-neutral-900 transition cursor-pointer shadow-xs"
               >
                 ANNULER
               </button>
