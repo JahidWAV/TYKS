@@ -21,30 +21,9 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
   const [isAuthOpen, setIsAuthOpen] = useState(false);
   const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
   
-  // État initialisé instantanément pour éviter le sursaut au rechargement
-  const [user, setUser] = useState<any>(() => {
-    if (typeof window !== "undefined") {
-      // Tente de récupérer rapidement la session stockée par Supabase dans le localStorage
-      const storageKey = Object.keys(localStorage).find((key) => key.includes("auth-token"));
-      if (storageKey) {
-        try {
-          const parsed = JSON.parse(localStorage.getItem(storageKey) || "{}");
-          return parsed?.user || null;
-        } catch (e) {
-          return null;
-        }
-      }
-    }
-    return null;
-  });
-
-  const [userName, setUserName] = useState<string>(() => {
-    if (user) {
-      const metaName = user.user_metadata?.full_name || user.user_metadata?.name || user.email?.split('@')[0] || "MON COMPTE";
-      return metaName.toUpperCase();
-    }
-    return "";
-  });
+  const [user, setUser] = useState<any>(null);
+  const [userName, setUserName] = useState<string>("");
+  const [isInitialized, setIsInitialized] = useState<boolean>(false);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -56,6 +35,7 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
         const metaName = currentUser.user_metadata?.full_name || currentUser.user_metadata?.name || currentUser.email?.split('@')[0] || "MON COMPTE";
         setUserName(metaName.toUpperCase());
       }
+      setIsInitialized(true);
     };
 
     fetchUserData();
@@ -67,6 +47,7 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
         const metaName = currentUser.user_metadata?.full_name || currentUser.user_metadata?.name || currentUser.email?.split('@')[0] || "MON COMPTE";
         setUserName(metaName.toUpperCase());
       }
+      setIsInitialized(true);
     });
 
     return () => subscription.unsubscribe();
@@ -110,16 +91,18 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
                 width={340} 
                 height={110} 
                 priority 
-                className="h-10 sm:h-12 md:h-14 w-auto object-contain brightness-0 invert transition-all duration-300" 
+                className="h-11 sm:h-14 md:h-16 w-auto object-contain brightness-0 invert transition-all duration-300" 
               />
             </Link>
           </div>
 
-          {/* COLONNE DROITE : COMPTE / CONNEXION */}
+          {/* COLONNE DROITE : COMPTE / CONNEXION (Masqué tant que non initialisé pour éviter le flash) */}
           <div className="hidden md:flex items-center justify-end">
             <button
               onClick={handleMainButtonClick}
-              className="h-11 px-7 bg-transparent hover:bg-white/10 text-white border border-white/15 transition-all duration-300 text-xs tracking-wider font-bold rounded-full flex items-center justify-center shrink-0 cursor-pointer"
+              className={`h-11 px-7 bg-transparent hover:bg-white/10 text-white border border-white/15 transition-all duration-300 text-xs tracking-wider font-bold rounded-full flex items-center justify-center shrink-0 cursor-pointer ${
+                !isInitialized ? "opacity-0 pointer-events-none" : "opacity-100"
+              }`}
             >
               {user ? userName : "SE CONNECTER / S'INSCRIRE"}
             </button>
@@ -157,7 +140,9 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
                 setMobileOpen(false);
                 handleMainButtonClick();
               }}
-              className="w-full h-12 bg-white text-black hover:bg-neutral-200 text-xs tracking-wider font-bold rounded-full shadow-md flex items-center justify-center cursor-pointer"
+              className={`w-full h-12 bg-white text-black hover:bg-neutral-200 text-xs tracking-wider font-bold rounded-full shadow-md flex items-center justify-center cursor-pointer ${
+                !isInitialized ? "opacity-0 pointer-events-none" : "opacity-100"
+              }`}
             >
               {user ? userName : "SE CONNECTER / S'INSCRIRE"}
             </button>
