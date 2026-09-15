@@ -46,28 +46,46 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
     return () => clearTimeout(timer);
   }, [searchQuery]);
 
-  // Chargement large de la base pour un filtrage instantané et 100% fonctionnel
+  // Chargement ultra-robuste sans jointure stricte pour éviter tout blocage SQL
   const fetchAllData = async () => {
     setIsLoading(true);
     try {
+      console.log("Chargement des données de recherche...");
+      
+      // 1. Récupération des événements
       const { data: eventsData, error: eventsError } = await supabaseBrowser
         .from("events")
-        .select("*, organizations(id, name, logo_url, slug)")
+        .select("*")
         .order("starts_at", { ascending: true })
-        .limit(300);
+        .limit(200);
 
-      if (eventsError) console.error("Erreur fetch events:", eventsError);
-      if (eventsData) setRawEvents(eventsData);
+      if (eventsError) {
+        console.error("Erreur Supabase events:", eventsError.message);
+      } else {
+        console.log("Événements chargés :", eventsData?.length);
+      }
 
+      // 2. Récupération séparée des organisations pour faire le lien proprement
       const { data: orgsData, error: orgsError } = await supabaseBrowser
         .from("organizations")
         .select("*")
         .limit(100);
 
-      if (orgsError) console.error("Erreur fetch orgs:", orgsError);
-      if (orgsData) setRawOrgs(orgsData);
+      if (orgsError) {
+        console.error("Erreur Supabase orgs:", orgsError.message);
+      }
+
+      // Associer les organisations aux événements en JavaScript (zéro risque de bug de jointure SQL)
+      const orgsMap = new Map((orgsData || []).map(org => [org.id, org]));
+      const enrichedEvents = (eventsData || []).map(evt => ({
+        ...evt,
+        organizations: evt.organization_id ? orgsMap.get(evt.organization_id) : null
+      }));
+
+      setRawEvents(enrichedEvents);
+      setRawOrgs(orgsData || []);
     } catch (err) {
-      console.error("Erreur chargement global :", err);
+      console.error("Erreur globale de chargement :", err);
     } finally {
       setIsLoading(false);
     }
@@ -75,7 +93,7 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
 
   if (!isOpen) return null;
 
-  // Filtrage ultra-robuste insensible à la casse et aux accents
+  // Filtrage insensible à la casse et aux accents
   const normalizeString = (str: string) => {
     return str
       ? str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase()
@@ -100,11 +118,9 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
   });
 
   const filteredOrgs = q === "" ? [] : rawOrgs.filter((org) => {
-    const orgName = normalizeString(org.name);
-    return orgName.includes(q);
+    return normalizeString(org.name).includes(q);
   });
 
-  // Si pas de recherche, on affiche uniquement les 6 premiers (tendances)
   const displayedEvents = debouncedQuery.trim() === "" ? rawEvents.slice(0, 6) : filteredEvents;
 
   return (
@@ -146,7 +162,7 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
         
         {isLoading ? (
           <div className="py-24 text-center text-white/40 text-xs font-bold tracking-widest animate-pulse">
-            CHARGEMENT DES UNIVERS...
+            CHARGEMENT DES DONNÉES...
           </div>
         ) : (
           <>
