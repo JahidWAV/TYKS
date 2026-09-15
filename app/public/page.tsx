@@ -41,17 +41,18 @@ export default function PublicHome() {
   }, []);
 
   return (
-    <main className="min-h-screen bg-white text-black selection:bg-black selection:text-white font-grotesque antialiased pt-32 uppercase">
+    <main className="min-h-screen bg-white text-black selection:bg-black selection:text-white font-grotesque antialiased pt-28 uppercase">
       
-      <section className="relative overflow-hidden max-w-7xl mx-auto px-6 lg:px-12 pb-24 border-b border-black/15 grid lg:grid-cols-12 gap-12 items-center">
+      {/* HERO SECTION */}
+      <section className="max-w-7xl mx-auto px-6 lg:px-12 py-16 lg:py-24 border-b border-black/15 grid lg:grid-cols-12 gap-16 items-center">
         
-        <div className="lg:col-span-7 space-y-8 z-10">
-          <h1 className="text-4xl sm:text-6xl lg:text-7xl font-bold tracking-tight leading-[1.08] text-black">
+        <div className="lg:col-span-7 space-y-8 flex flex-col justify-center">
+          <h1 className="text-4xl sm:text-6xl lg:text-7xl font-bold tracking-tight leading-[1.05] text-black">
             L&apos;ART DU SPECTACLE, <br />
             SANS ARTIFICE.
           </h1>
           
-          <p className="text-sm sm:text-base text-black/70 max-w-xl font-normal leading-relaxed normal-case">
+          <p className="text-xs sm:text-sm text-black/70 max-w-xl font-normal leading-relaxed normal-case">
             Zéro frais cachés, revente officielle instantanée pour contrer la spéculation et sélection pointue de la scène live. Réservez vos places en toute sérénité sur le web, l&apos;application mobile ou directement dans votre Apple Wallet.
           </p>
 
@@ -71,8 +72,8 @@ export default function PublicHome() {
           </div>
         </div>
 
-        <div className="lg:col-span-5 z-10">
-          <div className="relative bg-neutral-50 border border-black/15 p-8 sm:p-10 rounded-[2.5rem] shadow-xl space-y-6 overflow-hidden">
+        <div className="lg:col-span-5 flex justify-center w-full">
+          <div className="relative w-full max-w-md bg-neutral-50 border border-black/15 p-8 sm:p-10 rounded-[2.5rem] shadow-xl space-y-6">
             <div className="flex items-center justify-between border-b border-black/15 pb-5">
               <div className="flex items-center gap-3.5">
                 <div className="w-11 h-11 rounded-2xl bg-black/10 border border-black/20 flex items-center justify-center text-black">
@@ -111,6 +112,7 @@ export default function PublicHome() {
 
       </section>
 
+      {/* SECTION ÉVÉNEMENTS */}
       <section id="evenements" className="max-w-7xl mx-auto px-6 lg:px-12 py-24 space-y-12 border-b border-black/15">
         <div className="flex flex-col sm:flex-row sm:items-end justify-between border-b border-black/15 pb-6 gap-4">
           <h2 className="text-3xl font-bold text-black">PROCHAINS ÉVÉNEMENTS</h2>
@@ -217,6 +219,7 @@ export default function PublicHome() {
         )}
       </section>
 
+      {/* SECTION VALEURS */}
       <section className="max-w-7xl mx-auto px-6 lg:px-12 py-24 border-b border-black/15">
         <div className="text-center max-w-2xl mx-auto space-y-4 mb-16">
           <h2 className="text-3xl sm:text-4xl font-bold text-black">
@@ -260,7 +263,8 @@ export default function PublicHome() {
         </div>
       </section>
 
-      <section className="max-w-7xl mx-auto px-6 lg:px-12 py-24 border-b border-black/15 grid lg:grid-cols-2 gap-12 items-center">
+      {/* SECTION ORGANISATEURS */}
+      <section className="max-w-7xl mx-auto px-6 lg:px-12 py-24 border-b border-black/15 grid lg:grid-cols-2 gap-16 items-center">
         <div className="space-y-6">
           <h2 className="text-3xl sm:text-4xl font-bold text-black">
             BIEN PLUS QU&apos;UNE BILLETTERIE : UN VÉRITABLE OUTIL DE CROISSANCE.
@@ -301,6 +305,7 @@ export default function PublicHome() {
         </div>
       </section>
 
+      {/* CTA FINAL */}
       <section className="max-w-7xl mx-auto px-6 lg:px-12 py-20">
         <div className="bg-neutral-50 border border-black/25 rounded-[3rem] p-8 sm:p-14 flex flex-col md:flex-row items-center justify-between gap-10 shadow-xl">
           <div className="space-y-4 max-w-xl text-center md:text-left">
