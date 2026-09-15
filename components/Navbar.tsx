@@ -66,21 +66,8 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
       <div className="absolute top-6 left-0 right-0 z-50 max-w-7xl mx-auto px-6 lg:px-12 font-grotesque uppercase">
         <header className="w-full flex items-center justify-between gap-4">
 
-          {/* BLOC GAUCHE (Recherche avec loupe 100% blanche) */}
-          <div className="flex-1 flex items-center justify-start">
-            {!isPro && (
-              <button
-                onClick={() => setIsSearchModalOpen(true)}
-                className="h-11 w-11 bg-transparent hover:bg-white/10 text-white border border-white/15 transition-all duration-300 rounded-full flex items-center justify-center shrink-0 cursor-pointer"
-                aria-label="Rechercher"
-              >
-                <Search className="h-4 w-4 shrink-0" strokeWidth={2.5} style={{ color: '#ffffff' }} />
-              </button>
-            )}
-          </div>
-
-          {/* BLOC CENTRE (Logo parfaitement centré) */}
-          <div className="shrink-0 flex items-center justify-center">
+          {/* 1. BLOC GAUCHE (Logo TYKS) */}
+          <div className="flex items-center justify-start">
             <Link 
               href="/" 
               className="group flex items-center justify-center shrink-0 transition-opacity duration-300 hover:opacity-75"
@@ -96,8 +83,18 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
             </Link>
           </div>
 
-          {/* BLOC DROITE (Compte / Connexion - Desktop) */}
-          <div className="flex-1 hidden md:flex items-center justify-end">
+          {/* 2. BLOC DROITE (Recherche + Compte / Connexion - Desktop) */}
+          <div className="hidden md:flex items-center gap-3">
+            {!isPro && (
+              <button
+                onClick={() => setIsSearchModalOpen(true)}
+                className="h-11 w-11 bg-transparent hover:bg-white/10 text-white border border-white/15 transition-all duration-300 rounded-full flex items-center justify-center shrink-0 cursor-pointer"
+                aria-label="Rechercher"
+              >
+                <Search className="h-4 w-4 shrink-0" strokeWidth={2.5} style={{ color: '#ffffff' }} />
+              </button>
+            )}
+
             <button
               onClick={handleMainButtonClick}
               className={`h-11 px-7 bg-transparent hover:bg-white/10 text-white border border-white/15 transition-all duration-300 text-xs tracking-wider font-bold rounded-full flex items-center justify-center shrink-0 cursor-pointer ${
@@ -109,7 +106,17 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
           </div>
 
           {/* MENU MOBILE (DROITE) */}
-          <div className="flex-1 flex items-center justify-end md:hidden">
+          <div className="flex items-center justify-end gap-2 md:hidden">
+            {!isPro && (
+              <button
+                onClick={() => setIsSearchModalOpen(true)}
+                className="h-11 w-11 bg-transparent hover:bg-white/10 text-white border border-white/15 transition-all duration-300 rounded-full flex items-center justify-center shrink-0 cursor-pointer"
+                aria-label="Rechercher"
+              >
+                <Search className="h-4 w-4 shrink-0" strokeWidth={2.5} style={{ color: '#ffffff' }} />
+              </button>
+            )}
+
             <button
               className="inline-flex items-center justify-center bg-transparent text-white border border-white/15 p-3 rounded-full transition-all duration-300 cursor-pointer hover:bg-white/10"
               onClick={() => setMobileOpen((open) => !open)}
@@ -126,19 +133,6 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
 
         {mobileOpen && (
           <div className="px-6 py-6 md:hidden space-y-4 bg-neutral-900 border border-white/15 rounded-[2.5rem] mt-3 shadow-2xl text-white">
-            {!isPro && (
-              <button
-                onClick={() => {
-                  setMobileOpen(false);
-                  setIsSearchModalOpen(true);
-                }}
-                className="w-full h-11 bg-neutral-950 px-4 text-xs font-bold text-white flex items-center justify-center gap-2 rounded-full border border-white/15 shadow-inner"
-              >
-                <Search className="h-4 w-4" strokeWidth={2.5} style={{ color: '#ffffff' }} />
-                <span>RECHERCHER UN ÉVÉNEMENT...</span>
-              </button>
-            )}
-
             <button
               onClick={() => {
                 setMobileOpen(false);
