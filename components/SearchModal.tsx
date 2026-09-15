@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { Search, Calendar, MapPin, ArrowUpRight, X, Building2 } from "lucide-react";
+import { Search, Calendar, MapPin, ArrowUpRight, X, Building2, Sparkles } from "lucide-react";
 import { supabaseBrowser } from "@/lib/supabase-browser";
 
 interface SearchModalProps {
@@ -14,184 +14,253 @@ interface SearchModalProps {
 export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedQuery, setDebouncedQuery] = useState("");
   const [allEvents, setAllEvents] = useState<any[]>([]);
-  const [results, setResults] = useState<any[]>([]);
+  const [allOrgs, setAllOrgs] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
 
+  // Gestion du focus à l'ouverture et reset
   useEffect(() => {
     if (isOpen) {
+      document.body.style.overflow = "hidden";
       setTimeout(() => {
         searchInputRef.current?.focus();
       }, 100);
-      fetchEvents();
+      fetchAllData();
     } else {
+      document.body.style.overflow = "auto";
       setSearchQuery("");
-      setResults([]);
+      setDebouncedQuery("");
     }
+    return () => {
+      document.body.style.overflow = "auto";
+    };
   }, [isOpen]);
 
-  const fetchEvents = async () => {
+  // Debounce pour éviter le re-render à chaque frappe trop brutale (300ms)
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedQuery(searchQuery);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
+  const fetchAllData = async () => {
     setIsLoading(true);
     try {
-      const { data, error } = await supabaseBrowser
+      // Charger les événements avec leur organisation liée
+      const { data: eventsData } = await supabaseBrowser
         .from("events")
-        .select("*, organizations(name)")
+        .select("*, organizations(id, name, logo_url, slug)")
         .order("starts_at", { ascending: true })
-        .limit(100);
+        .limit(150);
 
-      if (!error && data) {
-        setAllEvents(data);
-      }
+      if (eventsData) setAllEvents(eventsData);
+
+      // Charger aussi les organisations directement pour pouvoir les chercher aussi
+      const { data: orgsData } = await supabaseBrowser
+        .from("organizations")
+        .select("*")
+        .limit(50);
+
+      if (orgsData) setAllOrgs(orgsData);
     } catch (err) {
-      console.error("Erreur lors du chargement des événements :", err);
+      console.error("Erreur chargement recherche :", err);
     } finally {
       setIsLoading(false);
     }
   };
 
-  useEffect(() => {
-    if (!searchQuery.trim()) {
-      setResults([]);
-      return;
-    }
-
-    const q = searchQuery.toLowerCase().trim();
-    const filtered = allEvents.filter((evt) => {
-      const titleMatch = evt.title?.toLowerCase().includes(q);
-      const locationMatch = evt.location?.toLowerCase().includes(q);
-      const orgMatch = evt.organizations?.name?.toLowerCase().includes(q);
-
-      return titleMatch || locationMatch || orgMatch;
-    });
-
-    setResults(filtered);
-  }, [searchQuery, allEvents]);
-
   if (!isOpen) return null;
 
+  // Filtrage intelligent
+  const q = debouncedQuery.toLowerCase().trim();
+
+  const filteredEvents = q === "" 
+    ? allEvents.slice(0, 6) // Suggestions par défaut si vide (ex: "Vu récemment / Tendances")
+    : allEvents.filter((evt) => {
+        const titleMatch = evt.title?.toLowerCase().includes(q);
+        const locationMatch = evt.location?.toLowerCase().includes(q);
+        const orgMatch = evt.organizations?.name?.toLowerCase().includes(q);
+        return titleMatch || locationMatch || orgMatch;
+      });
+
+  const filteredOrgs = q === "" 
+    ? [] 
+    : allOrgs.filter((org) => org.name?.toLowerCase().includes(q));
+
   return (
-    /* Centrage parfait avec flex items-center justify-center p-4 */
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-in fade-in duration-200 font-grotesque uppercase">
-      <div className="relative w-full max-w-3xl bg-white/90 backdrop-blur-2xl border border-black/15 p-6 md:p-8 shadow-2xl text-black rounded-[2.5rem] animate-in zoom-in-95 duration-200 max-h-[90vh] flex flex-col">
-        
-        {/* Barre de recherche */}
-        <div className="flex items-center gap-3 pb-6 border-b border-black/10 shrink-0">
-          <div className="relative flex-1 flex items-center">
-            <Search className="absolute left-5 h-4 w-4 text-black/60 pointer-events-none" />
-            <input
-              ref={searchInputRef}
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="RECHERCHER UN ÉVÉNEMENT, UNE VILLE, UN ORGANISATEUR..."
-              className="w-full h-14 bg-white/60 border border-black/15 pl-12 pr-4 text-xs font-bold placeholder:text-black/40 focus:outline-none focus:border-black text-black rounded-full shadow-inner uppercase"
-            />
-          </div>
-
-          <button
-            onClick={onClose}
-            className="h-14 w-14 shrink-0 border border-black/15 bg-white/80 hover:bg-black text-black hover:text-white backdrop-blur-md flex items-center justify-center transition-all duration-300 cursor-pointer rounded-full shadow-sm"
-            aria-label="Fermer"
-          >
-            <X className="w-5 h-5" />
-          </button>
-        </div>
-
-        {/* Résultats */}
-        <div className="mt-6 overflow-y-auto space-y-3 pr-1 flex-1">
-          {searchQuery.trim().length === 0 ? (
-            <div className="py-16 text-center text-black/40 text-xs font-bold tracking-wider">
-              TAPEZ UN TITRE, UNE VILLE OU UN ORGANISATEUR...
-            </div>
-          ) : isLoading ? (
-            <div className="py-16 text-center text-black/40 text-xs font-bold tracking-wider animate-pulse">
-              CHARGEMENT...
-            </div>
-          ) : results.length > 0 ? (
-            <div className="grid grid-cols-1 gap-3">
-              {results.map((evt) => {
-                const priceFormatted = evt.price && parseFloat(evt.price) > 0
-                  ? `${parseFloat(evt.price).toFixed(2)} €`
-                  : evt.price_cents && evt.price_cents > 0
-                  ? `${(evt.price_cents / 100).toFixed(2)} €`
-                  : 'GRATUIT';
-
-                // Vérification élargie de toutes les clés possibles pour l'image
-                const flyer = evt.image_url || evt.flyer || evt.poster || evt.cover_image || evt.image;
-                const orgName = evt.organizations?.name;
-
-                return (
-                  <button
-                    key={evt.id}
-                    onClick={() => {
-                      onClose();
-                      router.push(`/events/${evt.slug || evt.id}`);
-                    }}
-                    className="w-full text-left p-4 bg-white/70 hover:bg-black hover:text-white border border-black/15 rounded-3xl transition-all duration-300 flex items-center justify-between group cursor-pointer shadow-sm gap-4"
-                  >
-                    <div className="flex items-center gap-4 truncate">
-                      {/* Affiche de l'événement avec balise img standard */}
-                      <div className="relative w-16 h-16 shrink-0 rounded-2xl overflow-hidden border border-black/10 bg-neutral-100 shadow-sm flex items-center justify-center">
-                        {flyer ? (
-                          <img 
-                            src={flyer} 
-                            alt={evt.title || "Événement"} 
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" 
-                          />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center text-[10px] font-bold text-black/40 bg-neutral-200">
-                            TYKS
-                          </div>
-                        )}
-                      </div>
-
-                      {/* Infos */}
-                      <div className="space-y-1.5 truncate pr-2">
-                        <p className="text-xs font-bold tracking-wide truncate">
-                          {evt.title}
-                        </p>
-                        
-                        <div className="flex flex-wrap items-center gap-3 text-[10px] text-black/60 group-hover:text-white/70 font-bold">
-                          {evt.starts_at && (
-                            <span className="flex items-center gap-1">
-                              <Calendar className="w-3 h-3 shrink-0" />
-                              {new Date(evt.starts_at).toLocaleDateString("fr-FR", { day: "numeric", month: "short", year: "numeric" })}
-                            </span>
-                          )}
-                          {evt.location && (
-                            <span className="flex items-center gap-1 truncate">
-                              <MapPin className="w-3 h-3 shrink-0" />
-                              {evt.location}
-                            </span>
-                          )}
-                          {orgName && (
-                            <span className="flex items-center gap-1 truncate text-black/80 group-hover:text-white/90">
-                              <Building2 className="w-3 h-3 shrink-0" />
-                              {orgName}
-                            </span>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Prix */}
-                    <div className="flex items-center gap-3 shrink-0">
-                      <span className="text-[10px] font-bold px-3.5 py-2 border border-black/15 bg-white group-hover:bg-neutral-800 group-hover:text-white group-hover:border-white/20 text-black rounded-full transition-colors shadow-xs">
-                        {priceFormatted}
-                      </span>
-                      <ArrowUpRight className="w-4 h-4 text-black/40 group-hover:text-white transition-colors" />
-                    </div>
-                  </button>
-                );
-              })}
-            </div>
-          ) : (
-            <div className="py-16 text-center text-black/50 text-xs font-bold tracking-wider">
-              AUCUN RÉSULTAT TROUVÉ POUR &quot;{searchQuery}&quot;
-            </div>
+    <div className="fixed inset-0 z-50 bg-neutral-950/95 backdrop-blur-2xl flex flex-col font-grotesque uppercase text-white animate-in fade-in duration-200">
+      
+      {/* HEADER DE RECHERCHE PLEIN ÉCRAN */}
+      <div className="w-full max-w-5xl mx-auto px-6 pt-8 pb-6 flex items-center gap-4 border-b border-white/10">
+        <div className="relative flex-1 flex items-center">
+          <Search className="absolute left-6 h-5 w-5 text-white/40 pointer-events-none" />
+          <input
+            ref={searchInputRef}
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="RECHERCHER UN ÉVÉNEMENT, UN ARTISTE, UN ORGANISATEUR OU UNE VILLE..."
+            className="w-full h-16 bg-neutral-900 border border-white/15 pl-14 pr-6 text-sm font-bold placeholder:text-white/30 focus:outline-none focus:border-white text-white rounded-full shadow-inner uppercase tracking-wider"
+          />
+          {searchQuery && (
+            <button 
+              onClick={() => setSearchQuery("")}
+              className="absolute right-5 text-xs text-white/50 hover:text-white cursor-pointer"
+            >
+              EFFACER
+            </button>
           )}
         </div>
+
+        <button
+          onClick={onClose}
+          className="h-16 px-6 shrink-0 bg-neutral-900 hover:bg-white hover:text-black border border-white/15 text-white rounded-full transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer font-bold text-xs tracking-wider"
+        >
+          <X className="w-5 h-5" />
+          <span className="hidden sm:inline">FERMER</span>
+        </button>
+      </div>
+
+      {/* CONTENU DES RÉSULTATS */}
+      <div className="flex-1 overflow-y-auto max-w-5xl w-full mx-auto px-6 py-8 space-y-10">
+        
+        {isLoading ? (
+          <div className="py-24 text-center text-white/40 text-xs font-bold tracking-widest animate-pulse">
+            CHARGEMENT DES UNIVERS...
+          </div>
+        ) : (
+          <>
+            {/* SECTION ORGANISATEURS (Si trouvés) */}
+            {filteredOrgs.length > 0 && (
+              <div className="space-y-4">
+                <h3 className="text-xs font-bold tracking-widest text-white/50 flex items-center gap-2">
+                  <Building2 className="w-4 h-4 text-white" /> ORGANISATEURS & COLLECTIFS ({filteredOrgs.length})
+                </h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                  {filteredOrgs.map((org) => {
+                    const orgLogo = org.logo_url || org.image_url;
+                    return (
+                      <button
+                        key={org.id}
+                        onClick={() => {
+                          onClose();
+                          router.push(`/organizations/${org.slug || org.id}`);
+                        }}
+                        className="p-4 bg-neutral-900/80 hover:bg-white hover:text-black border border-white/15 rounded-3xl transition-all duration-300 flex items-center gap-4 group cursor-pointer text-left"
+                      >
+                        <div className="relative w-12 h-12 shrink-0 rounded-2xl overflow-hidden bg-neutral-800 border border-white/10 flex items-center justify-center">
+                          {orgLogo ? (
+                            <img src={orgLogo} alt={org.name} className="w-full h-full object-cover" />
+                          ) : (
+                            <Building2 className="w-5 h-5 text-white/50 group-hover:text-black" />
+                          )}
+                        </div>
+                        <div className="truncate flex-1">
+                          <p className="text-xs font-bold tracking-wider truncate">{org.name}</p>
+                          <span className="text-[10px] text-white/50 group-hover:text-black/70 font-semibold">ORGANISATEUR</span>
+                        </div>
+                        <ArrowUpRight className="w-4 h-4 text-white/30 group-hover:text-black shrink-0" />
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            {/* SECTION ÉVÉNEMENTS */}
+            <div className="space-y-4">
+              <h3 className="text-xs font-bold tracking-widest text-white/50 flex items-center gap-2">
+                {q === "" ? <Sparkles className="w-4 h-4 text-white" /> : <Calendar className="w-4 h-4 text-white" />}
+                {q === "" ? "ÉVÉNEMENTS EN TENDANCE" : `ÉVÉNEMENTS (${filteredEvents.length})`}
+              </h3>
+
+              {filteredEvents.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {filteredEvents.map((evt) => {
+                    const priceFormatted = evt.price && parseFloat(evt.price) > 0
+                      ? `${parseFloat(evt.price).toFixed(2)} €`
+                      : evt.price_cents && evt.price_cents > 0
+                      ? `${(evt.price_cents / 100).toFixed(2)} €`
+                      : 'GRATUIT';
+
+                    const flyer = evt.image_url || evt.flyer || evt.poster || evt.cover_image;
+                    const orgName = evt.organizations?.name;
+
+                    return (
+                      <button
+                        key={evt.id}
+                        onClick={() => {
+                          onClose();
+                          router.push(`/events/${evt.slug || evt.id}`);
+                        }}
+                        className="group text-left bg-neutral-900/60 hover:bg-neutral-900 border border-white/15 rounded-[2rem] p-4 transition-all duration-300 flex flex-col justify-between cursor-pointer space-y-4 shadow-xl"
+                      >
+                        {/* Affiche de l'événement en grand format style Shotgun */}
+                        <div className="relative w-full aspect-[4/3] rounded-2xl overflow-hidden bg-neutral-800 border border-white/10 shadow-md">
+                          {flyer ? (
+                            <img 
+                              src={flyer} 
+                              alt={evt.title || "Événement"} 
+                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
+                            />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center text-xs font-bold text-white/30">
+                              TYKS
+                            </div>
+                          )}
+                          <div className="absolute top-3 right-3 bg-black/80 backdrop-blur-md border border-white/20 text-white text-[10px] font-bold px-3 py-1.5 rounded-full">
+                            {priceFormatted}
+                          </div>
+                        </div>
+
+                        {/* Infos de l'événement */}
+                        <div className="space-y-2 flex-1">
+                          <p className="text-xs font-bold tracking-wide line-clamp-1 group-hover:text-white">
+                            {evt.title}
+                          </p>
+
+                          <div className="space-y-1 text-[10px] text-white/60 font-bold">
+                            {evt.starts_at && (
+                              <div className="flex items-center gap-1.5">
+                                <Calendar className="w-3 h-3 shrink-0 text-white/40" />
+                                {new Date(evt.starts_at).toLocaleDateString("fr-FR", { day: "numeric", month: "short", year: "numeric" })}
+                              </div>
+                            )}
+                            {evt.location && (
+                              <div className="flex items-center gap-1.5 truncate">
+                                <MapPin className="w-3 h-3 shrink-0 text-white/40" />
+                                <span className="truncate">{evt.location}</span>
+                              </div>
+                            )}
+                            {orgName && (
+                              <div className="flex items-center gap-1.5 truncate text-white/80">
+                                <Building2 className="w-3 h-3 shrink-0 text-white/40" />
+                                <span className="truncate">{orgName}</span>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Footer de la carte */}
+                        <div className="pt-3 border-t border-white/10 flex items-center justify-between text-[10px] text-white/40 group-hover:text-white font-bold transition-colors">
+                          <span>VOIR LA BILLETTERIE</span>
+                          <ArrowUpRight className="w-4 h-4" />
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div className="py-20 text-center text-white/40 text-xs font-bold tracking-widest">
+                  AUCUN RÉSULTAT TROUVÉ POUR &quot;{searchQuery}&quot;
+                </div>
+              )}
+            </div>
+          </>
+        )}
 
       </div>
     </div>
