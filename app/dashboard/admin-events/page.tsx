@@ -1,13 +1,17 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Calendar, MapPin, ArrowUpRight, Ticket, Edit3, Trash2, Loader2, Image as ImageIcon } from 'lucide-react';
+import { Calendar, MapPin, ArrowUpRight, Ticket, Edit3, Trash2, Loader2, Image as ImageIcon, AlertTriangle, X } from 'lucide-react';
 import Link from 'next/link';
 import { supabaseBrowser } from '@/lib/supabase-browser';
 
 export default function AdminEventsPage() {
   const [events, setEvents] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  
+  // États pour gérer la modale de suppression personnalisée
+  const [eventToDelete, setEventToDelete] = useState<any | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   async function loadEvents() {
     try {
@@ -30,20 +34,24 @@ export default function AdminEventsPage() {
     loadEvents();
   }, []);
 
-  const handleDeleteEvent = async (eventId: string) => {
-    if (!confirm("ATTENTION : VOULEZ-VOUS VRAIMENT SUPPRIMER CET ÉVÉNEMENT ?")) return;
+  const confirmDeleteEvent = async () => {
+    if (!eventToDelete) return;
 
     try {
+      setIsDeleting(true);
       const { error } = await supabaseBrowser
         .from('events')
         .delete()
-        .eq('id', eventId);
+        .eq('id', eventToDelete.id);
 
       if (error) throw error;
-      setEvents((prev) => prev.filter((e) => e.id !== eventId));
+      setEvents((prev) => prev.filter((e) => e.id !== eventToDelete.id));
+      setEventToDelete(null);
     } catch (err) {
       console.error('ERREUR LORS DE LA SUPPRESSION :', err);
       alert("IMPOSSIBLE DE SUPPRIMER CET ÉVÉNEMENT.");
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -56,7 +64,7 @@ export default function AdminEventsPage() {
   }
 
   return (
-    <div className="w-full px-6 lg:px-12 py-8 space-y-8 font-grotesque text-white bg-[#0f0f0f] min-h-full uppercase">
+    <div className="w-full px-6 lg:px-12 py-8 space-y-8 font-grotesque text-white bg-[#0f0f0f] min-h-full uppercase relative">
       <div className="w-full space-y-8">
         
         {/* Compteur discret en haut à droite */}
@@ -165,7 +173,7 @@ export default function AdminEventsPage() {
                       </Link>
 
                       <button
-                        onClick={() => handleDeleteEvent(event.id)}
+                        onClick={() => setEventToDelete(event)}
                         className="w-10 h-10 rounded-xl border border-white/20 bg-neutral-950 text-white flex items-center justify-center hover:bg-white hover:text-black transition-colors cursor-pointer shadow-xs"
                         title="SUPPRIMER"
                       >
@@ -180,6 +188,59 @@ export default function AdminEventsPage() {
         )}
 
       </div>
+
+      {/* MODALE DE CONFIRMATION DE SUPPRESSION SUR MESURE */}
+      {eventToDelete && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-xs px-4">
+          <div className="w-full max-w-md rounded-2xl border border-white/20 bg-neutral-900 p-6 md:p-8 space-y-6 shadow-2xl font-grotesque">
+            
+            <div className="flex items-center justify-between border-b border-white/10 pb-4">
+              <div className="flex items-center gap-2 text-white">
+                <AlertTriangle className="w-5 h-5 text-white" />
+                <h3 className="text-sm font-bold tracking-wider">CONFIRMER LA SUPPRESSION</h3>
+              </div>
+              <button 
+                onClick={() => setEventToDelete(null)}
+                className="text-white/50 hover:text-white transition-colors cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="space-y-2">
+              <p className="text-xs text-white/70">
+                ÊTES-VOUS SÛR DE VOULOIR SUPPRIMER DÉFINITIVEMENT CET ÉVÉNEMENT ?
+              </p>
+              <p className="text-sm font-bold text-white bg-neutral-950 p-3 rounded-xl border border-white/10 truncate">
+                {eventToDelete.title}
+              </p>
+            </div>
+
+            <div className="flex items-center justify-end gap-3 pt-2 border-t border-white/10">
+              <button
+                type="button"
+                onClick={() => setEventToDelete(null)}
+                disabled={isDeleting}
+                className="px-5 py-3 rounded-xl border border-white/20 bg-neutral-950 text-white text-xs font-bold hover:bg-neutral-800 transition cursor-pointer shadow-xs"
+              >
+                ANNULER
+              </button>
+
+              <button
+                type="button"
+                onClick={confirmDeleteEvent}
+                disabled={isDeleting}
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-white text-black text-xs font-bold hover:bg-neutral-200 transition cursor-pointer shadow-lg disabled:opacity-50"
+              >
+                {isDeleting && <Loader2 className="w-4 h-4 animate-spin" />}
+                <span>{isDeleting ? 'SUPPRESSION...' : 'SUPPRIMER'}</span>
+              </button>
+            </div>
+
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }
