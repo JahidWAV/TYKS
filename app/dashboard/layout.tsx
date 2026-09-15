@@ -1,269 +1,445 @@
 'use client';
 
-import { useEffect, useState, useRef } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { 
-  LayoutDashboard, Calendar, BarChart3, 
-  Wallet, LogOut, Shield, Sliders, ChevronRight 
+  ArrowUpRight, Plus, Calendar, MapPin, Trash2, Edit3, 
+  Euro, Ticket, Search, RefreshCw, ShieldCheck
 } from 'lucide-react';
+import type { IortiEvent } from '@/types/event';
 import { supabaseBrowser } from '@/lib/supabase-browser';
+import CustomAuthModal from '@/components/CustomAuthModal';
 
-const SIDEBAR_STORAGE_KEY = 'tyks_sidebar_open';
+const STATUS_LABEL: Record<string, string> = {
+  draft: 'BROUILLON',
+  published: 'PUBLIÉ',
+  cancelled: 'ANNULÉ',
+};
 
-export default function DashboardLayout({ children }: { children: React.ReactNode }) {
-  const pathname = usePathname();
+interface DashboardStats {
+  totalRevenue: number;
+  totalTicketsSold: number;
+  totalCapacity: number;
+  publishedEventsCount: number;
+  totalEventsCount: number;
+}
+
+export default function OrganizerDashboard() {
   const router = useRouter();
-  const [user, setUser] = useState<any>(undefined);
-  const [isOpen, setIsOpen] = useState(false);
-  const [mounted, setMounted] = useState(false);
-  const [profileOpen, setProfileOpen] = useState(false);
-  const [userName, setUserName] = useState<string>("MON COMPTE");
-  const profileMenuRef = useRef<HTMLDivElement>(null);
+  const [user, setUser] = useState<any>(null);
+  const [ready, setReady] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [events, setEvents] = useState<IortiEvent[]>([]);
+  const [stats, setStats] = useState<DashboardStats>({
+    totalRevenue: 0,
+    totalTicketsSold: 0,
+    totalCapacity: 0,
+    publishedEventsCount: 0,
+    totalEventsCount: 0,
+  });
+  
+  const [searchQuery, setSearchQuery] = useState('');
+  const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [refreshing, setRefreshing] = useState(false);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
   useEffect(() => {
-    async function checkAuth() {
+    async function getSession() {
       const { data: { session } } = await supabaseBrowser.auth.getSession();
-      const currentUser = session?.user ?? null;
-      setUser(currentUser);
-
-      if (currentUser) {
-        const metaName = currentUser.user_metadata?.first_name || currentUser.user_metadata?.full_name || currentUser.user_metadata?.name || currentUser.email?.split('@')[0] || "MON COMPTE";
-        setUserName(metaName.toUpperCase());
-      }
+      setUser(session?.user ?? null);
+      setReady(true);
     }
-    checkAuth();
+    getSession();
 
     const { data: { subscription } } = supabaseBrowser.auth.onAuthStateChange((_event, session) => {
-      const currentUser = session?.user ?? null;
-      setUser(currentUser);
-      if (currentUser) {
-        const metaName = currentUser.user_metadata?.first_name || currentUser.user_metadata?.full_name || currentUser.user_metadata?.name || currentUser.email?.split('@')[0] || "MON COMPTE";
-        setUserName(metaName.toUpperCase());
-      }
+      setUser(session?.user ?? null);
     });
 
     return () => subscription.unsubscribe();
   }, []);
 
-  useEffect(() => {
+  const loadDashboard = useCallback(async (userId: string, isRefresh = false) => {
     try {
-      const stored = window.localStorage.getItem(SIDEBAR_STORAGE_KEY);
-      if (stored !== null) setIsOpen(stored === 'true');
-    } catch {
-      // stockage indisponible
-    }
-    setMounted(true);
-  }, []);
+      if (isRefresh) setRefreshing(true);
+      else setLoading(true);
 
-  useEffect(() => {
-    if (!mounted) return;
-    try {
-      window.localStorage.setItem(SIDEBAR_STORAGE_KEY, String(isOpen));
-    } catch {
-      // stockage indisponible
-    }
-  }, [isOpen, mounted]);
+      const { data: membership } = await supabaseBrowser
+        .from('organization_members')
+        .select('organization_id')
+        .eq('user_id', userId)
+        .maybeSingle();
 
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (profileMenuRef.current && !profileMenuRef.current.contains(event.target as Node)) {
-        setProfileOpen(false);
+      let query = supabaseBrowser.from('events').select('*');
+
+      if (membership?.organization_id) {
+        query = query.eq('organization_id', membership.organization_id);
+      } else {
+        query = query.eq('created_by', userId);
       }
+
+      const { data: eventsData, error } = await query.order('starts_at', { ascending: true });
+
+      if (error) {
+        console.error('Erreur Supabase :', error.message);
+        return;
+      }
+
+      if (eventsData) {
+        setEvents(eventsData);
+
+        const totalEventsCount = eventsData.length;
+        const publishedEventsCount = eventsData.filter((e) => e.status === 'published').length;
+
+        let calculatedRevenue = 0;
+        let calculatedTickets = 0;
+        let calculatedCapacity = 0;
+
+        eventsData.forEach((evt: any) => {
+          const price = Number(evt.price || evt.ticket_price || 0);
+          const sold = Number(evt.tickets_sold || evt.sold_count || 0);
+          const capacity = Number(evt.capacity || evt.max_attendees || 0);
+
+          calculatedRevenue += price * sold;
+          calculatedTickets += sold;
+          calculatedCapacity += capacity;
+        });
+
+        setStats({
+          totalRevenue: calculatedRevenue,
+          totalTicketsSold: calculatedTickets,
+          totalCapacity: calculatedCapacity,
+          publishedEventsCount,
+          totalEventsCount,
+        });
+      }
+    } catch (err) {
+      console.error('Erreur de chargement du dashboard :', err);
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
     }
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const handleLogout = async () => {
-    await supabaseBrowser.auth.signOut();
-    router.push('/');
-    router.refresh();
+  useEffect(() => {
+    if (ready && user?.id) {
+      loadDashboard(user.id);
+    } else if (ready && !user) {
+      setLoading(false);
+    }
+  }, [ready, user, loadDashboard]);
+
+  const handleDeleteEvent = async (eventId: string) => {
+    if (!confirm('ATTENTION : CETTE ACTION EST IRRÉVERSIBLE. VOULEZ-VOUS VRAIMENT SUPPRIMER CET ÉVÉNEMENT ?')) return;
+
+    try {
+      const { error } = await supabaseBrowser
+        .from('events')
+        .delete()
+        .eq('id', eventId);
+
+      if (error) throw error;
+      setEvents((prev) => prev.filter((e) => e.id !== eventId));
+    } catch (err) {
+      console.error('Erreur lors de la suppression :', err);
+      alert("IMPOSSIBLE DE SUPPRIMER L'ÉVÉNEMENT EN RAISON D'UNE CONTRAINTE TECHNIQUE.");
+    }
   };
 
-  const navItems = [
-    { label: "VUE D'ENSEMBLE", href: '/', icon: LayoutDashboard },
-    { label: ' ÉVÉNEMENTS', href: '/admin-events', icon: Calendar },
-    { label: 'STATISTIQUES', href: '/stats', icon: BarChart3 },
-    { label: 'FINANCES & PAIEMENTS', href: '/banking', icon: Wallet },
-  ];
-
-  const getBreadcrumbs = () => {
-    if (pathname === '/') return ["VUE D'ENSEMBLE"];
-    const segments = pathname.split('/').filter(Boolean);
-    
-    return segments.map(seg => {
-      const match = navItems.find(item => item.href === `/${seg}`);
-      if (match) return match.label;
-      return seg.toUpperCase().replace(/-/g, ' ');
-    });
-  };
-
-  const breadcrumbs = getBreadcrumbs();
-
-  if (user === undefined) {
+  if (!ready) {
     return (
-      <div className="min-h-screen bg-white text-[#1e3932]/60 font-grotesque text-xs tracking-wider flex items-center justify-center uppercase">
+      <div className="min-h-screen bg-white text-[#1e3932]/60 font-grotesque text-xs flex items-center justify-center uppercase">
         CHARGEMENT...
       </div>
     );
   }
 
   if (!user) {
-    return <main className="min-h-screen w-full bg-white">{children}</main>;
-  }
-
-  const SIDEBAR_WIDTH = isOpen ? 'w-64' : 'w-16';
-  const CONTENT_MARGIN = isOpen ? 'ml-64' : 'ml-16';
-
-  return (
-    <div className="min-h-screen bg-white text-[#1e3932] font-sans selection:bg-[#1e3932] selection:text-white flex overflow-x-hidden uppercase">
-
-      {/* Barre supérieure fixe */}
-      <header className="fixed top-0 left-0 right-0 h-20 border-b border-[#1e3932]/10 bg-white flex items-center justify-between shrink-0 z-50 select-none shadow-xs px-6">
-        <div className="flex items-center h-full">
-          <div className="w-16 h-full flex items-center justify-center shrink-0 border-r border-[#1e3932]/10 bg-[#f8faf9] -ml-6 mr-6">
-            <Link href="/" className="w-9 h-9 flex items-center justify-center group">
-              <span className="h-8 w-8 rounded-lg bg-[#1e3932] text-white flex items-center justify-center font-grotesque font-bold text-xs transition-transform group-hover:scale-105">
-                T
-              </span>
-            </Link>
+    return (
+      <div className="min-h-screen bg-white text-[#1e3932] flex flex-col lg:flex-row w-full overflow-hidden selection:bg-[#1e3932] selection:text-white font-grotesque uppercase">
+        
+        <div className="w-full lg:w-1/2 flex flex-col justify-between p-8 lg:p-16 z-10 bg-white border-b lg:border-b-0 lg:border-r border-[#1e3932]/10">
+          <div className="flex items-center gap-3">
+            <span className="h-9 w-9 rounded-lg bg-[#1e3932] text-white flex items-center justify-center font-grotesque font-bold text-xs">T</span>
+            <span className="font-grotesque text-xs font-bold text-[#1e3932]">TYKS PRO</span>
           </div>
 
-          <div className="flex items-center gap-2 text-xs font-grotesque tracking-wide">
-            {breadcrumbs.map((crumb, index) => (
-              <div key={index} className="flex items-center gap-2">
-                {index > 0 && <ChevronRight className="w-3.5 h-3.5 text-[#1e3932]/40" />}
-                <span className={`flex items-center ${index === breadcrumbs.length - 1 ? "bg-[#1e3932]/10 text-[#1e3932] border border-[#1e3932]/20 px-3 py-1 font-bold rounded-full" : "text-[#1e3932]/60"}`}>
-                  {crumb}
-                </span>
+          <div className="space-y-6 my-auto py-12">
+            <span className="inline-block font-grotesque text-[11px] bg-[#1e3932]/10 border border-[#1e3932]/20 text-[#1e3932] px-3 py-1.5 rounded-full">
+              TYKS PRO · ESPACE ORGANISATEUR
+            </span>
+            <h1 className="text-4xl lg:text-6xl font-grotesque font-normal tracking-tight text-[#1e3932] leading-[1.05]">
+              REPRENEZ LE CONTRÔLE DE VOTRE BILLETTERIE ET DE VOS MARGES.
+            </h1>
+            <p className="font-grotesque text-xs leading-relaxed text-[#1e3932]/70 max-w-md">
+              FINS DE COMMISSIONS ABUSIVES ET DE DONNÉES CAPTIVES. TYKS PRO VOUS OFFRE UNE PLATEFORME SUR-MESURE, DES FRAIS RÉDUITS ET L&apos;ACCÈS DIRECT À VOTRE COMMUNAUTÉ.
+            </p>
+            <div>
+              <button
+                onClick={() => setIsAuthModalOpen(true)}
+                className="w-full sm:w-auto px-8 py-4 bg-[#1e3932] text-white font-grotesque text-xs hover:bg-[#152a25] transition-colors flex items-center justify-center gap-3 cursor-pointer font-bold rounded-xl shadow-lg"
+              >
+                <span>ACCÉDER À MON ESPACE PRO</span>
+                <ArrowUpRight className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+
+          <div className="font-grotesque text-xs text-[#1e3932]/40">
+            © TYKS INC.
+          </div>
+        </div>
+
+        <div className="hidden lg:flex w-1/2 bg-[#f8faf9] p-12 relative overflow-hidden items-center justify-center select-none pointer-events-none">
+          <div className="w-full max-w-lg bg-white border border-[#1e3932]/15 rounded-3xl p-6 space-y-6 shadow-xl font-grotesque">
+            <div className="flex items-center justify-between border-b border-[#1e3932]/10 pb-4">
+              <div className="flex items-center gap-2">
+                <span className="h-3 w-3 rounded-full bg-[#1e3932]/20"></span>
+                <span className="h-3 w-3 rounded-full bg-[#1e3932]/20"></span>
+                <span className="h-3 w-3 rounded-full bg-[#1e3932]/20"></span>
               </div>
+              <span className="text-xs font-grotesque text-[#1e3932]/50 lowercase">dashboard.tyks.app</span>
+            </div>
+          </div>
+        </div>
+
+        <CustomAuthModal 
+          isOpen={isAuthModalOpen} 
+          onClose={() => setIsAuthModalOpen(false)} 
+        />
+
+      </div>
+    );
+  }
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-white text-[#1e3932]/60 font-grotesque text-xs flex items-center justify-center uppercase">
+        CHARGEMENT...
+      </div>
+    );
+  }
+
+  const filteredEvents = events.filter((evt: any) => {
+    const matchesSearch = evt.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                          evt.location?.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesStatus = statusFilter === 'all' || evt.status === statusFilter;
+    return matchesSearch && matchesStatus;
+  });
+
+  const fillRate = stats.totalCapacity > 0 
+    ? Math.round((stats.totalTicketsSold / stats.totalCapacity) * 100) 
+    : 0;
+
+  return (
+    <div className="w-full px-6 lg:px-12 pt-4 pb-12 space-y-8 font-grotesque text-[#1e3932] bg-white min-h-full uppercase">
+      
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 border-b border-[#1e3932]/10">
+        <div className="space-y-2">
+          <div className="flex items-center gap-2">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-[#1e3932]/20 text-xs font-grotesque bg-[#1e3932]/10 font-bold text-[#1e3932]">
+              <ShieldCheck className="w-3.5 h-3.5 text-[#1e3932]" /> ACCÈS ILLIMITÉ (SANS ABONNEMENT)
+            </span>
+          </div>
+          <h1 className="text-3xl lg:text-5xl font-grotesque font-normal tracking-tight leading-none text-[#1e3932]">APERÇU DES VENTES</h1>
+          <p className="text-xs font-grotesque text-[#1e3932]/60">ANALYSEZ ET OPTIMISEZ VOS VENTES EN TEMPS RÉEL</p>
+        </div>
+
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => loadDashboard(user.id, true)}
+            disabled={refreshing}
+            className="h-12 px-5 rounded-xl border border-[#1e3932]/15 bg-white hover:bg-[#f8faf9] text-[#1e3932] font-grotesque text-xs transition-all flex items-center gap-2 disabled:opacity-50 cursor-pointer font-bold shadow-xs"
+          >
+            <RefreshCw className={`h-3.5 w-3.5 ${refreshing ? 'animate-spin' : ''}`} />
+            <span className="hidden sm:inline">ACTUALISER</span>
+          </button>
+          <Link
+            href="/new"
+            className="h-12 px-6 rounded-xl bg-[#1e3932] text-white hover:bg-[#152a25] font-grotesque text-xs transition-all flex items-center justify-center gap-2 cursor-pointer font-bold shadow-lg"
+          >
+            <Plus className="h-4 w-4" />
+            <span>CRÉER UN ÉVÉNEMENT ILLIMITÉ</span>
+          </Link>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 font-grotesque">
+        <div className="p-6 rounded-2xl border border-[#1e3932]/10 bg-[#f8faf9] space-y-3 shadow-xs">
+          <div className="flex items-center justify-between">
+            <p className="text-xs text-[#1e3932]/60 font-bold">CHIFFRE D&apos;AFFAIRES</p>
+            <Euro className="w-4 h-4 text-[#1e3932]" />
+          </div>
+          <p className="text-3xl font-bold tracking-tight text-[#1e3932]">
+            {stats.totalRevenue.toLocaleString('fr-FR')} €
+          </p>
+          <p className="text-[11px] text-[#1e3932]/50">VOLUME BRUT ENCAISSÉ</p>
+        </div>
+
+        <div className="p-6 rounded-2xl border border-[#1e3932]/10 bg-[#f8faf9] space-y-3 shadow-xs">
+          <div className="flex items-center justify-between">
+            <p className="text-xs text-[#1e3932]/60 font-bold">BILLETS VENDUS</p>
+            <Ticket className="w-4 h-4 text-[#1e3932]" />
+          </div>
+          <p className="text-3xl font-bold tracking-tight text-[#1e3932]">
+            {stats.totalTicketsSold}
+          </p>
+          <p className="text-[11px] text-[#1e3932]/50">TAUX DE REMPLISSAGE : {fillRate}%</p>
+        </div>
+
+        <div className="p-6 rounded-2xl border border-[#1e3932]/10 bg-[#f8faf9] space-y-3 shadow-xs">
+          <div className="flex items-center justify-between">
+            <p className="text-xs text-[#1e3932]/60 font-bold">ÉVÉNEMENTS PUBLIÉS</p>
+            <Calendar className="w-4 h-4 text-[#1e3932]" />
+          </div>
+          <p className="text-3xl font-bold tracking-tight text-[#1e3932]">
+            {stats.publishedEventsCount} <span className="text-xs font-normal text-[#1e3932]/50">({stats.totalEventsCount} TOTAL)</span>
+          </p>
+          <p className="text-[11px] text-[#1e3932]/50">CRÉATION ILLIMITÉE</p>
+        </div>
+
+        <div className="p-6 rounded-2xl border border-[#1e3932]/10 bg-[#f8faf9] space-y-3 shadow-xs">
+          <div className="flex items-center justify-between">
+            <p className="text-xs text-[#1e3932]/60 font-bold">MODÈLE TARIFAIRE</p>
+            <span className="h-3 w-3 rounded-full bg-[#1e3932] animate-pulse" />
+          </div>
+          <p className="text-base font-bold tracking-tight pt-1 text-[#1e3932]">
+            COMMISSION SUR VENTES
+          </p>
+          <p className="text-[11px] text-[#1e3932]/50">0 € D&apos;ABONNEMENT FIXE</p>
+        </div>
+      </div>
+
+      <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4 pt-4">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 flex-1">
+          <div className="relative flex-1 max-w-md">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-[#1e3932]/40" />
+            <input
+              type="text"
+              placeholder="RECHERCHER PAR TITRE OU LIEU..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full h-12 rounded-xl border border-[#1e3932]/15 bg-white pl-11 pr-4 font-grotesque text-xs text-[#1e3932] placeholder:text-[#1e3932]/40 focus:outline-none focus:border-[#1e3932] shadow-xs"
+            />
+          </div>
+          <div className="flex items-center gap-2 overflow-x-auto py-1 font-grotesque">
+            {['all', 'published', 'draft', 'cancelled'].map((status) => (
+              <button
+                key={status}
+                onClick={() => setStatusFilter(status)}
+                className={`h-12 px-4 rounded-xl border font-grotesque text-xs transition-all whitespace-nowrap cursor-pointer font-bold shadow-xs ${
+                  statusFilter === status 
+                    ? 'bg-[#1e3932] text-white border-[#1e3932]' 
+                    : 'bg-white border-[#1e3932]/15 text-[#1e3932]/80 hover:bg-[#f8faf9]'
+                }`}
+              >
+                {status === 'all' ? 'TOUS' : STATUS_LABEL[status] || status}
+              </button>
             ))}
           </div>
         </div>
-
-        {/* BOUTON UTILISATEUR */}
-        <div className="relative" ref={profileMenuRef}>
-          <button 
-            onClick={() => setProfileOpen(!profileOpen)}
-            className="h-10 px-6 bg-[#1e3932] hover:bg-[#152a25] transition-all text-white text-xs tracking-wider font-grotesque font-normal rounded-full shadow-md flex items-center justify-center shrink-0 cursor-pointer"
-          >
-            {userName}
-          </button>
-
-          {profileOpen && (
-            <div className="absolute right-0 mt-3 w-72 bg-white border border-[#1e3932]/15 shadow-2xl rounded-3xl py-2 z-50 font-grotesque text-xs text-[#1e3932]">
-              <div className="flex items-center gap-3 px-5 py-3 border-b border-[#1e3932]/10 bg-[#f8faf9]">
-                <div className="min-w-0">
-                  <p className="font-bold truncate text-[#1e3932]">{userName}</p>
-                  <p className="text-[10px] text-[#1e3932]/60 truncate lowercase">{user.email}</p>
-                </div>
-              </div>
-
-              <div className="py-2 space-y-1 px-2">
-                <Link 
-                  href="/settings" 
-                  onClick={() => setProfileOpen(false)}
-                  className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-[#1e3932]/5 hover:text-[#1e3932] transition-colors tracking-wide font-bold text-[#1e3932]/80"
-                >
-                  <span>PROFIL</span>
-                </Link>
-
-                <Link 
-                  href="/settings/security" 
-                  onClick={() => setProfileOpen(false)}
-                  className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-[#1e3932]/5 hover:text-[#1e3932] transition-colors tracking-wide font-bold text-[#1e3932]/80"
-                >
-                  <Shield className="w-4 h-4 text-[#1e3932]" />
-                  <span>SÉCURITÉ</span>
-                </Link>
-
-                <Link 
-                  href="/settings/preferences" 
-                  onClick={() => setProfileOpen(false)}
-                  className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-[#1e3932]/5 hover:text-[#1e3932] transition-colors tracking-wide font-bold text-[#1e3932]/80"
-                >
-                  <Sliders className="w-4 h-4 text-[#1e3932]" />
-                  <span>PRÉFÉRENCES</span>
-                </Link>
-              </div>
-
-              <div className="border-t border-[#1e3932]/10 pt-2 px-2">
-                <button
-                  onClick={() => {
-                    setProfileOpen(false);
-                    handleLogout();
-                  }}
-                  className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-red-600 hover:bg-red-50 transition-colors tracking-wide font-bold cursor-pointer"
-                >
-                  <LogOut className="w-4 h-4" />
-                  <span>SE DÉCONNECTER</span>
-                </button>
-              </div>
-            </div>
-          )}
-        </div>
-      </header>
-
-      {/* Sidebar */}
-      <aside className={`fixed top-20 left-0 h-[calc(100vh-5rem)] ${SIDEBAR_WIDTH} border-r border-[#1e3932]/10 bg-white flex flex-col py-6 z-40 select-none overflow-hidden ${
-        mounted ? 'transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]' : ''
-      }`}>
-
-        <div className="flex-1 w-full flex flex-col justify-center gap-3 px-3 font-grotesque">
-          {navItems.map((item) => {
-            const Icon = item.icon;
-            const isActive = pathname === item.href;
-
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                title={isOpen ? undefined : item.label}
-                className={`flex items-center h-12 transition-all font-grotesque text-xs tracking-wide group rounded-xl ${
-                  isOpen ? 'px-3 gap-3 border shadow-xs' : 'justify-center border border-transparent'
-                } ${
-                  isActive
-                    ? 'bg-[#1e3932] text-white border-[#1e3932] font-bold shadow-md'
-                    : 'bg-[#f8faf9] text-[#1e3932]/80 border-[#1e3932]/10 hover:bg-[#1e3932]/5 hover:text-[#1e3932]'
-                }`}
-              >
-                <Icon className={`w-4 h-4 shrink-0 transition-transform group-hover:scale-110 ${isActive ? 'text-white' : 'text-[#1e3932]'}`} />
-                <span
-                  className={`font-bold whitespace-nowrap overflow-hidden transition-all duration-300 ${
-                    isOpen ? 'max-w-[160px] opacity-100' : 'max-w-0 opacity-0'
-                  }`}
-                >
-                  {item.label}
-                </span>
-              </Link>
-            );
-          })}
-        </div>
-
-        <div className={`w-full flex items-center border-t border-[#1e3932]/10 pt-4 px-3 ${isOpen ? '' : 'justify-center'}`}>
-          <button
-            onClick={() => setIsOpen(prev => !prev)}
-            title={isOpen ? 'RÉDUIRE LE MENU' : 'DÉPLOYER LE MENU'}
-            aria-label={isOpen ? 'Réduire le menu' : 'Déployer le menu'}
-            aria-pressed={isOpen}
-            className="w-10 h-10 rounded-xl border border-[#1e3932]/15 bg-[#f8faf9] text-[#1e3932] flex items-center justify-center hover:bg-[#1e3932] hover:text-white transition-all shrink-0 cursor-pointer shadow-sm"
-          >
-            <ChevronRight className={`w-4 h-4 transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${isOpen ? 'rotate-180' : ''}`} />
-          </button>
-        </div>
-      </aside>
-
-      {/* Conteneur principal */}
-      <div 
-        className={`flex-1 min-w-0 flex flex-col h-screen pt-20 overflow-hidden ${CONTENT_MARGIN} ${
-          mounted ? 'transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]' : ''
-        }`}
-      >
-        <main className="flex-1 overflow-y-auto p-8 bg-white font-grotesque">
-          {children}
-        </main>
+        <span className="font-grotesque text-xs text-[#1e3932]/60 text-right">
+          {filteredEvents.length} ÉVÉNEMENT(S)
+        </span>
       </div>
+
+      <div className="space-y-6">
+        {filteredEvents.length === 0 ? (
+          <div className="rounded-2xl border border-[#1e3932]/10 bg-[#f8faf9] p-16 text-center space-y-4 shadow-xs font-grotesque">
+            <Calendar className="mx-auto h-8 w-8 text-[#1e3932]" />
+            <p className="font-grotesque text-xs text-[#1e3932]/60">
+              {events.length === 0 
+                ? "VOUS N'AVEZ PAS ENCORE CRÉÉ D'ÉVÉNEMENT. LANCEZ-VOUS, C'EST ILLIMITÉ !" 
+                : "AUCUN ÉVÉNEMENT NE CORRESPOND À VOS FILTRES."}
+            </p>
+            {events.length === 0 && (
+              <div className="pt-2">
+                <Link
+                  href="/new"
+                  className="inline-flex items-center gap-2 h-12 px-6 rounded-xl bg-[#1e3932] text-white font-grotesque text-xs font-bold hover:bg-[#152a25] transition-all shadow-md"
+                >
+                  CRÉER MON PREMIER ÉVÉNEMENT
+                </Link>
+              </div>
+            )}
+          </div>
+        ) : (
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {filteredEvents.map((evt: any) => {
+              const eventPrice = Number(evt.price || evt.ticket_price || 0);
+              return (
+                <article
+                  key={evt.id}
+                  className="group flex flex-col rounded-2xl border border-[#1e3932]/15 bg-[#f8faf9] shadow-xs transition-all hover:border-[#1e3932]/40 hover:shadow-md overflow-hidden font-grotesque"
+                >
+                  <div className="space-y-3 p-6 flex-1">
+                    <div className="flex items-center justify-between font-grotesque">
+                      <span className="text-[11px] text-[#1e3932]/50 font-bold">
+                        {evt.starts_at ? new Date(evt.starts_at).toLocaleDateString('fr-FR', {
+                          day: '2-digit',
+                          month: 'short',
+                          year: 'numeric',
+                          hour: '2-digit',
+                          minute: '2-digit',
+                        }).toUpperCase() : 'DATE NON DÉFINIE'}
+                      </span>
+                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full border text-[10px] font-bold ${
+                        evt.status === 'published' 
+                          ? 'bg-[#1e3932]/10 text-[#1e3932] border-[#1e3932]/20' 
+                          : evt.status === 'cancelled'
+                          ? 'bg-red-50 text-red-700 border-red-200'
+                          : 'bg-white text-[#1e3932]/60 border-[#1e3932]/15'
+                      }`}>
+                        {STATUS_LABEL[evt.status] ?? evt.status}
+                      </span>
+                    </div>
+
+                    <h3 className="text-xl font-grotesque font-normal leading-snug text-[#1e3932]">
+                      {evt.title}
+                    </h3>
+
+                    {evt.description && (
+                      <p className="line-clamp-2 text-xs font-grotesque text-[#1e3932]/70 leading-relaxed font-light">
+                        {evt.description}
+                      </p>
+                    )}
+
+                    {evt.location && (
+                      <div className="flex items-center gap-2 font-grotesque text-xs text-[#1e3932]/70 pt-1">
+                        <MapPin className="h-3.5 w-3.5 shrink-0 text-[#1e3932]" />
+                        <span className="truncate">{evt.location}</span>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="flex items-center justify-between border-t border-[#1e3932]/10 px-6 py-4 bg-white font-grotesque">
+                    <span className="font-grotesque text-xs font-bold text-[#1e3932]">
+                      {eventPrice > 0 ? `${eventPrice.toLocaleString('fr-FR')} €` : 'GRATUIT'}
+                    </span>
+                    <div className="flex items-center gap-2">
+                      <Link
+                        href={`/events/${evt.slug || evt.id}/edit`}
+                        className="w-10 h-10 rounded-xl border border-[#1e3932]/15 bg-white text-[#1e3932] flex items-center justify-center hover:bg-[#1e3932] hover:text-white transition-colors cursor-pointer shadow-xs"
+                        title="MODIFIER"
+                      >
+                        <Edit3 className="h-4 w-4" />
+                      </Link>
+                      <button
+                        onClick={() => handleDeleteEvent(evt.id)}
+                        className="w-10 h-10 rounded-xl border border-[#1e3932]/15 bg-white text-red-600 flex items-center justify-center hover:bg-red-600 hover:text-white transition-colors cursor-pointer shadow-xs"
+                        title="SUPPRIMER"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+                    </div>
+                  </div>
+                </article>
+              );
+            })}
+          </div>
+        )}
+      </div>
+
     </div>
   );
 }
