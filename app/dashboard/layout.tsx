@@ -103,7 +103,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   if (user === undefined) {
     return (
-      <div className="min-h-screen bg-white text-[#1e3932]/60 font-mono text-xs tracking-wider flex items-center justify-center">
+      <div className="min-h-screen bg-white text-[#1e3932]/60 font-grotesque text-xs tracking-wider flex items-center justify-center">
         Chargement...
       </div>
     );
@@ -119,18 +119,18 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   return (
     <div className="min-h-screen bg-white text-[#1e3932] font-sans selection:bg-[#1e3932] selection:text-white flex overflow-x-hidden">
 
-      {/* Barre supérieure fixe : design blanc et vert #1e3932 */}
+      {/* Barre supérieure fixe */}
       <header className="fixed top-0 left-0 right-0 h-20 border-b border-[#1e3932]/10 bg-white flex items-center justify-between shrink-0 z-50 select-none shadow-xs px-6">
         <div className="flex items-center h-full">
           <div className="w-16 h-full flex items-center justify-center shrink-0 border-r border-[#1e3932]/10 bg-[#f8faf9] -ml-6 mr-6">
             <Link href="/" className="w-9 h-9 flex items-center justify-center group">
-              <span className="h-8 w-8 rounded-lg bg-[#1e3932] text-white flex items-center justify-center font-mono font-bold text-xs transition-transform group-hover:scale-105">
+              <span className="h-8 w-8 rounded-lg bg-[#1e3932] text-white flex items-center justify-center font-grotesque font-bold text-xs transition-transform group-hover:scale-105">
                 T
               </span>
             </Link>
           </div>
 
-          <div className="flex items-center gap-2 text-xs font-mono tracking-wide">
+          <div className="flex items-center gap-2 text-xs font-grotesque tracking-wide">
             {breadcrumbs.map((crumb, index) => (
               <div key={index} className="flex items-center gap-2">
                 {index > 0 && <ChevronRight className="w-3.5 h-3.5 text-[#1e3932]/40" />}
@@ -142,17 +142,17 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           </div>
         </div>
 
-        {/* BOUTON DYNAMIQUE UTILISATEUR SANS ICÔNE DE PROFIL */}
+        {/* BOUTON UTILISATEUR AVEC POLICE GROTESQUE */}
         <div className="relative" ref={profileMenuRef}>
           <button 
             onClick={() => setProfileOpen(!profileOpen)}
-            className="h-10 px-6 bg-[#1e3932] hover:bg-[#152a25] transition-all text-white text-xs tracking-wider font-normal font-grotesque rounded-full shadow-md flex items-center justify-center shrink-0 cursor-pointer"
+            className="h-10 px-6 bg-[#1e3932] hover:bg-[#152a25] transition-all text-white text-xs tracking-wider font-grotesque font-normal rounded-full shadow-md flex items-center justify-center shrink-0 cursor-pointer"
           >
             {userName}
           </button>
 
           {profileOpen && (
-            <div className="absolute right-0 mt-3 w-72 bg-white border border-[#1e3932]/15 shadow-2xl rounded-3xl py-2 z-50 font-mono text-xs text-[#1e3932]">
+            <div className="absolute right-0 mt-3 w-72 bg-white border border-[#1e3932]/15 shadow-2xl rounded-3xl py-2 z-50 font-grotesque text-xs text-[#1e3932]">
               <div className="flex items-center gap-3 px-5 py-3 border-b border-[#1e3932]/10 bg-[#f8faf9]">
                 <div className="min-w-0">
                   <p className="font-bold truncate text-[#1e3932]">{userName}</p>
@@ -205,12 +205,12 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         </div>
       </header>
 
-      {/* Sidebar de navigation */}
+      {/* Sidebar */}
       <aside className={`fixed top-20 left-0 h-[calc(100vh-5rem)] ${SIDEBAR_WIDTH} border-r border-[#1e3932]/10 bg-white flex flex-col py-6 z-40 select-none overflow-hidden ${
         mounted ? 'transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]' : ''
       }`}>
 
-        <div className="flex-1 w-full flex flex-col justify-center gap-3 px-3">
+        <div className="flex-1 w-full flex flex-col justify-center gap-3 px-3 font-grotesque">
           {navItems.map((item) => {
             const Icon = item.icon;
             const isActive = pathname === item.href;
@@ -220,7 +220,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 key={item.href}
                 href={item.href}
                 title={isOpen ? undefined : item.label}
-                className={`flex items-center h-12 transition-all font-mono text-xs tracking-wide group rounded-xl ${
+                className={`flex items-center h-12 transition-all font-grotesque text-xs tracking-wide group rounded-xl ${
                   isOpen ? 'px-3 gap-3 border shadow-xs' : 'justify-center border border-transparent'
                 } ${
                   isActive
@@ -241,7 +241,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           })}
         </div>
 
-        {/* Bouton de bascule de la sidebar */}
         <div className={`w-full flex items-center border-t border-[#1e3932]/10 pt-4 px-3 ${isOpen ? '' : 'justify-center'}`}>
           <button
             onClick={() => setIsOpen(prev => !prev)}
@@ -255,13 +254,13 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         </div>
       </aside>
 
-      {/* Conteneur principal avec padding-top ajusté */}
+      {/* Conteneur principal */}
       <div 
         className={`flex-1 min-w-0 flex flex-col h-screen pt-20 overflow-hidden ${CONTENT_MARGIN} ${
           mounted ? 'transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]' : ''
         }`}
       >
-        <main className="flex-1 overflow-y-auto p-8 bg-white">
+        <main className="flex-1 overflow-y-auto p-8 bg-white font-grotesque">
           {children}
         </main>
       </div>
