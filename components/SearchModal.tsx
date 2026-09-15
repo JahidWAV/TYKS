@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { Search, Calendar, MapPin, ArrowUpRight, X, User } from "lucide-react";
+import { Search, Calendar, MapPin, ArrowUpRight, X, Building2 } from "lucide-react";
 import { supabaseBrowser } from "@/lib/supabase-browser";
 
 interface SearchModalProps {
@@ -18,7 +18,6 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
   const [isSearching, setIsSearching] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
 
-  // Focus automatique à l'ouverture
   useEffect(() => {
     if (isOpen) {
       setTimeout(() => {
@@ -30,7 +29,7 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
     }
   }, [isOpen]);
 
-  // Logique de recherche globale et ultra-large (Events, Lieux, Organisateurs, Artistes)
+  // Recherche avec jointure sur la table organizations pour trouver par nom d'orga, titre ou lieu
   useEffect(() => {
     if (!isOpen) return;
 
@@ -45,27 +44,30 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
       const q = searchQuery.trim();
 
       try {
-        // On interroge les champs les plus courants pour être sûr de tout remonter
+        // On interroge events et on récupère le nom de l'organisation liée
         const { data, error } = await supabaseBrowser
           .from("events")
-          .select("*")
-          .or(
-            `title.ilike.%${q}%,` +
-            `location.ilike.%${q}%,` +
-            `description.ilike.%${q}%,` +
-            `organizer_name.ilike.%${q}%,` +
-            `organizer.ilike.%${q}%,` +
-            `artist.ilike.%${q}%`
-          )
+          .select("*, organizations(name)")
+          .or(`title.ilike.%${q}%,location.ilike.%${q}%`)
           .limit(10);
 
         if (!error && data) {
-          setResults(data);
+          // Si la recherche texte simple ne suffit pas, on filtre aussi côté JS si l'utilisateur a tapé le nom d'une orga
+          const filtered = data.filter((evt: any) => {
+            const matchesEvent = 
+              evt.title?.toLowerCase().includes(q.toLowerCase()) || 
+              evt.location?.toLowerCase().includes(q.toLowerCase());
+            const matchesOrg = 
+              evt.organizations?.name?.toLowerCase().includes(q.toLowerCase());
+            return matchesEvent || matchesOrg;
+          });
+
+          setResults(filtered);
         } else {
           setResults([]);
         }
       } catch (err) {
-        console.error("Erreur de recherche globale :", err);
+        console.error("Erreur de recherche :", err);
         setResults([]);
       } finally {
         setIsSearching(false);
@@ -91,7 +93,7 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="RECHERCHER UN EVENT, UN ORGANISATEUR, UN ARTISTE, UN LIEU..."
+              placeholder="RECHERCHER UN ÉVÉNEMENT, UNE VILLE, UN ORGANISATEUR..."
               className="w-full h-14 bg-white/60 border border-black/15 pl-12 pr-4 text-xs font-bold placeholder:text-black/40 focus:outline-none focus:border-black text-black rounded-full shadow-inner uppercase"
             />
           </div>
@@ -105,11 +107,11 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
           </button>
         </div>
 
-        {/* Résultats avec affiches et mise en page améliorée */}
+        {/* Résultats */}
         <div className="mt-6 max-h-[60vh] overflow-y-auto space-y-3 pr-1">
           {searchQuery.trim().length === 0 ? (
             <div className="py-16 text-center text-black/40 text-xs font-bold tracking-wider">
-              TAPEZ UN NOM, UN LIEU OU UN ORGANISATEUR...
+              TAPEZ UN TITRE, UNE VILLE OU UN ORGANISATEUR...
             </div>
           ) : isSearching ? (
             <div className="py-16 text-center text-black/40 text-xs font-bold tracking-wider animate-pulse">
@@ -122,9 +124,9 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
                   ? `${parseFloat(evt.price).toFixed(2)} €`
                   : 'GRATUIT';
 
-                // Gestion large des différentes sources d'images / affiches possibles
-                const flyer = evt.image_url || evt.cover_image || evt.flyer_url || evt.poster || evt.image;
-                const organizer = evt.organizer_name || evt.organizer || evt.artist;
+                // Utilisation directe du champ exact image_url de ta table
+                const flyer = evt.image_url;
+                const orgName = evt.organizations?.name;
 
                 return (
                   <button
@@ -152,7 +154,7 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
                         )}
                       </div>
 
-                      {/* Infos détaillées */}
+                      {/* Infos */}
                       <div className="space-y-1.5 truncate pr-2">
                         <p className="text-xs font-bold tracking-wide truncate">
                           {evt.title}
@@ -171,17 +173,17 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
                               {evt.location}
                             </span>
                           )}
-                          {organizer && (
+                          {orgName && (
                             <span className="flex items-center gap-1 truncate text-black/80 group-hover:text-white/90">
-                              <User className="w-3 h-3 shrink-0" />
-                              {organizer}
+                              <Building2 className="w-3 h-3 shrink-0" />
+                              {orgName}
                             </span>
                           )}
                         </div>
                       </div>
                     </div>
 
-                    {/* Prix et flèche */}
+                    {/* Prix */}
                     <div className="flex items-center gap-3 shrink-0">
                       <span className="text-[10px] font-bold px-3.5 py-2 border border-black/15 bg-white group-hover:bg-neutral-800 group-hover:text-white group-hover:border-white/20 text-black rounded-full transition-colors shadow-xs">
                         {priceFormatted}
