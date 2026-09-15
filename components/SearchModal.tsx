@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { Search, Calendar, MapPin, ArrowUpRight, X, Building2 } from "lucide-react";
 import { supabaseBrowser } from "@/lib/supabase-browser";
@@ -9,7 +8,7 @@ import { supabaseBrowser } from "@/lib/supabase-browser";
 interface SearchModalProps {
   isOpen: boolean;
   onClose: () => void;
-  isPro?: boolean; // <-- Ajouté ici pour éviter toute future erreur de build
+  isPro?: boolean;
 }
 
 export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
@@ -72,10 +71,12 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center pt-16 md:pt-24 px-4 bg-black/60 backdrop-blur-md animate-in fade-in duration-200 font-grotesque uppercase">
-      <div className="relative w-full max-w-3xl bg-white/90 backdrop-blur-2xl border border-black/15 p-6 md:p-8 shadow-2xl text-black rounded-[2.5rem] animate-in zoom-in-95 duration-200">
+    /* Centrage parfait avec flex items-center justify-center p-4 */
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-in fade-in duration-200 font-grotesque uppercase">
+      <div className="relative w-full max-w-3xl bg-white/90 backdrop-blur-2xl border border-black/15 p-6 md:p-8 shadow-2xl text-black rounded-[2.5rem] animate-in zoom-in-95 duration-200 max-h-[90vh] flex flex-col">
         
-        <div className="flex items-center gap-3 pb-6 border-b border-black/10">
+        {/* Barre de recherche */}
+        <div className="flex items-center gap-3 pb-6 border-b border-black/10 shrink-0">
           <div className="relative flex-1 flex items-center">
             <Search className="absolute left-5 h-4 w-4 text-black/60 pointer-events-none" />
             <input
@@ -97,7 +98,8 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
           </button>
         </div>
 
-        <div className="mt-6 max-h-[60vh] overflow-y-auto space-y-3 pr-1">
+        {/* Résultats */}
+        <div className="mt-6 overflow-y-auto space-y-3 pr-1 flex-1">
           {searchQuery.trim().length === 0 ? (
             <div className="py-16 text-center text-black/40 text-xs font-bold tracking-wider">
               TAPEZ UN TITRE, UNE VILLE OU UN ORGANISATEUR...
@@ -115,7 +117,8 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
                   ? `${(evt.price_cents / 100).toFixed(2)} €`
                   : 'GRATUIT';
 
-                const flyer = evt.image_url;
+                // Vérification élargie de toutes les clés possibles pour l'image
+                const flyer = evt.image_url || evt.flyer || evt.poster || evt.cover_image || evt.image;
                 const orgName = evt.organizations?.name;
 
                 return (
@@ -128,13 +131,13 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
                     className="w-full text-left p-4 bg-white/70 hover:bg-black hover:text-white border border-black/15 rounded-3xl transition-all duration-300 flex items-center justify-between group cursor-pointer shadow-sm gap-4"
                   >
                     <div className="flex items-center gap-4 truncate">
-                      <div className="relative w-16 h-16 shrink-0 rounded-2xl overflow-hidden border border-black/10 bg-neutral-100 shadow-sm">
+                      {/* Affiche de l'événement avec balise img standard */}
+                      <div className="relative w-16 h-16 shrink-0 rounded-2xl overflow-hidden border border-black/10 bg-neutral-100 shadow-sm flex items-center justify-center">
                         {flyer ? (
-                          <Image 
+                          <img 
                             src={flyer} 
                             alt={evt.title || "Événement"} 
-                            fill 
-                            className="object-cover group-hover:scale-105 transition-transform duration-300" 
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" 
                           />
                         ) : (
                           <div className="w-full h-full flex items-center justify-center text-[10px] font-bold text-black/40 bg-neutral-200">
@@ -143,6 +146,7 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
                         )}
                       </div>
 
+                      {/* Infos */}
                       <div className="space-y-1.5 truncate pr-2">
                         <p className="text-xs font-bold tracking-wide truncate">
                           {evt.title}
@@ -171,6 +175,7 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
                       </div>
                     </div>
 
+                    {/* Prix */}
                     <div className="flex items-center gap-3 shrink-0">
                       <span className="text-[10px] font-bold px-3.5 py-2 border border-black/15 bg-white group-hover:bg-neutral-800 group-hover:text-white group-hover:border-white/20 text-black rounded-full transition-colors shadow-xs">
                         {priceFormatted}
