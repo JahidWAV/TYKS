@@ -9,13 +9,15 @@ import { supabaseBrowser } from "@/lib/supabase-browser";
 interface SearchModalProps {
   isOpen: boolean;
   onClose: () => void;
+  isPro?: boolean; // <-- Ajouté ici pour éviter toute future erreur de build
 }
 
 export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState("");
+  const [allEvents, setAllEvents] = useState<any[]>([]);
   const [results, setResults] = useState<any[]>([]);
-  const [isSearching, setIsSearching] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -23,60 +25,49 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
       setTimeout(() => {
         searchInputRef.current?.focus();
       }, 100);
+      fetchEvents();
     } else {
       setSearchQuery("");
       setResults([]);
     }
   }, [isOpen]);
 
-  // Recherche avec jointure sur la table organizations pour trouver par nom d'orga, titre ou lieu
+  const fetchEvents = async () => {
+    setIsLoading(true);
+    try {
+      const { data, error } = await supabaseBrowser
+        .from("events")
+        .select("*, organizations(name)")
+        .order("starts_at", { ascending: true })
+        .limit(100);
+
+      if (!error && data) {
+        setAllEvents(data);
+      }
+    } catch (err) {
+      console.error("Erreur lors du chargement des événements :", err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   useEffect(() => {
-    if (!isOpen) return;
+    if (!searchQuery.trim()) {
+      setResults([]);
+      return;
+    }
 
-    const fetchResults = async () => {
-      if (!searchQuery.trim()) {
-        setResults([]);
-        setIsSearching(false);
-        return;
-      }
+    const q = searchQuery.toLowerCase().trim();
+    const filtered = allEvents.filter((evt) => {
+      const titleMatch = evt.title?.toLowerCase().includes(q);
+      const locationMatch = evt.location?.toLowerCase().includes(q);
+      const orgMatch = evt.organizations?.name?.toLowerCase().includes(q);
 
-      setIsSearching(true);
-      const q = searchQuery.trim();
+      return titleMatch || locationMatch || orgMatch;
+    });
 
-      try {
-        // On interroge events et on récupère le nom de l'organisation liée
-        const { data, error } = await supabaseBrowser
-          .from("events")
-          .select("*, organizations(name)")
-          .or(`title.ilike.%${q}%,location.ilike.%${q}%`)
-          .limit(10);
-
-        if (!error && data) {
-          // Si la recherche texte simple ne suffit pas, on filtre aussi côté JS si l'utilisateur a tapé le nom d'une orga
-          const filtered = data.filter((evt: any) => {
-            const matchesEvent = 
-              evt.title?.toLowerCase().includes(q.toLowerCase()) || 
-              evt.location?.toLowerCase().includes(q.toLowerCase());
-            const matchesOrg = 
-              evt.organizations?.name?.toLowerCase().includes(q.toLowerCase());
-            return matchesEvent || matchesOrg;
-          });
-
-          setResults(filtered);
-        } else {
-          setResults([]);
-        }
-      } catch (err) {
-        console.error("Erreur de recherche :", err);
-        setResults([]);
-      } finally {
-        setIsSearching(false);
-      }
-    };
-
-    const timer = setTimeout(fetchResults, 250);
-    return () => clearTimeout(timer);
-  }, [searchQuery, isOpen]);
+    setResults(filtered);
+  }, [searchQuery, allEvents]);
 
   if (!isOpen) return null;
 
@@ -84,7 +75,6 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
     <div className="fixed inset-0 z-50 flex items-start justify-center pt-16 md:pt-24 px-4 bg-black/60 backdrop-blur-md animate-in fade-in duration-200 font-grotesque uppercase">
       <div className="relative w-full max-w-3xl bg-white/90 backdrop-blur-2xl border border-black/15 p-6 md:p-8 shadow-2xl text-black rounded-[2.5rem] animate-in zoom-in-95 duration-200">
         
-        {/* Barre de recherche */}
         <div className="flex items-center gap-3 pb-6 border-b border-black/10">
           <div className="relative flex-1 flex items-center">
             <Search className="absolute left-5 h-4 w-4 text-black/60 pointer-events-none" />
@@ -107,24 +97,24 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
           </button>
         </div>
 
-        {/* Résultats */}
         <div className="mt-6 max-h-[60vh] overflow-y-auto space-y-3 pr-1">
           {searchQuery.trim().length === 0 ? (
             <div className="py-16 text-center text-black/40 text-xs font-bold tracking-wider">
               TAPEZ UN TITRE, UNE VILLE OU UN ORGANISATEUR...
             </div>
-          ) : isSearching ? (
+          ) : isLoading ? (
             <div className="py-16 text-center text-black/40 text-xs font-bold tracking-wider animate-pulse">
-              RECHERCHE EN COURS...
+              CHARGEMENT...
             </div>
           ) : results.length > 0 ? (
             <div className="grid grid-cols-1 gap-3">
               {results.map((evt) => {
                 const priceFormatted = evt.price && parseFloat(evt.price) > 0
                   ? `${parseFloat(evt.price).toFixed(2)} €`
+                  : evt.price_cents && evt.price_cents > 0
+                  ? `${(evt.price_cents / 100).toFixed(2)} €`
                   : 'GRATUIT';
 
-                // Utilisation directe du champ exact image_url de ta table
                 const flyer = evt.image_url;
                 const orgName = evt.organizations?.name;
 
@@ -138,7 +128,6 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
                     className="w-full text-left p-4 bg-white/70 hover:bg-black hover:text-white border border-black/15 rounded-3xl transition-all duration-300 flex items-center justify-between group cursor-pointer shadow-sm gap-4"
                   >
                     <div className="flex items-center gap-4 truncate">
-                      {/* Affiche de l'événement */}
                       <div className="relative w-16 h-16 shrink-0 rounded-2xl overflow-hidden border border-black/10 bg-neutral-100 shadow-sm">
                         {flyer ? (
                           <Image 
@@ -154,7 +143,6 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
                         )}
                       </div>
 
-                      {/* Infos */}
                       <div className="space-y-1.5 truncate pr-2">
                         <p className="text-xs font-bold tracking-wide truncate">
                           {evt.title}
@@ -183,7 +171,6 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
                       </div>
                     </div>
 
-                    {/* Prix */}
                     <div className="flex items-center gap-3 shrink-0">
                       <span className="text-[10px] font-bold px-3.5 py-2 border border-black/15 bg-white group-hover:bg-neutral-800 group-hover:text-white group-hover:border-white/20 text-black rounded-full transition-colors shadow-xs">
                         {priceFormatted}
