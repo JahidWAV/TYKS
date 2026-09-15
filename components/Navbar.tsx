@@ -21,13 +21,12 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
   const [user, setUser] = useState<any>(null);
   const [userName, setUserName] = useState<string>("");
 
-  // États pour la recherche (pilule expansible)
-  const [isSearchExpanded, setIsSearchExpanded] = useState(false);
+  // États pour la modale de recherche dédiée
+  const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [results, setResults] = useState<any[]>([]);
   const [isSearching, setIsSearching] = useState(false);
-  const [showDropdown, setShowDropdown] = useState(false);
-  const searchRef = useRef<HTMLDivElement>(null);
+  const searchInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -55,20 +54,16 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
     return () => subscription.unsubscribe();
   }, []);
 
-  // Fermeture des menus au clic extérieur
+  // Focus automatique sur l'input de recherche quand la modale s'ouvre
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
-        setShowDropdown(false);
-        if (!searchQuery.trim()) {
-          setIsSearchExpanded(false);
-        }
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [searchQuery]);
+    if (isSearchModalOpen) {
+      setTimeout(() => {
+        searchInputRef.current?.focus();
+      }, 100);
+    }
+  }, [isSearchModalOpen]);
 
+  // Logique de recherche en temps réel
   useEffect(() => {
     if (isPro) return;
 
@@ -85,7 +80,7 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
           .from("events")
           .select("id, slug, title, location, starts_at, price")
           .ilike("title", `%${searchQuery}%`)
-          .limit(5);
+          .limit(6);
 
         if (!error && data) {
           setResults(data);
@@ -115,10 +110,10 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
       <div className="absolute top-6 left-0 right-0 z-50 max-w-7xl mx-auto px-6 font-grotesque uppercase">
         <header className="w-full flex items-center justify-between gap-4">
 
-          {/* 1. LOGO FLOTTANT GLASS -> HOVER NOIR */}
+          {/* 1. LOGO FLOTTANT GLASS -> HOVER NOIR (Hauteur calée à h-11) */}
           <Link 
             href="/" 
-            className="group flex items-center justify-start shrink-0 px-3.5 py-2.5 bg-white/80 hover:bg-black backdrop-blur-md border border-black/15 rounded-full shadow-lg shadow-black/5 transition-all duration-300"
+            className="group flex items-center justify-center shrink-0 h-11 px-5 bg-white/80 hover:bg-black backdrop-blur-md border border-black/15 rounded-full shadow-lg shadow-black/5 transition-all duration-300"
           >
             <Image 
               src="/tyks.svg" 
@@ -126,110 +121,22 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
               width={340} 
               height={110} 
               priority 
-              className="h-7 sm:h-9 w-auto object-contain text-black group-hover:brightness-0 group-hover:invert transition-all duration-300" 
+              className="h-6 sm:h-7 w-auto object-contain text-black group-hover:brightness-0 group-hover:invert transition-all duration-300" 
             />
           </Link>
 
           {/* 2. ZONE DROITE FLOTTANTE */}
           <div className="hidden md:flex items-center gap-3">
             
-            {/* LOUPE DE RECHERCHE GLASS -> HOVER NOIR */}
+            {/* BOUTON DE RECHERCHE DÉCLENCHEUR DE MODALE */}
             {!isPro && (
-              <div className="relative" ref={searchRef}>
-                <div 
-                  className={`flex items-center transition-all duration-300 bg-white/80 hover:bg-black text-black hover:text-white backdrop-blur-md border border-black/15 rounded-full h-11 shadow-lg shadow-black/5 ${
-                    isSearchExpanded || searchQuery.trim() ? 'w-64 px-4 bg-black text-white' : 'w-11 px-0 justify-center cursor-pointer'
-                  }`}
-                  onClick={() => {
-                    if (!isSearchExpanded) {
-                      setIsSearchExpanded(true);
-                    }
-                  }}
-                >
-                  <Search className={`h-4 w-4 shrink-0 ${!isSearchExpanded && !searchQuery.trim() ? 'mx-auto' : 'mr-2'}`} />
-                  
-                  {(isSearchExpanded || searchQuery.trim()) && (
-                    <input
-                      type="text"
-                      autoFocus={isSearchExpanded}
-                      value={searchQuery}
-                      onChange={(e) => {
-                        setSearchQuery(e.target.value);
-                        if (!showDropdown) setShowDropdown(true);
-                      }}
-                      onFocus={() => setShowDropdown(true)}
-                      placeholder="RECHERCHER..."
-                      className="w-full bg-transparent text-[11px] font-bold placeholder:text-current/60 focus:outline-none truncate pr-1 uppercase"
-                    />
-                  )}
-
-                  {searchQuery && (
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setSearchQuery("");
-                        setResults([]);
-                      }}
-                      className="p-1 opacity-60 hover:opacity-100 shrink-0"
-                    >
-                      <X className="h-3.5 w-3.5" />
-                    </button>
-                  )}
-                </div>
-
-                {showDropdown && searchQuery.trim().length > 0 && (
-                  <div className="absolute top-full right-0 w-80 mt-3 bg-white border border-black/15 rounded-[2rem] divide-y divide-black/10 z-50 text-black shadow-xl overflow-hidden">
-                    {results.length > 0 ? (
-                      <div className="py-2">
-                        {results.map((evt) => {
-                          const priceFormatted = evt.price && parseFloat(evt.price) > 0
-                            ? `${parseFloat(evt.price).toFixed(2)} €`
-                            : 'GRATUIT';
-
-                          return (
-                            <button
-                              key={evt.id}
-                              onClick={() => {
-                                setShowDropdown(false);
-                                setSearchQuery("");
-                                setIsSearchExpanded(false);
-                                router.push(`/events/${evt.slug || evt.id}`);
-                              }}
-                              className="w-full text-left px-5 py-3 transition-all flex items-center justify-between group hover:bg-neutral-50 cursor-pointer"
-                            >
-                              <div className="space-y-1 pr-3 truncate">
-                                <p className="text-xs font-bold truncate text-black">
-                                  {evt.title}
-                                </p>
-                                <div className="flex items-center gap-3 text-[10px] text-black/60 font-bold">
-                                  <span className="flex items-center gap-1">
-                                    <Calendar className="w-3 h-3 text-black" />
-                                    {new Date(evt.starts_at).toLocaleDateString("fr-FR", { day: "numeric", month: "short" })}
-                                  </span>
-                                  <span className="flex items-center gap-1 truncate">
-                                    <MapPin className="w-3 h-3 text-black" />
-                                    {evt.location}
-                                  </span>
-                                </div>
-                              </div>
-                              <div className="flex items-center gap-2 shrink-0">
-                                <span className="text-[10px] font-bold px-2.5 py-1 border border-black/15 bg-neutral-50 text-black rounded-full">
-                                  {priceFormatted}
-                                </span>
-                                <ArrowUpRight className="w-3.5 h-3.5 text-black/40 group-hover:text-black transition-colors" />
-                              </div>
-                            </button>
-                          );
-                        })}
-                      </div>
-                    ) : (
-                      <div className="px-4 py-6 text-center">
-                        <p className="text-[10px] font-bold tracking-wider text-black/50">AUCUN RÉSULTAT POUR &quot;{searchQuery}&quot;</p>
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
+              <button
+                onClick={() => setIsSearchModalOpen(true)}
+                className="h-11 px-5 bg-white/80 hover:bg-black text-black hover:text-white backdrop-blur-md border border-black/15 transition-all duration-300 text-xs tracking-wider font-bold rounded-full shadow-lg shadow-black/5 flex items-center gap-2.5 shrink-0 cursor-pointer group"
+              >
+                <Search className="h-4 w-4 shrink-0" />
+                <span>RECHERCHER...</span>
+              </button>
             )}
 
             {/* BOUTON DYNAMIQUE GLASS -> HOVER NOIR */}
@@ -256,38 +163,20 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
 
         {/* MOBILE PANEL */}
         {mobileOpen && (
-          <div className="px-6 py-6 md:hidden space-y-4 bg-white border border-black/15 rounded-[2.5rem] mt-3 shadow-2xl text-black">
+          <div className="px-6 py-6 md:hidden space-y-4 bg-white/90 backdrop-blur-xl border border-black/15 rounded-[2.5rem] mt-3 shadow-2xl text-black">
             {!isPro && (
-              <>
-                <div className="relative flex items-center">
-                  <Search className="absolute left-4 h-4 w-4 pointer-events-none text-black/60 z-10" />
-                  <input
-                    type="text"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="RECHERCHER UN ÉVÉNEMENT..."
-                    className="w-full h-11 bg-neutral-50 pl-11 pr-4 text-xs font-bold placeholder:text-black/50 focus:outline-none text-black rounded-full border border-black/15 shadow-inner uppercase"
-                  />
-                </div>
-                {searchQuery.trim().length > 0 && results.length > 0 && (
-                  <div className="border border-black/15 bg-neutral-50 rounded-2xl divide-y divide-black/10 overflow-hidden shadow-sm">
-                    {results.map((evt) => (
-                      <div
-                        key={evt.id}
-                        onClick={() => {
-                          setMobileOpen(false);
-                          setSearchQuery("");
-                          router.push(`/events/${evt.slug || evt.id}`);
-                        }}
-                        className="p-4 text-xs flex justify-between items-center cursor-pointer hover:bg-white text-black font-bold"
-                      >
-                        <span className="truncate">{evt.title}</span>
-                        <span className="text-black/80">{evt.price ? `${evt.price} €` : "GRATUIT"}</span>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </>
+              <button
+                onClick={() => {
+                  setMobileOpen(false);
+                  setIsSearchModalOpen(true);
+                }}
+                className="w-full h-11 bg-neutral-50 px-4 text-xs font-bold text-black/60 flex items-center justify-between rounded-full border border-black/15 shadow-inner"
+              >
+                <span className="flex items-center gap-2">
+                  <Search className="h-4 w-4" />
+                  RECHERCHER UN ÉVÉNEMENT...
+                </span>
+              </button>
             )}
 
             <button
@@ -302,6 +191,98 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
           </div>
         )}
       </div>
+
+      {/* MODALE DE RECHERCHE SMOOTH AVEC EFFET GLASS */}
+      {isSearchModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-start justify-center pt-20 px-4 bg-black/50 backdrop-blur-md animate-in fade-in duration-200 font-grotesque uppercase">
+          <div className="relative w-full max-w-2xl bg-white/90 backdrop-blur-2xl border border-black/15 p-6 md:p-8 shadow-2xl text-black rounded-[2.5rem] animate-in zoom-in-95 duration-200">
+            
+            {/* En-tête de la modale avec barre de recherche active */}
+            <div className="flex items-center gap-3 pb-6 border-b border-black/10">
+              <div className="relative flex-1 flex items-center">
+                <Search className="absolute left-4 h-4 w-4 text-black/60 pointer-events-none" />
+                <input
+                  ref={searchInputRef}
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="RECHERCHER UN ÉVÉNEMENT, UN LIEU..."
+                  className="w-full h-13 bg-white/60 border border-black/15 pl-12 pr-4 text-xs font-bold placeholder:text-black/40 focus:outline-none focus:border-black text-black rounded-full shadow-inner uppercase"
+                />
+              </div>
+
+              <button
+                onClick={() => {
+                  setIsSearchModalOpen(false);
+                  setSearchQuery("");
+                  setResults([]);
+                }}
+                className="h-13 w-13 shrink-0 border border-black/15 bg-white/80 hover:bg-black text-black hover:text-white backdrop-blur-md flex items-center justify-center transition-all duration-300 cursor-pointer rounded-full shadow-sm"
+                aria-label="Fermer la recherche"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Résultats de recherche */}
+            <div className="mt-6 max-h-[60vh] overflow-y-auto space-y-2 pr-1">
+              {searchQuery.trim().length === 0 ? (
+                <div className="py-12 text-center text-black/40 text-xs font-bold tracking-wider">
+                  COMMENCEZ À TAPER POUR LANCER LA RECHERCHE...
+                </div>
+              ) : results.length > 0 ? (
+                <div className="space-y-2">
+                  {results.map((evt) => {
+                    const priceFormatted = evt.price && parseFloat(evt.price) > 0
+                      ? `${parseFloat(evt.price).toFixed(2)} €`
+                      : 'GRATUIT';
+
+                    return (
+                      <button
+                        key={evt.id}
+                        onClick={() => {
+                          setIsSearchModalOpen(false);
+                          setSearchQuery("");
+                          setResults([]);
+                          router.push(`/events/${evt.slug || evt.id}`);
+                        }}
+                        className="w-full text-left px-5 py-4 bg-white/50 hover:bg-black hover:text-white border border-black/15 rounded-2xl transition-all duration-300 flex items-center justify-between group cursor-pointer shadow-sm"
+                      >
+                        <div className="space-y-1 pr-3 truncate">
+                          <p className="text-xs font-bold truncate">
+                            {evt.title}
+                          </p>
+                          <div className="flex items-center gap-4 text-[10px] text-black/60 group-hover:text-white/70 font-bold">
+                            <span className="flex items-center gap-1">
+                              <Calendar className="w-3 h-3" />
+                              {new Date(evt.starts_at).toLocaleDateString("fr-FR", { day: "numeric", month: "short" })}
+                            </span>
+                            <span className="flex items-center gap-1 truncate">
+                              <MapPin className="w-3 h-3" />
+                              {evt.location}
+                            </span>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-3 shrink-0">
+                          <span className="text-[10px] font-bold px-3 py-1.5 border border-black/15 bg-white group-hover:bg-neutral-800 group-hover:text-white group-hover:border-white/20 text-black rounded-full transition-colors">
+                            {priceFormatted}
+                          </span>
+                          <ArrowUpRight className="w-4 h-4 text-black/40 group-hover:text-white transition-colors" />
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div className="py-12 text-center text-black/50 text-xs font-bold tracking-wider">
+                  AUCUN RÉSULTAT TROUVÉ POUR &quot;{searchQuery}&quot;
+                </div>
+              )}
+            </div>
+
+          </div>
+        </div>
+      )}
 
       <CustomAuthModal
         isOpen={isAuthOpen}
