@@ -14,8 +14,6 @@ import {
   Sparkles,
   Smartphone,
   QrCode,
-  Menu,
-  X,
   ChevronDown,
   Quote,
 } from 'lucide-react';
@@ -89,7 +87,6 @@ const FAQS = [
 export default function PublicHome() {
   const [events, setEvents] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [menuOpen, setMenuOpen] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(0);
 
   useEffect(() => {
@@ -113,64 +110,10 @@ export default function PublicHome() {
   return (
     <main className={`${fraunces.variable} min-h-screen bg-white text-[#1e3932] selection:bg-[#1e3932] selection:text-white font-sans`}>
 
-      {/* ─── NAVIGATION ─── */}
-      <header className="sticky top-0 z-50 bg-white/85 backdrop-blur-md border-b border-[#1e3932]/10">
-        <div className="max-w-7xl mx-auto px-6 lg:px-12 h-20 flex items-center justify-between">
-          <a href="#" className={`${fraunces.className} text-2xl tracking-tight text-[#1e3932]`}>
-            TYKS
-          </a>
-
-          <nav className="hidden md:flex items-center gap-10 text-sm text-[#1e3932]/75">
-            <a href="#evenements" className="hover:text-[#1e3932] transition-colors">Programmation</a>
-            <a href="#comment-ca-marche" className="hover:text-[#1e3932] transition-colors">Comment ça marche</a>
-            <a href="#application" className="hover:text-[#1e3932] transition-colors">Application</a>
-          </nav>
-
-          <div className="hidden md:flex items-center gap-3">
-            <a
-              href="https://pro.tyks.app"
-              className="h-11 px-6 border border-[#1e3932]/20 text-[#1e3932] text-sm font-medium rounded-full flex items-center hover:bg-[#1e3932]/5 transition-colors"
-            >
-              Espace Pro
-            </a>
-            <a
-              href="#evenements"
-              className="h-11 px-6 bg-[#1e3932] text-white text-sm font-medium rounded-full flex items-center hover:bg-[#152a25] transition-colors"
-            >
-              Réserver
-            </a>
-          </div>
-
-          <button
-            onClick={() => setMenuOpen((v) => !v)}
-            className="md:hidden w-10 h-10 flex items-center justify-center text-[#1e3932]"
-            aria-label="Menu"
-          >
-            {menuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-          </button>
-        </div>
-
-        {menuOpen && (
-          <div className="md:hidden border-t border-[#1e3932]/10 px-6 py-6 space-y-5 bg-white">
-            <a href="#evenements" onClick={() => setMenuOpen(false)} className="block text-[#1e3932]">Programmation</a>
-            <a href="#comment-ca-marche" onClick={() => setMenuOpen(false)} className="block text-[#1e3932]">Comment ça marche</a>
-            <a href="#application" onClick={() => setMenuOpen(false)} className="block text-[#1e3932]">Application</a>
-            <a href="https://pro.tyks.app" className="block text-[#1e3932]">Espace Pro</a>
-          </div>
-        )}
-      </header>
-
       {/* ─── HERO ─── */}
       <section className="max-w-7xl mx-auto px-6 lg:px-12 pt-16 pb-24 lg:pt-24 lg:pb-28 grid lg:grid-cols-12 gap-16 items-center">
 
         <div className="lg:col-span-6 space-y-8">
-          <div className="inline-flex items-center gap-2 text-xs text-[#1e3932]/70 border border-[#1e3932]/15 rounded-full pl-1.5 pr-4 py-1.5">
-            <span className="w-6 h-6 rounded-full bg-[#1e3932]/10 flex items-center justify-center">
-              <ShieldCheck className="w-3.5 h-3.5 text-[#1e3932]" />
-            </span>
-            Billetterie officielle et indépendante
-          </div>
-
           <h1 className={`${fraunces.className} text-4xl sm:text-6xl font-normal tracking-tight leading-[1.08] text-[#1e3932]`}>
             L’art du spectacle,<br />
             <span className="italic font-light text-[#1e3932]/70">sans artifice.</span>
@@ -194,21 +137,6 @@ export default function PublicHome() {
             >
               Je suis organisateur
             </a>
-          </div>
-
-          <div className="flex items-center gap-8 pt-6 border-t border-[#1e3932]/10">
-            <div>
-              <p className={`${fraunces.className} text-2xl text-[#1e3932]`}>50k+</p>
-              <p className="text-xs text-[#1e3932]/60 mt-1">billets délivrés</p>
-            </div>
-            <div>
-              <p className={`${fraunces.className} text-2xl text-[#1e3932]`}>300+</p>
-              <p className="text-xs text-[#1e3932]/60 mt-1">salles partenaires</p>
-            </div>
-            <div>
-              <p className={`${fraunces.className} text-2xl text-[#1e3932]`}>0€</p>
-              <p className="text-xs text-[#1e3932]/60 mt-1">frais de service</p>
-            </div>
           </div>
         </div>
 
@@ -287,9 +215,10 @@ export default function PublicHome() {
                   : 'Date à venir';
 
                 return (
-                  <article
+                  <Link
                     key={evt.id}
-                    className="group flex flex-col bg-white border border-[#1e3932]/10 rounded-[1.75rem] transition-shadow duration-300 hover:shadow-xl hover:shadow-[#1e3932]/5"
+                    href={`/events/${evt.slug || evt.id}`}
+                    className="group flex flex-col bg-white border border-[#1e3932]/10 rounded-[1.75rem] transition-all duration-300 hover:shadow-xl hover:shadow-[#1e3932]/5 hover:-translate-y-1 hover:scale-[1.02]"
                   >
                     <div className="relative w-full h-48 bg-[#1e3932]/5 overflow-hidden rounded-t-[1.75rem] border-b border-[#1e3932]/10 flex items-center justify-center">
                       {eventImage ? (
@@ -297,7 +226,7 @@ export default function PublicHome() {
                           src={eventImage}
                           alt={evt.title || 'Événement'}
                           fill
-                          className="object-cover group-hover:scale-105 transition-transform duration-500"
+                          className="object-cover"
                           unoptimized={eventImage.startsWith('http')}
                         />
                       ) : (
@@ -341,16 +270,13 @@ export default function PublicHome() {
                         <span className="text-sm font-medium text-[#1e3932]">
                           {eventPrice > 0 ? `${eventPrice.toLocaleString('fr-FR')} €` : 'Entrée libre'}
                         </span>
-                        <Link
-                          href={`/events/${evt.slug || evt.id}`}
-                          className="h-10 px-5 bg-[#1e3932] hover:bg-[#152a25] text-white font-medium text-xs transition-colors flex items-center gap-2 rounded-full"
-                        >
+                        <span className="h-10 px-5 bg-[#1e3932] group-hover:bg-[#152a25] text-white font-medium text-xs transition-colors flex items-center gap-2 rounded-full">
                           Réserver
                           <ArrowUpRight className="w-3.5 h-3.5" />
-                        </Link>
+                        </span>
                       </div>
                     </div>
-                  </article>
+                  </Link>
                 );
               })}
             </div>
@@ -535,43 +461,6 @@ export default function PublicHome() {
           </a>
         </div>
       </section>
-
-      {/* ─── FOOTER ─── */}
-      <footer className="border-t border-[#1e3932]/10">
-        <div className="max-w-7xl mx-auto px-6 lg:px-12 py-16 grid sm:grid-cols-2 lg:grid-cols-5 gap-10">
-          <div className="lg:col-span-2 space-y-3">
-            <p className={`${fraunces.className} text-xl text-[#1e3932]`}>TYKS</p>
-            <p className="text-sm text-[#1e3932]/60 font-light max-w-xs leading-relaxed">
-              Billetterie officielle et indépendante pour la scène live française.
-            </p>
-          </div>
-
-          <div className="space-y-3 text-sm">
-            <p className="font-medium text-[#1e3932]">Découvrir</p>
-            <a href="#evenements" className="block text-[#1e3932]/60 hover:text-[#1e3932]">Programmation</a>
-            <a href="#application" className="block text-[#1e3932]/60 hover:text-[#1e3932]">Application mobile</a>
-            <a href="https://pro.tyks.app" className="block text-[#1e3932]/60 hover:text-[#1e3932]">Espace Pro</a>
-          </div>
-
-          <div className="space-y-3 text-sm">
-            <p className="font-medium text-[#1e3932]">Assistance</p>
-            <a href="#" className="block text-[#1e3932]/60 hover:text-[#1e3932]">Centre d’aide</a>
-            <a href="#" className="block text-[#1e3932]/60 hover:text-[#1e3932]">Remboursement & revente</a>
-            <a href="#" className="block text-[#1e3932]/60 hover:text-[#1e3932]">Nous contacter</a>
-          </div>
-
-          <div className="space-y-3 text-sm">
-            <p className="font-medium text-[#1e3932]">Légal</p>
-            <a href="#" className="block text-[#1e3932]/60 hover:text-[#1e3932]">Conditions générales</a>
-            <a href="#" className="block text-[#1e3932]/60 hover:text-[#1e3932]">Confidentialité</a>
-            <a href="#" className="block text-[#1e3932]/60 hover:text-[#1e3932]">Mentions légales</a>
-          </div>
-        </div>
-
-        <div className="max-w-7xl mx-auto px-6 lg:px-12 py-6 border-t border-[#1e3932]/10 text-xs text-[#1e3932]/50">
-          © {new Date().getFullYear()} TYKS. Tous droits réservés.
-        </div>
-      </footer>
 
     </main>
   );
