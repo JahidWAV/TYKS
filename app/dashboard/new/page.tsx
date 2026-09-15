@@ -28,7 +28,7 @@ export default function NewEventPage() {
     setForm({ ...form, [e.target.name]: e.target.value });
   }
 
-  // Fonction d'upload d'image vers Supabase Storage
+  // Fonction d'upload d'image vers Supabase Storage corrigée
   async function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -38,10 +38,10 @@ export default function NewEventPage() {
       setError(null);
 
       const fileExt = file.name.split('.').pop();
-      const fileName = `${Math.random().toString(36.substring(2))}-${Date.now()}.${fileExt}`;
+      // Correction de la syntaxe ici : Math.random().toString(36).substring(2)
+      const fileName = `${Math.random().toString(36).substring(2)}-${Date.now()}.${fileExt}`;
       const filePath = `event-covers/${fileName}`;
 
-      // Upload dans le bucket public "events" (assurez-vous qu'il existe dans votre Supabase Storage)
       const { error: uploadError } = await supabaseBrowser.storage
         .from('events')
         .upload(filePath, file);
@@ -50,7 +50,6 @@ export default function NewEventPage() {
         throw uploadError;
       }
 
-      // Récupération de l'URL publique
       const { data: { publicUrl } } = supabaseBrowser.storage
         .from('events')
         .getPublicUrl(filePath);
@@ -128,18 +127,16 @@ export default function NewEventPage() {
     <div className="w-full px-6 lg:px-12 py-8 space-y-8 font-grotesque text-white bg-[#0f0f0f] min-h-full uppercase">
       <div className="max-w-3xl mx-auto space-y-10">
         
-        {/* Bouton Retour */}
         <div>
           <Link
             href="/"
             className="inline-flex items-center gap-2 text-xs font-bold text-white/60 hover:text-white transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
-            <span>RETOOUR AU DASHBOARD</span>
+            <span>RETOUR AU DASHBOARD</span>
           </Link>
         </div>
 
-        {/* En-tête & Indicateur d'étapes */}
         <div className="space-y-6 pb-6 border-b border-white/10">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div className="space-y-1">
@@ -184,11 +181,9 @@ export default function NewEventPage() {
           </div>
         )}
 
-        {/* Formulaire principal */}
         <div className="rounded-2xl border border-white/10 bg-neutral-900 p-6 md:p-8 shadow-xs transition-all">
           <form onSubmit={handleSubmit} className="space-y-6">
             
-            {/* ÉTAPE 1 : GÉNÉRAL */}
             {step === 1 && (
               <div className="space-y-5 font-grotesque">
                 <div className="border-b border-white/10 pb-4">
@@ -237,7 +232,6 @@ export default function NewEventPage() {
               </div>
             )}
 
-            {/* ÉTAPE 2 : DATES & BILLETTERIE */}
             {step === 2 && (
               <div className="space-y-5 font-grotesque">
                 <div className="border-b border-white/10 pb-4">
@@ -295,7 +289,6 @@ export default function NewEventPage() {
               </div>
             )}
 
-            {/* ÉTAPE 3 : VISUEL (UPLOAD OU URL) */}
             {step === 3 && (
               <div className="space-y-5 font-grotesque">
                 <div className="border-b border-white/10 pb-4">
@@ -303,7 +296,6 @@ export default function NewEventPage() {
                   <p className="text-[11px] text-white/50">TÉLÉCHARGEZ UNE IMAGE DE COUVERTURE OU INDIQUEZ UNE URL.</p>
                 </div>
 
-                {/* Zone Drag & Drop / Input File */}
                 <div className="space-y-2">
                   <label className="text-xs text-white/60 font-bold">FICHIER IMAGE (RECOMMANDÉ)</label>
                   <label className="flex flex-col items-center justify-center w-full h-36 border-2 border-dashed border-white/20 rounded-2xl bg-neutral-950 hover:border-white transition cursor-pointer shadow-xs">
@@ -351,7 +343,6 @@ export default function NewEventPage() {
               </div>
             )}
 
-            {/* Boutons de navigation */}
             <div className="flex items-center justify-between pt-6 border-t border-white/10 mt-8 font-grotesque">
               {step > 1 ? (
                 <button
