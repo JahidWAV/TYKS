@@ -91,27 +91,27 @@ export default function BankingDashboardPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-white text-black/60 font-grotesque text-xs flex items-center justify-center uppercase">
+      <div className="min-h-screen bg-[#0f0f0f] text-white/60 font-grotesque text-xs flex items-center justify-center uppercase">
         CHARGEMENT...
       </div>
     );
   }
 
   return (
-    <div className="w-full px-6 lg:px-12 py-4 space-y-8 font-grotesque text-black bg-white min-h-full uppercase">
+    <div className="w-full px-6 lg:px-12 py-4 space-y-8 font-grotesque text-white bg-[#0f0f0f] min-h-full uppercase">
       {!hasBankAccount && (
-        <div className="p-6 rounded-2xl border border-black/25 bg-neutral-50 flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-sm">
+        <div className="p-6 rounded-2xl border border-white/20 bg-neutral-900 flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-sm">
           <div className="flex items-start gap-3">
-            <AlertCircle className="w-5 h-5 text-black shrink-0 mt-0.5" />
+            <AlertCircle className="w-5 h-5 text-white shrink-0 mt-0.5" />
             <div className="space-y-1 font-grotesque">
-              <p className="text-xs font-bold text-black">COMPTE BANCAIRE NON CONFIGURÉ</p>
-              <p className="text-xs text-black/70">ASSOCIEZ VOS COORDONNÉES BANCAIRES POUR PERMETTRE LES VIREMENTS AUTOMATIQUES DE VOS VENTES.</p>
+              <p className="text-xs font-bold text-white">COMPTE BANCAIRE NON CONFIGURÉ</p>
+              <p className="text-xs text-white/70">ASSOCIEZ VOS COORDONNÉES BANCAIRES POUR PERMETTRE LES VIREMENTS AUTOMATIQUES DE VOS VENTES.</p>
             </div>
           </div>
           <button
             onClick={handleStripeRedirect}
             disabled={connectingStripe}
-            className="inline-flex items-center justify-center gap-2 rounded-xl bg-black px-5 py-3 text-xs font-grotesque font-bold text-white transition hover:bg-neutral-800 shadow-lg disabled:opacity-50 shrink-0 cursor-pointer"
+            className="inline-flex items-center justify-center gap-2 rounded-xl bg-white px-5 py-3 text-xs font-grotesque font-bold text-black transition hover:bg-neutral-200 shadow-lg disabled:opacity-50 shrink-0 cursor-pointer"
           >
             {connectingStripe ? (
               <Loader2 className="h-4 w-4 animate-spin" />
@@ -128,7 +128,7 @@ export default function BankingDashboardPage() {
           <button
             onClick={handleStripeRedirect}
             disabled={connectingStripe}
-            className="inline-flex items-center gap-2 rounded-xl bg-black px-5 py-3 text-xs font-grotesque font-bold text-white transition hover:bg-neutral-800 shadow-lg disabled:opacity-50 cursor-pointer"
+            className="inline-flex items-center gap-2 rounded-xl bg-white px-5 py-3 text-xs font-grotesque font-bold text-black transition hover:bg-neutral-200 shadow-lg disabled:opacity-50 cursor-pointer"
           >
             {connectingStripe ? (
               <Loader2 className="h-4 w-4 animate-spin" />
@@ -141,55 +141,55 @@ export default function BankingDashboardPage() {
       )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 font-grotesque">
-        <div className="p-6 rounded-2xl border border-black/15 bg-neutral-50 space-y-3 shadow-xs">
+        <div className="p-6 rounded-2xl border border-white/10 bg-neutral-900 space-y-3 shadow-xs">
           <div className="flex items-center justify-between">
-            <p className="text-xs text-black/60 font-bold">SOLDE DISPONIBLE</p>
-            <Euro className="w-4 h-4 text-black" />
+            <p className="text-xs text-white/60 font-bold">SOLDE DISPONIBLE</p>
+            <Euro className="w-4 h-4 text-white" />
           </div>
-          <p className="text-3xl font-bold tracking-tight text-black">
+          <p className="text-3xl font-bold tracking-tight text-white">
             {balance.available.toLocaleString('fr-FR')} €
           </p>
-          <p className="text-[11px] text-black/50">FONDS PRÊTS À ÊTRE VERSÉS VERS VOTRE COMPTE.</p>
+          <p className="text-[11px] text-white/50">FONDS PRÊTS À ÊTRE VERSÉS VERS VOTRE COMPTE.</p>
         </div>
 
-        <div className="p-6 rounded-2xl border border-black/15 bg-neutral-50 space-y-3 shadow-xs">
+        <div className="p-6 rounded-2xl border border-white/10 bg-neutral-900 space-y-3 shadow-xs">
           <div className="flex items-center justify-between">
-            <p className="text-xs text-black/60 font-bold">EN COURS DE TRAITEMENT</p>
-            <CreditCard className="w-4 h-4 text-black" />
+            <p className="text-xs text-white/60 font-bold">EN COURS DE TRAITEMENT</p>
+            <CreditCard className="w-4 h-4 text-white" />
           </div>
-          <p className="text-3xl font-bold tracking-tight text-black">
+          <p className="text-3xl font-bold tracking-tight text-white">
             {balance.pending.toLocaleString('fr-FR')} €
           </p>
-          <p className="text-[11px] text-black/50">FONDS LIÉS AUX VENTES EN COURS.</p>
+          <p className="text-[11px] text-white/50">FONDS LIÉS AUX VENTES EN COURS.</p>
         </div>
       </div>
 
       <div className="space-y-4 pt-4">
         <div className="flex items-center gap-2">
-          <History className="w-4 h-4 text-black" />
-          <h2 className="text-xl font-grotesque font-normal text-black">HISTORIQUE DES VIREMENTS</h2>
+          <History className="w-4 h-4 text-white" />
+          <h2 className="text-xl font-grotesque font-normal text-white">HISTORIQUE DES VIREMENTS</h2>
         </div>
 
-        <div className="rounded-2xl border border-black/15 bg-neutral-50 overflow-hidden shadow-xs font-grotesque">
+        <div className="rounded-2xl border border-white/10 bg-neutral-900 overflow-hidden shadow-xs font-grotesque">
           {payouts.length === 0 ? (
-            <div className="p-12 text-center text-xs text-black/60">
+            <div className="p-12 text-center text-xs text-white/60">
               AUCUN VIREMENT ENREGISTRÉ POUR LE MOMENT.
             </div>
           ) : (
-            <div className="divide-y divide-black/15">
+            <div className="divide-y divide-white/10">
               {payouts.map((payout) => (
-                <div key={payout.id} className="flex items-center justify-between p-6 hover:bg-black/5 transition">
+                <div key={payout.id} className="flex items-center justify-between p-6 hover:bg-white/5 transition">
                   <div className="space-y-1">
-                    <p className="text-xs font-bold text-black">{payout.reference || payout.id}</p>
-                    <p className="text-[10px] text-black/50">
+                    <p className="text-xs font-bold text-white">{payout.reference || payout.id}</p>
+                    <p className="text-[10px] text-white/50">
                       {payout.created_at ? `VERSÉ LE ${new Date(payout.created_at).toLocaleDateString('fr-FR', { dateStyle: 'long' }).toUpperCase()}` : ''}
                     </p>
                   </div>
                   <div className="flex items-center gap-6">
-                    <span className="text-sm font-bold text-black">
+                    <span className="text-sm font-bold text-white">
                       {Number(payout.amount || 0).toLocaleString('fr-FR')} €
                     </span>
-                    <span className="px-3 py-1 rounded-full text-[10px] font-bold bg-black/10 text-black border border-black/20">
+                    <span className="px-3 py-1 rounded-full text-[10px] font-bold bg-white/10 text-white border border-white/20">
                       {payout.status ? payout.status.toUpperCase() : 'VERSÉ'}
                     </span>
                   </div>
