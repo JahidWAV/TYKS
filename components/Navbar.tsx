@@ -36,7 +36,6 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
       setUser(currentUser);
 
       if (currentUser) {
-        // Récupération éventuelle du prénom depuis les metadata de l'utilisateur
         const metaName = currentUser.user_metadata?.full_name || currentUser.user_metadata?.name || currentUser.email?.split('@')[0] || "MON COMPTE";
         setUserName(metaName.toUpperCase());
       }
@@ -113,8 +112,8 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
   return (
     <>
       {/* BULLE FLOTTANTE FIXE EN HAUT DE PAGE */}
-      <div className="fixed top-6 left-0 right-0 z-50 max-w-7xl mx-auto px-6">
-        <header className="w-full bg-white/80 backdrop-blur-md border border-[#1e3932]/10 text-[#1e3932] py-3 px-6 rounded-full shadow-lg shadow-[#1e3932]/5 flex items-center justify-between gap-4">
+      <div className="fixed top-6 left-0 right-0 z-50 max-w-7xl mx-auto px-6 font-grotesque uppercase">
+        <header className="w-full bg-white/90 backdrop-blur-md border border-black/15 text-black py-2.5 px-6 rounded-full shadow-lg shadow-black/5 flex items-center justify-between gap-4">
 
           {/* 1. LOGO */}
           <Link href="/" className="flex items-center justify-start shrink-0 px-2">
@@ -124,8 +123,7 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
               width={340} 
               height={110} 
               priority 
-              className="h-10 sm:h-12 w-auto object-contain text-[#1e3932]" 
-              style={{ filter: 'brightness(0) saturate(100%) invert(18%) sepia(21%) saturate(1210%) hue-rotate(124deg) brightness(94%) contrast(92%)' }}
+              className="h-8 sm:h-10 w-auto object-contain text-black" 
             />
           </Link>
 
@@ -136,8 +134,8 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
             {!isPro && (
               <div className="relative" ref={searchRef}>
                 <div 
-                  className={`flex items-center transition-all duration-300 bg-[#1e3932] text-white rounded-full h-10 shadow-md ${
-                    isSearchExpanded || searchQuery.trim() ? 'w-64 px-3.5' : 'w-10 px-0 justify-center cursor-pointer hover:bg-[#152a25]'
+                  className={`flex items-center transition-all duration-300 bg-black text-white rounded-full h-10 shadow-md ${
+                    isSearchExpanded || searchQuery.trim() ? 'w-64 px-3.5' : 'w-10 px-0 justify-center cursor-pointer hover:bg-neutral-800'
                   }`}
                   onClick={() => {
                     if (!isSearchExpanded) {
@@ -157,8 +155,8 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
                         if (!showDropdown) setShowDropdown(true);
                       }}
                       onFocus={() => setShowDropdown(true)}
-                      placeholder="Rechercher..."
-                      className="w-full bg-transparent text-xs placeholder:text-white/60 focus:outline-none text-white truncate pr-1"
+                      placeholder="RECHERCHER..."
+                      className="w-full bg-transparent text-[11px] font-bold placeholder:text-white/60 focus:outline-none text-white truncate pr-1 uppercase"
                     />
                   )}
 
@@ -177,13 +175,13 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
                 </div>
 
                 {showDropdown && searchQuery.trim().length > 0 && (
-                  <div className="absolute top-full right-0 w-80 mt-3 bg-white border border-[#1e3932]/15 rounded-3xl divide-y divide-[#1e3932]/10 z-50 text-[#1e3932] shadow-xl overflow-hidden">
+                  <div className="absolute top-full right-0 w-80 mt-3 bg-white border border-black/15 rounded-3xl divide-y divide-black/10 z-50 text-black shadow-xl overflow-hidden">
                     {results.length > 0 ? (
                       <div className="py-2">
                         {results.map((evt) => {
                           const priceFormatted = evt.price && parseFloat(evt.price) > 0
                             ? `${parseFloat(evt.price).toFixed(2)} €`
-                            : 'Gratuit';
+                            : 'GRATUIT';
 
                           return (
                             <button
@@ -194,28 +192,28 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
                                 setIsSearchExpanded(false);
                                 router.push(`/events/${evt.slug || evt.id}`);
                               }}
-                              className="w-full text-left px-5 py-3 transition-all flex items-center justify-between group hover:bg-[#f8faf9]"
+                              className="w-full text-left px-5 py-3 transition-all flex items-center justify-between group hover:bg-neutral-50 cursor-pointer"
                             >
                               <div className="space-y-1 pr-3 truncate">
-                                <p className="text-xs font-medium truncate text-[#1e3932]">
+                                <p className="text-xs font-bold truncate text-black">
                                   {evt.title}
                                 </p>
-                                <div className="flex items-center gap-3 text-[10px] text-[#1e3932]/60">
+                                <div className="flex items-center gap-3 text-[10px] text-black/60 font-bold">
                                   <span className="flex items-center gap-1">
-                                    <Calendar className="w-3 h-3 text-[#1e3932]" />
+                                    <Calendar className="w-3 h-3 text-black" />
                                     {new Date(evt.starts_at).toLocaleDateString("fr-FR", { day: "numeric", month: "short" })}
                                   </span>
                                   <span className="flex items-center gap-1 truncate">
-                                    <MapPin className="w-3 h-3 text-[#1e3932]" />
+                                    <MapPin className="w-3 h-3 text-black" />
                                     {evt.location}
                                   </span>
                                 </div>
                               </div>
                               <div className="flex items-center gap-2 shrink-0">
-                                <span className="text-[10px] font-medium px-2.5 py-1 border border-[#1e3932]/15 bg-[#f8faf9] text-[#1e3932] rounded-full">
+                                <span className="text-[10px] font-bold px-2.5 py-1 border border-black/15 bg-neutral-50 text-black rounded-full">
                                   {priceFormatted}
                                 </span>
-                                <ArrowUpRight className="w-3.5 h-3.5 text-[#1e3932]/40 group-hover:text-[#1e3932] transition-colors" />
+                                <ArrowUpRight className="w-3.5 h-3.5 text-black/40 group-hover:text-black transition-colors" />
                               </div>
                             </button>
                           );
@@ -223,7 +221,7 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
                       </div>
                     ) : (
                       <div className="px-4 py-6 text-center">
-                        <p className="text-[10px] font-medium tracking-wide text-[#1e3932]/50">Aucun résultat pour &quot;{searchQuery}&quot;</p>
+                        <p className="text-[10px] font-bold tracking-wider text-black/50">AUCUN RÉSULTAT POUR &quot;{searchQuery}&quot;</p>
                       </div>
                     )}
                   </div>
@@ -234,7 +232,7 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
             {/* BOUTON DYNAMIQUE : PRÉNOM OU SE CONNECTER */}
             <button
               onClick={handleMainButtonClick}
-              className="h-10 px-6 bg-[#1e3932] hover:bg-[#152a25] transition-all text-white text-xs tracking-wider font-normal font-grotesque rounded-full shadow-md flex items-center justify-center shrink-0 cursor-pointer"
+              className="h-10 px-6 bg-black hover:bg-neutral-800 transition-all text-white text-xs tracking-wider font-bold rounded-full shadow-md flex items-center justify-center shrink-0 cursor-pointer"
             >
               {user ? userName : "SE CONNECTER / S'INSCRIRE"}
             </button>
@@ -244,7 +242,7 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
           {/* MOBILE TOGGLE */}
           <div className="flex items-center md:hidden">
             <button
-              className="inline-flex items-center justify-center bg-[#1e3932] text-white p-2.5 rounded-full shadow-md"
+              className="inline-flex items-center justify-center bg-black text-white p-2.5 rounded-full shadow-md cursor-pointer"
               onClick={() => setMobileOpen((open) => !open)}
               aria-label="Ouvrir le menu"
             >
@@ -255,21 +253,21 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
 
         {/* MOBILE PANEL */}
         {mobileOpen && (
-          <div className="px-6 py-5 md:hidden space-y-3 bg-[#1e3932] text-white border border-white/10 rounded-3xl mt-2 shadow-xl">
+          <div className="px-6 py-5 md:hidden space-y-3 bg-neutral-50 text-black border border-black/15 rounded-[2rem] mt-2 shadow-xl">
             {!isPro && (
               <>
                 <div className="relative flex items-center">
-                  <Search className="absolute left-4 h-3.5 w-3.5 pointer-events-none text-white/60 z-10" />
+                  <Search className="absolute left-4 h-3.5 w-3.5 pointer-events-none text-black/60 z-10" />
                   <input
                     type="text"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Rechercher un événement..."
-                    className="w-full h-10 bg-black/20 pl-10 pr-4 text-xs placeholder:text-white/60 focus:outline-none text-white rounded-full border border-white/10 shadow-inner"
+                    placeholder="RECHERCHER UN ÉVÉNEMENT..."
+                    className="w-full h-10 bg-white pl-10 pr-4 text-[11px] font-bold placeholder:text-black/50 focus:outline-none text-black rounded-full border border-black/15 shadow-inner uppercase"
                   />
                 </div>
                 {searchQuery.trim().length > 0 && results.length > 0 && (
-                  <div className="border border-white/10 bg-black/20 rounded-3xl divide-y divide-white/10 overflow-hidden">
+                  <div className="border border-black/15 bg-white rounded-2xl divide-y divide-black/10 overflow-hidden shadow-sm">
                     {results.map((evt) => (
                       <div
                         key={evt.id}
@@ -278,10 +276,10 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
                           setSearchQuery("");
                           router.push(`/events/${evt.slug || evt.id}`);
                         }}
-                        className="p-3.5 text-xs flex justify-between items-center cursor-pointer hover:bg-white/10 text-white"
+                        className="p-3.5 text-xs flex justify-between items-center cursor-pointer hover:bg-neutral-50 text-black font-bold"
                       >
-                        <span className="font-medium truncate">{evt.title}</span>
-                        <span className="font-medium text-white/80">{evt.price ? `${evt.price} €` : "Gratuit"}</span>
+                        <span className="truncate">{evt.title}</span>
+                        <span className="text-black/80">{evt.price ? `${evt.price} €` : "GRATUIT"}</span>
                       </div>
                     ))}
                   </div>
@@ -294,7 +292,7 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
                 setMobileOpen(false);
                 handleMainButtonClick();
               }}
-              className="w-full h-11 bg-white text-[#1e3932] hover:bg-white/90 text-xs tracking-wider font-normal font-grotesque rounded-full shadow-md flex items-center justify-center"
+              className="w-full h-11 bg-black text-white hover:bg-neutral-800 text-xs tracking-wider font-bold rounded-full shadow-md flex items-center justify-center cursor-pointer"
             >
               {user ? userName : "SE CONNECTER / S'INSCRIRE"}
             </button>
