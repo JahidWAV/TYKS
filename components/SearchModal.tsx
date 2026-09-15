@@ -20,7 +20,6 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
   const [isLoading, setIsLoading] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
 
-  // Gestion du focus à l'ouverture et reset
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = "hidden";
@@ -38,7 +37,6 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
     };
   }, [isOpen]);
 
-  // Debounce (200ms)
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedQuery(searchQuery);
@@ -46,7 +44,6 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
     return () => clearTimeout(timer);
   }, [searchQuery]);
 
-  // Chargement global des événements et des organisations
   const fetchAllData = async () => {
     setIsLoading(true);
     try {
@@ -55,23 +52,19 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
         .from("events")
         .select("*")
         .order("starts_at", { ascending: true })
-        .limit(200);
+        .limit(300);
 
-      if (eventsError) {
-        console.error("Erreur Supabase events:", eventsError.message);
-      }
+      if (eventsError) console.error("Erreur events:", eventsError.message);
 
-      // 2. Récupération des organisations
+      // 2. Récupération des organisations (table `organizations`)
       const { data: orgsData, error: orgsError } = await supabaseBrowser
         .from("organizations")
         .select("*")
         .limit(100);
 
-      if (orgsError) {
-        console.error("Erreur Supabase orgs:", orgsError.message);
-      }
+      if (orgsError) console.error("Erreur orgs:", orgsError.message);
 
-      // Associer proprement chaque organisation à son événement correspondant
+      // Associer l'organisation à chaque événement via `organization_id`
       const orgsMap = new Map((orgsData || []).map(org => [org.id, org]));
       const enrichedEvents = (eventsData || []).map(evt => ({
         ...evt,
@@ -81,7 +74,7 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
       setRawEvents(enrichedEvents);
       setRawOrgs(orgsData || []);
     } catch (err) {
-      console.error("Erreur globale de chargement :", err);
+      console.error("Erreur chargement global :", err);
     } finally {
       setIsLoading(false);
     }
@@ -89,7 +82,6 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
 
   if (!isOpen) return null;
 
-  // Filtrage insensible à la casse et aux accents
   const normalizeString = (str: string) => {
     return str
       ? str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase()
@@ -98,7 +90,7 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
 
   const q = normalizeString(debouncedQuery.trim());
 
-  // Filtrage des événements (titre, lieu, description ou nom de l'organisation)
+  // Filtrage des événements (titre, lieu, description, ou nom de l'organisation associée)
   const filteredEvents = rawEvents.filter((evt) => {
     if (q === "") return true;
     const title = normalizeString(evt.title);
@@ -114,7 +106,7 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
     );
   });
 
-  // Filtrage direct des organisations
+  // Filtrage direct des organisations par leur nom (`name`)
   const filteredOrgs = q === "" ? [] : rawOrgs.filter((org) => {
     return normalizeString(org.name).includes(q);
   });
@@ -124,7 +116,7 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
   return (
     <div className="fixed inset-0 z-50 bg-[#0f0f0f] flex flex-col font-grotesque uppercase text-white animate-in fade-in duration-200">
       
-      {/* HEADER DE RECHERCHE PLEIN ÉCRAN */}
+      {/* HEADER DE RECHERCHE */}
       <div className="w-full max-w-5xl mx-auto px-6 pt-8 pb-6 flex items-center gap-4 border-b border-white/10">
         <div className="relative flex-1 flex items-center">
           <Search className="absolute left-6 h-5 w-5 text-white pointer-events-none" strokeWidth={2.5} style={{ color: '#ffffff' }} />
@@ -155,7 +147,7 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
         </button>
       </div>
 
-      {/* CONTENU DES RÉSULTATS */}
+      {/* RÉSULTATS */}
       <div className="flex-1 overflow-y-auto max-w-5xl w-full mx-auto px-6 py-8 space-y-10">
         
         {isLoading ? (
@@ -164,7 +156,7 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
           </div>
         ) : (
           <>
-            {/* SECTION ORGANISATEURS (S'affiche dès qu'une recherche correspond à un orga) */}
+            {/* SECTION ORGANISATEURS */}
             {filteredOrgs.length > 0 && (
               <div className="space-y-4">
                 <h3 className="text-xs font-bold tracking-widest text-white/50 flex items-center gap-2">
@@ -229,7 +221,6 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
                         }}
                         className="group text-left bg-neutral-900 hover:bg-neutral-800 border border-white/15 rounded-[2rem] p-4 transition-all duration-300 flex flex-col justify-between cursor-pointer space-y-4 shadow-xl"
                       >
-                        {/* Affiche de l'événement */}
                         <div className="relative w-full aspect-[4/3] rounded-2xl overflow-hidden bg-neutral-800 border border-white/10 shadow-md">
                           {flyer ? (
                             <img 
@@ -247,7 +238,6 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
                           </div>
                         </div>
 
-                        {/* Infos de l'événement */}
                         <div className="space-y-2 flex-1">
                           <p className="text-xs font-bold tracking-wide line-clamp-1 group-hover:text-white">
                             {evt.title}
@@ -275,7 +265,6 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
                           </div>
                         </div>
 
-                        {/* Footer de la carte */}
                         <div className="pt-3 border-t border-white/10 flex items-center justify-between text-[10px] text-white/40 group-hover:text-white font-bold transition-colors">
                           <span>VOIR LA BILLETTERIE</span>
                           <ArrowUpRight className="w-4 h-4" />
