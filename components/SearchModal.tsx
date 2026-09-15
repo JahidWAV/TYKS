@@ -38,7 +38,7 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
     };
   }, [isOpen]);
 
-  // Debounce pour éviter le re-render à chaque frappe trop brutale (300ms)
+  // Debounce (300ms) pour éviter les micro-saccades à chaque frappe
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedQuery(searchQuery);
@@ -49,7 +49,6 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
   const fetchAllData = async () => {
     setIsLoading(true);
     try {
-      // Charger les événements avec leur organisation liée
       const { data: eventsData } = await supabaseBrowser
         .from("events")
         .select("*, organizations(id, name, logo_url, slug)")
@@ -58,7 +57,6 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
 
       if (eventsData) setAllEvents(eventsData);
 
-      // Charger aussi les organisations directement pour pouvoir les chercher aussi
       const { data: orgsData } = await supabaseBrowser
         .from("organizations")
         .select("*")
@@ -74,11 +72,10 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
 
   if (!isOpen) return null;
 
-  // Filtrage intelligent
   const q = debouncedQuery.toLowerCase().trim();
 
   const filteredEvents = q === "" 
-    ? allEvents.slice(0, 6) // Suggestions par défaut si vide (ex: "Vu récemment / Tendances")
+    ? allEvents.slice(0, 6) 
     : allEvents.filter((evt) => {
         const titleMatch = evt.title?.toLowerCase().includes(q);
         const locationMatch = evt.location?.toLowerCase().includes(q);
@@ -91,7 +88,8 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
     : allOrgs.filter((org) => org.name?.toLowerCase().includes(q));
 
   return (
-    <div className="fixed inset-0 z-50 bg-neutral-950/95 backdrop-blur-2xl flex flex-col font-grotesque uppercase text-white animate-in fade-in duration-200">
+    /* Fond noir #0f0f0f sans aucune transparence (suppression du /95 et du backdrop-blur) */
+    <div className="fixed inset-0 z-50 bg-[#0f0f0f] flex flex-col font-grotesque uppercase text-white animate-in fade-in duration-200">
       
       {/* HEADER DE RECHERCHE PLEIN ÉCRAN */}
       <div className="w-full max-w-5xl mx-auto px-6 pt-8 pb-6 flex items-center gap-4 border-b border-white/10">
@@ -149,7 +147,7 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
                           onClose();
                           router.push(`/organizations/${org.slug || org.id}`);
                         }}
-                        className="p-4 bg-neutral-900/80 hover:bg-white hover:text-black border border-white/15 rounded-3xl transition-all duration-300 flex items-center gap-4 group cursor-pointer text-left"
+                        className="p-4 bg-neutral-900 hover:bg-white hover:text-black border border-white/15 rounded-3xl transition-all duration-300 flex items-center gap-4 group cursor-pointer text-left"
                       >
                         <div className="relative w-12 h-12 shrink-0 rounded-2xl overflow-hidden bg-neutral-800 border border-white/10 flex items-center justify-center">
                           {orgLogo ? (
@@ -196,9 +194,9 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
                           onClose();
                           router.push(`/events/${evt.slug || evt.id}`);
                         }}
-                        className="group text-left bg-neutral-900/60 hover:bg-neutral-900 border border-white/15 rounded-[2rem] p-4 transition-all duration-300 flex flex-col justify-between cursor-pointer space-y-4 shadow-xl"
+                        className="group text-left bg-neutral-900 hover:bg-neutral-800 border border-white/15 rounded-[2rem] p-4 transition-all duration-300 flex flex-col justify-between cursor-pointer space-y-4 shadow-xl"
                       >
-                        {/* Affiche de l'événement en grand format style Shotgun */}
+                        {/* Affiche de l'événement */}
                         <div className="relative w-full aspect-[4/3] rounded-2xl overflow-hidden bg-neutral-800 border border-white/10 shadow-md">
                           {flyer ? (
                             <img 
