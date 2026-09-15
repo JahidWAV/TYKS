@@ -89,8 +89,6 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
     return () => clearTimeout(timer);
   }, [searchQuery, isPro]);
 
-  // Si l'utilisateur est connecté -> lien vers /settings, sinon -> ouvre la modale de connexion.
-  // Le rendu est direct sans passer par un état de chargement visuel qui fait clignoter l'icône.
   const handleProfileClick = () => {
     if (user) {
       router.push("/settings");
@@ -101,9 +99,9 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
 
   return (
     <>
-      {/* Utilisation de relative pour qu'elle défile avec la page */}
-      <header className="relative z-50 bg-transparent font-sans text-[#1e3932] py-4">
-        <div className="max-w-7xl mx-auto px-6 lg:px-12 flex items-center justify-between gap-4">
+      {/* BULLE FLOTTANTE FIXE EN HAUT DE PAGE */}
+      <div className="fixed top-4 left-0 right-0 z-50 max-w-7xl mx-auto px-6">
+        <header className="w-full bg-white/80 backdrop-blur-md border border-[#1e3932]/10 text-[#1e3932] py-3 px-6 rounded-full shadow-lg shadow-[#1e3932]/5 flex items-center justify-between gap-4">
 
           {/* 1. LOGO AGRANDI */}
           <Link href="/" className="flex items-center justify-start shrink-0 px-2">
@@ -113,13 +111,13 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
               width={340} 
               height={110} 
               priority 
-              className="h-12 sm:h-16 w-auto object-contain text-[#1e3932]" 
+              className="h-10 sm:h-12 w-auto object-contain text-[#1e3932]" 
               style={{ filter: 'brightness(0) saturate(100%) invert(18%) sepia(21%) saturate(1210%) hue-rotate(124deg) brightness(94%) contrast(92%)' }}
             />
           </Link>
 
           {/* 2. ZONE DROITE : LES ÉLÉMENTS CÔTE À CÔTE */}
-          <div className="hidden md:flex items-center gap-2">
+          <div className="hidden md:flex items-center gap-3">
             
             {/* LOUPE (À gauche) */}
             {!isPro && (
@@ -166,7 +164,7 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
                 </div>
 
                 {showDropdown && searchQuery.trim().length > 0 && (
-                  <div className="absolute top-full right-0 w-80 mt-2 bg-white border border-[#1e3932]/15 rounded-3xl divide-y divide-[#1e3932]/10 z-50 text-[#1e3932] shadow-xl overflow-hidden">
+                  <div className="absolute top-full right-0 w-80 mt-3 bg-white border border-[#1e3932]/15 rounded-3xl divide-y divide-[#1e3932]/10 z-50 text-[#1e3932] shadow-xl overflow-hidden">
                     {results.length > 0 ? (
                       <div className="py-2">
                         {results.map((evt) => {
@@ -220,11 +218,21 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
               </div>
             )}
 
-            {/* BOUTON PROFIL (Sans flash de chargement) */}
+            {/* BOUTON AVEC TEXTE : SE CONNECTER / S'INSCRIRE (Affiché si non connecté) */}
+            {!user && (
+              <button
+                onClick={() => setIsAuthOpen(true)}
+                className="h-10 px-5 bg-[#1e3932] hover:bg-[#152a25] transition-all text-white text-xs uppercase tracking-wider font-medium rounded-full shadow-md flex items-center justify-center shrink-0 cursor-pointer"
+              >
+                Se connecter / S&apos;inscrire
+              </button>
+            )}
+
+            {/* BOUTON PROFIL (ou Paramètres si connecté) */}
             <button
               onClick={handleProfileClick}
               className="w-10 h-10 bg-[#1e3932] hover:bg-[#152a25] transition-all flex items-center justify-center text-white rounded-full shadow-md shrink-0 cursor-pointer"
-              title={user ? "Paramètres / Profil" : (isPro ? "Connexion Pro" : "Connexion")}
+              title={user ? "Paramètres / Profil" : "Profil"}
             >
               <UserIcon className="w-3.5 h-3.5 text-white/80" />
             </button>
@@ -241,11 +249,11 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
               {mobileOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
             </button>
           </div>
-        </div>
+        </header>
 
         {/* MOBILE PANEL */}
         {mobileOpen && (
-          <div className="px-6 py-4 md:hidden space-y-3 bg-[#1e3932] text-white border border-white/10 rounded-3xl mx-4 mt-2 shadow-xl">
+          <div className="px-6 py-5 md:hidden space-y-3 bg-[#1e3932] text-white border border-white/10 rounded-3xl mt-2 shadow-xl">
             {!isPro && (
               <>
                 <div className="relative flex items-center">
@@ -294,14 +302,14 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
                   setMobileOpen(false);
                   setIsAuthOpen(true);
                 }}
-                className="w-full h-10 bg-white text-[#1e3932] hover:bg-white/90 text-xs tracking-wider font-medium rounded-full shadow-md"
+                className="w-full h-11 bg-white text-[#1e3932] hover:bg-white/90 text-xs uppercase tracking-wider font-medium rounded-full shadow-md flex items-center justify-center"
               >
-                {isPro ? "Connexion Pro" : "Connexion"}
+                Se connecter / S&apos;inscrire
               </button>
             )}
           </div>
         )}
-      </header>
+      </div>
 
       <CustomAuthModal
         isOpen={isAuthOpen}
