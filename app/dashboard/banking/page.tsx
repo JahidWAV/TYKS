@@ -49,7 +49,7 @@ export default function BankingDashboardPage() {
           }
         }
       } catch (err) {
-        console.error('Erreur lors du chargement des données bancaires :', err);
+        console.error('ERREUR LORS DU CHARGEMENT DES DONNÉES BANCAIRES :', err);
       } finally {
         setLoading(false);
       }
@@ -63,7 +63,7 @@ export default function BankingDashboardPage() {
       setConnectingStripe(true);
       const { data: { session } } = await supabaseBrowser.auth.getSession();
       if (!session?.access_token) {
-        alert("Session expirée, veuillez vous reconnecter.");
+        alert("SESSION EXPIRÉE, VEUILLEZ VOUS RECONNECTER.");
         setConnectingStripe(false);
         return;
       }
@@ -80,45 +80,45 @@ export default function BankingDashboardPage() {
       if (data.url) {
         window.location.href = data.url;
       } else {
-        alert(data.error || "Erreur lors de la configuration du compte Stripe.");
+        alert(data.error || "ERREUR LORS DE LA CONFIGURATION DU COMPTE STRIPE.");
         setConnectingStripe(false);
       }
     } catch (err) {
-      console.error('Erreur de redirection Stripe :', err);
+      console.error('ERREUR DE REDIRECTION STRIPE :', err);
       setConnectingStripe(false);
     }
   };
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-white text-[#1e3932]/60 font-mono text-xs flex items-center justify-center">
-        Chargement...
+      <div className="min-h-screen bg-white text-black/60 font-grotesque text-xs flex items-center justify-center uppercase">
+        CHARGEMENT...
       </div>
     );
   }
 
   return (
-    <div className="w-full px-6 lg:px-12 py-10 space-y-8 font-sans text-[#1e3932] bg-white min-h-full">
+    <div className="w-full px-6 lg:px-12 py-4 space-y-8 font-grotesque text-black bg-white min-h-full uppercase">
       {!hasBankAccount && (
-        <div className="p-6 rounded-2xl border border-amber-500/30 bg-amber-500/5 flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-sm">
+        <div className="p-6 rounded-2xl border border-black/25 bg-neutral-50 flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-sm">
           <div className="flex items-start gap-3">
-            <AlertCircle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
-            <div className="space-y-1 font-mono">
-              <p className="text-xs font-bold text-amber-900">Compte bancaire non configuré</p>
-              <p className="text-xs text-amber-800/80">Associez vos coordonnées bancaires pour permettre les virements automatiques de vos ventes.</p>
+            <AlertCircle className="w-5 h-5 text-black shrink-0 mt-0.5" />
+            <div className="space-y-1 font-grotesque">
+              <p className="text-xs font-bold text-black">COMPTE BANCAIRE NON CONFIGURÉ</p>
+              <p className="text-xs text-black/70">ASSOCIEZ VOS COORDONNÉES BANCAIRES POUR PERMETTRE LES VIREMENTS AUTOMATIQUES DE VOS VENTES.</p>
             </div>
           </div>
           <button
             onClick={handleStripeRedirect}
             disabled={connectingStripe}
-            className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#1e3932] px-5 py-3 text-xs font-mono font-bold text-white transition hover:bg-[#152a25] shadow-lg disabled:opacity-50 shrink-0 cursor-pointer"
+            className="inline-flex items-center justify-center gap-2 rounded-xl bg-black px-5 py-3 text-xs font-grotesque font-bold text-white transition hover:bg-neutral-800 shadow-lg disabled:opacity-50 shrink-0 cursor-pointer"
           >
             {connectingStripe ? (
               <Loader2 className="h-4 w-4 animate-spin" />
             ) : (
               <Building2 className="h-4 w-4" />
             )}
-            Configurer mon compte bancaire
+            CONFIGURER MON COMPTE BANCAIRE
           </button>
         </div>
       )}
@@ -128,69 +128,69 @@ export default function BankingDashboardPage() {
           <button
             onClick={handleStripeRedirect}
             disabled={connectingStripe}
-            className="inline-flex items-center gap-2 rounded-xl bg-[#1e3932] px-5 py-3 text-xs font-mono font-bold text-white transition hover:bg-[#152a25] shadow-lg disabled:opacity-50 cursor-pointer"
+            className="inline-flex items-center gap-2 rounded-xl bg-black px-5 py-3 text-xs font-grotesque font-bold text-white transition hover:bg-neutral-800 shadow-lg disabled:opacity-50 cursor-pointer"
           >
             {connectingStripe ? (
               <Loader2 className="h-4 w-4 animate-spin" />
             ) : (
               <Building2 className="h-4 w-4" />
             )}
-            Gérer mon compte bancaire
+            GÉRER MON COMPTE BANCAIRE
           </button>
         </div>
       )}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 font-mono">
-        <div className="p-6 rounded-2xl border border-[#1e3932]/10 bg-[#f8faf9] space-y-3 shadow-xs">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 font-grotesque">
+        <div className="p-6 rounded-2xl border border-black/15 bg-neutral-50 space-y-3 shadow-xs">
           <div className="flex items-center justify-between">
-            <p className="text-xs text-[#1e3932]/60 font-bold">Solde disponible</p>
-            <Euro className="w-4 h-4 text-[#1e3932]" />
+            <p className="text-xs text-black/60 font-bold">SOLDE DISPONIBLE</p>
+            <Euro className="w-4 h-4 text-black" />
           </div>
-          <p className="text-3xl font-bold tracking-tight text-[#1e3932]">
-            {balance.available.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' })}
+          <p className="text-3xl font-bold tracking-tight text-black">
+            {balance.available.toLocaleString('fr-FR')} €
           </p>
-          <p className="text-[11px] text-[#1e3932]/50">Fonds prêts à être versés vers votre compte.</p>
+          <p className="text-[11px] text-black/50">FONDS PRÊTS À ÊTRE VERSÉS VERS VOTRE COMPTE.</p>
         </div>
 
-        <div className="p-6 rounded-2xl border border-[#1e3932]/10 bg-[#f8faf9] space-y-3 shadow-xs">
+        <div className="p-6 rounded-2xl border border-black/15 bg-neutral-50 space-y-3 shadow-xs">
           <div className="flex items-center justify-between">
-            <p className="text-xs text-[#1e3932]/60 font-bold">En cours de traitement</p>
-            <CreditCard className="w-4 h-4 text-[#1e3932]" />
+            <p className="text-xs text-black/60 font-bold">EN COURS DE TRAITEMENT</p>
+            <CreditCard className="w-4 h-4 text-black" />
           </div>
-          <p className="text-3xl font-bold tracking-tight text-[#1e3932]">
-            {balance.pending.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' })}
+          <p className="text-3xl font-bold tracking-tight text-black">
+            {balance.pending.toLocaleString('fr-FR')} €
           </p>
-          <p className="text-[11px] text-[#1e3932]/50">Fonds liés aux ventes en cours.</p>
+          <p className="text-[11px] text-black/50">FONDS LIÉS AUX VENTES EN COURS.</p>
         </div>
       </div>
 
       <div className="space-y-4 pt-4">
         <div className="flex items-center gap-2">
-          <History className="w-4 h-4 text-[#1e3932]" />
-          <h2 className="text-xl font-serif font-medium text-[#1e3932]">Historique des virements</h2>
+          <History className="w-4 h-4 text-black" />
+          <h2 className="text-xl font-grotesque font-normal text-black">HISTORIQUE DES VIREMENTS</h2>
         </div>
 
-        <div className="rounded-2xl border border-[#1e3932]/10 bg-[#f8faf9] overflow-hidden shadow-xs font-mono">
+        <div className="rounded-2xl border border-black/15 bg-neutral-50 overflow-hidden shadow-xs font-grotesque">
           {payouts.length === 0 ? (
-            <div className="p-12 text-center text-xs text-[#1e3932]/60">
-              Aucun virement enregistré pour le moment.
+            <div className="p-12 text-center text-xs text-black/60">
+              AUCUN VIREMENT ENREGISTRÉ POUR LE MOMENT.
             </div>
           ) : (
-            <div className="divide-y divide-[#1e3932]/10">
+            <div className="divide-y divide-black/15">
               {payouts.map((payout) => (
-                <div key={payout.id} className="flex items-center justify-between p-6 hover:bg-[#1e3932]/5 transition">
+                <div key={payout.id} className="flex items-center justify-between p-6 hover:bg-black/5 transition">
                   <div className="space-y-1">
-                    <p className="text-xs font-bold text-[#1e3932]">{payout.reference || payout.id}</p>
-                    <p className="text-[10px] text-[#1e3932]/50">
-                      {payout.created_at ? `Versé le ${new Date(payout.created_at).toLocaleDateString('fr-FR', { dateStyle: 'long' })}` : ''}
+                    <p className="text-xs font-bold text-black">{payout.reference || payout.id}</p>
+                    <p className="text-[10px] text-black/50">
+                      {payout.created_at ? `VERSÉ LE ${new Date(payout.created_at).toLocaleDateString('fr-FR', { dateStyle: 'long' }).toUpperCase()}` : ''}
                     </p>
                   </div>
                   <div className="flex items-center gap-6">
-                    <span className="text-sm font-bold text-[#1e3932]">
-                      {Number(payout.amount || 0).toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' })}
+                    <span className="text-sm font-bold text-black">
+                      {Number(payout.amount || 0).toLocaleString('fr-FR')} €
                     </span>
-                    <span className="px-3 py-1 rounded-full text-[10px] font-bold bg-[#1e3932]/10 text-[#1e3932] border border-[#1e3932]/20">
-                      {payout.status || 'Versé'}
+                    <span className="px-3 py-1 rounded-full text-[10px] font-bold bg-black/10 text-black border border-black/20">
+                      {payout.status ? payout.status.toUpperCase() : 'VERSÉ'}
                     </span>
                   </div>
                 </div>
