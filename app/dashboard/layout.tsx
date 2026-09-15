@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { 
   LayoutDashboard, Calendar, BarChart3, 
-  Wallet, LogOut, User, ChevronRight, Shield, Sliders 
+  Wallet, LogOut, Shield, Sliders, ChevronRight 
 } from 'lucide-react';
 import { supabaseBrowser } from '@/lib/supabase-browser';
 
@@ -18,17 +18,29 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const [isOpen, setIsOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
+  const [userName, setUserName] = useState<string>("MON COMPTE");
   const profileMenuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     async function checkAuth() {
       const { data: { session } } = await supabaseBrowser.auth.getSession();
-      setUser(session?.user ?? null);
+      const currentUser = session?.user ?? null;
+      setUser(currentUser);
+
+      if (currentUser) {
+        const metaName = currentUser.user_metadata?.first_name || currentUser.user_metadata?.full_name || currentUser.user_metadata?.name || currentUser.email?.split('@')[0] || "MON COMPTE";
+        setUserName(metaName.toUpperCase());
+      }
     }
     checkAuth();
 
     const { data: { subscription } } = supabaseBrowser.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
+      const currentUser = session?.user ?? null;
+      setUser(currentUser);
+      if (currentUser) {
+        const metaName = currentUser.user_metadata?.first_name || currentUser.user_metadata?.full_name || currentUser.user_metadata?.name || currentUser.email?.split('@')[0] || "MON COMPTE";
+        setUserName(metaName.toUpperCase());
+      }
     });
 
     return () => subscription.unsubscribe();
@@ -89,32 +101,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   const breadcrumbs = getBreadcrumbs();
 
-  const getDisplayName = () => {
-    const meta = user?.user_metadata || {};
-    if (meta.first_name && meta.last_name) return `${meta.first_name} ${meta.last_name}`;
-    if (meta.full_name) return meta.full_name;
-    if (meta.name) return meta.name;
-    return user?.email ?? 'Utilisateur';
-  };
-
-  const getInitials = () => {
-    const meta = user?.user_metadata || {};
-    const first = meta.first_name || meta.given_name;
-    const last = meta.last_name || meta.family_name;
-    if (first && last) return `${first[0]}${last[0]}`.toUpperCase();
-    const full = meta.full_name || meta.name;
-    if (full) {
-      const parts = full.trim().split(/\s+/);
-      return parts.length > 1
-        ? `${parts[0][0]}${parts[parts.length - 1][0]}`.toUpperCase()
-        : parts[0].slice(0, 2).toUpperCase();
-    }
-    return user?.email ? user.email.slice(0, 2).toUpperCase() : '?';
-  };
-
-  const displayName = getDisplayName();
-  const initials = getInitials();
-
   if (user === undefined) {
     return (
       <div className="min-h-screen bg-white text-[#1e3932]/60 font-mono text-xs tracking-wider flex items-center justify-center">
@@ -134,9 +120,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     <div className="min-h-screen bg-white text-[#1e3932] font-sans selection:bg-[#1e3932] selection:text-white flex overflow-x-hidden">
 
       {/* Barre supérieure fixe : design blanc et vert #1e3932 */}
-      <header className="fixed top-0 left-0 right-0 h-16 border-b border-[#1e3932]/10 bg-white flex items-center justify-between shrink-0 z-50 select-none shadow-xs">
+      <header className="fixed top-0 left-0 right-0 h-20 border-b border-[#1e3932]/10 bg-white flex items-center justify-between shrink-0 z-50 select-none shadow-xs px-6">
         <div className="flex items-center h-full">
-          <div className="w-16 h-full flex items-center justify-center shrink-0 border-r border-[#1e3932]/10 bg-[#f8faf9]">
+          <div className="w-16 h-full flex items-center justify-center shrink-0 border-r border-[#1e3932]/10 bg-[#f8faf9] -ml-6 mr-6">
             <Link href="/" className="w-9 h-9 flex items-center justify-center group">
               <span className="h-8 w-8 rounded-lg bg-[#1e3932] text-white flex items-center justify-center font-mono font-bold text-xs transition-transform group-hover:scale-105">
                 T
@@ -144,7 +130,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             </Link>
           </div>
 
-          <div className="flex items-center gap-2 text-xs font-mono tracking-wide pl-6">
+          <div className="flex items-center gap-2 text-xs font-mono tracking-wide">
             {breadcrumbs.map((crumb, index) => (
               <div key={index} className="flex items-center gap-2">
                 {index > 0 && <ChevronRight className="w-3.5 h-3.5 text-[#1e3932]/40" />}
@@ -156,23 +142,20 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           </div>
         </div>
 
-        <div className="relative pr-6" ref={profileMenuRef}>
+        {/* BOUTON DYNAMIQUE UTILISATEUR SANS ICÔNE DE PROFIL */}
+        <div className="relative" ref={profileMenuRef}>
           <button 
             onClick={() => setProfileOpen(!profileOpen)}
-            className="w-10 h-10 rounded-xl border border-[#1e3932]/15 bg-[#f8faf9] text-[#1e3932] flex items-center justify-center hover:bg-[#1e3932] hover:text-white transition-colors text-xs font-mono font-bold tracking-tight cursor-pointer shadow-sm"
-            title="Mon profil"
+            className="h-10 px-6 bg-[#1e3932] hover:bg-[#152a25] transition-all text-white text-xs tracking-wider font-normal font-grotesque rounded-full shadow-md flex items-center justify-center shrink-0 cursor-pointer"
           >
-            {initials}
+            {userName}
           </button>
 
           {profileOpen && (
-            <div className="absolute right-6 mt-3 w-72 bg-white border border-[#1e3932]/15 shadow-2xl rounded-2xl py-2 z-50 font-mono text-xs text-[#1e3932]">
-              <div className="flex items-center gap-3 px-4 py-3 border-b border-[#1e3932]/10 bg-[#f8faf9]">
-                <div className="w-9 h-9 rounded-xl border border-[#1e3932]/15 bg-[#1e3932] text-white flex items-center justify-center text-xs font-bold shrink-0">
-                  {initials}
-                </div>
+            <div className="absolute right-0 mt-3 w-72 bg-white border border-[#1e3932]/15 shadow-2xl rounded-3xl py-2 z-50 font-mono text-xs text-[#1e3932]">
+              <div className="flex items-center gap-3 px-5 py-3 border-b border-[#1e3932]/10 bg-[#f8faf9]">
                 <div className="min-w-0">
-                  <p className="font-bold truncate text-[#1e3932]">{displayName}</p>
+                  <p className="font-bold truncate text-[#1e3932]">{userName}</p>
                   <p className="text-[10px] text-[#1e3932]/60 truncate">{user.email}</p>
                 </div>
               </div>
@@ -183,7 +166,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                   onClick={() => setProfileOpen(false)}
                   className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-[#1e3932]/5 hover:text-[#1e3932] transition-colors tracking-wide font-bold text-[#1e3932]/80"
                 >
-                  <User className="w-4 h-4 text-[#1e3932]" />
                   <span>Profil</span>
                 </Link>
 
@@ -224,7 +206,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       </header>
 
       {/* Sidebar de navigation */}
-      <aside className={`fixed top-16 left-0 h-[calc(100vh-4rem)] ${SIDEBAR_WIDTH} border-r border-[#1e3932]/10 bg-white flex flex-col py-6 z-40 select-none overflow-hidden ${
+      <aside className={`fixed top-20 left-0 h-[calc(100vh-5rem)] ${SIDEBAR_WIDTH} border-r border-[#1e3932]/10 bg-white flex flex-col py-6 z-40 select-none overflow-hidden ${
         mounted ? 'transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]' : ''
       }`}>
 
@@ -273,9 +255,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         </div>
       </aside>
 
-      {/* Conteneur principal */}
+      {/* Conteneur principal avec padding-top ajusté */}
       <div 
-        className={`flex-1 min-w-0 flex flex-col h-screen pt-16 overflow-hidden ${CONTENT_MARGIN} ${
+        className={`flex-1 min-w-0 flex flex-col h-screen pt-20 overflow-hidden ${CONTENT_MARGIN} ${
           mounted ? 'transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]' : ''
         }`}
       >
