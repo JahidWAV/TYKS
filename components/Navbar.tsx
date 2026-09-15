@@ -59,12 +59,12 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
 
   return (
     <>
-      <div className="absolute top-6 left-0 right-0 z-50 max-w-7xl mx-auto px-6 font-grotesque uppercase">
+      <div className="absolute top-6 left-0 right-0 z-50 max-w-7xl mx-auto px-6 lg:px-12 font-grotesque uppercase">
         <header className="w-full flex items-center justify-between gap-4">
 
           <Link 
             href="/" 
-            className="group flex items-center justify-center shrink-0 h-11 px-5 bg-neutral-900 hover:bg-white border border-white/15 rounded-full shadow-lg transition-all duration-300"
+            className="group flex items-center justify-center shrink-0 transition-opacity duration-300 hover:opacity-75"
           >
             <Image 
               src="/tyks.svg" 
@@ -72,15 +72,15 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
               width={340} 
               height={110} 
               priority 
-              className="h-8 sm:h-10 w-auto object-contain brightness-0 invert group-hover:invert-0 transition-all duration-300" 
+              className="h-8 sm:h-10 w-auto object-contain brightness-0 invert transition-all duration-300" 
             />
           </Link>
 
-          <div className="hidden md:flex items-center gap-3">
+          <div className="hidden md:flex items-center gap-4">
             {!isPro && (
               <button
                 onClick={() => setIsSearchModalOpen(true)}
-                className="h-11 w-11 bg-neutral-900 hover:bg-white text-white hover:text-black border border-white/15 transition-all duration-300 rounded-full shadow-lg flex items-center justify-center shrink-0 cursor-pointer"
+                className="h-11 w-11 bg-transparent hover:bg-white/10 text-white border border-white/15 transition-all duration-300 rounded-full flex items-center justify-center shrink-0 cursor-pointer"
                 aria-label="Rechercher"
               >
                 <Search className="h-4 w-4 shrink-0" />
@@ -89,7 +89,7 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
 
             <button
               onClick={handleMainButtonClick}
-              className="h-11 px-7 bg-neutral-900 hover:bg-white text-white hover:text-black border border-white/15 transition-all duration-300 text-xs tracking-wider font-bold rounded-full shadow-lg flex items-center justify-center shrink-0 cursor-pointer"
+              className="h-11 px-7 bg-transparent hover:bg-white/10 text-white border border-white/15 transition-all duration-300 text-xs tracking-wider font-bold rounded-full flex items-center justify-center shrink-0 cursor-pointer"
             >
               {user ? userName : "SE CONNECTER / S'INSCRIRE"}
             </button>
@@ -97,7 +97,7 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
 
           <div className="flex items-center md:hidden">
             <button
-              className="inline-flex items-center justify-center bg-neutral-900 hover:bg-white text-white hover:text-black border border-white/15 p-3 rounded-full shadow-lg transition-all duration-300 cursor-pointer"
+              className="inline-flex items-center justify-center bg-transparent text-white border border-white/15 p-3 rounded-full transition-all duration-300 cursor-pointer hover:bg-white/10"
               onClick={() => setMobileOpen((open) => !open)}
               aria-label="Ouvrir le menu"
             >
