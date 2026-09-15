@@ -1,201 +1,150 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
+import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { Search, Calendar, MapPin, ArrowUpRight, X, Building2 } from "lucide-react";
+import { Search, X, Menu } from "lucide-react";
+import CustomAuthModal from "@/components/CustomAuthModal";
+import SearchModal from "@/components/SearchModal";
 import { supabaseBrowser } from "@/lib/supabase-browser";
 
-interface SearchModalProps {
-  isOpen: boolean;
-  onClose: () => void;
+// Ajout de isPro?: boolean ici pour corriger l'erreur de build
+interface NavbarProps {
+  isPro?: boolean;
+  isDarkMode?: boolean;
 }
 
-export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
+export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProps) {
   const router = useRouter();
-  const [searchQuery, setSearchQuery] = useState("");
-  const [allEvents, setAllEvents] = useState<any[]>([]);
-  const [results, setResults] = useState<any[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const searchInputRef = useRef<HTMLInputElement>(null);
 
-  // Charger les événements et leurs organisations dès l'ouverture de la modale
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [isAuthOpen, setIsAuthOpen] = useState(false);
+  const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
+  const [user, setUser] = useState<any>(null);
+  const [userName, setUserName] = useState<string>("");
+
   useEffect(() => {
-    if (isOpen) {
-      setTimeout(() => {
-        searchInputRef.current?.focus();
-      }, 100);
-      fetchEvents();
-    } else {
-      setSearchQuery("");
-      setResults([]);
-    }
-  }, [isOpen]);
+    const fetchUserData = async () => {
+      const { data: { session } } = await supabaseBrowser.auth.getSession();
+      const currentUser = session?.user ?? null;
+      setUser(currentUser);
 
-  const fetchEvents = async () => {
-    setIsLoading(true);
-    try {
-      const { data, error } = await supabaseBrowser
-        .from("events")
-        .select("*, organizations(name)")
-        .order("starts_at", { ascending: true })
-        .limit(100);
-
-      if (!error && data) {
-        setAllEvents(data);
+      if (currentUser) {
+        const metaName = currentUser.user_metadata?.full_name || currentUser.user_metadata?.name || currentUser.email?.split('@')[0] || "MON COMPTE";
+        setUserName(metaName.toUpperCase());
       }
-    } catch (err) {
-      console.error("Erreur lors du chargement des événements :", err);
-    } finally {
-      setIsLoading(false);
+    };
+
+    fetchUserData();
+
+    const { data: { subscription } } = supabaseBrowser.auth.onAuthStateChange((_event, session) => {
+      const currentUser = session?.user ?? null;
+      setUser(currentUser);
+      if (currentUser) {
+        const metaName = currentUser.user_metadata?.full_name || currentUser.user_metadata?.name || currentUser.email?.split('@')[0] || "MON COMPTE";
+        setUserName(metaName.toUpperCase());
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const handleMainButtonClick = () => {
+    if (user) {
+      router.push("/settings");
+    } else {
+      setIsAuthOpen(true);
     }
   };
 
-  // Filtrage instantané et complet sur le titre, le lieu/ville et l'organisation
-  useEffect(() => {
-    if (!searchQuery.trim()) {
-      setResults([]);
-      return;
-    }
-
-    const q = searchQuery.toLowerCase().trim();
-    const filtered = allEvents.filter((evt) => {
-      const titleMatch = evt.title?.toLowerCase().includes(q);
-      const locationMatch = evt.location?.toLowerCase().includes(q);
-      const orgMatch = evt.organizations?.name?.toLowerCase().includes(q);
-
-      return titleMatch || locationMatch || orgMatch;
-    });
-
-    setResults(filtered);
-  }, [searchQuery, allEvents]);
-
-  if (!isOpen) return null;
-
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center pt-16 md:pt-24 px-4 bg-black/60 backdrop-blur-md animate-in fade-in duration-200 font-grotesque uppercase">
-      <div className="relative w-full max-w-3xl bg-white/90 backdrop-blur-2xl border border-black/15 p-6 md:p-8 shadow-2xl text-black rounded-[2.5rem] animate-in zoom-in-95 duration-200">
-        
-        {/* Barre de recherche */}
-        <div className="flex items-center gap-3 pb-6 border-b border-black/10">
-          <div className="relative flex-1 flex items-center">
-            <Search className="absolute left-5 h-4 w-4 text-black/60 pointer-events-none" />
-            <input
-              ref={searchInputRef}
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="RECHERCHER UN ÉVÉNEMENT, UNE VILLE, UN ORGANISATEUR..."
-              className="w-full h-14 bg-white/60 border border-black/15 pl-12 pr-4 text-xs font-bold placeholder:text-black/40 focus:outline-none focus:border-black text-black rounded-full shadow-inner uppercase"
+    <>
+      <div className="absolute top-6 left-0 right-0 z-50 max-w-7xl mx-auto px-6 font-grotesque uppercase">
+        <header className="w-full flex items-center justify-between gap-4">
+
+          <Link 
+            href="/" 
+            className="group flex items-center justify-center shrink-0 h-11 px-5 bg-white/80 hover:bg-black backdrop-blur-md border border-black/15 rounded-full shadow-lg shadow-black/5 transition-all duration-300"
+          >
+            <Image 
+              src="/tyks.svg" 
+              alt="TYKS" 
+              width={340} 
+              height={110} 
+              priority 
+              className="h-8 sm:h-10 w-auto object-contain text-black group-hover:brightness-0 group-hover:invert transition-all duration-300" 
             />
+          </Link>
+
+          <div className="hidden md:flex items-center gap-3">
+            {!isPro && (
+              <button
+                onClick={() => setIsSearchModalOpen(true)}
+                className="h-11 w-11 bg-white/80 hover:bg-black text-black hover:text-white backdrop-blur-md border border-black/15 transition-all duration-300 rounded-full shadow-lg shadow-black/5 flex items-center justify-center shrink-0 cursor-pointer"
+                aria-label="Rechercher"
+              >
+                <Search className="h-4 w-4 shrink-0" />
+              </button>
+            )}
+
+            <button
+              onClick={handleMainButtonClick}
+              className="h-11 px-7 bg-white/80 hover:bg-black text-black hover:text-white backdrop-blur-md border border-black/15 transition-all duration-300 text-xs tracking-wider font-bold rounded-full shadow-lg shadow-black/5 flex items-center justify-center shrink-0 cursor-pointer"
+            >
+              {user ? userName : "SE CONNECTER / S'INSCRIRE"}
+            </button>
           </div>
 
-          <button
-            onClick={onClose}
-            className="h-14 w-14 shrink-0 border border-black/15 bg-white/80 hover:bg-black text-black hover:text-white backdrop-blur-md flex items-center justify-center transition-all duration-300 cursor-pointer rounded-full shadow-sm"
-            aria-label="Fermer"
-          >
-            <X className="w-5 h-5" />
-          </button>
-        </div>
+          <div className="flex items-center md:hidden">
+            <button
+              className="inline-flex items-center justify-center bg-white/80 hover:bg-black text-black hover:text-white backdrop-blur-md border border-black/15 p-3 rounded-full shadow-lg transition-all duration-300 cursor-pointer"
+              onClick={() => setMobileOpen((open) => !open)}
+              aria-label="Ouvrir le menu"
+            >
+              {mobileOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
+            </button>
+          </div>
+        </header>
 
-        {/* Résultats */}
-        <div className="mt-6 max-h-[60vh] overflow-y-auto space-y-3 pr-1">
-          {searchQuery.trim().length === 0 ? (
-            <div className="py-16 text-center text-black/40 text-xs font-bold tracking-wider">
-              TAPEZ UN TITRE, UNE VILLE OU UN ORGANISATEUR...
-            </div>
-          ) : isLoading ? (
-            <div className="py-16 text-center text-black/40 text-xs font-bold tracking-wider animate-pulse">
-              CHARGEMENT...
-            </div>
-          ) : results.length > 0 ? (
-            <div className="grid grid-cols-1 gap-3">
-              {results.map((evt) => {
-                const priceFormatted = evt.price && parseFloat(evt.price) > 0
-                  ? `${parseFloat(evt.price).toFixed(2)} €`
-                  : evt.price_cents && evt.price_cents > 0
-                  ? `${(evt.price_cents / 100).toFixed(2)} €`
-                  : 'GRATUIT';
+        {mobileOpen && (
+          <div className="px-6 py-6 md:hidden space-y-4 bg-white/90 backdrop-blur-xl border border-black/15 rounded-[2.5rem] mt-3 shadow-2xl text-black">
+            {!isPro && (
+              <button
+                onClick={() => {
+                  setMobileOpen(false);
+                  setIsSearchModalOpen(true);
+                }}
+                className="w-full h-11 bg-neutral-50 px-4 text-xs font-bold text-black/60 flex items-center justify-center gap-2 rounded-full border border-black/15 shadow-inner"
+              >
+                <Search className="h-4 w-4" />
+                <span>RECHERCHER UN ÉVÉNEMENT...</span>
+              </button>
+            )}
 
-                // Utilisation directe du champ image_url de la table events
-                const flyer = evt.image_url;
-                const orgName = evt.organizations?.name;
-
-                return (
-                  <button
-                    key={evt.id}
-                    onClick={() => {
-                      onClose();
-                      router.push(`/events/${evt.slug || evt.id}`);
-                    }}
-                    className="w-full text-left p-4 bg-white/70 hover:bg-black hover:text-white border border-black/15 rounded-3xl transition-all duration-300 flex items-center justify-between group cursor-pointer shadow-sm gap-4"
-                  >
-                    <div className="flex items-center gap-4 truncate">
-                      {/* Affiche de l'événement */}
-                      <div className="relative w-16 h-16 shrink-0 rounded-2xl overflow-hidden border border-black/10 bg-neutral-100 shadow-sm">
-                        {flyer ? (
-                          <Image 
-                            src={flyer} 
-                            alt={evt.title || "Événement"} 
-                            fill 
-                            className="object-cover group-hover:scale-105 transition-transform duration-300" 
-                          />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center text-[10px] font-bold text-black/40 bg-neutral-200">
-                            TYKS
-                          </div>
-                        )}
-                      </div>
-
-                      {/* Infos */}
-                      <div className="space-y-1.5 truncate pr-2">
-                        <p className="text-xs font-bold tracking-wide truncate">
-                          {evt.title}
-                        </p>
-                        
-                        <div className="flex flex-wrap items-center gap-3 text-[10px] text-black/60 group-hover:text-white/70 font-bold">
-                          {evt.starts_at && (
-                            <span className="flex items-center gap-1">
-                              <Calendar className="w-3 h-3 shrink-0" />
-                              {new Date(evt.starts_at).toLocaleDateString("fr-FR", { day: "numeric", month: "short", year: "numeric" })}
-                            </span>
-                          )}
-                          {evt.location && (
-                            <span className="flex items-center gap-1 truncate">
-                              <MapPin className="w-3 h-3 shrink-0" />
-                              {evt.location}
-                            </span>
-                          )}
-                          {orgName && (
-                            <span className="flex items-center gap-1 truncate text-black/80 group-hover:text-white/90">
-                              <Building2 className="w-3 h-3 shrink-0" />
-                              {orgName}
-                            </span>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Prix */}
-                    <div className="flex items-center gap-3 shrink-0">
-                      <span className="text-[10px] font-bold px-3.5 py-2 border border-black/15 bg-white group-hover:bg-neutral-800 group-hover:text-white group-hover:border-white/20 text-black rounded-full transition-colors shadow-xs">
-                        {priceFormatted}
-                      </span>
-                      <ArrowUpRight className="w-4 h-4 text-black/40 group-hover:text-white transition-colors" />
-                    </div>
-                  </button>
-                );
-              })}
-            </div>
-          ) : (
-            <div className="py-16 text-center text-black/50 text-xs font-bold tracking-wider">
-              AUCUN RÉSULTAT TROUVÉ POUR &quot;{searchQuery}&quot;
-            </div>
-          )}
-        </div>
-
+            <button
+              onClick={() => {
+                setMobileOpen(false);
+                handleMainButtonClick();
+              }}
+              className="w-full h-12 bg-black text-white hover:bg-neutral-800 text-xs tracking-wider font-bold rounded-full shadow-md flex items-center justify-center cursor-pointer"
+            >
+              {user ? userName : "SE CONNECTER / S'INSCRIRE"}
+            </button>
+          </div>
+        )}
       </div>
-    </div>
+
+      <SearchModal 
+        isOpen={isSearchModalOpen} 
+        onClose={() => setIsSearchModalOpen(false)} 
+      />
+
+      <CustomAuthModal
+        isOpen={isAuthOpen}
+        onClose={() => setIsAuthOpen(false)}
+        isDarkMode={isDarkMode}
+      />
+    </>
   );
 }
