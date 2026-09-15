@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useRef } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import { 
   LayoutDashboard, Calendar, BarChart3, 
@@ -103,38 +104,45 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   if (user === undefined) {
     return (
-      <div className="min-h-screen bg-white text-black/60 font-grotesque text-xs tracking-wider flex items-center justify-center uppercase">
+      <div className="min-h-screen bg-[#0f0f0f] text-white/60 font-grotesque text-xs tracking-wider flex items-center justify-center uppercase">
         CHARGEMENT...
       </div>
     );
   }
 
   if (!user) {
-    return <main className="min-h-screen w-full bg-white">{children}</main>;
+    return <main className="min-h-screen w-full bg-[#0f0f0f]">{children}</main>;
   }
 
-  const SIDEBAR_WIDTH = isOpen ? 'w-64' : 'w-16';
-  const CONTENT_MARGIN = isOpen ? 'ml-64' : 'ml-16';
+  // Largeurs adaptées pour loger le logo de manière élégante même fermé (w-20 au lieu de w-16)
+  const SIDEBAR_WIDTH = isOpen ? 'w-64' : 'w-20';
+  const CONTENT_MARGIN = isOpen ? 'ml-64' : 'ml-20';
 
   return (
-    <div className="min-h-screen bg-white text-black font-sans selection:bg-black selection:text-white flex overflow-x-hidden uppercase">
+    <div className="min-h-screen bg-[#0f0f0f] text-white font-sans selection:bg-white selection:text-black flex overflow-x-hidden uppercase">
 
       {/* Barre supérieure fixe */}
-      <header className="fixed top-0 left-0 right-0 h-20 border-b border-black/15 bg-white flex items-center justify-between shrink-0 z-50 select-none shadow-xs px-6">
+      <header className="fixed top-0 left-0 right-0 h-20 border-b border-white/10 bg-[#0f0f0f] flex items-center justify-between shrink-0 z-50 select-none px-6">
         <div className="flex items-center h-full">
-          <div className="w-16 h-full flex items-center justify-center shrink-0 border-r border-black/15 bg-neutral-50 -ml-6 mr-6">
-            <Link href="/" className="w-9 h-9 flex items-center justify-center group">
-              <span className="h-8 w-8 rounded-lg bg-black text-white flex items-center justify-center font-grotesque font-bold text-xs transition-transform group-hover:scale-105">
-                T
-              </span>
+          {/* Section logo haut-gauche unifiée avec la sidebar */}
+          <div className={`${SIDEBAR_WIDTH} h-full flex items-center justify-center shrink-0 border-r border-white/10 bg-[#0f0f0f] -ml-6 mr-6 transition-all duration-300`}>
+            <Link href="/" className="flex items-center justify-center group py-2">
+              <Image 
+                src="/tyks.svg" 
+                alt="TYKS" 
+                width={120} 
+                height={40} 
+                priority 
+                className="h-7 w-auto object-contain brightness-0 invert transition-transform group-hover:scale-105" 
+              />
             </Link>
           </div>
 
           <div className="flex items-center gap-2 text-xs font-grotesque tracking-wide">
             {breadcrumbs.map((crumb, index) => (
               <div key={index} className="flex items-center gap-2">
-                {index > 0 && <ChevronRight className="w-3.5 h-3.5 text-black/40" />}
-                <span className={`flex items-center ${index === breadcrumbs.length - 1 ? "bg-black/10 text-black border border-black/20 px-3 py-1 font-bold rounded-full" : "text-black/60"}`}>
+                {index > 0 && <ChevronRight className="w-3.5 h-3.5 text-white/40" />}
+                <span className={`flex items-center ${index === breadcrumbs.length - 1 ? "bg-white/10 text-white border border-white/20 px-3 py-1 font-bold rounded-full" : "text-white/60"}`}>
                   {crumb}
                 </span>
               </div>
@@ -146,17 +154,17 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         <div className="relative" ref={profileMenuRef}>
           <button 
             onClick={() => setProfileOpen(!profileOpen)}
-            className="h-10 px-6 bg-black hover:bg-neutral-800 transition-all text-white text-xs tracking-wider font-grotesque font-normal rounded-full shadow-md flex items-center justify-center shrink-0 cursor-pointer"
+            className="h-11 px-7 bg-transparent hover:bg-white/10 text-white border border-white/15 transition-all text-xs tracking-wider font-grotesque font-bold rounded-full shadow-md flex items-center justify-center shrink-0 cursor-pointer"
           >
             {userName}
           </button>
 
           {profileOpen && (
-            <div className="absolute right-0 mt-3 w-72 bg-white border border-black/20 shadow-2xl rounded-3xl py-2 z-50 font-grotesque text-xs text-black">
-              <div className="flex items-center gap-3 px-5 py-3 border-b border-black/10 bg-neutral-50">
+            <div className="absolute right-0 mt-3 w-72 bg-neutral-900 border border-white/15 shadow-2xl rounded-3xl py-2 z-50 font-grotesque text-xs text-white">
+              <div className="flex items-center gap-3 px-5 py-3 border-b border-white/10 bg-neutral-950/50">
                 <div className="min-w-0">
-                  <p className="font-bold truncate text-black">{userName}</p>
-                  <p className="text-[10px] text-black/60 truncate lowercase">{user.email}</p>
+                  <p className="font-bold truncate text-white">{userName}</p>
+                  <p className="text-[10px] text-white/50 truncate lowercase">{user.email}</p>
                 </div>
               </div>
 
@@ -164,7 +172,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 <Link 
                   href="/settings" 
                   onClick={() => setProfileOpen(false)}
-                  className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-black/5 hover:text-black transition-colors tracking-wide font-bold text-black/80"
+                  className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 hover:text-white transition-colors tracking-wide font-bold text-white/80"
                 >
                   <span>PROFIL</span>
                 </Link>
@@ -172,29 +180,29 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 <Link 
                   href="/settings/security" 
                   onClick={() => setProfileOpen(false)}
-                  className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-black/5 hover:text-black transition-colors tracking-wide font-bold text-black/80"
+                  className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 hover:text-white transition-colors tracking-wide font-bold text-white/80"
                 >
-                  <Shield className="w-4 h-4 text-black" />
+                  <Shield className="w-4 h-4 text-white" />
                   <span>SÉCURITÉ</span>
                 </Link>
 
                 <Link 
                   href="/settings/preferences" 
                   onClick={() => setProfileOpen(false)}
-                  className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-black/5 hover:text-black transition-colors tracking-wide font-bold text-black/80"
+                  className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 hover:text-white transition-colors tracking-wide font-bold text-white/80"
                 >
-                  <Sliders className="w-4 h-4 text-black" />
+                  <Sliders className="w-4 h-4 text-white" />
                   <span>PRÉFÉRENCES</span>
                 </Link>
               </div>
 
-              <div className="border-t border-black/10 pt-2 px-2">
+              <div className="border-t border-white/10 pt-2 px-2">
                 <button
                   onClick={() => {
                     setProfileOpen(false);
                     handleLogout();
                   }}
-                  className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-black hover:bg-neutral-100 transition-colors tracking-wide font-bold cursor-pointer"
+                  className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-white hover:bg-neutral-800 transition-colors tracking-wide font-bold cursor-pointer"
                 >
                   <LogOut className="w-4 h-4" />
                   <span>SE DÉCONNECTER</span>
@@ -206,7 +214,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       </header>
 
       {/* Sidebar */}
-      <aside className={`fixed top-20 left-0 h-[calc(100vh-5rem)] ${SIDEBAR_WIDTH} border-r border-black/15 bg-white flex flex-col py-6 z-40 select-none overflow-hidden ${
+      <aside className={`fixed top-20 left-0 h-[calc(100vh-5rem)] ${SIDEBAR_WIDTH} border-r border-white/10 bg-[#0f0f0f] flex flex-col py-6 z-40 select-none overflow-hidden ${
         mounted ? 'transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]' : ''
       }`}>
 
@@ -224,11 +232,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                   isOpen ? 'px-3 gap-3 border shadow-xs' : 'justify-center border border-transparent'
                 } ${
                   isActive
-                    ? 'bg-black text-white border-black font-bold shadow-md'
-                    : 'bg-neutral-50 text-black/80 border-black/15 hover:bg-black/5 hover:text-black'
+                    ? 'bg-white text-black border-white font-bold shadow-md'
+                    : 'bg-neutral-900 text-white/80 border-white/10 hover:bg-white/10 hover:text-white'
                 }`}
               >
-                <Icon className={`w-4 h-4 shrink-0 transition-transform group-hover:scale-110 ${isActive ? 'text-white' : 'text-black'}`} />
+                <Icon className={`w-4 h-4 shrink-0 transition-transform group-hover:scale-110 ${isActive ? 'text-black' : 'text-white'}`} />
                 <span
                   className={`font-bold whitespace-nowrap overflow-hidden transition-all duration-300 ${
                     isOpen ? 'max-w-[160px] opacity-100' : 'max-w-0 opacity-0'
@@ -241,13 +249,13 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           })}
         </div>
 
-        <div className={`w-full flex items-center border-t border-black/15 pt-4 px-3 ${isOpen ? '' : 'justify-center'}`}>
+        <div className={`w-full flex items-center border-t border-white/10 pt-4 px-3 ${isOpen ? '' : 'justify-center'}`}>
           <button
             onClick={() => setIsOpen(prev => !prev)}
             title={isOpen ? 'RÉDUIRE LE MENU' : 'DÉPLOYER LE MENU'}
             aria-label={isOpen ? 'Réduire le menu' : 'Déployer le menu'}
             aria-pressed={isOpen}
-            className="w-10 h-10 rounded-xl border border-black/20 bg-neutral-50 text-black flex items-center justify-center hover:bg-black hover:text-white transition-all shrink-0 cursor-pointer shadow-sm"
+            className="w-10 h-10 rounded-xl border border-white/15 bg-neutral-900 text-white flex items-center justify-center hover:bg-white hover:text-black transition-all shrink-0 cursor-pointer shadow-sm"
           >
             <ChevronRight className={`w-4 h-4 transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${isOpen ? 'rotate-180' : ''}`} />
           </button>
@@ -260,7 +268,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           mounted ? 'transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]' : ''
         }`}
       >
-        <main className="flex-1 overflow-y-auto p-8 bg-white font-grotesque">
+        <main className="flex-1 overflow-y-auto p-8 bg-[#0f0f0f] font-grotesque text-white">
           {children}
         </main>
       </div>
