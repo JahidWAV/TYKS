@@ -49,7 +49,7 @@ export default function PublicHome() {
         <div className="lg:col-span-7 space-y-8 z-10">
           <h1 className="text-4xl sm:text-6xl lg:text-7xl font-grotesque font-normal tracking-tight leading-[1.08] text-[#1e3932]">
             L&apos;art du spectacle, <br />
-            <span className="italic font-light text-[#1e3932]/60">sans artifice.</span>
+            sans artifice.
           </h1>
           
           <p className="text-base sm:text-lg text-[#1e3932]/70 max-w-xl font-light leading-relaxed">
@@ -59,13 +59,13 @@ export default function PublicHome() {
           <div className="flex flex-wrap items-center gap-4 pt-2">
             <a
               href="#evenements"
-              className="h-13 px-8 bg-[#1e3932] hover:bg-[#152a25] text-white font-medium text-xs uppercase tracking-wider transition-all duration-300 flex items-center justify-center rounded-full shadow-lg shadow-[#1e3932]/10 hover:shadow-xl hover:-translate-y-0.5 cursor-pointer"
+              className="h-12 px-8 bg-[#1e3932] hover:bg-[#152a25] text-white font-medium text-xs uppercase tracking-wider transition-all duration-300 flex items-center justify-center rounded-full shadow-lg shadow-[#1e3932]/10 hover:shadow-xl hover:-translate-y-0.5 cursor-pointer"
             >
               Voir la programmation
             </a>
             <a
               href="https://pro.tyks.app"
-              className="h-13 px-8 bg-transparent hover:bg-[#1e3932]/5 border border-[#1e3932]/20 text-[#1e3932] font-medium text-xs uppercase tracking-wider transition-all duration-300 flex items-center justify-center rounded-full cursor-pointer"
+              className="h-12 px-8 bg-transparent hover:bg-[#1e3932]/5 border border-[#1e3932]/20 text-[#1e3932] font-medium text-xs uppercase tracking-wider transition-all duration-300 flex items-center justify-center rounded-full cursor-pointer"
             >
               Espace Organisateur
             </a>
@@ -321,7 +321,7 @@ export default function PublicHome() {
 
           <a
             href="https://pro.tyks.app"
-            className="h-13 px-9 bg-[#1e3932] hover:bg-[#152a25] text-white font-medium text-xs uppercase tracking-wider transition-all duration-300 flex items-center justify-center rounded-full shadow-lg shadow-[#1e3932]/10 hover:shadow-xl hover:-translate-y-0.5 shrink-0 cursor-pointer"
+            className="h-12 px-9 bg-[#1e3932] hover:bg-[#152a25] text-white font-medium text-xs uppercase tracking-wider transition-all duration-300 flex items-center justify-center rounded-full shadow-lg shadow-[#1e3932]/10 hover:shadow-xl hover:-translate-y-0.5 shrink-0 cursor-pointer"
           >
             Accéder à l&apos;espace Pro
           </a>
