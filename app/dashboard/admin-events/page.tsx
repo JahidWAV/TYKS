@@ -1,146 +1,98 @@
-import { notFound } from 'next/navigation';
 import { supabaseServer } from '@/lib/supabase-server';
-import { Calendar, MapPin, ArrowLeft, ArrowUpRight, Clock, Ticket } from 'lucide-react';
+import { Calendar, MapPin, ArrowUpRight, Ticket, ShieldAlert } from 'lucide-react';
 import Link from 'next/link';
 
-interface PublicEventPageProps {
-  params: {
-    slug: string;
-  };
-}
+export const dynamic = 'force-dynamic';
 
-export default async function PublicEventPage({ params }: PublicEventPageProps) {
-  const { slug } = params;
-
-  const { data: event, error } = await supabaseServer
+export default async function AdminEventsPage() {
+  // Récupération de tous les événements pour les administrateurs
+  const { data: events, error } = await supabaseServer
     .from('events')
     .select('*, organizations(name)')
-    .eq('slug', slug)
-    .eq('status', 'published')
-    .maybeSingle();
-
-  if (error || !event) {
-    notFound();
-  }
-
-  const startDate = event.starts_at ? new Date(event.starts_at) : null;
-  const formattedDate = startDate
-    ? startDate.toLocaleDateString('fr-FR', {
-        weekday: 'long',
-        day: '2-digit',
-        month: 'long',
-        year: 'numeric',
-      })
-    : '';
-
-  const formattedTime = startDate
-    ? startDate.toLocaleDateString('fr-FR', {
-        hour: '2-digit',
-        minute: '2-digit',
-      })
-    : '';
-
-  const priceFormatted = Number(event.price) === 0 ? 'Gratuit' : `${event.price} €`;
+    .order('starts_at', { ascending: true });
 
   return (
-    <main className="min-h-screen bg-[#0a0b0e] text-white px-6 md:px-12 py-12 md:py-20 flex flex-col justify-between font-sans">
-      <div className="max-w-6xl mx-auto w-full space-y-12">
+    <main className="min-h-screen bg-[#0f0f0f] text-white px-6 md:px-12 py-12 space-y-8 font-grotesque uppercase">
+      <div className="max-w-6xl mx-auto w-full space-y-8">
         
-        {/* Navigation & Fil d'Ariane */}
-        <div className="flex items-center justify-between border-b border-neutral-800 pb-6 font-mono">
-          <Link
-            href="/events"
-            className="inline-flex items-center gap-2 text-xs uppercase tracking-widest text-neutral-400 hover:text-white transition-colors"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            <span>Retour à l&apos;agenda</span>
-          </Link>
-          <span className="text-xs uppercase tracking-widest text-[#E5D4B4] font-bold">
-            {event.organizations?.name || 'Organisateur Indépendant'}
+        {/* En-tête */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between pb-6 border-b border-white/10 gap-4">
+          <div className="space-y-1">
+            <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs bg-neutral-900 text-white font-bold border border-white/15 shadow-xs">
+              <ShieldAlert className="w-3.5 h-3.5" /> ADMINISTRATION GLOBALE
+            </span>
+            <h1 className="text-3xl lg:text-4xl font-normal tracking-tight text-white">TOUS LES ÉVÉNEMENTS</h1>
+          </div>
+          <span className="text-xs text-white/60 font-bold">
+            {events?.length || 0} ÉVÉNEMENT(S) ENREGISTRÉ(S)
           </span>
         </div>
 
-        {/* Grille principale */}
-        <div className="grid lg:grid-cols-[1.3fr_0.7fr] gap-12 lg:gap-20 items-start">
-          
-          {/* Colonne gauche */}
-          <div className="space-y-10">
-            <div className="space-y-6">
-              <span className="inline-block text-xs font-mono px-3 py-1.5 rounded-full border border-neutral-800 bg-[#14171f] text-[#E5D4B4] uppercase tracking-widest font-bold">
-                Événement officiel
-              </span>
-              <h1 className="text-4xl md:text-6xl font-bold tracking-tight leading-[1.02] text-white">
-                {event.title}
-              </h1>
-            </div>
-
-            {/* Lignes d'informations métadonnées */}
-            <div className="border-t border-b border-neutral-800 py-6 space-y-4 font-mono text-xs text-neutral-300">
-              <div className="flex items-center gap-3">
-                <Calendar className="w-4 h-4 text-[#E5D4B4]" />
-                <span className="capitalize">{formattedDate}</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <Clock className="w-4 h-4 text-[#E5D4B4]" />
-                <span>Ouverture des portes à {formattedTime}</span>
-              </div>
-              {event.location && (
-                <div className="flex items-center gap-3">
-                  <MapPin className="w-4 h-4 text-[#E5D4B4]" />
-                  <span>{event.location}</span>
-                </div>
-              )}
-            </div>
-
-            {/* Description */}
-            <div className="space-y-4">
-              <h3 className="text-xs font-mono uppercase tracking-widest text-neutral-500">À propos</h3>
-              {event.description ? (
-                <div className="text-base text-neutral-300 font-light leading-relaxed whitespace-pre-line">
-                  {event.description}
-                </div>
-              ) : (
-                <p className="text-sm text-neutral-500 italic font-light">Aucune description détaillée fournie.</p>
-              )}
-            </div>
+        {/* Grille ou Liste */}
+        {!events || events.length === 0 ? (
+          <div className="rounded-2xl border border-white/10 bg-neutral-900 p-16 text-center text-xs text-white/60 shadow-xs">
+            AUCUN ÉVÉNEMENT TROUVÉ DANS LA BASE DE DONNÉES.
           </div>
+        ) : (
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {events.map((event: any) => {
+              const startDate = event.starts_at ? new Date(event.starts_at) : null;
+              const formattedDate = startDate
+                ? startDate.toLocaleDateString('fr-FR', {
+                    day: '2-digit',
+                    month: 'short',
+                    year: 'numeric',
+                  }).toUpperCase()
+                : 'DATE NON DÉFINIE';
 
-          {/* Colonne droite : Carte de billetterie */}
-          <div className="rounded-2xl bg-[#14171f] border border-neutral-800 text-white p-8 md:p-10 space-y-8 sticky top-8 shadow-2xl font-mono">
-            <div className="flex items-center justify-between pb-6 border-b border-neutral-800">
-              <span className="text-xs uppercase tracking-widest text-neutral-400 font-bold">Tarif unique</span>
-              <Ticket className="w-5 h-5 text-[#E5D4B4]" />
-            </div>
+              const priceFormatted = Number(event.price) === 0 ? 'GRATUIT' : `${event.price} €`;
 
-            <div className="space-y-2">
-              <p className="text-5xl font-bold tracking-tight text-white">
-                {priceFormatted}
-              </p>
-              <p className="text-xs text-neutral-500">Taxes et frais de service inclus</p>
-            </div>
+              return (
+                <div
+                  key={event.id}
+                  className="rounded-2xl border border-white/10 bg-neutral-900 p-6 space-y-4 shadow-xs flex flex-col justify-between hover:border-white transition"
+                >
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between text-[11px] text-white/50 font-bold">
+                      <span>{formattedDate}</span>
+                      <span className="px-2.5 py-0.5 rounded-full bg-neutral-950 border border-white/15 text-white text-[10px]">
+                        {event.status?.toUpperCase() || 'ACTIF'}
+                      </span>
+                    </div>
 
-            <div className="space-y-3 pt-4 border-t border-neutral-800 text-xs text-neutral-300 font-light">
-              <div className="flex justify-between">
-                <span>Format</span>
-                <span className="text-white font-bold">Pass numérique instantané</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Politique</span>
-                <span className="text-white font-bold">Garantie salle</span>
-              </div>
-            </div>
+                    <h3 className="text-xl font-normal text-white leading-snug">
+                      {event.title}
+                    </h3>
 
-            <button className="w-full rounded-xl bg-[#E5D4B4] text-black py-4 text-xs font-bold uppercase tracking-wider transition-transform hover:scale-[1.02] flex items-center justify-center gap-2 cursor-pointer shadow-lg">
-              <span>Réserver ma place</span>
-              <ArrowUpRight className="w-4 h-4" />
-            </button>
+                    <p className="text-xs text-white/60 font-bold">
+                      {event.organizations?.name || 'ORGANISATEUR INDÉPENDANT'}
+                    </p>
 
-            <p className="text-[11px] text-center text-neutral-500">
-              Paiement direct · Soutien aux artistes et lieux
-            </p>
+                    {event.location && (
+                      <div className="flex items-center gap-2 text-xs text-white/70 pt-1">
+                        <MapPin className="w-3.5 h-3.5 text-white shrink-0" />
+                        <span className="truncate">{event.location}</span>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="flex items-center justify-between pt-4 border-t border-white/10">
+                    <span className="text-xs font-bold text-white">
+                      {priceFormatted}
+                    </span>
+                    <Link
+                      href={`/events/${event.slug || event.id}`}
+                      className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white text-black text-xs font-bold hover:bg-neutral-200 transition shadow-xs"
+                    >
+                      <span>VOIR</span>
+                      <ArrowUpRight className="w-3.5 h-3.5" />
+                    </Link>
+                  </div>
+                </div>
+              );
+            })}
           </div>
-
-        </div>
+        )}
 
       </div>
     </main>
