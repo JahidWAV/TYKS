@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { ArrowUpRight, Calendar, MapPin, ShieldCheck, Ticket, Sparkles, Smartphone, QrCode } from 'lucide-react';
+import { ArrowUpRight, Calendar, MapPin, ShieldCheck, Ticket, Sparkles, Smartphone, QrCode, Lock, Users, Zap } from 'lucide-react';
 import { supabaseBrowser } from '@/lib/supabase-browser';
 
 export default function PublicHome() {
@@ -47,7 +47,7 @@ export default function PublicHome() {
           </h1>
           
           <p className="text-base sm:text-lg text-[#1e3932]/70 max-w-xl font-light leading-relaxed">
-            Zéro frais cachés, revente officielle instantanée et sélection pointue de la scène live. Réservez vos places en toute sérénité sur le web ou directement depuis notre application mobile.
+            Zéro frais cachés, revente officielle instantanée pour contrer la spéculation et sélection pointue de la scène live. Réservez vos places en toute sérénité sur le web ou directement depuis notre application mobile dédiée.
           </p>
 
           <div className="flex flex-wrap items-center gap-4 pt-2">
@@ -227,13 +227,16 @@ export default function PublicHome() {
         )}
       </section>
 
-      {/* ─── SECTION EXPLICATION & AVANTAGES (POURQUOI CHOISIR TYKS) ─── */}
+      {/* ─── SECTION EXPLICATION & ENGAGEMENTS (POURQUOI CHOISIR TYKS) ─── */}
       <section className="max-w-7xl mx-auto px-6 lg:px-12 py-24 border-b border-[#1e3932]/10">
         <div className="text-center max-w-2xl mx-auto space-y-4 mb-16">
           <span className="text-xs font-semibold uppercase tracking-[0.2em] text-[#1e3932]/60">Valeurs & Engagements</span>
           <h2 className="text-3xl sm:text-4xl font-serif text-[#1e3932]">
             Une billetterie pensée pour le public et la culture.
           </h2>
+          <p className="text-sm text-[#1e3932]/70 font-light">
+            Nous remettons l&apos;humain et l&apos;équité au cœur de la billetterie live, en soutenant activement les artistes, les salles indépendantes et les spectateurs passionnés.
+          </p>
         </div>
 
         <div className="grid md:grid-cols-3 gap-8">
@@ -243,7 +246,7 @@ export default function PublicHome() {
             </div>
             <h3 className="text-xl font-serif text-[#1e3932]">Zéro frais cachés</h3>
             <p className="text-xs sm:text-sm text-[#1e3932]/70 font-light leading-relaxed">
-              Le prix affiché est le prix payé. Pas de mauvaises surprises au moment de valider votre panier.
+              Le prix affiché est le prix payé. Pas de frais de dossier surprise ou de majorations masquées au moment de régler votre panier.
             </p>
           </div>
 
@@ -253,7 +256,7 @@ export default function PublicHome() {
             </div>
             <h3 className="text-xl font-serif text-[#1e3932]">Revente officielle sécurisée</h3>
             <p className="text-xs sm:text-sm text-[#1e3932]/70 font-light leading-relaxed">
-              Empêchez la spéculation. Revendez ou achetez des billets en toute confiance entre particuliers au prix juste.
+              Empêchez la spéculation et le marché noir. Revendez ou achetez des billets en toute confiance entre particuliers au prix juste, garanti par QR code tournant.
             </p>
           </div>
 
@@ -263,8 +266,51 @@ export default function PublicHome() {
             </div>
             <h3 className="text-xl font-serif text-[#1e3932]">Sélection pointue</h3>
             <p className="text-xs sm:text-sm text-[#1e3932]/70 font-light leading-relaxed">
-              Une programmation artistique rigoureuse, indépendante et de qualité pour des expériences mémorables.
+              Une programmation artistique rigoureuse, indépendante et de grande qualité pour vous offrir des expériences mémorables et authentiques.
             </p>
+          </div>
+        </div>
+      </section>
+
+      {/* ─── SECTION VALEURS AJOUTÉES / COMMUNAUTÉ ─── */}
+      <section className="max-w-7xl mx-auto px-6 lg:px-12 py-24 border-b border-[#1e3932]/15 grid lg:grid-cols-2 gap-12 items-center">
+        <div className="space-y-6">
+          <span className="text-xs font-semibold uppercase tracking-[0.2em] text-[#1e3932]/60">Écosystème Intelligent</span>
+          <h2 className="text-3xl sm:text-4xl font-serif text-[#1e3932]">
+            Bien plus qu&apos;une billetterie : un véritable outil de croissance.
+          </h2>
+          <p className="text-sm text-[#1e3932]/70 font-light leading-relaxed">
+            Pour les spectateurs, c&apos;est la simplicité d&apos;accès à la culture. Pour les organisateurs, c&apos;est un écosystème sur-mesure combinant CRM, outils de relance ciblée et contrôle d&apos;accès ultra-rapide sur mobile.
+          </p>
+          <div className="grid grid-cols-2 gap-6 pt-4">
+            <div className="space-y-2">
+              <div className="w-10 h-10 rounded-xl bg-[#1e3932]/5 border border-[#1e3932]/10 flex items-center justify-center text-[#1e3932]">
+                <Users className="w-5 h-5" />
+              </div>
+              <h4 className="font-serif text-base text-[#1e3932]">Propriété des données</h4>
+              <p className="text-xs text-[#1e3932]/60 font-light">Gardez le contact direct avec votre public et vos fidèles spectateurs.</p>
+            </div>
+            <div className="space-y-2">
+              <div className="w-10 h-10 rounded-xl bg-[#1e3932]/5 border border-[#1e3932]/10 flex items-center justify-center text-[#1e3932]">
+                <Zap className="w-5 h-5" />
+              </div>
+              <h4 className="font-serif text-base text-[#1e3932]">Expérience fluide</h4>
+              <p className="text-xs text-[#1e3932]/60 font-light">Encaissement instantané et génération automatique des e-billets.</p>
+            </div>
+          </div>
+        </div>
+        <div className="bg-[#f8faf9] border border-[#1e3932]/10 p-8 sm:p-12 rounded-[3rem] space-y-6 shadow-inner">
+          <h3 className="text-xl font-serif text-[#1e3932]">Vous organisez un événement ?</h3>
+          <p className="text-xs sm:text-sm text-[#1e3932]/70 font-light leading-relaxed">
+            Rejoignez les collectifs, théâtres et petits festivals qui font confiance à TYKS pour simplifier leur gestion quotidienne sans contraintes superflues.
+          </p>
+          <div className="pt-2">
+            <a
+              href="https://pro.tyks.app"
+              className="h-12 px-7 bg-[#1e3932] hover:bg-[#152a25] text-white font-medium text-xs uppercase tracking-wider transition-all duration-300 inline-flex items-center justify-center rounded-full shadow-lg shadow-[#1e3932]/10 cursor-pointer"
+            >
+              Découvrir l&apos;espace Pro
+            </a>
           </div>
         </div>
       </section>
@@ -274,13 +320,13 @@ export default function PublicHome() {
         <div className="bg-gradient-to-br from-[#f8faf9] to-[#f0f4f2] border border-[#1e3932]/15 rounded-[3rem] p-8 sm:p-14 flex flex-col md:flex-row items-center justify-between gap-10 shadow-2xl shadow-[#1e3932]/5">
           <div className="space-y-4 max-w-xl text-center md:text-left">
             <span className="text-xs font-semibold uppercase tracking-[0.2em] text-[#1e3932]/60">
-              Espace Professionnel
+              Prêt à franchir le pas ?
             </span>
             <h2 className="text-3xl sm:text-4xl font-serif text-[#1e3932]">
-              Vous organisez des événements ?
+              Donnez vie à vos projets culturels dès aujourd&apos;hui.
             </h2>
             <p className="text-xs sm:text-sm text-[#1e3932]/70 font-light leading-relaxed">
-              Gérez votre billetterie, vos contrôles d’accès et vos ventes en toute simplicité avec la solution pro TYKS. Commissions transparentes et outils sur-mesure.
+              Gérez votre billetterie, vos contrôles d’accès et vos ventes en toute simplicité avec la solution pro TYKS. Des outils sur-mesure pour les acteurs de la scène indépendante.
             </p>
           </div>
 
