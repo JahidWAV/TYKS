@@ -37,6 +37,7 @@ const config: Config = {
         sans: ["var(--font-body)", "system-ui", "sans-serif"],
         display: ["var(--font-display)", "var(--font-body)", "system-ui", "sans-serif"],
         mono: ["var(--font-mono)", "ui-monospace", "monospace"],
+        grotesque: ["Grotesque", "sans-serif"], // <-- Intégration de votre police personnalisée
       },
       backgroundImage: {
         "night-glow":
