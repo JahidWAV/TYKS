@@ -125,24 +125,24 @@ export default function CustomAuthModal({ isOpen, onClose }: CustomAuthModalProp
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-md animate-in fade-in duration-200 font-grotesque uppercase">
-      <div className="relative w-full max-w-md bg-white/90 backdrop-blur-xl border border-black/15 p-8 shadow-2xl text-black rounded-[2.5rem]">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#0f0f0f] animate-in fade-in duration-200 font-grotesque uppercase text-white">
+      <div className="relative w-full max-w-md bg-neutral-900 border border-white/15 p-8 shadow-2xl text-white rounded-[2.5rem]">
         
         {/* Bouton de fermeture */}
         <button
           onClick={onClose}
-          className="absolute top-6 right-6 w-9 h-9 border border-black/15 bg-white/80 hover:bg-black text-black hover:text-white backdrop-blur-md flex items-center justify-center transition-all duration-300 cursor-pointer rounded-full shadow-sm"
+          className="absolute top-6 right-6 w-9 h-9 border border-white/15 bg-neutral-800 hover:bg-white text-white hover:text-black flex items-center justify-center transition-all duration-300 cursor-pointer rounded-full shadow-sm"
         >
           <X className="w-4 h-4" />
         </button>
 
         {/* En-tête */}
         <div className="text-center mb-6 space-y-2">
-          <div className="inline-flex h-9 w-9 border border-black/15 bg-white/80 backdrop-blur-md text-black font-bold text-xs items-center justify-center mx-auto mb-2 rounded-2xl shadow-sm">
+          <div className="inline-flex h-9 w-9 border border-white/15 bg-neutral-800 text-white font-bold text-xs items-center justify-center mx-auto mb-2 rounded-2xl shadow-sm">
             T
           </div>
-          <h2 className="text-base font-bold tracking-wider text-black">TYKS LIVE</h2>
-          <p className="text-[10px] tracking-wider text-black/60 font-bold normal-case">
+          <h2 className="text-base font-bold tracking-wider text-white">TYKS LIVE</h2>
+          <p className="text-[10px] tracking-wider text-white/60 font-bold normal-case">
             {step === 'email' && "ENTREZ VOTRE E-MAIL POUR CONTINUER"}
             {step === 'signin' && "BON RETOUR ! ENTREZ VOTRE MOT DE PASSE"}
             {step === 'signup' && "PREMIÈRE VISITE ? CRÉEZ VOTRE MOT DE PASSE"}
@@ -150,7 +150,7 @@ export default function CustomAuthModal({ isOpen, onClose }: CustomAuthModalProp
         </div>
 
         {error && (
-          <div className="mb-4 p-3 border border-red-200 bg-red-50 text-red-600 text-[10px] tracking-wider text-center rounded-2xl font-bold">
+          <div className="mb-4 p-3 border border-red-500/30 bg-red-950/50 text-red-400 text-[10px] tracking-wider text-center rounded-2xl font-bold">
             {error}
           </div>
         )}
@@ -162,7 +162,7 @@ export default function CustomAuthModal({ isOpen, onClose }: CustomAuthModalProp
               <button
                 onClick={handleLoginWithGoogle}
                 disabled={loading}
-                className="w-full h-12 flex items-center justify-center gap-3 px-4 border border-black/15 bg-white/80 hover:bg-black text-black hover:text-white backdrop-blur-md text-xs font-bold tracking-wider transition-all duration-300 disabled:opacity-50 cursor-pointer rounded-full shadow-sm"
+                className="w-full h-12 flex items-center justify-center gap-3 px-4 border border-white/15 bg-neutral-800 hover:bg-white text-white hover:text-black text-xs font-bold tracking-wider transition-all duration-300 disabled:opacity-50 cursor-pointer rounded-full shadow-sm"
               >
                 <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24">
                   <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
@@ -176,7 +176,7 @@ export default function CustomAuthModal({ isOpen, onClose }: CustomAuthModalProp
               <button
                 onClick={handleLoginWithApple}
                 disabled={loading}
-                className="w-full h-12 flex items-center justify-center gap-3 px-4 border border-black/15 bg-white/80 hover:bg-black text-black hover:text-white backdrop-blur-md text-xs font-bold tracking-wider transition-all duration-300 disabled:opacity-50 cursor-pointer rounded-full shadow-sm group"
+                className="w-full h-12 flex items-center justify-center gap-3 px-4 border border-white/15 bg-neutral-800 hover:bg-white text-white hover:text-black text-xs font-bold tracking-wider transition-all duration-300 disabled:opacity-50 cursor-pointer rounded-full shadow-sm"
               >
                 <svg className="w-4 h-4 fill-current shrink-0" viewBox="0 0 24 24">
                   <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 6.01c.65-.79 1.09-1.89.97-2.99-.96.04-2.13.64-2.82 1.43-.6.68-1.13 1.78-.99 2.85 1.08.08 2.19-.53 2.84-1.29z"/>
@@ -187,9 +187,9 @@ export default function CustomAuthModal({ isOpen, onClose }: CustomAuthModalProp
 
             <div className="relative flex items-center justify-center mb-6">
               <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-black/15" />
+                <div className="w-full border-t border-white/10" />
               </div>
-              <span className="relative px-3 text-[10px] tracking-wider bg-white/80 text-black/60 font-bold">
+              <span className="relative px-3 text-[10px] tracking-wider bg-neutral-900 text-white/60 font-bold">
                 OU PAR E-MAIL
               </span>
             </div>
@@ -205,12 +205,12 @@ export default function CustomAuthModal({ isOpen, onClose }: CustomAuthModalProp
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="w-full h-12 px-5 border border-black/15 bg-white/50 backdrop-blur-md text-xs font-bold placeholder:text-black/40 focus:outline-none focus:border-black text-black rounded-full shadow-inner uppercase"
+              className="w-full h-12 px-5 border border-white/15 bg-neutral-950 text-xs font-bold placeholder:text-white/30 focus:outline-none focus:border-white text-white rounded-full shadow-inner uppercase"
             />
             <button
               type="submit"
               disabled={loading}
-              className="w-full h-12 flex items-center justify-center gap-2 px-4 border border-black/15 bg-black hover:bg-neutral-800 text-white text-xs font-bold tracking-wider transition-all duration-300 disabled:opacity-50 cursor-pointer rounded-full shadow-md"
+              className="w-full h-12 flex items-center justify-center gap-2 px-4 border border-white/15 bg-white hover:bg-neutral-200 text-black text-xs font-bold tracking-wider transition-all duration-300 disabled:opacity-50 cursor-pointer rounded-full shadow-md"
             >
               {loading ? (
                 <Loader2 className="w-4 h-4 animate-spin" />
@@ -224,12 +224,12 @@ export default function CustomAuthModal({ isOpen, onClose }: CustomAuthModalProp
           </form>
         ) : (
           <form onSubmit={handleSubmitAuth} className="space-y-4 animate-in fade-in slide-in-from-right-2 duration-200">
-            <div className="flex items-center justify-between px-5 py-3 border border-black/15 bg-white/50 backdrop-blur-md text-xs rounded-full text-black">
+            <div className="flex items-center justify-between px-5 py-3 border border-white/15 bg-neutral-950 text-xs rounded-full text-white">
               <span className="font-bold truncate max-w-[220px] normal-case">{email}</span>
               <button
                 type="button"
                 onClick={() => { setStep('email'); setPassword(''); setConfirmPassword(''); setError(null); }}
-                className="inline-flex items-center gap-1 font-bold underline text-black hover:opacity-70 cursor-pointer text-[10px]"
+                className="inline-flex items-center gap-1 font-bold underline text-white hover:opacity-70 cursor-pointer text-[10px]"
               >
                 <ArrowLeft className="w-3 h-3" /> CHANGER
               </button>
@@ -243,7 +243,7 @@ export default function CustomAuthModal({ isOpen, onClose }: CustomAuthModalProp
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 autoFocus
-                className="w-full h-12 px-5 border border-black/15 bg-white/50 backdrop-blur-md text-xs font-bold placeholder:text-black/40 focus:outline-none focus:border-black text-black rounded-full shadow-inner uppercase"
+                className="w-full h-12 px-5 border border-white/15 bg-neutral-950 text-xs font-bold placeholder:text-white/30 focus:outline-none focus:border-white text-white rounded-full shadow-inner uppercase"
               />
 
               {step === 'signup' && (
@@ -254,7 +254,7 @@ export default function CustomAuthModal({ isOpen, onClose }: CustomAuthModalProp
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     required
-                    className="w-full h-12 px-5 border border-black/15 bg-white/50 backdrop-blur-md text-xs font-bold placeholder:text-black/40 focus:outline-none focus:border-black text-black rounded-full shadow-inner uppercase"
+                    className="w-full h-12 px-5 border border-white/15 bg-neutral-950 text-xs font-bold placeholder:text-white/30 focus:outline-none focus:border-white text-white rounded-full shadow-inner uppercase"
                   />
                 </div>
               )}
@@ -263,7 +263,7 @@ export default function CustomAuthModal({ isOpen, onClose }: CustomAuthModalProp
             <button
               type="submit"
               disabled={loading}
-              className="w-full h-12 flex items-center justify-center gap-2 px-4 border border-black/15 bg-black hover:bg-neutral-800 text-white text-xs font-bold tracking-wider transition-all duration-300 disabled:opacity-50 cursor-pointer mt-2 rounded-full shadow-md"
+              className="w-full h-12 flex items-center justify-center gap-2 px-4 border border-white/15 bg-white hover:bg-neutral-200 text-black text-xs font-bold tracking-wider transition-all duration-300 disabled:opacity-50 cursor-pointer mt-2 rounded-full shadow-md"
             >
               {loading ? (
                 <Loader2 className="w-4 h-4 animate-spin" />
