@@ -46,12 +46,10 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
     return () => clearTimeout(timer);
   }, [searchQuery]);
 
-  // Chargement ultra-robuste sans jointure stricte pour éviter tout blocage SQL
+  // Chargement global des événements et des organisations
   const fetchAllData = async () => {
     setIsLoading(true);
     try {
-      console.log("Chargement des données de recherche...");
-      
       // 1. Récupération des événements
       const { data: eventsData, error: eventsError } = await supabaseBrowser
         .from("events")
@@ -61,11 +59,9 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
 
       if (eventsError) {
         console.error("Erreur Supabase events:", eventsError.message);
-      } else {
-        console.log("Événements chargés :", eventsData?.length);
       }
 
-      // 2. Récupération séparée des organisations pour faire le lien proprement
+      // 2. Récupération des organisations
       const { data: orgsData, error: orgsError } = await supabaseBrowser
         .from("organizations")
         .select("*")
@@ -75,7 +71,7 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
         console.error("Erreur Supabase orgs:", orgsError.message);
       }
 
-      // Associer les organisations aux événements en JavaScript (zéro risque de bug de jointure SQL)
+      // Associer proprement chaque organisation à son événement correspondant
       const orgsMap = new Map((orgsData || []).map(org => [org.id, org]));
       const enrichedEvents = (eventsData || []).map(evt => ({
         ...evt,
@@ -102,6 +98,7 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
 
   const q = normalizeString(debouncedQuery.trim());
 
+  // Filtrage des événements (titre, lieu, description ou nom de l'organisation)
   const filteredEvents = rawEvents.filter((evt) => {
     if (q === "") return true;
     const title = normalizeString(evt.title);
@@ -117,6 +114,7 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
     );
   });
 
+  // Filtrage direct des organisations
   const filteredOrgs = q === "" ? [] : rawOrgs.filter((org) => {
     return normalizeString(org.name).includes(q);
   });
@@ -166,7 +164,7 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
           </div>
         ) : (
           <>
-            {/* SECTION ORGANISATEURS (Si trouvés) */}
+            {/* SECTION ORGANISATEURS (S'affiche dès qu'une recherche correspond à un orga) */}
             {filteredOrgs.length > 0 && (
               <div className="space-y-4">
                 <h3 className="text-xs font-bold tracking-widest text-white/50 flex items-center gap-2">
