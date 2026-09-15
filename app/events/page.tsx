@@ -9,32 +9,30 @@ export default async function EventsPage() {
     .order('starts_at', { ascending: true });
 
   if (error) {
-    console.error('Erreur lors du chargement des événements :', error);
+    console.error('ERREUR LORS DU CHARGEMENT DES ÉVÉNEMENTS :', error);
   }
 
   return (
-    <div className="flex-1 flex flex-col bg-[#111110] text-[#F7F5F0]">
+    <div className="flex-1 flex flex-col bg-white text-black font-grotesque uppercase">
       <main className="mx-auto max-w-7xl px-6 md:px-12 py-24 w-full flex-1">
         
-        {/* En-tête de page */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6 border-b border-[#F7F5F0]/10 pb-12">
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6 border-b border-black/15 pb-12">
           <div>
-            <span className="text-xs font-mono uppercase tracking-widest text-[#F7F5F0]/50">
-              Agenda — Édition 2026
+            <span className="text-xs font-bold tracking-widest text-black/50">
+              AGENDA — ÉDITION 2026
             </span>
-            <h1 className="font-display text-5xl md:text-7xl font-bold tracking-tight mt-3">
-              Tous les événements.
+            <h1 className="text-5xl md:text-7xl font-bold tracking-tight mt-3">
+              TOUS LES ÉVÉNEMENTS.
             </h1>
           </div>
-          <p className="text-sm font-light text-[#F7F5F0]/60 max-w-sm">
-            La culture indépendante sans artifice. Réservez directement auprès des salles et des collectifs.
+          <p className="text-sm font-normal text-black/60 max-w-sm normal-case">
+            LA CULTURE INDÉPENDANTE SANS ARTIFICE. RÉSERVEZ DIRECTEMENT AUPRÈS DES SALLES ET DES COLLECTIFS.
           </p>
         </div>
         
-        {/* Grille des événements avec affiches 16/9 */}
         {!events || events.length === 0 ? (
-          <div className="py-32 text-center border border-dashed border-[#F7F5F0]/15 rounded-3xl">
-            <p className="text-sm font-mono text-[#F7F5F0]/40 uppercase tracking-wider">Aucun événement programmé</p>
+          <div className="py-32 text-center border border-dashed border-black/25 rounded-3xl bg-neutral-50">
+            <p className="text-xs font-bold text-black/50 uppercase tracking-wider">AUCUN ÉVÉNEMENT PROGRAMMÉ</p>
           </div>
         ) : (
           <div className="grid md:grid-cols-2 lg:grid-cols-2 gap-12">
@@ -49,49 +47,45 @@ export default async function EventsPage() {
                   href={`/events/${event.slug}`} 
                   className="group flex flex-col space-y-4 cursor-pointer"
                 >
-                  {/* Container Image 16/9 */}
-                  <div className="aspect-video w-full overflow-hidden rounded-2xl bg-[#F7F5F0]/5 border border-[#F7F5F0]/10 relative">
+                  <div className="aspect-video w-full overflow-hidden rounded-2xl bg-neutral-100 border border-black/15 relative">
                     {event.image_url ? (
                       <img 
                         src={event.image_url} 
                         alt={event.title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-90 group-hover:opacity-100"
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 grayscale contrast-125 opacity-90 group-hover:opacity-100"
                       />
                     ) : (
-                      <div className="w-full h-full flex items-center justify-center font-mono text-xs text-[#F7F5F0]/30 uppercase tracking-widest">
-                        TYKS — Visuel brut
+                      <div className="w-full h-full flex items-center justify-center font-bold text-xs text-black/30 uppercase tracking-widest">
+                        TYKS — VISUEL BRUT
                       </div>
                     )}
                     
-                    {/* Badge Tag / Genre */}
                     <div className="absolute top-4 left-4">
-                      <span className="text-[10px] font-mono uppercase tracking-widest px-3 py-1 rounded-full bg-[#111110]/80 backdrop-blur-md text-[#F7F5F0] border border-[#F7F5F0]/20">
-                        {event.tag || 'Club / Live'}
+                      <span className="text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full bg-white text-black border border-black/20 shadow-xs">
+                        {event.tag || 'CLUB / LIVE'}
                       </span>
                     </div>
 
-                    {/* Badge Prix */}
                     <div className="absolute bottom-4 right-4">
-                      <span className="text-xs font-mono font-bold px-3 py-1 rounded-full bg-[#111110]/90 backdrop-blur-md text-[#F7F5F0] border border-[#F7F5F0]/20">
-                        {event.price ? `${event.price} €` : 'Sur place'}
+                      <span className="text-xs font-bold px-3 py-1 rounded-full bg-black text-white border border-black/20 shadow-xs">
+                        {event.price ? `${event.price} €` : 'SUR PLACE'}
                       </span>
                     </div>
                   </div>
 
-                  {/* Infos de l'événement */}
                   <div className="flex items-start justify-between gap-4 pt-2">
                     <div className="space-y-1">
-                      <div className="flex items-center gap-3 text-xs font-mono text-[#F7F5F0]/50">
+                      <div className="flex items-center gap-3 text-xs font-bold text-black/50">
                         <span>{formattedDate}</span>
                         <span>•</span>
                         <span className="uppercase">{event.location}</span>
                       </div>
-                      <h2 className="font-display text-2xl md:text-3xl font-bold tracking-tight group-hover:italic transition-all">
+                      <h2 className="text-2xl md:text-3xl font-bold tracking-tight group-hover:underline transition-all">
                         {event.title}
                       </h2>
                     </div>
 
-                    <div className="w-10 h-10 rounded-full border border-[#F7F5F0]/20 flex items-center justify-center shrink-0 group-hover:bg-[#F7F5F0] group-hover:text-[#111110] transition-colors">
+                    <div className="w-10 h-10 rounded-full border border-black/20 flex items-center justify-center shrink-0 group-hover:bg-black group-hover:text-white transition-colors">
                       <ArrowUpRight className="w-4 h-4" />
                     </div>
                   </div>
