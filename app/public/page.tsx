@@ -41,10 +41,10 @@ export default function PublicHome() {
   }, []);
 
   return (
-    <main className="min-h-screen bg-white text-[#1e3932] selection:bg-[#1e3932] selection:text-white font-sans antialiased">
+    <main className="min-h-screen bg-white text-[#1e3932] selection:bg-[#1e3932] selection:text-white font-sans antialiased pt-32">
       
       {/* ─── HERO SECTION ─── */}
-      <section className="relative overflow-hidden max-w-7xl mx-auto px-6 lg:px-12 pt-20 pb-24 border-b border-[#1e3932]/10 grid lg:grid-cols-12 gap-12 items-center">
+      <section className="relative overflow-hidden max-w-7xl mx-auto px-6 lg:px-12 pb-24 border-b border-[#1e3932]/10 grid lg:grid-cols-12 gap-12 items-center">
         
         <div className="lg:col-span-7 space-y-8 z-10">
           <h1 className="text-4xl sm:text-6xl lg:text-7xl font-grotesque font-normal tracking-tight leading-[1.08] text-[#1e3932]">
