@@ -66,7 +66,7 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
       <div className="absolute top-6 left-0 right-0 z-50 max-w-7xl mx-auto px-6 lg:px-12 font-grotesque uppercase">
         <header className="w-full flex items-center justify-between gap-4">
 
-          {/* BLOC GAUCHE (Recherche) */}
+          {/* BLOC GAUCHE (Recherche avec icône 100% blanche) */}
           <div className="flex-1 flex items-center justify-start">
             {!isPro && (
               <button
@@ -74,7 +74,7 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
                 className="h-11 w-11 bg-transparent hover:bg-white/10 text-white border border-white/15 transition-all duration-300 rounded-full flex items-center justify-center shrink-0 cursor-pointer"
                 aria-label="Rechercher"
               >
-                <Search className="h-4 w-4 shrink-0" />
+                <Search className="h-4 w-4 shrink-0 text-white opacity-100" />
               </button>
             )}
           </div>
@@ -115,7 +115,7 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
               onClick={() => setMobileOpen((open) => !open)}
               aria-label="Ouvrir le menu"
             >
-              {mobileOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
+              {mobileOpen ? <X className="h-4 w-4 text-white" /> : <Menu className="h-4 w-4 text-white" />}
             </button>
           </div>
         </header>
@@ -128,9 +128,9 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
                   setMobileOpen(false);
                   setIsSearchModalOpen(true);
                 }}
-                className="w-full h-11 bg-neutral-950 px-4 text-xs font-bold text-white/60 flex items-center justify-center gap-2 rounded-full border border-white/15 shadow-inner"
+                className="w-full h-11 bg-neutral-950 px-4 text-xs font-bold text-white flex items-center justify-center gap-2 rounded-full border border-white/15 shadow-inner"
               >
-                <Search className="h-4 w-4" />
+                <Search className="h-4 w-4 text-white" />
                 <span>RECHERCHER UN ÉVÉNEMENT...</span>
               </button>
             )}
