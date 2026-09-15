@@ -147,44 +147,44 @@ export default function PublicHome() {
 
         {/* Visuel : billet stylisé */}
         <div className="lg:col-span-6">
-          <div className="relative flex bg-zinc-900 border border-white/10 rounded-[1.75rem] max-w-md mx-auto">
+          <div className="relative flex bg-white border border-black/10 rounded-[1.75rem] max-w-md mx-auto">
             <div className="flex-1 p-8 space-y-6">
-              <div className={`${mono.className} flex items-center justify-between text-[11px] uppercase tracking-wider text-white/40`}>
+              <div className={`${mono.className} flex items-center justify-between text-[11px] uppercase tracking-wider text-black/40`}>
                 <span>Ven. 12 décembre</span>
                 <span>20h30</span>
               </div>
               <div>
-                <p className={`${display.className} font-bold text-2xl text-white leading-snug`}>
+                <p className={`${display.className} font-bold text-2xl text-black leading-snug`}>
                   Nuit de Jazz<br />au Comptoir
                 </p>
-                <p className="text-sm text-white/50 mt-2 flex items-center gap-1.5">
+                <p className="text-sm text-black/50 mt-2 flex items-center gap-1.5">
                   <MapPin className="w-3.5 h-3.5" /> Le Comptoir Bleu, Lyon
                 </p>
               </div>
-              <div className={`${mono.className} pt-4 border-t border-white/10 text-[11px] text-white/35`}>
+              <div className={`${mono.className} pt-4 border-t border-black/10 text-[11px] text-black/35`}>
                 BILLET NOMINATIF · NON TRANSFÉRABLE SANS REVENTE OFFICIELLE
               </div>
             </div>
 
-            <div className="relative w-28 shrink-0 border-l-2 border-dashed border-white/20 flex flex-col items-center justify-center gap-5 py-8">
+            <div className="relative w-28 shrink-0 border-l-2 border-dashed border-black/20 flex flex-col items-center justify-center gap-5 py-8">
               <span className="absolute -top-3 -left-3 w-6 h-6 rounded-full bg-black" />
               <span className="absolute -bottom-3 -left-3 w-6 h-6 rounded-full bg-black" />
-              <p className={`${mono.className} [writing-mode:vertical-rl] text-[10px] tracking-[0.3em] text-white/40`}>
+              <p className={`${mono.className} [writing-mode:vertical-rl] text-[10px] tracking-[0.3em] text-black/40`}>
                 RANG 3 · SIÈGE 12
               </p>
               <div className="flex flex-col gap-1">
                 {Array.from({ length: 6 }).map((_, i) => (
-                  <span key={i} className="h-0.5 bg-white/25" style={{ width: `${16 + (i % 3) * 6}px` }} />
+                  <span key={i} className="h-0.5 bg-black/25" style={{ width: `${16 + (i % 3) * 6}px` }} />
                 ))}
               </div>
-              <p className={`${display.className} font-bold text-sm text-white`}>32€</p>
+              <p className={`${display.className} font-bold text-sm text-black`}>32€</p>
             </div>
           </div>
         </div>
       </section>
 
       {/* ─── ÉVÉNEMENTS ─── */}
-      <section id="evenements" className="bg-zinc-950 border-y border-white/10">
+      <section id="evenements" className="bg-black border-y border-white/10">
         <div className="max-w-7xl mx-auto px-6 lg:px-12 py-20 space-y-10">
           <div className="flex items-end justify-between flex-wrap gap-4">
             <h2 className={`${display.className} font-bold text-3xl text-white`}>
@@ -196,13 +196,13 @@ export default function PublicHome() {
           </div>
 
           {loading ? (
-            <div className="bg-zinc-900 border border-white/10 p-16 text-center text-sm text-white/50 rounded-[1.75rem]">
+            <div className="bg-white border border-black/10 p-16 text-center text-sm text-black/50 rounded-[1.75rem]">
               Chargement de la programmation…
             </div>
           ) : events.length === 0 ? (
-            <div className="bg-zinc-900 border border-white/10 p-16 text-center space-y-3 rounded-[1.75rem]">
-              <Calendar className="mx-auto h-8 w-8 text-white/30" />
-              <p className="text-sm text-white/60">
+            <div className="bg-white border border-black/10 p-16 text-center space-y-3 rounded-[1.75rem]">
+              <Calendar className="mx-auto h-8 w-8 text-black/30" />
+              <p className="text-sm text-black/60">
                 Rien de programmé pour le moment. Revenez bientôt, la scène ne dort jamais longtemps.
               </p>
             </div>
@@ -223,9 +223,9 @@ export default function PublicHome() {
                   <Link
                     key={evt.id}
                     href={`/events/${evt.slug || evt.id}`}
-                    className="group flex flex-col bg-zinc-900 border border-white/10 rounded-[1.75rem] transition-all duration-300 hover:border-white/30 hover:-translate-y-1 hover:scale-[1.02]"
+                    className="group flex flex-col bg-white border border-black/10 rounded-[1.75rem] transition-all duration-300 hover:border-black/30 hover:-translate-y-1 hover:scale-[1.02]"
                   >
-                    <div className="relative w-full h-48 bg-white/5 overflow-hidden rounded-t-[1.75rem] border-b border-white/10 flex items-center justify-center">
+                    <div className="relative w-full h-48 bg-black/5 overflow-hidden rounded-t-[1.75rem] border-b border-black/10 flex items-center justify-center">
                       {eventImage ? (
                         <Image
                           src={eventImage}
@@ -235,47 +235,47 @@ export default function PublicHome() {
                           unoptimized={eventImage.startsWith('http')}
                         />
                       ) : (
-                        <div className="flex flex-col items-center justify-center text-white/20 space-y-1">
+                        <div className="flex flex-col items-center justify-center text-black/20 space-y-1">
                           <Ticket className="w-8 h-8" />
                         </div>
                       )}
 
                       <div className="absolute top-3 right-3">
-                        <span className={`${mono.className} text-[10px] uppercase tracking-wider font-medium px-2.5 py-1 bg-black/70 backdrop-blur-md border border-white/10 text-white/80 rounded-full`}>
+                        <span className={`${mono.className} text-[10px] uppercase tracking-wider font-medium px-2.5 py-1 bg-black text-white rounded-full`}>
                           {evt.organizations?.name || 'Exclusivité'}
                         </span>
                       </div>
                     </div>
 
                     <div className="p-6 space-y-3 flex-1">
-                      <span className={`${mono.className} text-[11px] uppercase tracking-wider text-white/40`}>{dateStr}</span>
+                      <span className={`${mono.className} text-[11px] uppercase tracking-wider text-black/40`}>{dateStr}</span>
 
-                      <h3 className={`${display.className} font-bold text-xl text-white leading-snug`}>
+                      <h3 className={`${display.className} font-bold text-xl text-black leading-snug`}>
                         {evt.title}
                       </h3>
 
                       {evt.description && (
-                        <p className="line-clamp-2 text-sm text-white/50 font-light leading-relaxed">
+                        <p className="line-clamp-2 text-sm text-black/50 font-light leading-relaxed">
                           {evt.description}
                         </p>
                       )}
 
                       {evt.location && (
-                        <div className="flex items-center gap-2 text-xs text-white/60 pt-1">
+                        <div className="flex items-center gap-2 text-xs text-black/60 pt-1">
                           <MapPin className="h-3.5 w-3.5 shrink-0" />
                           <span className="truncate">{evt.location}</span>
                         </div>
                       )}
                     </div>
 
-                    <div className="relative border-t border-dashed border-white/15 rounded-b-[1.75rem]">
+                    <div className="relative border-t border-dashed border-black/15 rounded-b-[1.75rem]">
                       <span className="absolute left-0 top-0 -translate-x-1/2 -translate-y-1/2 w-5 h-5 rounded-full bg-black" />
                       <span className="absolute right-0 top-0 translate-x-1/2 -translate-y-1/2 w-5 h-5 rounded-full bg-black" />
                       <div className="flex items-center justify-between px-6 py-4">
-                        <span className={`${display.className} font-bold text-sm text-white`}>
+                        <span className={`${display.className} font-bold text-sm text-black`}>
                           {eventPrice > 0 ? `${eventPrice.toLocaleString('fr-FR')} €` : 'Entrée libre'}
                         </span>
-                        <span className="h-10 px-5 bg-white group-hover:bg-white/85 text-black font-medium text-xs transition-colors flex items-center gap-2 rounded-full">
+                        <span className="h-10 px-5 bg-black group-hover:bg-black/80 text-white font-medium text-xs transition-colors flex items-center gap-2 rounded-full">
                           Réserver
                           <ArrowUpRight className="w-3.5 h-3.5" />
                         </span>
