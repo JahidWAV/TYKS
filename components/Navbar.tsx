@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { Loader2, Menu, X, Search, Calendar, MapPin, ArrowUpRight, User as UserIcon } from "lucide-react";
+import { Search, Calendar, MapPin, ArrowUpRight, X, Menu } from "lucide-react";
 import CustomAuthModal from "@/components/CustomAuthModal";
 import { supabaseBrowser } from "@/lib/supabase-browser";
 
@@ -19,6 +19,7 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
   const [mobileOpen, setMobileOpen] = useState(false);
   const [isAuthOpen, setIsAuthOpen] = useState(false);
   const [user, setUser] = useState<any>(null);
+  const [userName, setUserName] = useState<string>("");
 
   // États pour la recherche (pilule expansible)
   const [isSearchExpanded, setIsSearchExpanded] = useState(false);
@@ -31,13 +32,25 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
   useEffect(() => {
     const fetchUserData = async () => {
       const { data: { session } } = await supabaseBrowser.auth.getSession();
-      setUser(session?.user ?? null);
+      const currentUser = session?.user ?? null;
+      setUser(currentUser);
+
+      if (currentUser) {
+        // Récupération éventuelle du prénom depuis les metadata de l'utilisateur
+        const metaName = currentUser.user_metadata?.full_name || currentUser.user_metadata?.name || currentUser.email?.split('@')[0] || "MON COMPTE";
+        setUserName(metaName.toUpperCase());
+      }
     };
 
     fetchUserData();
 
     const { data: { subscription } } = supabaseBrowser.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
+      const currentUser = session?.user ?? null;
+      setUser(currentUser);
+      if (currentUser) {
+        const metaName = currentUser.user_metadata?.full_name || currentUser.user_metadata?.name || currentUser.email?.split('@')[0] || "MON COMPTE";
+        setUserName(metaName.toUpperCase());
+      }
     });
 
     return () => subscription.unsubscribe();
@@ -89,7 +102,7 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
     return () => clearTimeout(timer);
   }, [searchQuery, isPro]);
 
-  const handleProfileClick = () => {
+  const handleMainButtonClick = () => {
     if (user) {
       router.push("/settings");
     } else {
@@ -100,10 +113,10 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
   return (
     <>
       {/* BULLE FLOTTANTE FIXE EN HAUT DE PAGE */}
-      <div className="fixed top-4 left-0 right-0 z-50 max-w-7xl mx-auto px-6">
+      <div className="fixed top-6 left-0 right-0 z-50 max-w-7xl mx-auto px-6">
         <header className="w-full bg-white/80 backdrop-blur-md border border-[#1e3932]/10 text-[#1e3932] py-3 px-6 rounded-full shadow-lg shadow-[#1e3932]/5 flex items-center justify-between gap-4">
 
-          {/* 1. LOGO AGRANDI */}
+          {/* 1. LOGO */}
           <Link href="/" className="flex items-center justify-start shrink-0 px-2">
             <Image 
               src="/tyks.svg" 
@@ -116,10 +129,10 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
             />
           </Link>
 
-          {/* 2. ZONE DROITE : LES ÉLÉMENTS CÔTE À CÔTE */}
+          {/* 2. ZONE DROITE */}
           <div className="hidden md:flex items-center gap-3">
             
-            {/* LOUPE (À gauche) */}
+            {/* LOUPE DE RECHERCHE */}
             {!isPro && (
               <div className="relative" ref={searchRef}>
                 <div 
@@ -218,23 +231,12 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
               </div>
             )}
 
-            {/* BOUTON AVEC TEXTE : SE CONNECTER / S'INSCRIRE (Affiché si non connecté) */}
-            {!user && (
-              <button
-                onClick={() => setIsAuthOpen(true)}
-                className="h-10 px-5 bg-[#1e3932] hover:bg-[#152a25] transition-all text-white text-xs uppercase tracking-wider font-medium rounded-full shadow-md flex items-center justify-center shrink-0 cursor-pointer"
-              >
-                Se connecter / S&apos;inscrire
-              </button>
-            )}
-
-            {/* BOUTON PROFIL (ou Paramètres si connecté) */}
+            {/* BOUTON DYNAMIQUE : PRÉNOM OU SE CONNECTER */}
             <button
-              onClick={handleProfileClick}
-              className="w-10 h-10 bg-[#1e3932] hover:bg-[#152a25] transition-all flex items-center justify-center text-white rounded-full shadow-md shrink-0 cursor-pointer"
-              title={user ? "Paramètres / Profil" : "Profil"}
+              onClick={handleMainButtonClick}
+              className="h-10 px-6 bg-[#1e3932] hover:bg-[#152a25] transition-all text-white text-xs tracking-wider font-normal font-grotesque rounded-full shadow-md flex items-center justify-center shrink-0 cursor-pointer"
             >
-              <UserIcon className="w-3.5 h-3.5 text-white/80" />
+              {user ? userName : "SE CONNECTER / S'INSCRIRE"}
             </button>
 
           </div>
@@ -287,26 +289,15 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
               </>
             )}
 
-            {user ? (
-              <Link
-                href="/settings"
-                onClick={() => setMobileOpen(false)}
-                className="w-full h-10 bg-white/10 hover:bg-white/20 text-white text-xs tracking-wider font-medium rounded-full shadow-md flex items-center justify-center gap-2"
-              >
-                <UserIcon className="h-3.5 w-3.5 text-white/80" />
-                Paramètres
-              </Link>
-            ) : (
-              <button
-                onClick={() => {
-                  setMobileOpen(false);
-                  setIsAuthOpen(true);
-                }}
-                className="w-full h-11 bg-white text-[#1e3932] hover:bg-white/90 text-xs uppercase tracking-wider font-medium rounded-full shadow-md flex items-center justify-center"
-              >
-                Se connecter / S&apos;inscrire
-              </button>
-            )}
+            <button
+              onClick={() => {
+                setMobileOpen(false);
+                handleMainButtonClick();
+              }}
+              className="w-full h-11 bg-white text-[#1e3932] hover:bg-white/90 text-xs tracking-wider font-normal font-grotesque rounded-full shadow-md flex items-center justify-center"
+            >
+              {user ? userName : "SE CONNECTER / S'INSCRIRE"}
+            </button>
           </div>
         )}
       </div>
