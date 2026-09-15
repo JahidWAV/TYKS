@@ -21,7 +21,7 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
   const [user, setUser] = useState<any>(null);
   const [userName, setUserName] = useState<string>("");
 
-  // États pour la modale de recherche dédiée
+  // États pour la modale de recherche
   const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [results, setResults] = useState<any[]>([]);
@@ -63,7 +63,7 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
     }
   }, [isSearchModalOpen]);
 
-  // Logique de recherche en temps réel (récupération de l'affiche, image, cover, etc. selon votre schéma)
+  // Logique de recherche en temps réel (SELECT * pour récupérer toutes les colonnes et éviter tout blocage de schéma)
   useEffect(() => {
     if (isPro) return;
 
@@ -78,15 +78,18 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
       try {
         const { data, error } = await supabaseBrowser
           .from("events")
-          .select("id, slug, title, location, starts_at, price, image_url, cover_image, flyer_url")
+          .select("*")
           .ilike("title", `%${searchQuery}%`)
           .limit(6);
 
         if (!error && data) {
           setResults(data);
+        } else {
+          setResults([]);
         }
       } catch (err) {
         console.error("Erreur de recherche :", err);
+        setResults([]);
       } finally {
         setIsSearching(false);
       }
@@ -110,7 +113,7 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
       <div className="absolute top-6 left-0 right-0 z-50 max-w-7xl mx-auto px-6 font-grotesque uppercase">
         <header className="w-full flex items-center justify-between gap-4">
 
-          {/* 1. LOGO FLOTTANT GLASS -> HOVER NOIR (Taille d'origine respectée) */}
+          {/* 1. LOGO FLOTTANT GLASS -> HOVER NOIR */}
           <Link 
             href="/" 
             className="group flex items-center justify-center shrink-0 h-11 px-5 bg-white/80 hover:bg-black backdrop-blur-md border border-black/15 rounded-full shadow-lg shadow-black/5 transition-all duration-300"
@@ -190,7 +193,7 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
         )}
       </div>
 
-      {/* MODALE DE RECHERCHE RETRAVAILLÉE AVEC AFFICHES */}
+      {/* MODALE DE RECHERCHE */}
       {isSearchModalOpen && (
         <div className="fixed inset-0 z-50 flex items-start justify-center pt-16 md:pt-24 px-4 bg-black/50 backdrop-blur-md animate-in fade-in duration-200 font-grotesque uppercase">
           <div className="relative w-full max-w-3xl bg-white/90 backdrop-blur-2xl border border-black/15 p-6 md:p-8 shadow-2xl text-black rounded-[2.5rem] animate-in zoom-in-95 duration-200">
@@ -222,7 +225,7 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
               </button>
             </div>
 
-            {/* Grille ou Liste des résultats avec affiches */}
+            {/* Résultats de recherche */}
             <div className="mt-6 max-h-[60vh] overflow-y-auto space-y-3 pr-1">
               {searchQuery.trim().length === 0 ? (
                 <div className="py-16 text-center text-black/40 text-xs font-bold tracking-wider">
@@ -239,8 +242,8 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
                       ? `${parseFloat(evt.price).toFixed(2)} €`
                       : 'GRATUIT';
 
-                    // Récupération dynamique de l'image / affiche de l'événement
-                    const flyer = evt.image_url || evt.cover_image || evt.flyer_url;
+                    // Récupération souple de l'image parmi les champs possibles
+                    const flyer = evt.image_url || evt.cover_image || evt.flyer_url || evt.poster;
 
                     return (
                       <button
@@ -259,7 +262,7 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
                             {flyer ? (
                               <Image 
                                 src={flyer} 
-                                alt={evt.title} 
+                                alt={evt.title || "Événement"} 
                                 fill 
                                 className="object-cover group-hover:scale-105 transition-transform duration-300" 
                               />
@@ -275,14 +278,18 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
                               {evt.title}
                             </p>
                             <div className="flex items-center gap-3 text-[10px] text-black/60 group-hover:text-white/70 font-bold">
-                              <span className="flex items-center gap-1">
-                                <Calendar className="w-3 h-3 shrink-0" />
-                                {new Date(evt.starts_at).toLocaleDateString("fr-FR", { day: "numeric", month: "short" })}
-                              </span>
-                              <span className="flex items-center gap-1 truncate">
-                                <MapPin className="w-3 h-3 shrink-0" />
-                                {evt.location}
-                              </span>
+                              {evt.starts_at && (
+                                <span className="flex items-center gap-1">
+                                  <Calendar className="w-3 h-3 shrink-0" />
+                                  {new Date(evt.starts_at).toLocaleDateString("fr-FR", { day: "numeric", month: "short" })}
+                                </span>
+                              )}
+                              {evt.location && (
+                                <span className="flex items-center gap-1 truncate">
+                                  <MapPin className="w-3 h-3 shrink-0" />
+                                  {evt.location}
+                                </span>
+                              )}
                             </div>
                           </div>
                         </div>
