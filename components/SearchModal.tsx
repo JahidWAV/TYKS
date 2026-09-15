@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { Search, Calendar, MapPin, ArrowUpRight, X, Building2, Sparkles } from "lucide-react";
 import { supabaseBrowser } from "@/lib/supabase-browser";
@@ -14,9 +14,8 @@ interface SearchModalProps {
 export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState("");
-  const [debouncedQuery, setDebouncedQuery] = useState("");
-  const [allEvents, setAllEvents] = useState<any[]>([]);
-  const [allOrgs, setAllOrgs] = useState<any[]>([]);
+  const [filteredEvents, setFilteredEvents] = useState<any[]>([]);
+  const [filteredOrgs, setFilteredOrgs] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
 
@@ -27,74 +26,82 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
       setTimeout(() => {
         searchInputRef.current?.focus();
       }, 100);
-      fetchAllData();
+      performSearch("");
     } else {
       document.body.style.overflow = "auto";
       setSearchQuery("");
-      setDebouncedQuery("");
+      setFilteredEvents([]);
+      setFilteredOrgs([]);
     }
     return () => {
       document.body.style.overflow = "auto";
     };
   }, [isOpen]);
 
-  // Debounce (300ms) pour éviter les micro-saccades à chaque frappe
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setDebouncedQuery(searchQuery);
-    }, 300);
-    return () => clearTimeout(timer);
-  }, [searchQuery]);
-
-  const fetchAllData = async () => {
+  // Fonction de recherche dynamique optimisée sur Supabase
+  const performSearch = useCallback(async (query: string) => {
     setIsLoading(true);
     try {
-      const { data: eventsData } = await supabaseBrowser
+      const cleanQuery = query.trim();
+
+      // 1. Recherche des événements (par titre, lieu, ou description)
+      let eventsQuery = supabaseBrowser
         .from("events")
         .select("*, organizations(id, name, logo_url, slug)")
-        .order("starts_at", { ascending: true })
-        .limit(150);
+        .order("starts_at", { ascending: true });
 
-      if (eventsData) setAllEvents(eventsData);
+      if (cleanQuery !== "") {
+        eventsQuery = eventsQuery.or(
+          `title.ilike.%${cleanQuery}%,location.ilike.%${cleanQuery}%,description.ilike.%${cleanQuery}%`
+        );
+      } else {
+        eventsQuery = eventsQuery.limit(6); // Tendance par défaut
+      }
 
-      const { data: orgsData } = await supabaseBrowser
+      const { data: eventsData, error: eventsError } = await eventsQuery.limit(50);
+      if (eventsError) console.error("Erreur événements:", eventsError);
+
+      // 2. Recherche des organisations
+      let orgsQuery = supabaseBrowser
         .from("organizations")
-        .select("*")
-        .limit(50);
+        .select("*");
 
-      if (orgsData) setAllOrgs(orgsData);
+      if (cleanQuery !== "") {
+        orgsQuery = orgsQuery.ilike("name", `%${cleanQuery}%`);
+      } else {
+        orgsQuery = orgsQuery.limit(0); // Pas d'orgs par défaut si pas de recherche
+      }
+
+      const { data: orgsData, error: orgsError } = await orgsQuery.limit(20);
+      if (orgsError) console.error("Erreur organisations:", orgsError);
+
+      setFilteredEvents(eventsData || []);
+      setFilteredOrgs(orgsData || []);
     } catch (err) {
-      console.error("Erreur chargement recherche :", err);
+      console.error("Erreur globale recherche :", err);
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
+
+  // Debounce (300ms) pour déclencher la recherche serveur sans saturer
+  useEffect(() => {
+    if (!isOpen) return;
+    const timer = setTimeout(() => {
+      performSearch(searchQuery);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [searchQuery, isOpen, performSearch]);
 
   if (!isOpen) return null;
 
-  const q = debouncedQuery.toLowerCase().trim();
-
-  const filteredEvents = q === "" 
-    ? allEvents.slice(0, 6) 
-    : allEvents.filter((evt) => {
-        const titleMatch = evt.title?.toLowerCase().includes(q);
-        const locationMatch = evt.location?.toLowerCase().includes(q);
-        const orgMatch = evt.organizations?.name?.toLowerCase().includes(q);
-        return titleMatch || locationMatch || orgMatch;
-      });
-
-  const filteredOrgs = q === "" 
-    ? [] 
-    : allOrgs.filter((org) => org.name?.toLowerCase().includes(q));
-
   return (
-    /* Fond noir #0f0f0f sans aucune transparence (suppression du /95 et du backdrop-blur) */
     <div className="fixed inset-0 z-50 bg-[#0f0f0f] flex flex-col font-grotesque uppercase text-white animate-in fade-in duration-200">
       
       {/* HEADER DE RECHERCHE PLEIN ÉCRAN */}
       <div className="w-full max-w-5xl mx-auto px-6 pt-8 pb-6 flex items-center gap-4 border-b border-white/10">
         <div className="relative flex-1 flex items-center">
-          <Search className="absolute left-6 h-5 w-5 text-white/40 pointer-events-none" />
+          <Search className="absolute left-6 h-5 w-5 text-white pointer-events-none" strokeWidth={2.5} style={{ color: '#ffffff' }} />
           <input
             ref={searchInputRef}
             type="text"
@@ -117,7 +124,7 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
           onClick={onClose}
           className="h-16 px-6 shrink-0 bg-neutral-900 hover:bg-white hover:text-black border border-white/15 text-white rounded-full transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer font-bold text-xs tracking-wider"
         >
-          <X className="w-5 h-5" />
+          <X className="w-5 h-5" strokeWidth={2.5} style={{ color: 'currentColor' }} />
           <span className="hidden sm:inline">FERMER</span>
         </button>
       </div>
@@ -127,7 +134,7 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
         
         {isLoading ? (
           <div className="py-24 text-center text-white/40 text-xs font-bold tracking-widest animate-pulse">
-            CHARGEMENT DES UNIVERS...
+            RECHERCHE EN COURS...
           </div>
         ) : (
           <>
@@ -171,8 +178,8 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
             {/* SECTION ÉVÉNEMENTS */}
             <div className="space-y-4">
               <h3 className="text-xs font-bold tracking-widest text-white/50 flex items-center gap-2">
-                {q === "" ? <Sparkles className="w-4 h-4 text-white" /> : <Calendar className="w-4 h-4 text-white" />}
-                {q === "" ? "ÉVÉNEMENTS EN TENDANCE" : `ÉVÉNEMENTS (${filteredEvents.length})`}
+                {searchQuery.trim() === "" ? <Sparkles className="w-4 h-4 text-white" /> : <Calendar className="w-4 h-4 text-white" />}
+                {searchQuery.trim() === "" ? "ÉVÉNEMENTS EN TENDANCE" : `ÉVÉNEMENTS (${filteredEvents.length})`}
               </h3>
 
               {filteredEvents.length > 0 ? (
