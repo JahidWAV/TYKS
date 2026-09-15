@@ -172,7 +172,7 @@ export default function OrganizerDashboard() {
               Reprenez le contrôle de votre billetterie et de vos marges.
             </h1>
             <p className="font-mono text-xs leading-relaxed text-[#1e3932]/70 max-w-md">
-              Fins de commissions abusives et de données captives. Tyks Pro vous offre une plateforme sur-mesure, des frais réduits et l'accès direct à votre communauté.
+              Fins de commissions abusives et de données captives. Tyks Pro vous offre une plateforme sur-mesure, des frais réduits et l&apos;accès direct à votre communauté.
             </p>
             <div>
               <button
@@ -256,7 +256,7 @@ export default function OrganizerDashboard() {
     : 0;
 
   return (
-    <div className="w-full px-6 lg:px-12 py-10 space-y-8 font-sans text-[#1e3932] bg-white min-h-full">
+    <div className="w-full px-6 lg:px-12 pt-4 pb-12 space-y-8 font-sans text-[#1e3932] bg-white min-h-full">
       
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 border-b border-[#1e3932]/10">
         <div className="space-y-2">
