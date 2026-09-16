@@ -134,20 +134,20 @@ export default function PublicHome() {
           </div>
         </section>
 
-        {/* SECTION ÉVÉNEMENTS (Textes géants verticaux sur toute la hauteur + cartes bien proportionnées) */}
-        <section id="evenements" className="h-screen w-full snap-start snap-always flex items-center justify-between px-4 sm:px-10 lg:px-16 py-8 shrink-0 relative overflow-hidden">
+        {/* SECTION ÉVÉNEMENTS (PROCHAINS ÉVÉNEMENTS complets en vertical de chaque côté) */}
+        <section id="evenements" className="h-screen w-full snap-start snap-always flex items-center justify-between px-4 sm:px-8 lg:px-12 py-8 shrink-0 relative overflow-hidden">
           
-          {/* Texte vertical gauche géant : PROCHAINS (de bas en haut) */}
-          <div className="hidden xl:flex items-center justify-center shrink-0 w-24 h-full select-none">
-            <span className="text-white/[0.04] uppercase tracking-[0.2em] text-5xl font-black [writing-mode:vertical-lr] rotate-180 whitespace-nowrap">
-              PROCHAINS
+          {/* Texte vertical gauche : PROCHAINS ÉVÉNEMENTS (de bas en haut) */}
+          <div className="hidden xl:flex items-center justify-center shrink-0 w-20 h-full select-none">
+            <span className="text-white/[0.04] uppercase tracking-[0.2em] text-4xl font-black [writing-mode:vertical-lr] rotate-180 whitespace-nowrap">
+              PROCHAINS ÉVÉNEMENTS
             </span>
           </div>
 
           {/* Contenu central */}
           <div className="flex-1 space-y-6 w-full max-w-6xl mx-auto px-2 sm:px-4 z-10">
             
-            {/* En-tête mobile/tablette de secours si les textes géants verticaux sont masqués */}
+            {/* En-tête de secours pour les petits écrans */}
             <div className="flex xl:hidden items-center justify-between border-b border-white/15 pb-4 gap-4">
               <h2 className="text-xl font-bold text-white tracking-tight">PROCHAINS ÉVÉNEMENTS</h2>
               <span className="text-[11px] uppercase tracking-wider text-white font-bold px-3.5 py-1.5 rounded-full bg-neutral-900 border border-white/15 shrink-0">
@@ -256,10 +256,10 @@ export default function PublicHome() {
             )}
           </div>
 
-          {/* Texte vertical droit géant : ÉVÉNEMENTS (de haut en bas) */}
-          <div className="hidden xl:flex items-center justify-center shrink-0 w-24 h-full select-none">
-            <span className="text-white/[0.04] uppercase tracking-[0.2em] text-5xl font-black [writing-mode:vertical-lr] whitespace-nowrap">
-              ÉVÉNEMENTS
+          {/* Texte vertical droit : PROCHAINS ÉVÉNEMENTS (de haut en bas) */}
+          <div className="hidden xl:flex items-center justify-center shrink-0 w-20 h-full select-none">
+            <span className="text-white/[0.04] uppercase tracking-[0.2em] text-4xl font-black [writing-mode:vertical-lr] whitespace-nowrap">
+              PROCHAINS ÉVÉNEMENTS
             </span>
           </div>
 
