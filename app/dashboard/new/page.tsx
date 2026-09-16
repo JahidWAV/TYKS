@@ -22,7 +22,6 @@ export default function NewEventPage() {
     image_url: '',
   });
 
-  // États pour le sélecteur de date et d'heure personnalisé
   const now = new Date();
   const [startDate, setStartDate] = useState(now.toISOString().split('T')[0]);
   const [startHour, setStartHour] = useState(String(now.getHours()).padStart(2, '0'));
@@ -36,7 +35,6 @@ export default function NewEventPage() {
     setForm({ ...form, [e.target.name]: e.target.value });
   }
 
-  // Upload de l'image via l'API connectée à Vercel Blob
   async function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -89,8 +87,15 @@ export default function NewEventPage() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setLoading(true);
     setError(null);
+
+    // Sécurité : Vérifie que l'image est bien obligatoire
+    if (!form.image_url) {
+      setError("❌ L'AFFICHE DE L'ÉVÉNEMENT EST OBLIGATOIRE !");
+      return;
+    }
+
+    setLoading(true);
 
     try {
       const { data: { session } } = await supabaseBrowser.auth.getSession();
@@ -265,7 +270,6 @@ export default function NewEventPage() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-neutral-950 p-6 rounded-2xl border-2 border-white/20">
                   
-                  {/* DÉBUT PERSONNALISÉ */}
                   <div className="space-y-3">
                     <label className="text-sm text-white font-bold flex items-center gap-2">
                       <Clock className="w-4 h-4 text-green-400" />
@@ -301,7 +305,6 @@ export default function NewEventPage() {
                     </div>
                   </div>
 
-                  {/* FIN PERSONNALISÉE */}
                   <div className="space-y-3">
                     <label className="text-sm text-white font-bold flex items-center gap-2">
                       <Clock className="w-4 h-4 text-red-400" />
@@ -371,14 +374,19 @@ export default function NewEventPage() {
             {step === 3 && (
               <div className="space-y-6 font-grotesque">
                 <div className="border-b border-white/10 pb-4">
-                  <h2 className="text-base font-bold text-white">AJOUTER UNE IMAGE</h2>
-                  <p className="text-xs text-white/60">CHOISISSEZ UNE BELLE PHOTO POUR ILLUSTRER VOTRE ÉVÉNEMENT.</p>
+                  <h2 className="text-base font-bold text-white">AJOUTER UNE AFFICHE *</h2>
+                  <p className="text-xs text-white/60">L'AFFICHE EST OBLIGATOIRE POUR PUBLIER L'ÉVÉNEMENT.</p>
                 </div>
 
                 <div className="space-y-2">
                   <label className="text-sm text-white font-bold">CLIQUEZ POUR CHOISIR UNE PHOTO DEPUIS VOTRE APPAREIL</label>
-                  <label className="flex flex-col items-center justify-center w-full h-44 border-3 border-dashed border-white/30 rounded-2xl bg-neutral-950 hover:border-white transition cursor-pointer shadow-inner">
-                    <div className="flex flex-col items-center justify-center p-6 text-center">
+                  
+                  {/* Utilisation d'une div cliquable propre à la place d'une imbrication de labels */}
+                  <div 
+                    onClick={() => document.getElementById('file-upload-input')?.click()}
+                    className="flex flex-col items-center justify-center w-full h-44 border-3 border-dashed border-white/30 rounded-2xl bg-neutral-950 hover:border-white transition cursor-pointer shadow-inner"
+                  >
+                    <div className="flex flex-col items-center justify-center p-6 text-center pointer-events-none">
                       {uploadingImage ? (
                         <>
                           <Loader2 className="w-8 h-8 animate-spin text-white mb-2" />
@@ -393,13 +401,14 @@ export default function NewEventPage() {
                       )}
                     </div>
                     <input 
+                      id="file-upload-input"
                       type="file" 
                       accept="image/*" 
                       className="hidden" 
                       onChange={handleImageUpload} 
                       disabled={uploadingImage}
                     />
-                  </label>
+                  </div>
                 </div>
 
                 {form.image_url && (
@@ -426,7 +435,7 @@ export default function NewEventPage() {
 
               {step < 3 ? (
                 <button
-                  type="button" // <--- TRÈS IMPORTANT : Force le bouton à ne PAS valider le form
+                  type="button"
                   onClick={handleNext}
                   className="inline-flex items-center gap-2 rounded-2xl bg-white px-8 py-4 text-sm font-bold text-black transition-all hover:bg-neutral-200 ml-auto cursor-pointer shadow-xl scale-105"
                 >
@@ -435,8 +444,8 @@ export default function NewEventPage() {
                 </button>
               ) : (
                 <button
-                  type="submit" // <--- SEUL CELUI-CI SOUMET LE FORMULAIRE À LA FIN
-                  disabled={loading || uploadingImage}
+                  type="submit"
+                  disabled={loading || uploadingImage || !form.image_url}
                   className="inline-flex items-center gap-2 rounded-2xl bg-white px-8 py-4 text-sm font-bold text-black transition-all hover:bg-neutral-200 disabled:opacity-50 ml-auto cursor-pointer shadow-xl scale-105"
                 >
                   {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Check className="w-5 h-5" />}
