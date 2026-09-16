@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Navbar from '@/components/Navbar';
+import Footer from '@/components/Footer';
 import { 
   ArrowUpRight, 
   Calendar, 
@@ -292,9 +293,9 @@ export default function PublicHome() {
           </div>
         </section>
 
-        {/* SECTION ORGANISATEURS & CTA FINAL */}
-        <section className="h-screen w-full snap-start snap-always flex flex-col justify-center max-w-7xl mx-auto px-6 lg:px-12 py-12 shrink-0">
-          <div className="grid lg:grid-cols-2 gap-10 items-center w-full">
+        {/* SECTION ORGANISATEURS & FOOTER INTÉGRÉ DANS LE DERNIER SCROLL */}
+        <section className="h-screen w-full snap-start snap-always flex flex-col justify-between max-w-7xl mx-auto px-6 lg:px-12 pt-12 pb-6 shrink-0">
+          <div className="grid lg:grid-cols-2 gap-10 items-center w-full my-auto">
             <div className="space-y-5">
               <h2 className="text-2xl sm:text-4xl font-bold text-white">
                 UN VÉRITABLE OUTIL DE CROISSANCE.
@@ -334,6 +335,11 @@ export default function PublicHome() {
                 </a>
               </div>
             </div>
+          </div>
+
+          {/* Footer intégré en bas de la dernière section pour qu'il apparaisse directement */}
+          <div className="w-full pt-4 border-t border-white/10 shrink-0">
+            <Footer />
           </div>
         </section>
 
