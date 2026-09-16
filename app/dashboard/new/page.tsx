@@ -94,11 +94,21 @@ export default function NewEventPage() {
         return;
       }
 
-      // CORRECTION DU DÉCALAGE HORAIRE (Minuit reste minuit)
+      // CORRECTION DU DÉCALAGE HORAIRE : Force JavaScript à interpréter l'heure comme locale
+      const toLocalISOString = (dateTimeLocalString: string) => {
+        if (!dateTimeLocalString) return '';
+        const [datePart, timePart] = dateTimeLocalString.split('T');
+        const [year, month, day] = datePart.split('-').map(Number);
+        const [hours, minutes] = timePart.split(':').map(Number);
+        
+        const localDate = new Date(year, month - 1, day, hours, minutes);
+        return localDate.toISOString();
+      };
+
       const payload = {
         ...form,
-        starts_at: form.starts_at ? new Date(form.starts_at).toISOString() : '',
-        ends_at: form.ends_at ? new Date(form.ends_at).toISOString() : '',
+        starts_at: toLocalISOString(form.starts_at),
+        ends_at: toLocalISOString(form.ends_at),
       };
 
       const res = await fetch('/api/events', {
@@ -115,7 +125,7 @@ export default function NewEventPage() {
         throw new Error(data.error || "ERREUR LORS DE LA CRÉATION DE L'ÉVÉNEMENT.");
       }
 
-      router.push('/');
+      router.push('/dashboard');
       router.refresh();
     } catch (err: any) {
       setError(err.message || "UNE ERREUR EST SURVENUE.");
@@ -136,7 +146,7 @@ export default function NewEventPage() {
         
         <div>
           <Link
-            href="/"
+            href="/dashboard"
             className="inline-flex items-center gap-2 text-sm font-bold text-white/70 hover:text-white bg-neutral-900 px-4 py-2.5 rounded-xl border border-white/10 transition-colors"
           >
             <ArrowLeft className="w-5 h-5" />
@@ -252,7 +262,6 @@ export default function NewEventPage() {
                   <p className="text-xs text-white/60">INDIQUEZ BIEN L'HEURE DE DÉBUT ET DE FIN POUR QUE TOUT LE MONDE SACHE.</p>
                 </div>
 
-                {/* Bloc Horaires Ultra Clair */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-neutral-950 p-6 rounded-2xl border-2 border-white/20">
                   <div className="space-y-2">
                     <label className="text-sm text-white font-bold flex items-center gap-2">
