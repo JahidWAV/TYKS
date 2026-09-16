@@ -17,6 +17,7 @@ interface TyksEvent {
   description?: string;
   location?: string;
   starts_at?: string;
+  ends_at?: string; // Ajouté pour gérer l'heure de fin
   price?: number;
   image_url?: string;
   organizations?: { name?: string };
@@ -208,13 +209,20 @@ export default function PublicEventPage() {
   const estimatedStripeFees = basePrice > 0 ? ((subtotal + (stripeFixed * quantity)) / (1 - stripePercentage) - subtotal) : 0;
   const totalPrice = subtotal + estimatedStripeFees;
 
+  // Formatage des dates et des horaires (début et fin)
   const startDate = event.starts_at ? new Date(event.starts_at) : null;
+  const endDate = event.ends_at ? new Date(event.ends_at) : null;
+
   const rawDate = startDate
     ? startDate.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
     : '';
   const formattedDate = rawDate ? rawDate.replace(/\b1\s/, '1ER ') : '';
-  const formattedTime = startDate
+
+  const startTimeStr = startDate
     ? startDate.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })
+    : '';
+  const endTimeStr = endDate
+    ? endDate.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })
     : '';
 
   const handleInitCheckout = async () => {
@@ -252,18 +260,10 @@ export default function PublicEventPage() {
 
   return (
     <main className="w-full min-h-screen lg:py-20 lg:px-12 bg-[#0f0f0f] text-white font-grotesque selection:bg-white selection:text-black flex flex-col justify-center uppercase">
-      {/* 
-        Mise en page Linktree / ffm.to sur MOBILE : 
-        - h-screen overflow-hidden (pas de scroll, tient sur l'écran unique)
-        - flex flex-col justify-between items-center py-6 px-4
-        Sur PC (lg:) : 
-        - h-auto overflow-visible (grille classique large et propre)
-      */}
       <div className="w-full max-w-5xl mx-auto h-screen lg:h-auto flex flex-col justify-between lg:justify-center py-6 px-4 sm:px-6 lg:px-0 overflow-hidden lg:overflow-visible">
         
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-12 items-center lg:items-start my-auto">
           
-          {/* COLONNE GAUCHE : AFFICHE (plus compacte sur mobile pour tenir sans scroll) */}
           <div className="lg:col-span-5 flex justify-center">
             <div className="w-36 sm:w-48 lg:w-full max-w-md aspect-square bg-neutral-900/50 border border-white/10 rounded-2xl lg:rounded-3xl overflow-hidden shadow-2xl p-2">
               {event.image_url ? (
@@ -277,7 +277,6 @@ export default function PublicEventPage() {
             </div>
           </div>
 
-          {/* COLONNE DROITE : TITRE, INFOS ET BOUTON LINKTREE */}
           <div className="lg:col-span-7 space-y-4 lg:space-y-8 text-center lg:text-left">
             
             <div className="space-y-2 lg:space-y-4">
@@ -293,7 +292,7 @@ export default function PublicEventPage() {
               </h1>
             </div>
 
-            {/* DATES & LIEUX */}
+            {/* BLOC DATE ET HORAIRES (DÉBUT - FIN) */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 lg:gap-3 text-[11px] lg:text-xs font-bold tracking-wide">
               {formattedDate && (
                 <div className="flex items-center justify-center lg:justify-start gap-2.5 bg-neutral-900/85 border border-white/10 p-2.5 lg:p-3.5 rounded-xl lg:rounded-2xl">
@@ -301,12 +300,18 @@ export default function PublicEventPage() {
                   <span className="truncate">{formattedDate}</span>
                 </div>
               )}
-              {formattedTime && (
-                <div className="flex items-center justify-center lg:justify-start gap-2.5 bg-neutral-900/85 border border-white/10 p-2.5 lg:p-3.5 rounded-xl lg:rounded-2xl">
-                  <Clock className="w-3.5 h-3.5 lg:w-4 lg:h-4 text-white/70 shrink-0" />
-                  <span>{formattedTime}</span>
-                </div>
-              )}
+              
+              <div className="flex items-center justify-center lg:justify-start gap-2.5 bg-neutral-900/85 border border-white/10 p-2.5 lg:p-3.5 rounded-xl lg:rounded-2xl">
+                <Clock className="w-3.5 h-3.5 lg:w-4 lg:h-4 text-white/70 shrink-0" />
+                <span>
+                  {startTimeStr && endTimeStr 
+                    ? `DE ${startTimeStr} À ${endTimeStr}`
+                    : startTimeStr 
+                    ? `DÈS ${startTimeStr}` 
+                    : 'HORAIRE NON RENSEIGNÉ'}
+                </span>
+              </div>
+
               {event.location && (
                 <div className="sm:col-span-2 flex items-center justify-center lg:justify-start gap-2.5 bg-neutral-900/85 border border-white/10 p-2.5 lg:p-3.5 rounded-xl lg:rounded-2xl">
                   <MapPin className="w-3.5 h-3.5 lg:w-4 lg:h-4 text-white/70 shrink-0" />
@@ -315,7 +320,6 @@ export default function PublicEventPage() {
               )}
             </div>
 
-            {/* BOUTON D'ACTION AVEC PRIX FINAL DIRECTEMENT PRÉCISÉ */}
             <div className="pt-1 lg:pt-2">
               <button
                 onClick={() => {
@@ -335,7 +339,6 @@ export default function PublicEventPage() {
               </button>
             </div>
 
-            {/* DESCRIPTION INTÉGRÉE (Masquée sur mobile pour éviter le scroll, visible uniquement sur PC) */}
             {event.description && (
               <div className="hidden lg:block bg-neutral-900/40 border border-white/10 p-6 lg:p-8 rounded-3xl space-y-3">
                 <h3 className="text-xs font-bold uppercase tracking-widest text-white/40">À PROPOS DE L&apos;ÉVÉNEMENT</h3>
