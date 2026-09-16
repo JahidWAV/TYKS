@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Navbar from '@/components/Navbar';
-import Footer from '@/components/Footer';
 import { 
   ArrowUpRight, 
   Calendar, 
@@ -339,5 +338,7 @@ export default function PublicHome() {
         </section>
 
       </main>
-      );
+
+    </div>
+  );
 }
