@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useLayoutEffect } from 'react';
 import Link from 'next/link';
 import Navbar from '@/components/Navbar';
 import { 
@@ -39,9 +39,12 @@ export default function PublicHome() {
   const [fetchError, setFetchError] = useState(false);
   const sliderRef = useRef<HTMLDivElement>(null);
   const mainContainerRef = useRef<HTMLDivElement>(null);
+  const eventSectionRef = useRef<HTMLElement>(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(false);
 
-  // Sauvegarde et restauration de la position de scroll
-  useEffect(() => {
+  // Utilisation de useLayoutEffect pour restaurer la position avant le premier paint et éviter le flash
+  useLayoutEffect(() => {
     const container = mainContainerRef.current;
     if (!container) return;
 
@@ -49,12 +52,17 @@ export default function PublicHome() {
     if (savedScrollPos) {
       container.scrollTop = Number(savedScrollPos);
     }
+  }, []);
+
+  useEffect(() => {
+    const container = mainContainerRef.current;
+    if (!container) return;
 
     const handleScroll = () => {
       sessionStorage.setItem('home_scroll_pos', container.scrollTop.toString());
     };
 
-    container.addEventListener('scroll', handleScroll);
+    container.addEventListener('scroll', handleScroll, { passive: true });
     return () => container.removeEventListener('scroll', handleScroll);
   }, []);
 
@@ -78,6 +86,27 @@ export default function PublicHome() {
 
     fetchPublishedEvents();
   }, []);
+
+  const checkScroll = () => {
+    if (sliderRef.current) {
+      const { scrollLeft, scrollWidth, clientWidth } = sliderRef.current;
+      setCanScrollLeft(scrollLeft > 5);
+      setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 5);
+    }
+  };
+
+  useEffect(() => {
+    checkScroll();
+    const slider = sliderRef.current;
+    if (slider) {
+      slider.addEventListener('scroll', checkScroll);
+      window.addEventListener('resize', checkScroll);
+      return () => {
+        slider.removeEventListener('scroll', checkScroll);
+        window.removeEventListener('resize', checkScroll);
+      };
+    }
+  }, [events]);
 
   const scrollSlider = (direction: 'left' | 'right') => {
     if (sliderRef.current) {
@@ -165,17 +194,17 @@ export default function PublicHome() {
           </div>
         </section>
 
-        {/* SECTION ÉVÉNEMENTS (SLIDER AVEC FLÈCHES DE CHAQUE CÔTÉ) */}
-        <section id="evenements" className="h-screen w-full snap-start snap-always flex items-center justify-between px-4 sm:px-8 lg:px-12 py-4 shrink-0 relative overflow-hidden">
+        {/* SECTION ÉVÉNEMENTS */}
+        <section ref={eventSectionRef} id="evenements" className="h-screen w-full snap-start snap-always flex items-center justify-between px-4 sm:px-8 lg:px-12 py-4 shrink-0 relative overflow-hidden">
           
-          {/* Texte vertical gauche : PROCHAINS ÉVÉNEMENTS (de bas en haut) */}
-          <div className="hidden xl:flex items-center justify-center shrink-0 w-20 h-full select-none">
-            <span className="text-white/[0.04] uppercase tracking-[0.2em] text-4xl font-black [writing-mode:vertical-lr] rotate-180 whitespace-nowrap">
+          {/* Texte vertical gauche : PROCHAINS ÉVÉNEMENTS (calé à la hauteur exacte des cartes) */}
+          <div className="hidden xl:flex items-center justify-center shrink-0 w-16 h-[460px] select-none self-center">
+            <span className="text-white/[0.04] uppercase tracking-[0.2em] text-3xl font-black [writing-mode:vertical-lr] rotate-180 whitespace-nowrap">
               PROCHAINS ÉVÉNEMENTS
             </span>
           </div>
 
-          {/* Contenu central avec carrousel et flèches latérales */}
+          {/* Contenu central avec carrousel et flèches conditionnelles */}
           <div className="flex-1 relative w-full max-w-5xl mx-auto px-4 sm:px-8 z-10 flex items-center justify-center">
             
             {loading ? (
@@ -202,14 +231,16 @@ export default function PublicHome() {
               </div>
             ) : (
               <>
-                {/* Flèche Gauche externe */}
-                <button 
-                  onClick={() => scrollSlider('left')}
-                  className="hidden md:flex absolute -left-6 lg:-left-12 z-20 w-12 h-12 rounded-full bg-neutral-900 border border-white/20 items-center justify-center text-white hover:bg-white hover:text-black transition-all shadow-xl cursor-pointer"
-                  aria-label="Précédent"
-                >
-                  <ChevronLeft className="w-6 h-6" />
-                </button>
+                {/* Flèche Gauche (Affichée uniquement si on peut scroller à gauche) */}
+                {canScrollLeft && (
+                  <button 
+                    onClick={() => scrollSlider('left')}
+                    className="hidden md:flex absolute -left-6 lg:-left-12 z-20 w-12 h-12 rounded-full bg-neutral-900 border border-white/20 items-center justify-center text-white hover:bg-white hover:text-black transition-all shadow-xl cursor-pointer"
+                    aria-label="Précédent"
+                  >
+                    <ChevronLeft className="w-6 h-6" />
+                  </button>
+                )}
 
                 {/* Conteneur du Slider Horizontal */}
                 <div 
@@ -259,40 +290,37 @@ export default function PublicHome() {
                           )}
                         </div>
 
-                        {/* Infos textuelles bien lisibles */}
-                        <div className="p-5 flex-1 space-y-3 flex flex-col justify-between">
+                        {/* Infos textuelles parfaitement centrées */}
+                        <div className="p-5 flex-1 space-y-3 flex flex-col justify-center text-center">
                           <div className="space-y-2">
-                            {/* Nom de l'événement */}
+                            {/* Titre */}
                             <h3 className="text-base font-bold text-black tracking-tight group-hover:underline transition-colors line-clamp-1">
                               {evt.title}
                             </h3>
                             
-                            {/* Lieu en dessous */}
+                            {/* Lieu */}
                             {evt.location && (
-                              <div className="flex items-center gap-2 text-xs text-black/70 font-semibold">
+                              <div className="flex items-center justify-center gap-2 text-xs text-black/70 font-semibold">
                                 <MapPin className="h-3.5 w-3.5 text-black/50 shrink-0" />
                                 <span className="truncate">{evt.location}</span>
                               </div>
                             )}
 
-                            {/* Date et heure en dessous */}
-                            <div className="flex items-center gap-2 text-xs text-black/60 font-bold uppercase tracking-wider pt-1 border-t border-black/5">
+                            {/* Date et heure */}
+                            <div className="flex items-center justify-center gap-2 text-xs text-black/60 font-bold uppercase tracking-wider pt-1 border-t border-black/5">
                               <Calendar className="h-3.5 w-3.5 shrink-0 text-black/40" />
                               <span>{dateStr} {timeStr ? `• ${timeStr}` : ''}</span>
                             </div>
                           </div>
                         </div>
 
-                        {/* Barre du bas avec "À partir de..." et prix TTC frais Stripe */}
-                        <div className="flex items-center justify-between border-t border-black/10 px-5 py-3.5 bg-neutral-50">
-                          <span className="text-xs font-bold uppercase tracking-wider text-black/70">
-                            {basePrice > 0 ? `À partir de` : 'Gratuit'}
-                          </span>
+                        {/* Barre du bas avec bouton "À partir de [Prix]" direct */}
+                        <div className="flex items-center justify-center border-t border-black/10 p-3.5 bg-neutral-50">
                           <Link
                             href={`/events/${evt.slug || evt.id}`}
-                            className="h-8 px-4 bg-black hover:bg-neutral-800 text-white font-bold text-xs uppercase tracking-wider transition-all duration-300 flex items-center gap-1.5 rounded-xl shadow-md group-hover:gap-2 cursor-pointer"
+                            className="w-full h-9 px-4 bg-black hover:bg-neutral-800 text-white font-bold text-xs uppercase tracking-wider transition-all duration-300 flex items-center justify-center gap-2 rounded-xl shadow-md group-hover:gap-2.5 cursor-pointer"
                           >
-                            <span>{basePrice > 0 ? `${finalPriceWithStripe.toFixed(2).replace('.', ',')} €` : 'LIBRE'}</span>
+                            <span>{basePrice > 0 ? `À partir de ${finalPriceWithStripe.toFixed(2).replace('.', ',')} €` : 'Entrée Libre'}</span>
                             <ArrowUpRight className="w-3.5 h-3.5" />
                           </Link>
                         </div>
@@ -301,21 +329,23 @@ export default function PublicHome() {
                   })}
                 </div>
 
-                {/* Flèche Droite externe */}
-                <button 
-                  onClick={() => scrollSlider('right')}
-                  className="hidden md:flex absolute -right-6 lg:-right-12 z-20 w-12 h-12 rounded-full bg-neutral-900 border border-white/20 items-center justify-center text-white hover:bg-white hover:text-black transition-all shadow-xl cursor-pointer"
-                  aria-label="Suivant"
-                >
-                  <ChevronRight className="w-6 h-6" />
-                </button>
+                {/* Flèche Droite (Affichée uniquement si on peut scroller à droite) */}
+                {canScrollRight && (
+                  <button 
+                    onClick={() => scrollSlider('right')}
+                    className="hidden md:flex absolute -right-6 lg:-right-12 z-20 w-12 h-12 rounded-full bg-neutral-900 border border-white/20 items-center justify-center text-white hover:bg-white hover:text-black transition-all shadow-xl cursor-pointer"
+                    aria-label="Suivant"
+                  >
+                    <ChevronRight className="w-6 h-6" />
+                  </button>
+                )}
               </>
             )}
           </div>
 
-          {/* Texte vertical droit : PROCHAINS ÉVÉNEMENTS (de haut en bas) */}
-          <div className="hidden xl:flex items-center justify-center shrink-0 w-20 h-full select-none">
-            <span className="text-white/[0.04] uppercase tracking-[0.2em] text-4xl font-black [writing-mode:vertical-lr] whitespace-nowrap">
+          {/* Texte vertical droit : PROCHAINS ÉVÉNEMENTS (calé à la hauteur exacte des cartes) */}
+          <div className="hidden xl:flex items-center justify-center shrink-0 w-16 h-[460px] select-none self-center">
+            <span className="text-white/[0.04] uppercase tracking-[0.2em] text-3xl font-black [writing-mode:vertical-lr] whitespace-nowrap">
               PROCHAINS ÉVÉNEMENTS
             </span>
           </div>
