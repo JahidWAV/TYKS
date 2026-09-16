@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Navbar from '@/components/Navbar';
-import Footer from '@/components/Footer';
 import { 
   ArrowUpRight, 
   Calendar, 
@@ -62,7 +61,7 @@ export default function PublicHome() {
   return (
     <div className="bg-[#0f0f0f] text-white selection:bg-white selection:text-black font-grotesque antialiased h-screen overflow-y-scroll snap-y snap-mandatory flex flex-col">
       
-      {/* 1. NAVBAR : Fixe ou sticky au-dessus */}
+      {/* 1. NAVBAR */}
       <Navbar />
 
       {/* 2. CONTENU PRINCIPAL & SECTIONS MAGNÉTIQUES */}
@@ -293,8 +292,8 @@ export default function PublicHome() {
           </div>
         </section>
 
-        {/* SECTION ORGANISATEURS & FOOTER INTÉGRÉ DANS LE DERNIER SCROLL */}
-        <section className="h-screen w-full snap-start snap-always flex flex-col justify-between max-w-7xl mx-auto px-6 lg:px-12 pt-12 pb-6 shrink-0">
+        {/* DERNIÈRE SECTION + FOOTER GLOBAL INCLUS DANS LE MÊME ÉCRAN (snap-end) */}
+        <section className="h-screen w-full snap-end snap-always flex flex-col justify-between max-w-7xl mx-auto px-6 lg:px-12 pt-12 pb-6 shrink-0">
           <div className="grid lg:grid-cols-2 gap-10 items-center w-full my-auto">
             <div className="space-y-5">
               <h2 className="text-2xl sm:text-4xl font-bold text-white">
@@ -337,10 +336,8 @@ export default function PublicHome() {
             </div>
           </div>
 
-          {/* Footer intégré en bas de la dernière section pour qu'il apparaisse directement */}
-          <div className="w-full pt-4 border-t border-white/10 shrink-0">
-            <Footer />
-          </div>
+          {/* Espace tampon pour laisser respirer le footer global injecté par le layout juste en dessous */}
+          <div className="h-8 shrink-0" />
         </section>
 
       </main>
