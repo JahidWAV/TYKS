@@ -221,7 +221,8 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
                         }}
                         className="group text-left bg-neutral-900 hover:bg-neutral-800 border border-white/15 rounded-[2rem] p-4 transition-all duration-300 flex flex-col justify-between cursor-pointer space-y-4 shadow-xl"
                       >
-                        <div className="relative w-full aspect-[4/3] rounded-2xl overflow-hidden bg-neutral-800 border border-white/10 shadow-md">
+                        {/* Format carré appliqué ici avec aspect-square */}
+                        <div className="relative w-full aspect-square rounded-2xl overflow-hidden bg-neutral-800 border border-white/10 shadow-md">
                           {flyer ? (
                             <img 
                               src={flyer} 
