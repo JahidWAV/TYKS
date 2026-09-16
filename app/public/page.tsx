@@ -339,10 +339,5 @@ export default function PublicHome() {
         </section>
 
       </main>
-
-      {/* 3. FOOTER : Situé tout en bas de la page, il apparaît uniquement en fin de scroll */}
-      <Footer />
-
-    </div>
-  );
+      );
 }
