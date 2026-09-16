@@ -134,20 +134,20 @@ export default function PublicHome() {
           </div>
         </section>
 
-        {/* SECTION ÉVÉNEMENTS (Titres verticaux de chaque côté) */}
-        <section id="evenements" className="h-screen w-full snap-start snap-always flex items-center justify-between max-w-[90rem] mx-auto px-4 sm:px-8 lg:px-12 py-8 shrink-0 relative">
+        {/* SECTION ÉVÉNEMENTS (Textes géants verticaux sur toute la hauteur + cartes bien proportionnées) */}
+        <section id="evenements" className="h-screen w-full snap-start snap-always flex items-center justify-between px-4 sm:px-10 lg:px-16 py-8 shrink-0 relative overflow-hidden">
           
-          {/* Titre vertical gauche (masqué sur mobile très étroit pour laisser de la place) */}
-          <div className="hidden xl:flex flex-col items-center justify-center shrink-0 w-16 select-none">
-            <span className="text-white/20 uppercase tracking-[0.3em] text-xs font-bold [writing-mode:vertical-lr] rotate-180">
+          {/* Texte vertical gauche géant : PROCHAINS (de bas en haut) */}
+          <div className="hidden xl:flex items-center justify-center shrink-0 w-24 h-full select-none">
+            <span className="text-white/[0.04] uppercase tracking-[0.2em] text-5xl font-black [writing-mode:vertical-lr] rotate-180 whitespace-nowrap">
               PROCHAINS
             </span>
           </div>
 
           {/* Contenu central */}
-          <div className="flex-1 space-y-6 w-full max-w-7xl mx-auto px-2">
+          <div className="flex-1 space-y-6 w-full max-w-6xl mx-auto px-2 sm:px-4 z-10">
             
-            {/* Petit en-tête mobile/tablette si les textes verticaux sont masqués */}
+            {/* En-tête mobile/tablette de secours si les textes géants verticaux sont masqués */}
             <div className="flex xl:hidden items-center justify-between border-b border-white/15 pb-4 gap-4">
               <h2 className="text-xl font-bold text-white tracking-tight">PROCHAINS ÉVÉNEMENTS</h2>
               <span className="text-[11px] uppercase tracking-wider text-white font-bold px-3.5 py-1.5 rounded-full bg-neutral-900 border border-white/15 shrink-0">
@@ -178,7 +178,7 @@ export default function PublicHome() {
                 </p>
               </div>
             ) : (
-              <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 max-h-[70vh] overflow-y-auto pr-1">
+              <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                 {events.slice(0, 3).map((evt) => {
                   const eventPrice = Number(evt.price || evt.ticket_price || 0);
                   const eventImage = evt.image_url || evt.image;
@@ -195,7 +195,7 @@ export default function PublicHome() {
                       key={evt.id}
                       className="group flex flex-col bg-white text-black border border-white/15 rounded-[2.5rem] overflow-hidden transition-all duration-300 hover:shadow-2xl hover:-translate-y-1"
                     >
-                      <div className="relative w-full aspect-[16/9] sm:aspect-square bg-neutral-100 overflow-hidden border-b border-black/10 flex items-center justify-center">
+                      <div className="relative w-full aspect-square bg-neutral-100 overflow-hidden border-b border-black/10 flex items-center justify-center">
                         {eventImage ? (
                           <img
                             src={eventImage}
@@ -256,9 +256,9 @@ export default function PublicHome() {
             )}
           </div>
 
-          {/* Titre vertical droit (masqué sur mobile très étroit) */}
-          <div className="hidden xl:flex flex-col items-center justify-center shrink-0 w-16 select-none">
-            <span className="text-white/20 uppercase tracking-[0.3em] text-xs font-bold [writing-mode:vertical-lr]">
+          {/* Texte vertical droit géant : ÉVÉNEMENTS (de haut en bas) */}
+          <div className="hidden xl:flex items-center justify-center shrink-0 w-24 h-full select-none">
+            <span className="text-white/[0.04] uppercase tracking-[0.2em] text-5xl font-black [writing-mode:vertical-lr] whitespace-nowrap">
               ÉVÉNEMENTS
             </span>
           </div>
