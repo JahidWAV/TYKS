@@ -20,7 +20,15 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Événement introuvable' }, { status: 404 });
     }
 
-    const totalAmountCents = Math.round((unitPrice * quantity) * 100);
+    // Calcul du prix des billets
+    const baseAmount = unitPrice * quantity;
+    
+    // Ajout des frais de service de la plateforme si l'événement est payant (ex: 0,90 € par billet)
+    const platformFeePerTicket = baseAmount > 0 ? 0.90 : 0;
+    const totalPlatformFee = platformFeePerTicket * quantity;
+
+    // Montant total payé par l'acheteur en centimes
+    const totalAmountCents = Math.round((baseAmount + totalPlatformFee) * 100);
 
     if (totalAmountCents === 0) {
       return NextResponse.json({ 
@@ -38,6 +46,7 @@ export async function POST(req: Request) {
         eventId: event.id,
         quantity: quantity.toString(),
         includeSupport: includeSupport ? 'true' : 'false',
+        platformFee: totalPlatformFee.toFixed(2),
       },
     });
 
