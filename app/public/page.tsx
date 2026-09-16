@@ -14,8 +14,7 @@ import {
   QrCode, 
   Users, 
   Zap, 
-  Wallet,
-  Search
+  Wallet 
 } from 'lucide-react';
 import { supabaseBrowser } from '@/lib/supabase-browser';
 
@@ -42,29 +41,10 @@ export default function PublicHome() {
   }, []);
 
   return (
-    // Conteneur global avec le snap magnétique actif qui gère tout le document
     <main className="h-screen overflow-y-auto snap-y snap-mandatory bg-[#0f0f0f] text-white selection:bg-white selection:text-black font-grotesque antialiased">
       
-      {/* 0. HEADER / NAVBAR (devient le premier point d'ancrage du scroll) */}
-      <header className="h-24 max-w-7xl mx-auto px-6 lg:px-12 flex items-center justify-between snap-start snap-always">
-        <Link href="/" className="flex items-center gap-2">
-          <span className="text-xl font-black tracking-wider text-white">TYKS</span>
-        </Link>
-        <div className="flex items-center gap-4">
-          <button className="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center text-white hover:bg-white/10 transition-colors cursor-pointer">
-            <Search className="w-4 h-4" />
-          </button>
-          <a
-            href="https://pro.tyks.app"
-            className="h-10 px-5 border border-white/20 hover:bg-white/10 text-white font-bold text-xs uppercase tracking-wider transition-all duration-300 flex items-center justify-center rounded-full cursor-pointer"
-          >
-            SE CONNECTER / S&apos;INSCRIRE
-          </a>
-        </div>
-      </header>
-
       {/* 1. HERO SECTION */}
-      <section className="min-h-[calc(100vh-6rem)] flex items-center max-w-7xl mx-auto px-6 lg:px-12 py-12 border-b border-white/15 snap-start snap-always">
+      <section className="min-h-[calc(100vh-5rem)] flex items-center max-w-7xl mx-auto px-6 lg:px-12 py-16 border-b border-white/15 snap-start snap-always">
         <div className="w-full grid lg:grid-cols-12 gap-12 lg:gap-16 items-center">
           
           <div className="lg:col-span-7 space-y-6 flex flex-col justify-center">
@@ -135,7 +115,7 @@ export default function PublicHome() {
       </section>
 
       {/* 2. SECTION ÉVÉNEMENTS */}
-      <section id="evenements" className="min-h-[calc(100vh-6rem)] flex flex-col justify-center max-w-7xl mx-auto px-6 lg:px-12 py-16 border-b border-white/15 snap-start snap-always">
+      <section id="evenements" className="min-h-[calc(100vh-5rem)] flex flex-col justify-center max-w-7xl mx-auto px-6 lg:px-12 py-16 border-b border-white/15 snap-start snap-always">
         <div className="space-y-8 w-full">
           <div className="flex flex-col sm:flex-row sm:items-end justify-between border-b border-white/15 pb-5 gap-4">
             <h2 className="text-2xl sm:text-3xl font-bold text-white">PROCHAINS ÉVÉNEMENTS</h2>
@@ -242,7 +222,7 @@ export default function PublicHome() {
       </section>
 
       {/* 3. SECTION VALEURS */}
-      <section className="min-h-[calc(100vh-6rem)] flex flex-col justify-center max-w-7xl mx-auto px-6 lg:px-12 py-16 border-b border-white/15 snap-start snap-always">
+      <section className="min-h-[calc(100vh-5rem)] flex flex-col justify-center max-w-7xl mx-auto px-6 lg:px-12 py-16 border-b border-white/15 snap-start snap-always">
         <div className="space-y-12 w-full">
           <div className="text-center max-w-2xl mx-auto space-y-3">
             <h2 className="text-2xl sm:text-4xl font-bold text-white">
@@ -288,7 +268,7 @@ export default function PublicHome() {
       </section>
 
       {/* 4. SECTION ORGANISATEURS & CTA FINAL */}
-      <section className="min-h-[calc(100vh-6rem)] flex flex-col justify-center max-w-7xl mx-auto px-6 lg:px-12 py-16 snap-start snap-always">
+      <section className="min-h-[calc(100vh-5rem)] flex flex-col justify-center max-w-7xl mx-auto px-6 lg:px-12 py-16 snap-start snap-always">
         <div className="grid lg:grid-cols-2 gap-10 items-center w-full">
           <div className="space-y-5">
             <h2 className="text-2xl sm:text-4xl font-bold text-white">
