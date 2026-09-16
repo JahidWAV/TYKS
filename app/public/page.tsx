@@ -41,7 +41,7 @@ export default function PublicHome() {
   }, []);
 
   return (
-    <main className="h-screen overflow-y-scroll snap-y snap-mandatory bg-[#0f0f0f] text-white selection:bg-white selection:text-black font-grotesque antialiased pt-24">
+    <main className="h-screen overflow-y-auto snap-y snap-mandatory bg-[#0f0f0f] text-white selection:bg-white selection:text-black font-grotesque antialiased pt-24">
       
       {/* 1. HERO SECTION */}
       <section className="min-h-[calc(100vh-6rem)] flex items-center max-w-7xl mx-auto px-6 lg:px-12 py-12 lg:py-20 border-b border-white/15 snap-start snap-always">
