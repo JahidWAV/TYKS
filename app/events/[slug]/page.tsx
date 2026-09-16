@@ -233,14 +233,14 @@ export default function PublicEventPage() {
   };
 
   return (
-    <main className="w-full min-h-screen bg-[#0f0f0f] text-white font-grotesque selection:bg-white selection:text-black pt-36 pb-24 px-6 sm:px-12 uppercase">
+    <main className="w-full min-h-screen bg-[#0f0f0f] text-white font-grotesque selection:bg-white selection:text-black flex flex-col justify-center py-20 px-6 sm:px-12 uppercase">
       <div className="w-full max-w-5xl mx-auto">
         
         {/* MISE EN PAGE HARMONIEUSE : AFFICHE CARRÉE À GAUCHE / INFOS & DESCRIPTION À DROITE */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-start">
           
-          {/* COLONNE GAUCHE : AFFICHE CARRÉE FIXÉE */}
-          <div className="lg:col-span-5 lg:sticky lg:top-36 flex justify-center">
+          {/* COLONNE GAUCHE : AFFICHE CARRÉE */}
+          <div className="lg:col-span-5 flex justify-center">
             <div className="w-full max-w-md aspect-square bg-neutral-900/50 border border-white/10 rounded-3xl overflow-hidden shadow-2xl p-2.5">
               {event.image_url ? (
                 <img src={event.image_url} alt={event.title} className="w-full h-full object-cover rounded-2xl" />
