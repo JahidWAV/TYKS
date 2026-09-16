@@ -46,11 +46,11 @@ export default async function RootLayout({
   return (
     <html
       lang="fr"
-      className={`${fontBody.variable} ${fontDisplay.variable} ${fontMono.variable}`}
+      className={`${fontBody.variable} ${fontDisplay.variable} ${fontMono.variable} snap-y snap-mandatory scroll-smooth`}
     >
       <body className="min-h-screen bg-white text-[#1e3932] flex flex-col selection:bg-[#1e3932]/20 selection:text-[#1e3932] font-sans">
         
-        {/* Navbar affichée partout sauf sur le dashboard */}
+        {/* Navbar affichée partout sauf sur le dashboard (elle défilera naturellement avec la page) */}
         {!isDashboard && <Navbar isPro={isPro} />}
 
         <main className="relative z-10 flex-1">{children}</main>
