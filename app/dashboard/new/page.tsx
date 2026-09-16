@@ -36,7 +36,7 @@ export default function NewEventPage() {
     setForm({ ...form, [e.target.name]: e.target.value });
   }
 
-  // Upload de l'image via l'API connectée à Vercel Blob (`put`)
+  // Upload de l'image via l'API connectée à Vercel Blob
   async function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -426,7 +426,7 @@ export default function NewEventPage() {
 
               {step < 3 ? (
                 <button
-                  type="button"
+                  type="button" // <--- TRÈS IMPORTANT : Force le bouton à ne PAS valider le form
                   onClick={handleNext}
                   className="inline-flex items-center gap-2 rounded-2xl bg-white px-8 py-4 text-sm font-bold text-black transition-all hover:bg-neutral-200 ml-auto cursor-pointer shadow-xl scale-105"
                 >
@@ -435,7 +435,7 @@ export default function NewEventPage() {
                 </button>
               ) : (
                 <button
-                  type="submit"
+                  type="submit" // <--- SEUL CELUI-CI SOUMET LE FORMULAIRE À LA FIN
                   disabled={loading || uploadingImage}
                   className="inline-flex items-center gap-2 rounded-2xl bg-white px-8 py-4 text-sm font-bold text-black transition-all hover:bg-neutral-200 disabled:opacity-50 ml-auto cursor-pointer shadow-xl scale-105"
                 >
