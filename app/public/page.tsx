@@ -135,21 +135,21 @@ export default function PublicHome() {
         </section>
 
         {/* SECTION ÉVÉNEMENTS */}
-        <section id="evenements" className="h-screen w-full snap-start snap-always flex flex-col justify-center max-w-7xl mx-auto px-6 lg:px-12 py-12 shrink-0">
-          <div className="space-y-8 w-full">
-            <div className="flex flex-col sm:flex-row sm:items-end justify-between border-b border-white/15 pb-5 gap-4">
-              <h2 className="text-2xl sm:text-3xl font-bold text-white">PROCHAINS ÉVÉNEMENTS</h2>
-              <span className="text-xs uppercase tracking-wider text-white font-bold px-4 py-1.5 rounded-full bg-neutral-900 border border-white/15 w-fit">
+        <section id="evenements" className="h-screen w-full snap-start snap-always flex flex-col justify-center max-w-7xl mx-auto px-6 lg:px-12 py-8 shrink-0">
+          <div className="space-y-6 w-full">
+            <div className="flex flex-row items-center justify-between border-b border-white/15 pb-4 gap-4">
+              <h2 className="text-xl sm:text-3xl font-bold text-white tracking-tight">PROCHAINS ÉVÉNEMENTS</h2>
+              <span className="text-[11px] uppercase tracking-wider text-white font-bold px-3.5 py-1.5 rounded-full bg-neutral-900 border border-white/15 shrink-0">
                 {events.length} DISPONIBLE{events.length > 1 ? 'S' : ''}
               </span>
             </div>
 
             {loading ? (
-              <div className="bg-neutral-900 border border-white/15 p-16 text-center text-xs text-white/60 rounded-[2.5rem] font-bold">
+              <div className="bg-neutral-900 border border-white/15 p-12 text-center text-xs text-white/60 rounded-[2.5rem] font-bold">
                 CHARGEMENT DES EXPÉRIENCES EN COURS...
               </div>
             ) : fetchError ? (
-              <div className="bg-neutral-900 border border-white/15 p-16 text-center space-y-4 rounded-[2.5rem]">
+              <div className="bg-neutral-900 border border-white/15 p-12 text-center space-y-4 rounded-[2.5rem]">
                 <div className="w-12 h-12 mx-auto rounded-2xl bg-white/10 flex items-center justify-center text-white">
                   <Calendar className="h-5 w-5" />
                 </div>
@@ -158,7 +158,7 @@ export default function PublicHome() {
                 </p>
               </div>
             ) : events.length === 0 ? (
-              <div className="bg-neutral-900 border border-white/15 p-16 text-center space-y-4 rounded-[2.5rem]">
+              <div className="bg-neutral-900 border border-white/15 p-12 text-center space-y-4 rounded-[2.5rem]">
                 <div className="w-12 h-12 mx-auto rounded-2xl bg-white/10 flex items-center justify-center text-white">
                   <Calendar className="h-5 w-5" />
                 </div>
@@ -167,7 +167,7 @@ export default function PublicHome() {
                 </p>
               </div>
             ) : (
-              <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 max-h-[65vh] overflow-y-auto pr-1">
                 {events.slice(0, 3).map((evt) => {
                   const eventPrice = Number(evt.price || evt.ticket_price || 0);
                   const eventImage = evt.image_url || evt.image;
@@ -184,7 +184,7 @@ export default function PublicHome() {
                       key={evt.id}
                       className="group flex flex-col bg-white text-black border border-white/15 rounded-[2.5rem] overflow-hidden transition-all duration-300 hover:shadow-2xl hover:-translate-y-1"
                     >
-                      <div className="relative w-full aspect-square bg-neutral-100 overflow-hidden border-b border-black/10 flex items-center justify-center">
+                      <div className="relative w-full aspect-[16/9] sm:aspect-square bg-neutral-100 overflow-hidden border-b border-black/10 flex items-center justify-center">
                         {eventImage ? (
                           <img
                             src={eventImage}
@@ -336,7 +336,6 @@ export default function PublicHome() {
             </div>
           </div>
 
-          {/* Espace tampon pour laisser respirer le footer global injecté par le layout juste en dessous */}
           <div className="h-8 shrink-0" />
         </section>
 
