@@ -8,7 +8,7 @@ interface FooterProps {
 
 export default function Footer({}: FooterProps) {
   return (
-    <footer className="border-t border-white/10 bg-black text-white font-grotesque uppercase">
+    <footer className="border-t border-white/10 bg-[#0f0f0f] text-white font-grotesque uppercase">
       <div className="mx-auto max-w-7xl px-6 py-8 md:px-12 flex flex-col md:flex-row items-center justify-between gap-6">
         
         {/* Logo & Copyright */}
