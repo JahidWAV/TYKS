@@ -59,16 +59,16 @@ export default function PublicHome() {
   }, []);
 
   return (
-    <div className="bg-[#0f0f0f] text-white selection:bg-white selection:text-black font-grotesque antialiased min-h-screen flex flex-col">
+    <div className="bg-[#0f0f0f] text-white selection:bg-white selection:text-black font-grotesque antialiased h-screen overflow-y-scroll snap-y snap-mandatory flex flex-col">
       
-      {/* 1. NAVBAR : Visible au tout début, elle défile avec la page */}
+      {/* 1. NAVBAR : Fixe ou sticky au-dessus */}
       <Navbar />
 
-      {/* 2. CONTENU PRINCIPAL & SECTIONS */}
-      <main className="flex-1">
+      {/* 2. CONTENU PRINCIPAL & SECTIONS MAGNÉTIQUES */}
+      <main className="w-full flex-1">
         
         {/* HERO SECTION */}
-        <section className="min-h-[calc(100vh-5rem)] flex items-center max-w-7xl mx-auto px-6 lg:px-12 py-12">
+        <section className="h-screen w-full snap-start snap-always flex items-center max-w-7xl mx-auto px-6 lg:px-12 py-12 shrink-0">
           <div className="w-full grid lg:grid-cols-12 gap-12 lg:gap-16 items-center">
             <div className="lg:col-span-7 space-y-6 flex flex-col justify-center">
               <h1 className="text-4xl sm:text-6xl lg:text-7xl font-bold tracking-tight leading-[1.05] text-white">
@@ -135,7 +135,7 @@ export default function PublicHome() {
         </section>
 
         {/* SECTION ÉVÉNEMENTS */}
-        <section id="evenements" className="min-h-[calc(100vh-5rem)] flex flex-col justify-center max-w-7xl mx-auto px-6 lg:px-12 py-12">
+        <section id="evenements" className="h-screen w-full snap-start snap-always flex flex-col justify-center max-w-7xl mx-auto px-6 lg:px-12 py-12 shrink-0">
           <div className="space-y-8 w-full">
             <div className="flex flex-col sm:flex-row sm:items-end justify-between border-b border-white/15 pb-5 gap-4">
               <h2 className="text-2xl sm:text-3xl font-bold text-white">PROCHAINS ÉVÉNEMENTS</h2>
@@ -247,7 +247,7 @@ export default function PublicHome() {
         </section>
 
         {/* SECTION VALEURS */}
-        <section className="min-h-[calc(100vh-5rem)] flex flex-col justify-center max-w-7xl mx-auto px-6 lg:px-12 py-12">
+        <section className="h-screen w-full snap-start snap-always flex flex-col justify-center max-w-7xl mx-auto px-6 lg:px-12 py-12 shrink-0">
           <div className="space-y-12 w-full">
             <div className="text-center max-w-2xl mx-auto space-y-3">
               <h2 className="text-2xl sm:text-4xl font-bold text-white">
@@ -293,7 +293,7 @@ export default function PublicHome() {
         </section>
 
         {/* SECTION ORGANISATEURS & CTA FINAL */}
-        <section className="min-h-[calc(100vh-5rem)] flex flex-col justify-center max-w-7xl mx-auto px-6 lg:px-12 py-12">
+        <section className="h-screen w-full snap-start snap-always flex flex-col justify-center max-w-7xl mx-auto px-6 lg:px-12 py-12 shrink-0">
           <div className="grid lg:grid-cols-2 gap-10 items-center w-full">
             <div className="space-y-5">
               <h2 className="text-2xl sm:text-4xl font-bold text-white">
