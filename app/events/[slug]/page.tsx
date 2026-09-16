@@ -200,15 +200,12 @@ export default function PublicEventPage() {
 
   const basePrice = Number(event.price) || 0;
   
-  // Calculs front-end correspondants à l'API
+  // Calculs sans frais de plateforme (uniquement le prix organisateur + frais Stripe)
   const organizerSharePerTicket = basePrice;
-  const platformFeePerTicket = basePrice > 0 ? 0.90 : 0;
-  const subtotalPerTicket = organizerSharePerTicket + platformFeePerTicket;
-
   const stripePercentage = 0.015;
   const stripeFixed = 0.25;
   
-  const subtotal = subtotalPerTicket * quantity;
+  const subtotal = organizerSharePerTicket * quantity;
   const estimatedStripeFees = basePrice > 0 ? ((subtotal + (stripeFixed * quantity)) / (1 - stripePercentage) - subtotal) : 0;
   const totalPrice = subtotal + estimatedStripeFees;
 
@@ -500,10 +497,6 @@ export default function PublicEventPage() {
                           <div className="flex justify-between">
                             <span>BILLET(S) ({quantity}X)</span>
                             <span className="text-white font-bold">{(organizerSharePerTicket * quantity).toFixed(2)} €</span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span>FRAIS DE SERVICE PLATEFORME</span>
-                            <span className="text-white font-bold">{(platformFeePerTicket * quantity).toFixed(2)} €</span>
                           </div>
                           <div className="flex justify-between">
                             <span>FRAIS DE PAIEMENT SÉCURISÉ (STRIPE)</span>
