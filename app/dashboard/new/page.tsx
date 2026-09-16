@@ -36,26 +36,23 @@ export default function NewEventPage() {
       setUploadingImage(true);
       setError(null);
 
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${Math.random().toString(36).substring(2)}-${Date.now()}.${fileExt}`;
-      const filePath = `event-covers/${fileName}`;
+      const formData = new FormData();
+      formData.append('file', file);
 
-      const { error: uploadError } = await supabaseBrowser.storage
-        .from('events')
-        .upload(filePath, file);
+      const res = await fetch('/api/upload', {
+        method: 'POST',
+        body: formData,
+      });
 
-      if (uploadError) {
-        throw uploadError;
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || "Erreur lors de l'envoi de l'image");
       }
 
-      const { data: { publicUrl } } = supabaseBrowser.storage
-        .from('events')
-        .getPublicUrl(filePath);
-
-      setForm((prev) => ({ ...prev, image_url: publicUrl }));
+      setForm((prev) => ({ ...prev, image_url: data.url }));
     } catch (err: any) {
       console.error("ERREUR LORS DE L'UPLOAD DE L'IMAGE :", err);
-      setError(err.message || "ÉCHEC DE L'ENVOI DE L'IMAGE. VÉRIFIEZ LE FORMAT.");
+      setError(err.message || "ÉCHEC DE L'ENVOI DE L'IMAGE.");
     } finally {
       setUploadingImage(false);
     }
@@ -94,7 +91,7 @@ export default function NewEventPage() {
         return;
       }
 
-      // CORRECTION DU DÉCALAGE HORAIRE : Force JavaScript à interpréter l'heure comme locale
+      // Conversion exacte de l'heure locale pour éviter le décalage horaire
       const toLocalISOString = (dateTimeLocalString: string) => {
         if (!dateTimeLocalString) return '';
         const [datePart, timePart] = dateTimeLocalString.split('T');
