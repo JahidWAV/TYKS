@@ -17,12 +17,20 @@ export default function NewEventPage() {
     title: '',
     description: '',
     location: '',
-    starts_at: '',
-    ends_at: '',
     price: '0',
     capacity: '',
     image_url: '',
   });
+
+  // États séparés pour le sélecteur de date/heure personnalisé (Début et Fin)
+  const now = new Date();
+  const [startDate, setStartDate] = useState(now.toISOString().split('T')[0]);
+  const [startHour, setStartHour] = useState(String(now.getHours()).padStart(2, '0'));
+  const [startMinute, setStartMinute] = useState('00');
+
+  const [endDate, setEndDate] = useState(now.toISOString().split('T')[0]);
+  const [endHour, setEndHour] = useState(String((now.getHours() + 2) % 24).padStart(2, '0'));
+  const [endMinute, setEndMinute] = useState('00');
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -65,8 +73,8 @@ export default function NewEventPage() {
       return;
     }
     if (step === 2) {
-      if (!form.starts_at || !form.ends_at) {
-        setError("❌ IL FAUT IMPÉRATIVEMENT METTRE UNE HEURE DE DÉBUT ET UNE HEURE DE FIN !");
+      if (!startDate || !endDate) {
+        setError("❌ IL FAUT IMPÉRATIVEMENT METTRE UNE DATE DE DÉBUT ET DE FIN !");
         return;
       }
     }
@@ -91,21 +99,14 @@ export default function NewEventPage() {
         return;
       }
 
-      // Conversion exacte de l'heure locale pour éviter le décalage horaire
-      const toLocalISOString = (dateTimeLocalString: string) => {
-        if (!dateTimeLocalString) return '';
-        const [datePart, timePart] = dateTimeLocalString.split('T');
-        const [year, month, day] = datePart.split('-').map(Number);
-        const [hours, minutes] = timePart.split(':').map(Number);
-        
-        const localDate = new Date(year, month - 1, day, hours, minutes);
-        return localDate.toISOString();
-      };
+      // Construction des chaînes ISO à partir des champs personnalisés
+      const startsAtIso = new Date(`${startDate}T${startHour}:${startMinute}:00`).toISOString();
+      const endsAtIso = new Date(`${endDate}T${endHour}:${endMinute}:00`).toISOString();
 
       const payload = {
         ...form,
-        starts_at: toLocalISOString(form.starts_at),
-        ends_at: toLocalISOString(form.ends_at),
+        starts_at: startsAtIso,
+        ends_at: endsAtIso,
       };
 
       const res = await fetch('/api/events', {
@@ -136,6 +137,10 @@ export default function NewEventPage() {
     { number: 2, title: "2. HORAIRES & PRIX", icon: Clock, desc: "DÉBUT, FIN & TARIF" },
     { number: 3, title: "3. PHOTO", icon: ImageIcon, desc: "IMAGE" },
   ];
+
+  // Génération des heures (00 à 23) et minutes (00, 15, 30, 45) pour le sélecteur personnalisé
+  const hours = Array.from({ length: 24 }, (_, i) => String(i).padStart(2, '0'));
+  const minutes = ['00', '15', '30', '45'];
 
   return (
     <div className="w-full px-4 lg:px-12 py-8 space-y-8 font-grotesque text-white bg-[#0f0f0f] min-h-screen uppercase">
@@ -256,37 +261,83 @@ export default function NewEventPage() {
               <div className="space-y-6 font-grotesque">
                 <div className="border-b border-white/10 pb-4">
                   <h2 className="text-base font-bold text-white">QUAND ET COMBIEN ?</h2>
-                  <p className="text-xs text-white/60">INDIQUEZ BIEN L'HEURE DE DÉBUT ET DE FIN POUR QUE TOUT LE MONDE SACHE.</p>
+                  <p className="text-xs text-white/60">INDIQUEZ BIEN L'HEURE DE DÉBUT ET DE FIN VIA LE SÉLECTEUR CI-DESSOUS.</p>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-neutral-950 p-6 rounded-2xl border-2 border-white/20">
-                  <div className="space-y-2">
+                  
+                  {/* DÉBUT PERSONNALISÉ */}
+                  <div className="space-y-3">
                     <label className="text-sm text-white font-bold flex items-center gap-2">
                       <Clock className="w-4 h-4 text-green-400" />
-                      <span>DÉBUT (HEURE DE LANCEMENT) *</span>
+                      <span>DÉBUT DE L'ÉVÉNEMENT *</span>
                     </label>
-                    <input
-                      type="datetime-local"
-                      name="starts_at"
-                      value={form.starts_at}
-                      onChange={handleChange}
-                      className="w-full rounded-xl border-2 border-white/30 bg-neutral-900 px-4 py-3 text-sm font-bold text-white focus:outline-none focus:border-white transition-colors"
-                    />
+                    <div className="space-y-2">
+                      <input
+                        type="date"
+                        value={startDate}
+                        onChange={(e) => setStartDate(e.target.value)}
+                        className="w-full rounded-xl border-2 border-white/30 bg-neutral-900 px-4 py-3 text-sm font-bold text-white focus:outline-none focus:border-white transition-colors uppercase cursor-pointer"
+                      />
+                      <div className="grid grid-cols-2 gap-2">
+                        <select
+                          value={startHour}
+                          onChange={(e) => setStartHour(e.target.value)}
+                          className="w-full rounded-xl border-2 border-white/30 bg-neutral-900 px-3 py-3 text-sm font-bold text-white focus:outline-none focus:border-white cursor-pointer"
+                        >
+                          {hours.map((h) => (
+                            <option key={`sh-${h}`} value={h}>{h}H</option>
+                          ))}
+                        </select>
+                        <select
+                          value={startMinute}
+                          onChange={(e) => setStartMinute(e.target.value)}
+                          className="w-full rounded-xl border-2 border-white/30 bg-neutral-900 px-3 py-3 text-sm font-bold text-white focus:outline-none focus:border-white cursor-pointer"
+                        >
+                          {minutes.map((m) => (
+                            <option key={`sm-${m}`} value={m}>{m}MIN</option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
                   </div>
 
-                  <div className="space-y-2">
+                  {/* FIN PERSONNALISÉE */}
+                  <div className="space-y-3">
                     <label className="text-sm text-white font-bold flex items-center gap-2">
                       <Clock className="w-4 h-4 text-red-400" />
-                      <span>FIN (HEURE DE SORTIE) *</span>
+                      <span>FIN DE L'ÉVÉNEMENT *</span>
                     </label>
-                    <input
-                      type="datetime-local"
-                      name="ends_at"
-                      value={form.ends_at}
-                      onChange={handleChange}
-                      className="w-full rounded-xl border-2 border-white/30 bg-neutral-900 px-4 py-3 text-sm font-bold text-white focus:outline-none focus:border-white transition-colors"
-                    />
+                    <div className="space-y-2">
+                      <input
+                        type="date"
+                        value={endDate}
+                        onChange={(e) => setEndDate(e.target.value)}
+                        className="w-full rounded-xl border-2 border-white/30 bg-neutral-900 px-4 py-3 text-sm font-bold text-white focus:outline-none focus:border-white transition-colors uppercase cursor-pointer"
+                      />
+                      <div className="grid grid-cols-2 gap-2">
+                        <select
+                          value={endHour}
+                          onChange={(e) => setEndHour(e.target.value)}
+                          className="w-full rounded-xl border-2 border-white/30 bg-neutral-900 px-3 py-3 text-sm font-bold text-white focus:outline-none focus:border-white cursor-pointer"
+                        >
+                          {hours.map((h) => (
+                            <option key={`eh-${h}`} value={h}>{h}H</option>
+                          ))}
+                        </select>
+                        <select
+                          value={endMinute}
+                          onChange={(e) => setEndMinute(e.target.value)}
+                          className="w-full rounded-xl border-2 border-white/30 bg-neutral-900 px-3 py-3 text-sm font-bold text-white focus:outline-none focus:border-white cursor-pointer"
+                        >
+                          {minutes.map((m) => (
+                            <option key={`em-${m}`} value={m}>{m}MIN</option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
                   </div>
+
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
