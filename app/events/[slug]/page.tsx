@@ -200,7 +200,6 @@ export default function PublicEventPage() {
 
   const basePrice = Number(event.price) || 0;
   
-  // Calculs sans frais de plateforme (uniquement le prix organisateur + frais Stripe)
   const organizerSharePerTicket = basePrice;
   const stripePercentage = 0.015;
   const stripeFixed = 0.25;
@@ -252,79 +251,95 @@ export default function PublicEventPage() {
   };
 
   return (
-    <main className="w-full min-h-screen bg-[#0f0f0f] text-white font-grotesque selection:bg-white selection:text-black flex flex-col justify-center py-20 px-6 sm:px-12 uppercase">
-      <div className="w-full max-w-5xl mx-auto">
+    <main className="w-full min-h-screen lg:py-20 lg:px-12 bg-[#0f0f0f] text-white font-grotesque selection:bg-white selection:text-black flex flex-col justify-center uppercase">
+      {/* 
+        Mise en page Linktree / ffm.to sur MOBILE : 
+        - h-screen overflow-hidden (pas de scroll, tient sur l'écran unique)
+        - flex flex-col justify-between items-center py-6 px-4
+        Sur PC (lg:) : 
+        - h-auto overflow-visible (grille classique large et propre)
+      */}
+      <div className="w-full max-w-5xl mx-auto h-screen lg:h-auto flex flex-col justify-between lg:justify-center py-6 px-4 sm:px-6 lg:px-0 overflow-hidden lg:overflow-visible">
         
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-12 items-center lg:items-start my-auto">
           
+          {/* COLONNE GAUCHE : AFFICHE (plus compacte sur mobile pour tenir sans scroll) */}
           <div className="lg:col-span-5 flex justify-center">
-            <div className="w-full max-w-md aspect-square bg-neutral-900/50 border border-white/10 rounded-3xl overflow-hidden shadow-2xl p-2.5">
+            <div className="w-36 sm:w-48 lg:w-full max-w-md aspect-square bg-neutral-900/50 border border-white/10 rounded-2xl lg:rounded-3xl overflow-hidden shadow-2xl p-2">
               {event.image_url ? (
-                <img src={event.image_url} alt={event.title} className="w-full h-full object-cover rounded-2xl" />
+                <img src={event.image_url} alt={event.title} className="w-full h-full object-cover rounded-xl lg:rounded-2xl" />
               ) : (
-                <div className="w-full h-full p-8 flex flex-col justify-between bg-neutral-900 text-white rounded-2xl border border-white/10">
-                  <span className="text-[10px] tracking-widest text-white/40 font-bold">VISUEL</span>
-                  <span className="text-3xl font-normal tracking-tight">EVENT</span>
+                <div className="w-full h-full p-4 lg:p-8 flex flex-col justify-between bg-neutral-900 text-white rounded-xl lg:rounded-2xl border border-white/10">
+                  <span className="text-[9px] lg:text-[10px] tracking-widest text-white/40 font-bold">VISUEL</span>
+                  <span className="text-xl lg:text-3xl font-normal tracking-tight">EVENT</span>
                 </div>
               )}
             </div>
           </div>
 
-          <div className="lg:col-span-7 space-y-8">
+          {/* COLONNE DROITE : TITRE, INFOS ET BOUTON LINKTREE */}
+          <div className="lg:col-span-7 space-y-4 lg:space-y-8 text-center lg:text-left">
             
-            <div className="space-y-4">
+            <div className="space-y-2 lg:space-y-4">
               {event.organizations?.name && (
-                <div className="inline-flex items-center gap-2 text-xs font-bold tracking-wider text-white/60 bg-white/5 border border-white/10 px-3.5 py-1.5 rounded-full">
-                  <Building2 className="w-3.5 h-3.5" />
+                <div className="inline-flex items-center gap-1.5 text-[10px] lg:text-xs font-bold tracking-wider text-white/60 bg-white/5 border border-white/10 px-3 py-1 lg:px-3.5 lg:py-1.5 rounded-full">
+                  <Building2 className="w-3 h-3 lg:w-3.5 lg:h-3.5" />
                   <span>{event.organizations.name}</span>
                 </div>
               )}
               
-              <h1 className="text-4xl sm:text-5xl font-normal tracking-tight leading-[1.1] text-white">
+              <h1 className="text-2xl sm:text-3xl lg:text-5xl font-normal tracking-tight leading-[1.1] text-white">
                 {event.title}
               </h1>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs font-bold tracking-wide">
+            {/* DATES & LIEUX */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 lg:gap-3 text-[11px] lg:text-xs font-bold tracking-wide">
               {formattedDate && (
-                <div className="flex items-center gap-3 bg-neutral-900/80 border border-white/10 p-3.5 rounded-2xl">
-                  <Calendar className="w-4 h-4 text-white/70 shrink-0" />
+                <div className="flex items-center justify-center lg:justify-start gap-2.5 bg-neutral-900/85 border border-white/10 p-2.5 lg:p-3.5 rounded-xl lg:rounded-2xl">
+                  <Calendar className="w-3.5 h-3.5 lg:w-4 lg:h-4 text-white/70 shrink-0" />
                   <span className="truncate">{formattedDate}</span>
                 </div>
               )}
               {formattedTime && (
-                <div className="flex items-center gap-3 bg-neutral-900/80 border border-white/10 p-3.5 rounded-2xl">
-                  <Clock className="w-4 h-4 text-white/70 shrink-0" />
+                <div className="flex items-center justify-center lg:justify-start gap-2.5 bg-neutral-900/85 border border-white/10 p-2.5 lg:p-3.5 rounded-xl lg:rounded-2xl">
+                  <Clock className="w-3.5 h-3.5 lg:w-4 lg:h-4 text-white/70 shrink-0" />
                   <span>{formattedTime}</span>
                 </div>
               )}
               {event.location && (
-                <div className="sm:col-span-2 flex items-center gap-3 bg-neutral-900/80 border border-white/10 p-3.5 rounded-2xl">
-                  <MapPin className="w-4 h-4 text-white/70 shrink-0" />
+                <div className="sm:col-span-2 flex items-center justify-center lg:justify-start gap-2.5 bg-neutral-900/85 border border-white/10 p-2.5 lg:p-3.5 rounded-xl lg:rounded-2xl">
+                  <MapPin className="w-3.5 h-3.5 lg:w-4 lg:h-4 text-white/70 shrink-0" />
                   <span className="truncate">{event.location}</span>
                 </div>
               )}
             </div>
 
-            <div className="pt-2">
+            {/* BOUTON D'ACTION AVEC PRIX FINAL DIRECTEMENT PRÉCISÉ */}
+            <div className="pt-1 lg:pt-2">
               <button
                 onClick={() => {
                   setClientSecret(null);
                   setIsSuccess(false);
                   setIsCheckoutOpen(true);
                 }}
-                className="w-full h-14 bg-white text-black text-xs uppercase tracking-widest hover:bg-neutral-200 transition-all flex items-center justify-center gap-3 cursor-pointer shadow-lg font-bold rounded-2xl"
+                className="w-full h-12 lg:h-14 bg-white text-black text-xs uppercase tracking-widest hover:bg-neutral-200 transition-all flex items-center justify-center gap-3 cursor-pointer shadow-lg font-bold rounded-xl lg:rounded-2xl"
               >
                 <Ticket className="w-4 h-4" />
-                <span>{basePrice === 0 ? 'RÉSERVER GRATUITEMENT' : `RÉSERVER • À PARTIR DE ${basePrice.toFixed(2)} €`}</span>
+                <span>
+                  {basePrice === 0 
+                    ? 'RÉSERVER GRATUITEMENT' 
+                    : `RÉSERVER • ${totalPrice.toFixed(2)} € (FRAIS INCLUS)`}
+                </span>
                 <ArrowUpRight className="w-4 h-4" />
               </button>
             </div>
 
+            {/* DESCRIPTION INTÉGRÉE (Masquée sur mobile pour éviter le scroll, visible uniquement sur PC) */}
             {event.description && (
-              <div className="bg-neutral-900/40 border border-white/10 p-6 sm:p-8 rounded-3xl space-y-3">
+              <div className="hidden lg:block bg-neutral-900/40 border border-white/10 p-6 lg:p-8 rounded-3xl space-y-3">
                 <h3 className="text-xs font-bold uppercase tracking-widest text-white/40">À PROPOS DE L&apos;ÉVÉNEMENT</h3>
-                <p className="text-xs sm:text-sm leading-relaxed text-white/80 whitespace-pre-line font-normal">
+                <p className="text-xs sm:text-sm leading-relaxed text-white/80 whitespace-pre-line font-normal text-left">
                   {event.description}
                 </p>
               </div>
