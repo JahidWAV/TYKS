@@ -20,10 +20,10 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Événement introuvable' }, { status: 404 });
     }
 
-    // 1. Prix total des billets pour l'organisateur
-    const baseAmount = unitPrice * quantity;
+    // 1. Ce que touche l'organisateur (ex: 10.00€ par billet)
+    const organizerBaseAmount = unitPrice * quantity;
     
-    if (baseAmount === 0) {
+    if (organizerBaseAmount === 0) {
       return NextResponse.json({ 
         success: true, 
         free: true,
@@ -31,17 +31,21 @@ export async function POST(req: Request) {
       });
     }
 
-    // 2. Tes frais de service de plateforme (ex: 0,90 € par billet)
+    // 2. Tes frais de service plateforme (ex: 0.90€ par billet) qui s'ajoutent pour l'acheteur
     const platformFeePerTicket = 0.90;
     const totalPlatformFee = platformFeePerTicket * quantity;
 
-    // 3. Estimation des frais Stripe (en France, les cartes européennes coûtent généralement environ 1,5% + 0,25 € par transaction)
-    // On calcule ces frais sur le montant total provisoire (billets + ta com) pour que Stripe ne rogne pas sur ta marge.
-    const provisionalTotal = baseAmount + totalPlatformFee;
-    const estimatedStripeFees = (provisionalTotal * 0.015) + 0.25;
+    // 3. Sous-total avant frais bancaires Stripe (Organisateur + Plateforme)
+    const subtotal = organizerBaseAmount + totalPlatformFee;
 
-    // 4. Montant final total payé par l'acheteur
-    const finalTotalAmount = provisionalTotal + estimatedStripeFees;
+    // 4. Calcul des frais Stripe réels estimés sur le total payé par l'acheteur (~1.5% + 0.25€ en Europe)
+    // Formule mathématique pour que les frais Stripe soient entièrement à la charge de l'acheteur sans mordre sur ta com ou celle de l'org.
+    const stripePercentage = 0.015;
+    const stripeFixed = 0.25;
+    const estimatedStripeFees = (subtotal + stripeFixed) / (1 - stripePercentage) - subtotal;
+
+    // 5. Total final exact facturé à l'acheteur (Prix billet + Tes frais + Frais Stripe)
+    const finalTotalAmount = subtotal + estimatedStripeFees;
     const totalAmountCents = Math.round(finalTotalAmount * 100);
 
     const paymentIntent = await stripe.paymentIntents.create({
@@ -52,7 +56,7 @@ export async function POST(req: Request) {
         eventId: event.id,
         quantity: quantity.toString(),
         includeSupport: includeSupport ? 'true' : 'false',
-        organizerRevenue: baseAmount.toFixed(2),
+        organizerRevenue: organizerBaseAmount.toFixed(2),
         platformFee: totalPlatformFee.toFixed(2),
         estimatedStripeFees: estimatedStripeFees.toFixed(2),
       },
