@@ -1,12 +1,11 @@
 'use client';
 
 import { useState, useEffect, useRef, useLayoutEffect } from 'react';
-import Link from 'next/link';
-import Navbar from '@/components/Navbar';
+import { useRouter } from 'next/navigation';
+import Navbar '@/components/Navbar';
 import { 
   ArrowUpRight, 
   Calendar, 
-  MapPin, 
   ShieldCheck, 
   Ticket, 
   Sparkles, 
@@ -34,16 +33,15 @@ interface TyksEvent {
 }
 
 export default function PublicHome() {
+  const router = useRouter();
   const [events, setEvents] = useState<TyksEvent[]>([]);
   const [loading, setLoading] = useState(true);
   const [fetchError, setFetchError] = useState(false);
   const sliderRef = useRef<HTMLDivElement>(null);
   const mainContainerRef = useRef<HTMLDivElement>(null);
-  const eventSectionRef = useRef<HTMLElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
 
-  // Utilisation de useLayoutEffect pour restaurer la position avant le premier paint et éviter le flash
   useLayoutEffect(() => {
     const container = mainContainerRef.current;
     if (!container) return;
@@ -195,9 +193,9 @@ export default function PublicHome() {
         </section>
 
         {/* SECTION ÉVÉNEMENTS */}
-        <section ref={eventSectionRef} id="evenements" className="h-screen w-full snap-start snap-always flex items-center justify-between px-4 sm:px-8 lg:px-12 py-4 shrink-0 relative overflow-hidden">
+        <section id="evenements" className="h-screen w-full snap-start snap-always flex items-center justify-between px-4 sm:px-8 lg:px-12 py-4 shrink-0 relative overflow-hidden">
           
-          {/* Texte vertical gauche : PROCHAINS ÉVÉNEMENTS (calé à la hauteur exacte des cartes) */}
+          {/* Texte vertical gauche */}
           <div className="hidden xl:flex items-center justify-center shrink-0 w-16 h-[460px] select-none self-center">
             <span className="text-white/[0.04] uppercase tracking-[0.2em] text-3xl font-black [writing-mode:vertical-lr] rotate-180 whitespace-nowrap">
               PROCHAINS ÉVÉNEMENTS
@@ -231,7 +229,7 @@ export default function PublicHome() {
               </div>
             ) : (
               <>
-                {/* Flèche Gauche (Affichée uniquement si on peut scroller à gauche) */}
+                {/* Flèche Gauche */}
                 {canScrollLeft && (
                   <button 
                     onClick={() => scrollSlider('left')}
@@ -242,15 +240,16 @@ export default function PublicHome() {
                   </button>
                 )}
 
-                {/* Conteneur du Slider Horizontal */}
+                {/* Conteneur du Slider Horizontal (centrage automatique géré avec justify-center si peu d'items) */}
                 <div 
                   ref={sliderRef}
-                  className="w-full flex gap-6 overflow-x-auto scrollbar-none snap-x snap-mandatory py-4 px-2"
+                  className="w-full flex gap-6 overflow-x-auto scrollbar-none snap-x snap-mandatory py-4 px-2 justify-start xl:justify-center items-center"
                   style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
                 >
                   {events.map((evt) => {
                     const basePrice = Number(evt.price || evt.ticket_price || 0);
-                    const finalPriceWithStripe = basePrice > 0 ? basePrice * 1.015 + 0.25 : 0;
+                    // Calcul précis au centime près via arrondi mathématique strict
+                    const finalPriceWithStripe = basePrice > 0 ? Math.round((basePrice * 1.015 + 0.25) * 100) / 100 : 0;
                     const eventImage = evt.image_url || evt.image;
                     
                     const dateObj = evt.starts_at ? new Date(evt.starts_at) : null;
@@ -269,10 +268,13 @@ export default function PublicHome() {
                         })
                       : '';
 
+                    const eventUrl = `/events/${evt.slug || evt.id}`;
+
                     return (
                       <article
                         key={evt.id}
-                        className="group flex flex-col bg-white text-black border border-white/15 rounded-[2.5rem] overflow-hidden transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 shrink-0 w-[300px] sm:w-[340px] snap-start"
+                        onClick={() => router.push(eventUrl)}
+                        className="group cursor-pointer flex flex-col bg-white text-black border border-white/15 rounded-[2.5rem] overflow-hidden transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 shrink-0 w-[300px] sm:w-[340px] snap-start"
                       >
                         {/* Image carrée propre */}
                         <div className="relative w-full aspect-square bg-neutral-100 overflow-hidden border-b border-black/10 flex items-center justify-center">
@@ -290,46 +292,41 @@ export default function PublicHome() {
                           )}
                         </div>
 
-                        {/* Infos textuelles parfaitement centrées */}
-                        <div className="p-5 flex-1 space-y-3 flex flex-col justify-center text-center">
-                          <div className="space-y-2">
-                            {/* Titre */}
-                            <h3 className="text-base font-bold text-black tracking-tight group-hover:underline transition-colors line-clamp-1">
-                              {evt.title}
-                            </h3>
-                            
-                            {/* Lieu */}
-                            {evt.location && (
-                              <div className="flex items-center justify-center gap-2 text-xs text-black/70 font-semibold">
-                                <MapPin className="h-3.5 w-3.5 text-black/50 shrink-0" />
-                                <span className="truncate">{evt.location}</span>
-                              </div>
-                            )}
+                        {/* Infos textuelles centrées avec opacités hiérarchisées, sans lignes */}
+                        <div className="p-5 flex-1 space-y-2 flex flex-col justify-center text-center">
+                          {/* Titre (Opacité max / 100%) */}
+                          <h3 className="text-base font-bold text-black tracking-tight group-hover:underline transition-colors line-clamp-1">
+                            {evt.title}
+                          </h3>
+                          
+                          {/* Lieu (Opacité intermédiaire / 70%) */}
+                          {evt.location && (
+                            <p className="text-xs text-black/70 font-semibold truncate">
+                              {evt.location}
+                            </p>
+                          )}
 
-                            {/* Date et heure */}
-                            <div className="flex items-center justify-center gap-2 text-xs text-black/60 font-bold uppercase tracking-wider pt-1 border-t border-black/5">
-                              <Calendar className="h-3.5 w-3.5 shrink-0 text-black/40" />
-                              <span>{dateStr} {timeStr ? `• ${timeStr}` : ''}</span>
-                            </div>
-                          </div>
+                          {/* Date et heure (Opacité légère / 50%) */}
+                          <p className="text-xs text-black/50 font-bold uppercase tracking-wider pt-0.5">
+                            {dateStr} {timeStr ? `• ${timeStr}` : ''}
+                          </p>
                         </div>
 
-                        {/* Barre du bas avec bouton "À partir de [Prix]" direct */}
+                        {/* Bouton du bas cliquable */}
                         <div className="flex items-center justify-center border-t border-black/10 p-3.5 bg-neutral-50">
-                          <Link
-                            href={`/events/${evt.slug || evt.id}`}
-                            className="w-full h-9 px-4 bg-black hover:bg-neutral-800 text-white font-bold text-xs uppercase tracking-wider transition-all duration-300 flex items-center justify-center gap-2 rounded-xl shadow-md group-hover:gap-2.5 cursor-pointer"
+                          <div
+                            className="w-full h-9 px-4 bg-black group-hover:bg-neutral-800 text-white font-bold text-xs uppercase tracking-wider transition-all duration-300 flex items-center justify-center gap-2 rounded-xl shadow-md"
                           >
                             <span>{basePrice > 0 ? `À partir de ${finalPriceWithStripe.toFixed(2).replace('.', ',')} €` : 'Entrée Libre'}</span>
                             <ArrowUpRight className="w-3.5 h-3.5" />
-                          </Link>
+                          </div>
                         </div>
                       </article>
                     );
                   })}
                 </div>
 
-                {/* Flèche Droite (Affichée uniquement si on peut scroller à droite) */}
+                {/* Flèche Droite */}
                 {canScrollRight && (
                   <button 
                     onClick={() => scrollSlider('right')}
@@ -343,7 +340,7 @@ export default function PublicHome() {
             )}
           </div>
 
-          {/* Texte vertical droit : PROCHAINS ÉVÉNEMENTS (calé à la hauteur exacte des cartes) */}
+          {/* Texte vertical droit */}
           <div className="hidden xl:flex items-center justify-center shrink-0 w-16 h-[460px] select-none self-center">
             <span className="text-white/[0.04] uppercase tracking-[0.2em] text-3xl font-black [writing-mode:vertical-lr] whitespace-nowrap">
               PROCHAINS ÉVÉNEMENTS
