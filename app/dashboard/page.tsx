@@ -64,21 +64,12 @@ export default function OrganizerDashboard() {
       if (isRefresh) setRefreshing(true);
       else setLoading(true);
 
-      const { data: membership } = await supabaseBrowser
-        .from('organization_members')
-        .select('organization_id')
-        .eq('user_id', userId)
-        .maybeSingle();
-
-      let query = supabaseBrowser.from('events').select('*');
-
-      if (membership?.organization_id) {
-        query = query.eq('organization_id', membership.organization_id);
-      } else {
-        query = query.eq('created_by', userId);
-      }
-
-      const { data: eventsData, error } = await query.order('starts_at', { ascending: true });
+      // CORRECTION : On récupère directement tous les événements créés par l'utilisateur connecté
+      const { data: eventsData, error } = await supabaseBrowser
+        .from('events')
+        .select('*')
+        .eq('created_by', userId)
+        .order('starts_at', { ascending: true });
 
       if (error) {
         console.error('Erreur Supabase :', error.message);
@@ -418,7 +409,7 @@ export default function OrganizerDashboard() {
                     </span>
                     <div className="flex items-center gap-2">
                       <Link
-                        href={`/events/${evt.slug || evt.id}/edit`}
+                        href={`/dashboard/admin-events/${evt.slug || evt.id}/edit`}
                         className="w-10 h-10 rounded-xl border border-white/20 bg-neutral-900 text-white flex items-center justify-center hover:bg-white hover:text-black transition-colors cursor-pointer shadow-xs"
                         title="MODIFIER"
                       >
