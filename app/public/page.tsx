@@ -29,7 +29,6 @@ interface TyksEvent {
   price?: number;
   ticket_price?: number;
   image_url?: string;
-  image?: string;
 }
 
 export default function PublicHome() {
@@ -249,7 +248,8 @@ export default function PublicHome() {
                   {events.map((evt) => {
                     const basePrice = Number(evt.price || evt.ticket_price || 0);
                     const finalPriceWithStripe = basePrice > 0 ? Math.round((basePrice * 1.015 + 0.25) * 100) / 100 : 0;
-                    const eventImage = evt.image_url || evt.image;
+                    
+                    const eventImage = evt.image_url;
                     
                     const dateObj = evt.starts_at ? new Date(evt.starts_at) : null;
                     const dateStr = dateObj
@@ -275,18 +275,18 @@ export default function PublicHome() {
                         onClick={() => router.push(eventUrl)}
                         className="group cursor-pointer flex flex-col bg-white text-black border border-white/15 rounded-[2.5rem] overflow-hidden transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 shrink-0 w-[300px] sm:w-[340px] snap-start"
                       >
-                        {/* Image carrée propre */}
-                        <div className="relative w-full aspect-square bg-neutral-100 overflow-hidden border-b border-black/10 flex items-center justify-center">
-                          {eventImage ? (
+                        {/* Image carrée ou fallback stylé */}
+                        <div className="relative w-full aspect-square bg-neutral-900 overflow-hidden border-b border-black/10 flex items-center justify-center">
+                          {eventImage && eventImage.trim() !== '' ? (
                             <img
                               src={eventImage}
                               alt={evt.title || 'Événement'}
                               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
                             />
                           ) : (
-                            <div className="flex flex-col items-center justify-center text-black/30 space-y-1">
-                              <Calendar className="w-6 h-6 stroke-[1.5]" />
-                              <span className="text-[10px] uppercase tracking-widest font-bold">TYKS</span>
+                            <div className="w-full h-full bg-gradient-to-br from-neutral-900 to-neutral-800 flex flex-col items-center justify-center p-6 text-center space-y-2">
+                              <span className="text-[10px] tracking-widest uppercase text-white/50 font-bold">TYKS LIVE</span>
+                              <span className="text-sm font-bold text-white line-clamp-2">{evt.title}</span>
                             </div>
                           )}
                         </div>
