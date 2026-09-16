@@ -134,13 +134,24 @@ export default function PublicHome() {
           </div>
         </section>
 
-        {/* SECTION ÉVÉNEMENTS */}
-        <section id="evenements" className="h-screen w-full snap-start snap-always flex flex-col justify-center max-w-7xl mx-auto px-6 lg:px-12 py-8 shrink-0">
-          <div className="space-y-6 w-full">
-            <div className="flex flex-row items-center justify-between border-b border-white/15 pb-4 gap-4">
-              <h2 className="text-xl sm:text-3xl font-bold text-white tracking-tight">PROCHAINS ÉVÉNEMENTS</h2>
+        {/* SECTION ÉVÉNEMENTS (Titres verticaux de chaque côté) */}
+        <section id="evenements" className="h-screen w-full snap-start snap-always flex items-center justify-between max-w-[90rem] mx-auto px-4 sm:px-8 lg:px-12 py-8 shrink-0 relative">
+          
+          {/* Titre vertical gauche (masqué sur mobile très étroit pour laisser de la place) */}
+          <div className="hidden xl:flex flex-col items-center justify-center shrink-0 w-16 select-none">
+            <span className="text-white/20 uppercase tracking-[0.3em] text-xs font-bold [writing-mode:vertical-lr] rotate-180">
+              PROCHAINS
+            </span>
+          </div>
+
+          {/* Contenu central */}
+          <div className="flex-1 space-y-6 w-full max-w-7xl mx-auto px-2">
+            
+            {/* Petit en-tête mobile/tablette si les textes verticaux sont masqués */}
+            <div className="flex xl:hidden items-center justify-between border-b border-white/15 pb-4 gap-4">
+              <h2 className="text-xl font-bold text-white tracking-tight">PROCHAINS ÉVÉNEMENTS</h2>
               <span className="text-[11px] uppercase tracking-wider text-white font-bold px-3.5 py-1.5 rounded-full bg-neutral-900 border border-white/15 shrink-0">
-                {events.length} DISPONIBLE{events.length > 1 ? 'S' : ''}
+                {events.length} DISP.
               </span>
             </div>
 
@@ -167,7 +178,7 @@ export default function PublicHome() {
                 </p>
               </div>
             ) : (
-              <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 max-h-[65vh] overflow-y-auto pr-1">
+              <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 max-h-[70vh] overflow-y-auto pr-1">
                 {events.slice(0, 3).map((evt) => {
                   const eventPrice = Number(evt.price || evt.ticket_price || 0);
                   const eventImage = evt.image_url || evt.image;
@@ -244,6 +255,14 @@ export default function PublicHome() {
               </div>
             )}
           </div>
+
+          {/* Titre vertical droit (masqué sur mobile très étroit) */}
+          <div className="hidden xl:flex flex-col items-center justify-center shrink-0 w-16 select-none">
+            <span className="text-white/20 uppercase tracking-[0.3em] text-xs font-bold [writing-mode:vertical-lr]">
+              ÉVÉNEMENTS
+            </span>
+          </div>
+
         </section>
 
         {/* SECTION VALEURS */}
