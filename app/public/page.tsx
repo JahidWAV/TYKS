@@ -41,10 +41,12 @@ export default function PublicHome() {
   }, []);
 
   return (
-    <main className="bg-[#0f0f0f] text-white selection:bg-white selection:text-black font-grotesque antialiased overflow-x-hidden">
+    // h-screen + overflow-y-auto + snap-y active le magnétisme strict
+    <main className="h-screen overflow-y-auto snap-y snap-mandatory bg-[#0f0f0f] text-white selection:bg-white selection:text-black font-grotesque antialiased">
       
       {/* 1. HERO SECTION */}
-      <section className="min-h-screen flex items-center max-w-7xl mx-auto px-6 lg:px-12 pt-32 pb-20 border-b border-white/15">
+      {/* scroll-mt-24 garantit que le scroll s'arrête pile sous la navbar fixe */}
+      <section className="min-h-screen flex items-center max-w-7xl mx-auto px-6 lg:px-12 py-16 border-b border-white/15 snap-start snap-always scroll-mt-24">
         <div className="w-full grid lg:grid-cols-12 gap-12 lg:gap-16 items-center">
           
           <div className="lg:col-span-7 space-y-6 flex flex-col justify-center">
@@ -115,7 +117,7 @@ export default function PublicHome() {
       </section>
 
       {/* 2. SECTION ÉVÉNEMENTS */}
-      <section id="evenements" className="min-h-screen flex flex-col justify-center max-w-7xl mx-auto px-6 lg:px-12 py-24 border-b border-white/15">
+      <section id="evenements" className="min-h-screen flex flex-col justify-center max-w-7xl mx-auto px-6 lg:px-12 py-16 border-b border-white/15 snap-start snap-always scroll-mt-24">
         <div className="space-y-8 w-full">
           <div className="flex flex-col sm:flex-row sm:items-end justify-between border-b border-white/15 pb-5 gap-4">
             <h2 className="text-2xl sm:text-3xl font-bold text-white">PROCHAINS ÉVÉNEMENTS</h2>
@@ -222,7 +224,7 @@ export default function PublicHome() {
       </section>
 
       {/* 3. SECTION VALEURS */}
-      <section className="min-h-screen flex flex-col justify-center max-w-7xl mx-auto px-6 lg:px-12 py-24 border-b border-white/15">
+      <section className="min-h-screen flex flex-col justify-center max-w-7xl mx-auto px-6 lg:px-12 py-16 border-b border-white/15 snap-start snap-always scroll-mt-24">
         <div className="space-y-12 w-full">
           <div className="text-center max-w-2xl mx-auto space-y-3">
             <h2 className="text-2xl sm:text-4xl font-bold text-white">
@@ -268,7 +270,7 @@ export default function PublicHome() {
       </section>
 
       {/* 4. SECTION ORGANISATEURS & CTA FINAL */}
-      <section className="min-h-screen flex flex-col justify-center max-w-7xl mx-auto px-6 lg:px-12 py-24">
+      <section className="min-h-screen flex flex-col justify-center max-w-7xl mx-auto px-6 lg:px-12 py-16 snap-start snap-always scroll-mt-24">
         <div className="grid lg:grid-cols-2 gap-10 items-center w-full">
           <div className="space-y-5">
             <h2 className="text-2xl sm:text-4xl font-bold text-white">
