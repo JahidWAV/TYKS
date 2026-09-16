@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft, ArrowRight, Check, MapPin, FileText, Calendar, Euro, Loader2, Upload, Image as ImageIcon } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Check, MapPin, FileText, Calendar, Euro, Loader2, Upload, Image as ImageIcon, Clock } from 'lucide-react';
 import { supabaseBrowser } from '@/lib/supabase-browser';
 
 export default function NewEventPage() {
@@ -28,7 +28,6 @@ export default function NewEventPage() {
     setForm({ ...form, [e.target.name]: e.target.value });
   }
 
-  // Fonction d'upload d'image vers Supabase Storage corrigée
   async function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -38,7 +37,6 @@ export default function NewEventPage() {
       setError(null);
 
       const fileExt = file.name.split('.').pop();
-      // Correction de la syntaxe ici : Math.random().toString(36).substring(2)
       const fileName = `${Math.random().toString(36).substring(2)}-${Date.now()}.${fileExt}`;
       const filePath = `event-covers/${fileName}`;
 
@@ -66,12 +64,14 @@ export default function NewEventPage() {
   const handleNext = () => {
     setError(null);
     if (step === 1 && (!form.title.trim() || !form.location.trim())) {
-      setError("VEUILLEZ REMPLIR LE TITRE ET LE LIEU DE L'ÉVÉNEMENT.");
+      setError("❌ OUPSS ! IL MANQUE LE TITRE OU LE LIEU DE L'ÉVÉNEMENT.");
       return;
     }
-    if (step === 2 && !form.starts_at) {
-      setError("VEUILLEZ RENSEIGNER LA DATE DE DÉBUT.");
-      return;
+    if (step === 2) {
+      if (!form.starts_at || !form.ends_at) {
+        setError("❌ IL FAUT IMPÉRATIVEMENT METTRE UNE HEURE DE DÉBUT ET UNE HEURE DE FIN !");
+        return;
+      }
     }
     setStep((prev) => Math.min(prev + 1, 3));
   };
@@ -118,32 +118,32 @@ export default function NewEventPage() {
   }
 
   const stepsMeta = [
-    { number: 1, title: "GÉNÉRAL", icon: FileText, desc: "IDENTITÉ ET LIEU" },
-    { number: 2, title: "DATES & TARIFS", icon: Calendar, desc: "PLANNING ET JAUGE" },
-    { number: 3, title: "VISUEL", icon: ImageIcon, desc: "COUVERTURE" },
+    { number: 1, title: "1. LES BASES", icon: FileText, desc: "NOM & LIEU" },
+    { number: 2, title: "2. HORAIRES & PRIX", icon: Clock, desc: "DÉBUT, FIN & TARIF" },
+    { number: 3, title: "3. PHOTO", icon: ImageIcon, desc: "IMAGE" },
   ];
 
   return (
-    <div className="w-full px-6 lg:px-12 py-8 space-y-8 font-grotesque text-white bg-[#0f0f0f] min-h-full uppercase">
-      <div className="max-w-3xl mx-auto space-y-10">
+    <div className="w-full px-4 lg:px-12 py-8 space-y-8 font-grotesque text-white bg-[#0f0f0f] min-h-screen uppercase">
+      <div className="max-w-3xl mx-auto space-y-8">
         
         <div>
           <Link
             href="/"
-            className="inline-flex items-center gap-2 text-xs font-bold text-white/60 hover:text-white transition-colors"
+            className="inline-flex items-center gap-2 text-sm font-bold text-white/70 hover:text-white bg-neutral-900 px-4 py-2.5 rounded-xl border border-white/10 transition-colors"
           >
-            <ArrowLeft className="w-4 h-4" />
-            <span>RETOUR AU DASHBOARD</span>
+            <ArrowLeft className="w-5 h-5" />
+            <span>← RETOUR AU TABLEAU DE BORD</span>
           </Link>
         </div>
 
         <div className="space-y-6 pb-6 border-b border-white/10">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div className="space-y-1">
-              <h1 className="text-3xl lg:text-4xl font-normal tracking-tight leading-none text-white">CRÉER UN ÉVÉNEMENT</h1>
-              <p className="text-xs text-white/60 font-bold">PUBLICATION D&apos;UN NOUVEL ÉVÉNEMENT</p>
+              <h1 className="text-3xl lg:text-5xl font-normal tracking-tight leading-none text-white">CRÉER UN ÉVÉNEMENT</h1>
+              <p className="text-sm text-white/70 font-bold">LAISSEZ-VOUS GUIDER ÉTAPE PAR ÉTAPE</p>
             </div>
-            <span className="text-xs font-bold px-3.5 py-1.5 rounded-full bg-neutral-900 border border-white/15 text-white w-fit shadow-xs">
+            <span className="text-sm font-bold px-4 py-2 rounded-2xl bg-white text-black w-fit shadow-md">
               ÉTAPE {step} SUR 3
             </span>
           </div>
@@ -158,16 +158,16 @@ export default function NewEventPage() {
                   key={s.number}
                   className={`flex items-center gap-3 p-4 rounded-2xl border transition-all ${
                     isActive
-                      ? "bg-white text-black border-white shadow-md font-bold"
+                      ? "bg-white text-black border-white shadow-lg font-bold scale-105"
                       : isPassed
-                      ? "bg-neutral-900 border-white/15 text-white"
-                      : "bg-neutral-900/50 border-white/10 opacity-50 text-white/60"
+                      ? "bg-neutral-900 border-white/30 text-white"
+                      : "bg-neutral-900/50 border-white/10 opacity-60 text-white/60"
                   }`}
                 >
-                  <Icon className={`w-4 h-4 shrink-0 ${isActive ? "text-black" : "text-white"}`} />
-                  <div className="overflow-hidden hidden sm:block">
-                    <p className="text-xs font-bold truncate">{s.title}</p>
-                    <p className={`text-[10px] truncate ${isActive ? "text-black/70" : "text-white/50"}`}>{s.desc}</p>
+                  <Icon className={`w-5 h-5 shrink-0 ${isActive ? "text-black" : "text-white"}`} />
+                  <div className="overflow-hidden">
+                    <p className="text-xs sm:text-sm font-bold truncate">{s.title}</p>
+                    <p className={`text-[10px] truncate ${isActive ? "text-black/75" : "text-white/50"}`}>{s.desc}</p>
                   </div>
                 </div>
               );
@@ -176,56 +176,62 @@ export default function NewEventPage() {
         </div>
 
         {error && (
-          <div className="rounded-2xl border border-white/30 bg-neutral-900 px-5 py-3 text-xs text-white font-bold tracking-wider shadow-xs">
+          <div className="rounded-2xl border-2 border-red-500 bg-red-950/80 px-6 py-4 text-sm text-white font-bold tracking-wider shadow-lg animate-bounce">
             <span>{error}</span>
           </div>
         )}
 
-        <div className="rounded-2xl border border-white/10 bg-neutral-900 p-6 md:p-8 shadow-xs transition-all">
+        <div className="rounded-3xl border-2 border-white/20 bg-neutral-900 p-6 md:p-10 shadow-2xl transition-all">
           <form onSubmit={handleSubmit} className="space-y-6">
             
             {step === 1 && (
-              <div className="space-y-5 font-grotesque">
+              <div className="space-y-6 font-grotesque">
                 <div className="border-b border-white/10 pb-4">
-                  <h2 className="text-xs font-bold text-white">DÉTAILS GÉNÉRAUX</h2>
-                  <p className="text-[11px] text-white/50">DÉFINISSEZ LE NOM, LA DESCRIPTION ET LA LOCALISATION.</p>
+                  <h2 className="text-base font-bold text-white">QU'EST-CE QUE C'EST ?</h2>
+                  <p className="text-xs text-white/60">DONNEZ UN TITRE CLAIR ET INDIQUEZ OÙ ÇA SE PASSE.</p>
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-xs text-white/60 font-bold">TITRE *</label>
+                  <label className="text-sm text-white font-bold flex items-center justify-between">
+                    <span>TITRE DE L&apos;ÉVÉNEMENT *</span>
+                    <span className="text-[10px] text-white/40">OBLIGATOIRE</span>
+                  </label>
                   <input
                     type="text"
                     name="title"
                     value={form.title}
                     onChange={handleChange}
-                    placeholder="NOM DE L'ÉVÉNEMENT"
-                    className="w-full rounded-xl border border-white/15 bg-neutral-950 px-4 py-3 text-xs text-white placeholder:text-white/30 focus:outline-none focus:border-white transition-colors shadow-xs"
+                    placeholder="EX : CONCERT DE ROCK, ANNIVERSAIRE..."
+                    className="w-full rounded-2xl border-2 border-white/20 bg-neutral-950 px-5 py-4 text-sm sm:text-base text-white placeholder:text-white/30 focus:outline-none focus:border-white transition-colors shadow-inner font-bold"
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-xs text-white/60 font-bold">DESCRIPTION</label>
+                  <label className="text-sm text-white font-bold">PETITE DESCRIPTION (OPTIONNEL)</label>
                   <textarea
                     name="description"
                     rows={4}
                     value={form.description}
                     onChange={handleChange}
-                    placeholder="DÉCRIVEZ VOTRE ÉVÉNEMENT..."
-                    className="w-full rounded-xl border border-white/15 bg-neutral-950 px-4 py-3 text-xs text-white placeholder:text-white/30 focus:outline-none focus:border-white transition-colors resize-none shadow-xs"
+                    placeholder="EXPLIQUEZ EN QUELQUES MOTS CE QUI VA S'Y PASSER..."
+                    className="w-full rounded-2xl border-2 border-white/20 bg-neutral-950 px-5 py-4 text-sm sm:text-base text-white placeholder:text-white/30 focus:outline-none focus:border-white transition-colors resize-none shadow-inner"
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-xs text-white/60 font-bold">LIEU / ADRESSE *</label>
+                  <label className="text-sm text-white font-bold flex items-center justify-between">
+                    <span>LIEU OU ADRESSE *</span>
+                    <span className="text-[10px] text-white/40">OBLIGATOIRE</span>
+                  </label>
                   <div className="relative flex items-center">
-                    <MapPin className="absolute left-4 h-4 w-4 text-white pointer-events-none" />
+                    <MapPin className="absolute left-4 h-5 w-5 text-white pointer-events-none" />
                     <input
                       type="text"
                       name="location"
                       value={form.location}
                       onChange={handleChange}
-                      placeholder="ADRESSE OU NOM DU LIEU"
-                      className="w-full rounded-xl border border-white/15 bg-neutral-950 px-4 py-3 pl-11 text-xs text-white placeholder:text-white/30 focus:outline-none focus:border-white transition-colors shadow-xs"
+                      placeholder="EX : 12 RUE DE LA PAIX, PARIS"
+                      className="w-full rounded-2xl border-2 border-white/20 bg-neutral-950 px-5 py-4 pl-12 text-sm sm:text-base text-white placeholder:text-white/30 focus:outline-none focus:border-white transition-colors shadow-inner font-bold"
                     />
                   </div>
                 </div>
@@ -233,56 +239,66 @@ export default function NewEventPage() {
             )}
 
             {step === 2 && (
-              <div className="space-y-5 font-grotesque">
+              <div className="space-y-6 font-grotesque">
                 <div className="border-b border-white/10 pb-4">
-                  <h2 className="text-xs font-bold text-white">DATES & BILLETTERIE</h2>
-                  <p className="text-[11px] text-white/50">INDIQUEZ LES HORAIRES ET LES CONDITIONS TARIFAIRES.</p>
+                  <h2 className="text-base font-bold text-white">QUAND ET COMBIEN ?</h2>
+                  <p className="text-xs text-white/60">INDIQUEZ BIEN L'HEURE DE DÉBUT ET DE FIN POUR QUE TOUT LE MONDE SACHE.</p>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Bloc Horaires Ultra Clair */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-neutral-950 p-6 rounded-2xl border-2 border-white/20">
                   <div className="space-y-2">
-                    <label className="text-xs text-white/60 font-bold">DÉBUT *</label>
+                    <label className="text-sm text-white font-bold flex items-center gap-2">
+                      <Clock className="w-4 h-4 text-green-400" />
+                      <span>DÉBUT (HEURE DE LANCEMENT) *</span>
+                    </label>
                     <input
                       type="datetime-local"
                       name="starts_at"
                       value={form.starts_at}
                       onChange={handleChange}
-                      className="w-full rounded-xl border border-white/15 bg-neutral-950 px-4 py-3 text-xs text-white focus:outline-none focus:border-white transition-colors shadow-xs"
+                      className="w-full rounded-xl border-2 border-white/30 bg-neutral-900 px-4 py-3 text-sm font-bold text-white focus:outline-none focus:border-white transition-colors"
                     />
                   </div>
+
                   <div className="space-y-2">
-                    <label className="text-xs text-white/60 font-bold">FIN</label>
+                    <label className="text-sm text-white font-bold flex items-center gap-2">
+                      <Clock className="w-4 h-4 text-red-400" />
+                      <span>FIN (HEURE DE SORTIE) *</span>
+                    </label>
                     <input
                       type="datetime-local"
                       name="ends_at"
                       value={form.ends_at}
                       onChange={handleChange}
-                      className="w-full rounded-xl border border-white/15 bg-neutral-950 px-4 py-3 text-xs text-white focus:outline-none focus:border-white transition-colors shadow-xs"
+                      className="w-full rounded-xl border-2 border-white/30 bg-neutral-900 px-4 py-3 text-sm font-bold text-white focus:outline-none focus:border-white transition-colors"
                     />
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
                   <div className="space-y-2">
-                    <label className="text-xs text-white/60 font-bold">PRIX (€)</label>
+                    <label className="text-sm text-white font-bold">PRIX DU BILLET (€)</label>
                     <input
                       type="number"
                       step="0.01"
                       name="price"
                       value={form.price}
                       onChange={handleChange}
-                      className="w-full rounded-xl border border-white/15 bg-neutral-950 px-4 py-3 text-xs text-white focus:outline-none focus:border-white transition-colors shadow-xs"
+                      className="w-full rounded-2xl border-2 border-white/20 bg-neutral-950 px-5 py-4 text-base font-bold text-white focus:outline-none focus:border-white transition-colors shadow-inner"
                     />
+                    <p className="text-[10px] text-white/50">Mettez 0 si c'est gratuit.</p>
                   </div>
+
                   <div className="space-y-2">
-                    <label className="text-xs text-white/60 font-bold">JAUGE MAX</label>
+                    <label className="text-sm text-white font-bold">NOMBRE DE PLACES MAX (OPTIONNEL)</label>
                     <input
                       type="number"
                       name="capacity"
                       value={form.capacity}
                       onChange={handleChange}
-                      placeholder="EX: 150"
-                      className="w-full rounded-xl border border-white/15 bg-neutral-950 px-4 py-3 text-xs text-white placeholder:text-white/30 focus:outline-none focus:border-white transition-colors shadow-xs"
+                      placeholder="EX: 100"
+                      className="w-full rounded-2xl border-2 border-white/20 bg-neutral-950 px-5 py-4 text-base font-bold text-white placeholder:text-white/30 focus:outline-none focus:border-white transition-colors shadow-inner"
                     />
                   </div>
                 </div>
@@ -290,26 +306,26 @@ export default function NewEventPage() {
             )}
 
             {step === 3 && (
-              <div className="space-y-5 font-grotesque">
+              <div className="space-y-6 font-grotesque">
                 <div className="border-b border-white/10 pb-4">
-                  <h2 className="text-xs font-bold text-white">VISUEL DE L&apos;ÉVÉNEMENT</h2>
-                  <p className="text-[11px] text-white/50">TÉLÉCHARGEZ UNE IMAGE DE COUVERTURE OU INDIQUEZ UNE URL.</p>
+                  <h2 className="text-base font-bold text-white">AJOUTER UNE IMAGE</h2>
+                  <p className="text-xs text-white/60">CHOISISSEZ UNE BELLE PHOTO POUR ILLUSTRER VOTRE ÉVÉNEMENT.</p>
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-xs text-white/60 font-bold">FICHIER IMAGE (RECOMMANDÉ)</label>
-                  <label className="flex flex-col items-center justify-center w-full h-36 border-2 border-dashed border-white/20 rounded-2xl bg-neutral-950 hover:border-white transition cursor-pointer shadow-xs">
-                    <div className="flex flex-col items-center justify-center pt-5 pb-6 px-4 text-center">
+                  <label className="text-sm text-white font-bold">CLIQUEZ POUR CHOISIR UNE PHOTO DEPUIS VOTRE APPAREIL</label>
+                  <label className="flex flex-col items-center justify-center w-full h-44 border-3 border-dashed border-white/30 rounded-2xl bg-neutral-950 hover:border-white transition cursor-pointer shadow-inner">
+                    <div className="flex flex-col items-center justify-center p-6 text-center">
                       {uploadingImage ? (
                         <>
-                          <Loader2 className="w-6 h-6 animate-spin text-white mb-2" />
-                          <p className="text-xs text-white/60">TÉLÉCHARGEMENT EN COURS...</p>
+                          <Loader2 className="w-8 h-8 animate-spin text-white mb-2" />
+                          <p className="text-sm font-bold text-white">CHARGEMENT DE LA PHOTO...</p>
                         </>
                       ) : (
                         <>
-                          <Upload className="w-6 h-6 text-white mb-2" />
-                          <p className="text-xs font-bold text-white mb-1">CLIQUEZ POUR SÉLECTIONNER UN FICHIER</p>
-                          <p className="text-[10px] text-white/40">PNG, JPG, WEBP (MAX. 5MO)</p>
+                          <Upload className="w-8 h-8 text-white mb-3" />
+                          <p className="text-sm font-bold text-white mb-1">APPUYEZ ICI POUR IMPORTER UNE IMAGE</p>
+                          <p className="text-xs text-white/50">FORMATS ACCEPTÉS : JPG, PNG, WEBP</p>
                         </>
                       )}
                     </div>
@@ -323,20 +339,8 @@ export default function NewEventPage() {
                   </label>
                 </div>
 
-                <div className="space-y-2 pt-2">
-                  <label className="text-xs text-white/60 font-bold">OU URL DE L&apos;IMAGE</label>
-                  <input
-                    type="url"
-                    name="image_url"
-                    value={form.image_url}
-                    onChange={handleChange}
-                    placeholder="https://example.com/image.jpg"
-                    className="w-full rounded-xl border border-white/15 bg-neutral-950 px-4 py-3 text-xs text-white placeholder:text-white/30 focus:outline-none focus:border-white transition-colors shadow-xs"
-                  />
-                </div>
-
                 {form.image_url && (
-                  <div className="mt-4 rounded-xl overflow-hidden border border-white/20 h-48 bg-neutral-950 relative shadow-xs">
+                  <div className="mt-4 rounded-2xl overflow-hidden border-2 border-white/30 h-56 bg-neutral-950 relative shadow-md">
                     <img src={form.image_url} alt="APERÇU" className="w-full h-full object-cover" />
                   </div>
                 )}
@@ -348,9 +352,9 @@ export default function NewEventPage() {
                 <button
                   type="button"
                   onClick={handlePrev}
-                  className="inline-flex items-center gap-2 rounded-xl border border-white/20 bg-neutral-900 hover:bg-neutral-800 px-5 py-3 text-xs font-bold text-white transition-all cursor-pointer shadow-xs"
+                  className="inline-flex items-center gap-2 rounded-2xl border-2 border-white/30 bg-neutral-900 hover:bg-neutral-800 px-6 py-4 text-sm font-bold text-white transition-all cursor-pointer shadow-md"
                 >
-                  <ArrowLeft className="w-4 h-4" />
+                  <ArrowLeft className="w-5 h-5" />
                   <span>PRÉCÉDENT</span>
                 </button>
               ) : (
@@ -361,19 +365,19 @@ export default function NewEventPage() {
                 <button
                   type="button"
                   onClick={handleNext}
-                  className="inline-flex items-center gap-2 rounded-xl bg-white px-6 py-3 text-xs font-bold text-black transition-all hover:bg-neutral-200 ml-auto cursor-pointer shadow-lg"
+                  className="inline-flex items-center gap-2 rounded-2xl bg-white px-8 py-4 text-sm font-bold text-black transition-all hover:bg-neutral-200 ml-auto cursor-pointer shadow-xl scale-105"
                 >
-                  <span>SUIVANT</span>
-                  <ArrowRight className="w-4 h-4" />
+                  <span>ÉTAPE SUIVANTE</span>
+                  <ArrowRight className="w-5 h-5" />
                 </button>
               ) : (
                 <button
                   type="submit"
                   disabled={loading || uploadingImage}
-                  className="inline-flex items-center gap-2 rounded-xl bg-white px-6 py-3 text-xs font-bold text-black transition-all hover:bg-neutral-200 disabled:opacity-50 ml-auto cursor-pointer shadow-lg"
+                  className="inline-flex items-center gap-2 rounded-2xl bg-white px-8 py-4 text-sm font-bold text-black transition-all hover:bg-neutral-200 disabled:opacity-50 ml-auto cursor-pointer shadow-xl scale-105"
                 >
-                  {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
-                  <span>{loading ? 'CRÉATION...' : "CRÉER L'ÉVÉNEMENT"}</span>
+                  {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Check className="w-5 h-5" />}
+                  <span>{loading ? 'CRÉATION EN COURS...' : "PUBLIER L'ÉVÉNEMENT 🎉"}</span>
                 </button>
               )}
             </div>
