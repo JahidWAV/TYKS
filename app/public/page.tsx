@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { 
@@ -20,9 +19,24 @@ import {
 } from 'lucide-react';
 import { supabaseBrowser } from '@/lib/supabase-browser';
 
+interface TyksEvent {
+  id: string;
+  slug?: string;
+  title: string;
+  description?: string;
+  location?: string;
+  starts_at?: string;
+  price?: number;
+  ticket_price?: number;
+  image_url?: string;
+  image?: string;
+  organizations?: { name?: string };
+}
+
 export default function PublicHome() {
-  const [events, setEvents] = useState<any[]>([]);
+  const [events, setEvents] = useState<TyksEvent[]>([]);
   const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState(false);
 
   useEffect(() => {
     const fetchPublishedEvents = async () => {
@@ -35,6 +49,9 @@ export default function PublicHome() {
 
       if (!error && data) {
         setEvents(data);
+        setFetchError(false);
+      } else {
+        setFetchError(true);
       }
       setLoading(false);
     };
@@ -132,6 +149,15 @@ export default function PublicHome() {
               <div className="bg-neutral-900 border border-white/15 p-16 text-center text-xs text-white/60 rounded-[2.5rem] font-bold">
                 CHARGEMENT DES EXPÉRIENCES EN COURS...
               </div>
+            ) : fetchError ? (
+              <div className="bg-neutral-900 border border-white/15 p-16 text-center space-y-4 rounded-[2.5rem]">
+                <div className="w-12 h-12 mx-auto rounded-2xl bg-white/10 flex items-center justify-center text-white">
+                  <Calendar className="h-5 w-5" />
+                </div>
+                <p className="text-xs text-white/70 font-bold">
+                  UNE ERREUR EST SURVENUE LORS DU CHARGEMENT. VEUILLEZ RÉESSAYER.
+                </p>
+              </div>
             ) : events.length === 0 ? (
               <div className="bg-neutral-900 border border-white/15 p-16 text-center space-y-4 rounded-[2.5rem]">
                 <div className="w-12 h-12 mx-auto rounded-2xl bg-white/10 flex items-center justify-center text-white">
@@ -143,7 +169,7 @@ export default function PublicHome() {
               </div>
             ) : (
               <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                {events.slice(0, 3).map((evt: any) => {
+                {events.slice(0, 3).map((evt) => {
                   const eventPrice = Number(evt.price || evt.ticket_price || 0);
                   const eventImage = evt.image_url || evt.image;
                   const dateStr = evt.starts_at
@@ -233,7 +259,7 @@ export default function PublicHome() {
               </p>
             </div>
 
-            <div className="grid md:grid-cols-3 gap-6">
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
               <div className="bg-neutral-900 border border-white/15 p-6 sm:p-8 rounded-[2.5rem] space-y-4">
                 <div className="w-10 h-10 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center text-white">
                   <ShieldCheck className="w-5 h-5 stroke-[1.5]" />
@@ -281,7 +307,7 @@ export default function PublicHome() {
                 <div className="space-y-1.5">
                   <div className="w-8 h-8 rounded-xl bg-white/10 border border-white/15 flex items-center justify-center text-white">
                     <Users className="w-4 h-4" />
-                  </div> tout
+                  </div>
                   <h4 className="text-xs font-bold text-white">PROPRIÉTÉ DES DONNÉES</h4>
                   <p className="text-[10px] text-white/50 font-normal normal-case">Gardez le contact direct avec votre public.</p>
                 </div>
