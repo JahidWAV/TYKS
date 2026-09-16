@@ -1,8 +1,6 @@
 import type { Metadata } from 'next';
 import { headers } from 'next/headers';
 import { Inter, Space_Grotesk, JetBrains_Mono } from 'next/font/google';
-import Navbar from '@/components/Navbar';
-import Footer from '@/components/Footer';
 import './globals.css';
 
 const fontBody = Inter({
@@ -39,24 +37,17 @@ export default async function RootLayout({
 }) {
   const headersList = await headers();
   const hostname = headersList.get('host') || '';
-  
   const isDashboard = hostname.startsWith('dashboard.');
-  const isPro = hostname.startsWith('pro.');
 
   return (
     <html
       lang="fr"
       className={`${fontBody.variable} ${fontDisplay.variable} ${fontMono.variable}`}
     >
-      <body className="min-h-screen bg-white text-[#1e3932] flex flex-col selection:bg-[#1e3932]/20 selection:text-[#1e3932] font-sans">
-        
-        {/* Navbar affichée partout sauf sur le dashboard */}
-        {!isDashboard && <Navbar isPro={isPro} />}
-
-        <main className="relative z-10 flex-1">{children}</main>
-        
-        {/* Footer affiché partout sauf sur le dashboard */}
-        {!isDashboard && <Footer />}
+      <body className="min-h-screen bg-white text-[#1e3932] font-sans">
+        {/* Le layout ne gère plus la navbar/footer globaux pour les pages publiques, 
+            tout est intégré directement dans la page pour un contrôle total du flux. */}
+        <main className="relative z-10">{children}</main>
       </body>
     </html>
   );
