@@ -41,10 +41,10 @@ export default function PublicHome() {
   }, []);
 
   return (
-    <main className="h-screen overflow-y-scroll snap-y snap-mandatory bg-[#0f0f0f] text-white selection:bg-white selection:text-black font-grotesque antialiased pt-28 uppercase">
+    <main className="bg-[#0f0f0f] text-white selection:bg-white selection:text-black font-grotesque antialiased pt-24 uppercase">
       
       {/* 1. HERO SECTION */}
-      <section className="h-[calc(100vh-7rem)] min-h-[650px] max-w-7xl mx-auto px-6 lg:px-12 flex items-center border-b border-white/10 snap-start">
+      <section className="min-h-[calc(100vh-6rem)] flex items-center max-w-7xl mx-auto px-6 lg:px-12 py-12 lg:py-20 border-b border-white/15 snap-start">
         <div className="w-full grid lg:grid-cols-12 gap-12 lg:gap-16 items-center">
           
           <div className="lg:col-span-7 space-y-6 flex flex-col justify-center">
@@ -115,9 +115,9 @@ export default function PublicHome() {
       </section>
 
       {/* 2. SECTION ÉVÉNEMENTS */}
-      <section id="evenements" className="h-[calc(100vh-7rem)] min-h-[650px] max-w-7xl mx-auto px-6 lg:px-12 flex flex-col justify-center border-b border-white/10 snap-start">
+      <section id="evenements" className="min-h-[calc(100vh-6rem)] flex flex-col justify-center max-w-7xl mx-auto px-6 lg:px-12 py-16 lg:py-20 border-b border-white/15 snap-start">
         <div className="space-y-8 w-full">
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between border-b border-white/10 pb-4 gap-4">
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between border-b border-white/15 pb-5 gap-4">
             <h2 className="text-2xl sm:text-3xl font-bold text-white">PROCHAINS ÉVÉNEMENTS</h2>
             <span className="text-xs uppercase tracking-wider text-white font-bold px-4 py-1.5 rounded-full bg-neutral-900 border border-white/15 w-fit">
               {events.length} DISPONIBLE{events.length > 1 ? 'S' : ''}
@@ -223,7 +223,7 @@ export default function PublicHome() {
       </section>
 
       {/* 3. SECTION VALEURS */}
-      <section className="h-[calc(100vh-7rem)] min-h-[650px] max-w-7xl mx-auto px-6 lg:px-12 flex flex-col justify-center border-b border-white/10 snap-start">
+      <section className="min-h-[calc(100vh-6rem)] flex flex-col justify-center max-w-7xl mx-auto px-6 lg:px-12 py-16 lg:py-20 border-b border-white/15 snap-start">
         <div className="space-y-12 w-full">
           <div className="text-center max-w-2xl mx-auto space-y-3">
             <h2 className="text-2xl sm:text-4xl font-bold text-white">
@@ -269,7 +269,7 @@ export default function PublicHome() {
       </section>
 
       {/* 4. SECTION ORGANISATEURS & CTA FINAL */}
-      <section className="h-[calc(100vh-7rem)] min-h-[650px] max-w-7xl mx-auto px-6 lg:px-12 flex flex-col justify-center snap-start">
+      <section className="min-h-[calc(100vh-6rem)] flex flex-col justify-center max-w-7xl mx-auto px-6 lg:px-12 py-16 lg:py-20 snap-start">
         <div className="grid lg:grid-cols-2 gap-10 items-center w-full">
           <div className="space-y-5">
             <h2 className="text-2xl sm:text-4xl font-bold text-white">
