@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { notFound, useParams } from 'next/navigation';
 import { supabaseBrowser } from '@/lib/supabase-browser';
-import { ArrowUpRight, Ticket, Minus, Plus, Users, X, CheckCircle2, ShieldAlert, Loader2, Calendar, MapPin, Clock, Building2, Eye } from 'lucide-react';
+import { ArrowUpRight, Ticket, Minus, Plus, Users, X, CheckCircle2, ShieldAlert, Loader2, Calendar, MapPin, Clock, Building2 } from 'lucide-react';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements, PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js';
 
@@ -60,7 +60,7 @@ function CustomCheckoutForm({ slug, eventTitle, quantity, totalPrice, onSuccess 
       <PaymentElement options={{ layout: 'tabs' }} />
       
       {errorMessage && (
-        <div className="p-3 bg-neutral-900 text-white text-xs font-bold border border-white/20 rounded-xl">
+        <div className="p-3 bg-neutral-900 text-white text-xs font-bold border border-white/10 rounded-xl">
           {errorMessage}
         </div>
       )}
@@ -90,7 +90,6 @@ export default function PublicEventPage() {
   const [event, setEvent] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
-  const [isDescriptionModalOpen, setIsDescriptionModalOpen] = useState(false);
   const [quantity, setQuantity] = useState<number>(1);
   const [clientSecret, setClientSecret] = useState<string | null>(null);
   const [isInitializingPayment, setIsInitializingPayment] = useState(false);
@@ -154,48 +153,37 @@ export default function PublicEventPage() {
 
     const { error } = await supabaseBrowser.auth.signInWithOtp({
       email: authEmail,
-      options: {
-        emailRedirectTo: window.location.href,
-      },
+      options: { emailRedirectTo: window.location.href },
     });
 
     setAuthLoading(false);
-    if (!error) {
-      setAuthSent(true);
-    } else {
-      alert("ERREUR LORS DE L'ENVOI DU LIEN DE CONNEXION.");
-    }
+    if (!error) setAuthSent(true);
+    else alert("ERREUR LORS DE L'ENVOI DU LIEN.");
   };
 
   const handleGoogleLogin = async () => {
     await supabaseBrowser.auth.signInWithOAuth({
       provider: 'google',
-      options: {
-        redirectTo: window.location.href,
-      },
+      options: { redirectTo: window.location.href },
     });
   };
 
   const handleAppleLogin = async () => {
     await supabaseBrowser.auth.signInWithOAuth({
       provider: 'apple',
-      options: {
-        redirectTo: window.location.href,
-      },
+      options: { redirectTo: window.location.href },
     });
   };
 
   if (loading) {
     return (
-      <div className="w-full min-h-[60vh] bg-[#0f0f0f] flex items-center justify-center font-grotesque text-xs uppercase tracking-widest text-white/60">
+      <div className="w-full min-h-screen bg-[#0f0f0f] flex items-center justify-center font-grotesque text-xs uppercase tracking-widest text-white/40">
         CHARGEMENT...
       </div>
     );
   }
 
-  if (!event) {
-    return notFound();
-  }
+  if (!event) return notFound();
 
   const basePrice = Number(event.price) || 0;
   const platformFeePerTicket = basePrice > 0 ? 0.90 : 0;
@@ -206,7 +194,6 @@ export default function PublicEventPage() {
   const rawDate = startDate
     ? startDate.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
     : '';
-  
   const formattedDate = rawDate ? rawDate.replace(/\b1\s/, '1ER ') : '';
   const formattedTime = startDate
     ? startDate.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })
@@ -246,150 +233,113 @@ export default function PublicEventPage() {
   };
 
   return (
-    <main className="w-full bg-[#0f0f0f] text-white font-grotesque selection:bg-white selection:text-black py-12 px-6 sm:px-12 uppercase">
-      <div className="w-full max-w-6xl mx-auto space-y-12">
+    <main className="w-full min-h-screen bg-[#0f0f0f] text-white font-grotesque selection:bg-white selection:text-black py-16 px-6 sm:px-12 uppercase">
+      <div className="w-full max-w-5xl mx-auto space-y-16">
         
-        <div className="flex flex-col items-center text-center space-y-6 border-b border-white/10 pb-10">
-          <h1 className="text-4xl sm:text-6xl font-normal tracking-tight leading-[1.05] text-white max-w-4xl">
-            {event.title}
-          </h1>
-
-          <div className="flex flex-wrap items-center justify-center gap-3 pt-1 text-xs font-bold uppercase tracking-wider text-white">
-            {event.organizations?.name && (
-              <div className="flex items-center gap-2 bg-neutral-900 border border-white/15 px-4 py-2 rounded-full shadow-xs">
-                <Building2 className="w-3.5 h-3.5 text-white" />
-                <span>{event.organizations.name}</span>
-              </div>
-            )}
-            {formattedDate && (
-              <div className="flex items-center gap-2 bg-neutral-900 border border-white/15 px-4 py-2 rounded-full shadow-xs">
-                <Calendar className="w-3.5 h-3.5 text-white" />
-                <span>{formattedDate}</span>
-              </div>
-            )}
-            {formattedTime && (
-              <div className="flex items-center gap-2 bg-neutral-900 border border-white/15 px-4 py-2 rounded-full shadow-xs">
-                <Clock className="w-3.5 h-3.5 text-white" />
-                <span>{formattedTime}</span>
-              </div>
-            )}
-            {event.location && (
-              <div className="flex items-center gap-2 bg-neutral-900 border border-white/15 px-4 py-2 rounded-full shadow-xs max-w-xs truncate">
-                <MapPin className="w-3.5 h-3.5 text-white" />
-                <span className="truncate">{event.location}</span>
-              </div>
-            )}
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start w-full">
+        {/* SECTION PRINCIPALE : L'AFFICHE ET LES INFORMATIONS CLÉS EN FACE À FACE */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-center">
           
-          {/* AFFICHE AU FORMAT CARRÉ */}
-          <div className="lg:col-span-7 flex flex-col">
-            <div className="w-full aspect-square border border-white/15 bg-neutral-900 shadow-xl overflow-hidden rounded-[2.5rem] p-3 flex">
+          {/* AFFICHE FORMAT PORTRAIT MAÎTRISÉ */}
+          <div className="lg:col-span-5 flex justify-center">
+            <div className="w-full max-w-sm aspect-[3/4] bg-neutral-900/50 border border-white/10 rounded-3xl overflow-hidden shadow-2xl p-2.5">
               {event.image_url ? (
-                <img src={event.image_url} alt={event.title} className="w-full h-full object-cover rounded-3xl" />
+                <img src={event.image_url} alt={event.title} className="w-full h-full object-cover rounded-2xl" />
               ) : (
-                <div className="w-full h-full p-8 flex flex-col justify-between bg-neutral-900 text-white rounded-3xl border border-white/15">
-                  <span className="text-xs uppercase tracking-widest text-white/50 font-bold">VISUEL BANNER</span>
-                  <span className="text-4xl font-normal tracking-tighter text-white">LIVE</span>
+                <div className="w-full h-full p-8 flex flex-col justify-between bg-neutral-900 text-white rounded-2xl border border-white/10">
+                  <span className="text-[10px] tracking-widest text-white/40 font-bold">VISUEL</span>
+                  <span className="text-3xl font-normal tracking-tight">EVENT</span>
                 </div>
               )}
             </div>
           </div>
 
-          {/* PANNEAU DE RÉSERVATION & INFOS */}
-          <div className="lg:col-span-5 flex flex-col">
-            <div className="w-full bg-neutral-900 border border-white/15 p-6 sm:p-8 rounded-[2.5rem] shadow-xl flex flex-col justify-between space-y-6">
-              
-              <div className="space-y-4">
-                {event.description && (
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <h3 className="text-[10px] font-bold uppercase tracking-widest text-white/50">À PROPOS DE L&apos;ÉVÉNEMENT</h3>
-                      <button
-                        onClick={() => setIsDescriptionModalOpen(true)}
-                        className="flex items-center gap-1.5 text-[10px] uppercase tracking-wider font-bold text-white bg-black border border-white/15 hover:bg-white hover:text-black transition-all px-3 py-1.5 rounded-full cursor-pointer shadow-xs"
-                      >
-                        <Eye className="w-3 h-3" />
-                        <span>DÉTAILS</span>
-                      </button>
-                    </div>
-                    <p className="text-xs leading-relaxed text-white/70 line-clamp-4 font-normal">
-                      {event.description}
-                    </p>
-                  </div>
-                )}
-              </div>
-
-              <div className="border-t border-white/10 pt-6 space-y-6">
-                <div>
-                  <span className="text-[10px] uppercase tracking-wider text-white/50 font-bold block">TARIF UNIQUE</span>
-                  <span className="text-3xl font-normal tracking-tight text-white">
-                    {basePrice === 0 ? 'GRATUIT' : `${basePrice.toFixed(2)} €`}
-                  </span>
+          {/* BLOC TITRE ET MÉTADONNÉES HARMONIEUX (CENTRÉ VERTICALEMENT) */}
+          <div className="lg:col-span-7 space-y-8 flex flex-col justify-center">
+            
+            <div className="space-y-4">
+              {event.organizations?.name && (
+                <div className="inline-flex items-center gap-2 text-xs font-bold tracking-wider text-white/60 bg-white/5 border border-white/10 px-3.5 py-1.5 rounded-full">
+                  <Building2 className="w-3.5 h-3.5" />
+                  <span>{event.organizations.name}</span>
                 </div>
-
-                <button
-                  onClick={() => {
-                    setClientSecret(null);
-                    setIsSuccess(false);
-                    setIsCheckoutOpen(true);
-                  }}
-                  className="w-full h-14 border border-white/20 bg-white text-black text-xs uppercase tracking-widest hover:bg-neutral-200 transition-all flex items-center justify-center gap-3 cursor-pointer shadow-lg font-bold rounded-2xl"
-                >
-                  <Ticket className="w-4 h-4" />
-                  <span>{basePrice === 0 ? 'RÉSERVER MA PLACE' : 'RÉSERVER MES PLACES'}</span>
-                  <ArrowUpRight className="w-4 h-4" />
-                </button>
-              </div>
-
+              )}
+              
+              <h1 className="text-4xl sm:text-5xl font-normal tracking-tight leading-[1.1] text-white">
+                {event.title}
+              </h1>
             </div>
+
+            {/* DATES & LIEUX EN PILLS DISCRÈTES */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs font-bold tracking-wide">
+              {formattedDate && (
+                <div className="flex items-center gap-3 bg-neutral-900/80 border border-white/10 p-3.5 rounded-2xl">
+                  <Calendar className="w-4 h-4 text-white/70 shrink-0" />
+                  <span className="truncate">{formattedDate}</span>
+                </div>
+              )}
+              {formattedTime && (
+                <div className="flex items-center gap-3 bg-neutral-900/80 border border-white/10 p-3.5 rounded-2xl">
+                  <Clock className="w-4 h-4 text-white/70 shrink-0" />
+                  <span>{formattedTime}</span>
+                </div>
+              )}
+              {event.location && (
+                <div className="sm:col-span-2 flex items-center gap-3 bg-neutral-900/80 border border-white/10 p-3.5 rounded-2xl">
+                  <MapPin className="w-4 h-4 text-white/70 shrink-0" />
+                  <span className="truncate">{event.location}</span>
+                </div>
+              )}
+            </div>
+
+            {/* BOUTON D'ACTION DIRECT */}
+            <div className="pt-2 flex items-center gap-6">
+              <button
+                onClick={() => {
+                  setClientSecret(null);
+                  setIsSuccess(false);
+                  setIsCheckoutOpen(true);
+                }}
+                className="flex-1 h-14 bg-white text-black text-xs uppercase tracking-widest hover:bg-neutral-200 transition-all flex items-center justify-center gap-3 cursor-pointer shadow-lg font-bold rounded-2xl"
+              >
+                <Ticket className="w-4 h-4" />
+                <span>{basePrice === 0 ? 'RÉSERVER GRATUITEMENT' : `RÉSERVER • ${basePrice.toFixed(2)} €`}</span>
+                <ArrowUpRight className="w-4 h-4" />
+              </button>
+            </div>
+
           </div>
 
         </div>
+
+        {/* SECTION DESCRIPTION ÉPURÉE */}
+        {event.description && (
+          <div className="bg-neutral-900/40 border border-white/10 p-8 sm:p-10 rounded-3xl space-y-4">
+            <h3 className="text-xs font-bold uppercase tracking-widest text-white/40">À PROPOS DE L&apos;ÉVÉNEMENT</h3>
+            <p className="text-xs sm:text-sm leading-relaxed text-white/80 whitespace-pre-line font-normal max-w-3xl">
+              {event.description}
+            </p>
+          </div>
+        )}
 
       </div>
 
       {mounted && createPortal(
         <>
-          {isDescriptionModalOpen && (
-            <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-200">
-              <div className="bg-neutral-900 border border-white/20 p-8 max-w-lg w-full space-y-6 relative shadow-2xl max-h-[85vh] overflow-y-auto text-white rounded-[2.5rem] font-grotesque uppercase">
-                <button 
-                  onClick={() => setIsDescriptionModalOpen(false)}
-                  className="absolute top-5 right-5 w-8 h-8 border border-white/20 bg-black text-white flex items-center justify-center hover:bg-white hover:text-black transition-colors cursor-pointer rounded-xl"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-
-                <div className="space-y-2">
-                  <span className="inline-block text-[10px] uppercase tracking-widest bg-black border border-white/15 text-white px-2.5 py-1 rounded-full font-bold">DESCRIPTION COMPLÈTE</span>
-                  <h3 className="text-2xl font-normal uppercase tracking-tight text-white">{event.title}</h3>
-                </div>
-
-                <div className="pt-2 text-xs leading-relaxed text-white/80 whitespace-pre-line font-normal border-t border-white/10">
-                  {event.description}
-                </div>
-              </div>
-            </div>
-          )}
-
           {showAuthModal && (
             <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-200">
-              <div className="bg-neutral-900 border border-white/20 p-8 max-w-md w-full space-y-6 relative shadow-2xl text-white rounded-[2.5rem] font-grotesque uppercase">
+              <div className="bg-neutral-900 border border-white/15 p-8 max-w-md w-full space-y-6 relative shadow-2xl text-white rounded-3xl font-grotesque uppercase">
                 <button 
                   onClick={() => setShowAuthModal(false)}
-                  className="absolute top-5 right-5 w-8 h-8 border border-white/20 bg-black text-white flex items-center justify-center hover:bg-white hover:text-black transition-colors cursor-pointer rounded-xl"
+                  className="absolute top-5 right-5 w-8 h-8 border border-white/10 bg-neutral-800 text-white flex items-center justify-center hover:bg-white hover:text-black transition-colors cursor-pointer rounded-xl"
                 >
                   <X className="w-4 h-4" />
                 </button>
 
                 <div className="space-y-2">
-                  <span className="inline-block text-[10px] uppercase tracking-widest bg-black border border-white/15 text-white px-2.5 py-1 rounded-full font-bold">SÉCURITÉ</span>
-                  <h3 className="text-2xl font-normal uppercase tracking-tight text-white">AUTHENTIFICATION</h3>
-                  <p className="text-xs text-white/60 leading-relaxed font-normal">
-                    CONNECTEZ-VOUS POUR SÉCURISER VOS BILLETS ET LES RETROUVER INSTANTANÉMENT.
+                  <span className="inline-block text-[10px] uppercase tracking-widest bg-white/10 text-white px-2.5 py-1 rounded-full font-bold">SÉCURITÉ</span>
+                  <h3 className="text-2xl font-normal tracking-tight">CONNEXION REQUISE</h3>
+                  <p className="text-xs text-white/50 leading-relaxed font-normal">
+                    CONNECTEZ-VOUS POUR VALIDER VOTRE COMMANDE ET RETROUVER VOS BILLETS.
                   </p>
                 </div>
 
@@ -397,7 +347,7 @@ export default function PublicEventPage() {
                   <div className="space-y-4 pt-2">
                     <button
                       onClick={handleGoogleLogin}
-                      className="w-full h-12 border border-white/15 bg-black hover:bg-white hover:text-black text-white text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-3 cursor-pointer rounded-xl shadow-xs"
+                      className="w-full h-12 border border-white/10 bg-neutral-900 hover:bg-white hover:text-black text-white text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-3 cursor-pointer rounded-xl"
                     >
                       <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
                         <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
@@ -410,44 +360,42 @@ export default function PublicEventPage() {
 
                     <button
                       onClick={handleAppleLogin}
-                      className="w-full h-12 border border-white/15 bg-black hover:bg-white hover:text-black text-white text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-3 cursor-pointer rounded-xl shadow-xs"
+                      className="w-full h-12 border border-white/10 bg-neutral-900 hover:bg-white hover:text-black text-white text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-3 cursor-pointer rounded-xl"
                     >
-                      <svg className="w-4 h-4 fill-current text-white group-hover:text-black" viewBox="0 0 24 24">
+                      <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
                         <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 6.01c.65-.79 1.09-1.89.97-2.99-.96.04-2.13.64-2.82 1.43-.6.68-1.13 1.78-.99 2.85 1.08.08 2.19-.53 2.84-1.29z"/>
                       </svg>
                       <span>CONTINUER AVEC APPLE</span>
                     </button>
 
                     <div className="relative flex py-2 items-center">
-                      <div className="flex-grow border-t border-white/15"></div>
-                      <span className="flex-shrink mx-4 text-[10px] uppercase tracking-widest text-white/50 font-bold">OU</span>
-                      <div className="flex-grow border-t border-white/15"></div>
+                      <div className="flex-grow border-t border-white/10"></div>
+                      <span className="flex-shrink mx-4 text-[10px] tracking-widest text-white/40 font-bold">OU</span>
+                      <div className="flex-grow border-t border-white/10"></div>
                     </div>
 
-                    <form onSubmit={handleMagicLinkLogin} className="space-y-4">
+                    <form onSubmit={handleMagicLinkLogin} className="space-y-3">
                       <input
                         type="email"
                         required
                         placeholder="VOTRE@EMAIL.COM"
                         value={authEmail}
                         onChange={(e) => setAuthEmail(e.target.value)}
-                        className="w-full h-12 border border-white/15 bg-black px-4 text-xs uppercase placeholder:text-white/30 focus:outline-none focus:border-white text-white rounded-xl font-bold"
+                        className="w-full h-12 border border-white/10 bg-neutral-900 px-4 text-xs placeholder:text-white/30 focus:outline-none focus:border-white text-white rounded-xl font-bold"
                       />
                       <button
                         type="submit"
                         disabled={authLoading}
-                        className="w-full h-12 border border-white/20 bg-white text-black text-xs font-bold uppercase tracking-widest hover:bg-neutral-200 transition-all disabled:opacity-50 cursor-pointer flex items-center justify-center gap-2 rounded-xl shadow-md"
+                        className="w-full h-12 border border-white/25 bg-white text-black text-xs font-bold uppercase tracking-widest hover:bg-neutral-200 transition-all disabled:opacity-50 cursor-pointer flex items-center justify-center gap-2 rounded-xl"
                       >
-                        {authLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <span>RECEVOIR LE LIEN MAGIQUE</span>}
+                        {authLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <span>LIEN MAGIQUE PAR EMAIL</span>}
                       </button>
                     </form>
                   </div>
                 ) : (
-                  <div className="border border-white/15 p-6 bg-black text-center space-y-2 rounded-xl">
-                    <p className="text-xs font-bold uppercase text-white">LIEN ENVOYÉ AVEC SUCCÈS</p>
-                    <p className="text-[11px] text-white/60 leading-relaxed font-normal">
-                      VÉRIFIEZ VOTRE BOÎTE MAIL POUR FINALISER VOTRE ACCÈS.
-                    </p>
+                  <div className="border border-white/10 p-6 bg-neutral-900 text-center space-y-2 rounded-2xl">
+                    <p className="text-xs font-bold">LIEN ENVOYÉ</p>
+                    <p className="text-[11px] text-white/50 font-normal">VÉRIFIEZ VOTRE BOÎTE DE RÉCEPTION.</p>
                   </div>
                 )}
               </div>
@@ -456,14 +404,14 @@ export default function PublicEventPage() {
 
           {isCheckoutOpen && (
             <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-200">
-              <div className="relative w-full max-w-lg bg-neutral-900 border border-white/20 p-8 space-y-6 shadow-2xl max-h-[90vh] overflow-y-auto text-white rounded-[2.5rem] font-grotesque uppercase">
+              <div className="relative w-full max-w-lg bg-neutral-900 border border-white/15 p-8 space-y-6 shadow-2xl max-h-[90vh] overflow-y-auto text-white rounded-3xl font-grotesque uppercase">
                 <button
                   onClick={() => {
                     setIsCheckoutOpen(false);
                     setClientSecret(null);
                     setIsSuccess(false);
                   }}
-                  className="absolute top-5 right-5 w-8 h-8 border border-white/20 bg-black text-white flex items-center justify-center hover:bg-white hover:text-black transition-colors cursor-pointer z-10 rounded-xl"
+                  className="absolute top-5 right-5 w-8 h-8 border border-white/10 bg-neutral-800 text-white flex items-center justify-center hover:bg-white hover:text-black transition-colors cursor-pointer z-10 rounded-xl"
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -471,16 +419,14 @@ export default function PublicEventPage() {
                 {isSuccess ? (
                   <div className="py-6 space-y-6 text-center">
                     <div className="flex justify-center">
-                      <div className="w-16 h-16 border border-white/20 bg-black flex items-center justify-center text-white rounded-2xl">
+                      <div className="w-16 h-16 border border-white/15 bg-neutral-800 flex items-center justify-center text-white rounded-2xl">
                         <CheckCircle2 className="w-8 h-8" />
                       </div>
                     </div>
                     <div className="space-y-2">
-                      <span className="inline-block text-[10px] uppercase tracking-widest bg-black text-white border border-white/15 px-2.5 py-1 rounded-full font-bold">CONFIRMÉ</span>
-                      <h3 className="text-2xl font-normal uppercase tracking-tight text-white">PLACES RÉSERVÉES</h3>
-                      <p className="text-xs text-white/60 leading-relaxed font-normal">
-                        VOTRE BILLET ÉLECTRONIQUE A ÉTÉ ENVOYÉ PAR E-MAIL.
-                      </p>
+                      <span className="inline-block text-[10px] uppercase tracking-widest bg-white/10 text-white px-2.5 py-1 rounded-full font-bold">SUCCÈS</span>
+                      <h3 className="text-2xl font-normal tracking-tight">PLACES CONFIRMÉES</h3>
+                      <p className="text-xs text-white/50 font-normal">VOTRE BILLET VOUS A ÉTÉ ENVOYÉ PAR E-MAIL.</p>
                     </div>
                     <button
                       onClick={() => {
@@ -488,7 +434,7 @@ export default function PublicEventPage() {
                         setClientSecret(null);
                         setIsSuccess(false);
                       }}
-                      className="w-full h-12 border border-white/20 bg-white text-black text-xs font-bold uppercase tracking-widest hover:bg-neutral-200 transition-all cursor-pointer rounded-xl shadow-md"
+                      className="w-full h-12 bg-white text-black text-xs font-bold uppercase tracking-widest hover:bg-neutral-200 transition-all cursor-pointer rounded-xl"
                     >
                       FERMER
                     </button>
@@ -496,30 +442,30 @@ export default function PublicEventPage() {
                 ) : !clientSecret ? (
                   <>
                     <div className="space-y-1">
-                      <span className="inline-block text-[10px] uppercase tracking-widest bg-black border border-white/15 text-white px-2.5 py-1 rounded-full font-bold">PANIER</span>
-                      <h3 className="text-xl font-normal uppercase tracking-tight pt-2 text-white">{event.title}</h3>
+                      <span className="inline-block text-[10px] uppercase tracking-widest bg-white/10 text-white px-2.5 py-1 rounded-full font-bold">PANIER</span>
+                      <h3 className="text-xl font-normal tracking-tight pt-1">{event.title}</h3>
                     </div>
 
                     <div className="space-y-3 pt-2">
-                      <div className="flex justify-between items-center text-xs text-white/60 font-bold">
-                        <span>QUANTITÉ</span>
-                        <span className="text-white font-bold flex items-center gap-1">
-                          <Users className="w-3.5 h-3.5 text-white" /> {quantity}
+                      <div className="flex justify-between items-center text-xs text-white/50 font-bold">
+                        <span>QUANTITÉ DE PLACES</span>
+                        <span className="text-white flex items-center gap-1.5 font-bold">
+                          <Users className="w-3.5 h-3.5" /> {quantity}
                         </span>
                       </div>
-                      <div className="flex items-center justify-between border border-white/15 p-1.5 bg-black rounded-xl">
+                      <div className="flex items-center justify-between border border-white/10 p-1.5 bg-neutral-950 rounded-2xl">
                         <button
                           onClick={() => setQuantity(Math.max(1, quantity - 1))}
                           disabled={quantity <= 1}
-                          className="w-10 h-10 border border-white/15 bg-neutral-900 text-white flex items-center justify-center hover:bg-white hover:text-black disabled:opacity-30 transition-all cursor-pointer rounded-lg font-bold"
+                          className="w-10 h-10 border border-white/10 bg-neutral-900 text-white flex items-center justify-center hover:bg-white hover:text-black disabled:opacity-30 transition-all cursor-pointer rounded-xl font-bold"
                         >
                           <Minus className="w-4 h-4" />
                         </button>
-                        <span className="text-sm font-bold text-white">{quantity}</span>
+                        <span className="text-sm font-bold">{quantity}</span>
                         <button
                           onClick={() => setQuantity(Math.min(10, quantity + 1))}
                           disabled={quantity >= 10}
-                          className="w-10 h-10 border border-white/15 bg-neutral-900 text-white flex items-center justify-center hover:bg-white hover:text-black disabled:opacity-30 transition-all cursor-pointer rounded-lg font-bold"
+                          className="w-10 h-10 border border-white/10 bg-neutral-900 text-white flex items-center justify-center hover:bg-white hover:text-black disabled:opacity-30 transition-all cursor-pointer rounded-xl font-bold"
                         >
                           <Plus className="w-4 h-4" />
                         </button>
@@ -527,40 +473,40 @@ export default function PublicEventPage() {
                     </div>
 
                     {basePrice > 0 && (
-                      <div className="border border-white/15 p-4 bg-black space-y-2 rounded-xl">
-                        <div className="flex items-center gap-2 text-xs font-bold uppercase text-white">
+                      <div className="border border-white/10 p-4 bg-neutral-950 space-y-2 rounded-2xl">
+                        <div className="flex items-center gap-2 text-xs font-bold text-white/80">
                           <ShieldAlert className="w-4 h-4" />
-                          <span>TRANSPARENCE TARIFAIRE INTÉGRALE</span>
+                          <span>DÉTAIL DU TARIF</span>
                         </div>
-                        <div className="space-y-1 text-xs text-white/60 divide-y divide-white/10">
-                          <div className="flex justify-between pt-1">
-                            <span>PART ARTISTE / ORGANISATEUR</span>
+                        <div className="space-y-1 text-xs text-white/50">
+                          <div className="flex justify-between">
+                            <span>ORGANISATEUR</span>
                             <span className="text-white font-bold">{(organizerSharePerTicket * quantity).toFixed(2)} €</span>
                           </div>
-                          <div className="flex justify-between pt-1.5">
-                            <span>FRAIS DE PLATEFORME FIXES</span>
+                          <div className="flex justify-between">
+                            <span>PLATEFORME</span>
                             <span className="text-white font-bold">{(platformFeePerTicket * quantity).toFixed(2)} €</span>
                           </div>
                         </div>
                       </div>
                     )}
 
-                    <div className="space-y-4 pt-4 border-t border-white/10">
+                    <div className="space-y-4 pt-2">
                       <div className="flex items-baseline justify-between">
-                        <span className="text-xs uppercase tracking-wider text-white/60 font-bold">TOTAL NET</span>
-                        <p className="text-3xl font-normal tracking-tight text-white">{totalPrice.toFixed(2)} €</p>
+                        <span className="text-xs uppercase tracking-wider text-white/50 font-bold">TOTAL</span>
+                        <p className="text-3xl font-normal tracking-tight">{totalPrice.toFixed(2)} €</p>
                       </div>
 
                       <button 
                         onClick={handleInitCheckout}
                         disabled={isInitializingPayment}
-                        className="w-full h-12 border border-white/20 bg-white text-black text-xs uppercase tracking-widest transition-all flex items-center justify-center gap-2 cursor-pointer shadow-md font-bold disabled:opacity-50 hover:bg-neutral-200 rounded-xl"
+                        className="w-full h-12 bg-white text-black text-xs uppercase tracking-widest transition-all flex items-center justify-center gap-2 cursor-pointer shadow-md font-bold disabled:opacity-50 hover:bg-neutral-200 rounded-xl"
                       >
                         {isInitializingPayment ? (
                           <Loader2 className="w-4 h-4 animate-spin" />
                         ) : (
                           <>
-                            <span>PROCÉDER AU PAIEMENT SÉCURISÉ</span>
+                            <span>VALIDER LE PAIEMENT</span>
                             <ArrowUpRight className="w-4 h-4" />
                           </>
                         )}
@@ -571,14 +517,14 @@ export default function PublicEventPage() {
                   <div className="space-y-4">
                     <div className="flex items-center justify-between border-b border-white/10 pb-3">
                       <div>
-                        <span className="inline-block text-[10px] uppercase tracking-widest bg-black border border-white/15 text-white px-2.5 py-1 rounded-full font-bold mb-1">PAIEMENT</span>
-                        <h4 className="text-sm font-bold pt-1 text-white">{totalPrice.toFixed(2)} € • {quantity} PLACE(S)</h4>
+                        <span className="inline-block text-[10px] uppercase tracking-widest bg-white/10 text-white px-2.5 py-1 rounded-full font-bold mb-1">PAIEMENT SÉCURISÉ</span>
+                        <h4 className="text-sm font-bold pt-1">{totalPrice.toFixed(2)} € • {quantity} PLACE(S)</h4>
                       </div>
                       <button 
                         onClick={() => setClientSecret(null)}
-                        className="text-xs underline text-white/60 hover:text-white cursor-pointer font-bold"
+                        className="text-xs underline text-white/50 hover:text-white cursor-pointer font-bold"
                       >
-                        MODIFIER
+                        RETOUR
                       </button>
                     </div>
 
