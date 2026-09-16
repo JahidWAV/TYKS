@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import Navbar from '@/components/Navbar';
 import { 
@@ -14,7 +14,9 @@ import {
   QrCode, 
   Users, 
   Zap, 
-  Wallet 
+  Wallet,
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react';
 import { supabaseBrowser } from '@/lib/supabase-browser';
 
@@ -29,20 +31,20 @@ interface TyksEvent {
   ticket_price?: number;
   image_url?: string;
   image?: string;
-  organizations?: { name?: string };
 }
 
 export default function PublicHome() {
   const [events, setEvents] = useState<TyksEvent[]>([]);
   const [loading, setLoading] = useState(true);
   const [fetchError, setFetchError] = useState(false);
+  const sliderRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const fetchPublishedEvents = async () => {
       setLoading(true);
       const { data, error } = await supabaseBrowser
         .from('events')
-        .select('*, organizations(name)')
+        .select('*')
         .eq('status', 'published')
         .order('starts_at', { ascending: true });
 
@@ -57,6 +59,13 @@ export default function PublicHome() {
 
     fetchPublishedEvents();
   }, []);
+
+  const scrollSlider = (direction: 'left' | 'right') => {
+    if (sliderRef.current) {
+      const scrollAmount = direction === 'left' ? -400 : 400;
+      sliderRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+    }
+  };
 
   return (
     <div className="bg-[#0f0f0f] text-white selection:bg-white selection:text-black font-grotesque antialiased h-screen overflow-y-scroll snap-y snap-mandatory flex flex-col">
@@ -134,7 +143,7 @@ export default function PublicHome() {
           </div>
         </section>
 
-        {/* SECTION ÉVÉNEMENTS (6 cartes avec affiches strictement carrées) */}
+        {/* SECTION ÉVÉNEMENTS (SLIDER DE DROITE À GAUCHE AVEC FLÈCHES) */}
         <section id="evenements" className="h-screen w-full snap-start snap-always flex items-center justify-between px-4 sm:px-8 lg:px-12 py-4 shrink-0 relative overflow-hidden">
           
           {/* Texte vertical gauche : PROCHAINS ÉVÉNEMENTS (de bas en haut) */}
@@ -144,15 +153,36 @@ export default function PublicHome() {
             </span>
           </div>
 
-          {/* Contenu central */}
-          <div className="flex-1 space-y-3 w-full max-w-6xl mx-auto px-2 sm:px-4 z-10">
+          {/* Contenu central avec slider */}
+          <div className="flex-1 space-y-4 w-full max-w-6xl mx-auto px-2 sm:px-4 z-10">
             
-            {/* En-tête de secours pour les petits écrans */}
-            <div className="flex xl:hidden items-center justify-between border-b border-white/15 pb-2 gap-4">
+            {/* En-tête avec les flèches de navigation du slider */}
+            <div className="flex items-center justify-between border-b border-white/15 pb-3 gap-4">
               <h2 className="text-lg font-bold text-white tracking-tight">PROCHAINS ÉVÉNEMENTS</h2>
-              <span className="text-[10px] uppercase tracking-wider text-white font-bold px-3 py-1 rounded-full bg-neutral-900 border border-white/15 shrink-0">
-                {events.length} DISP.
-              </span>
+              
+              <div className="flex items-center gap-3">
+                <span className="text-[10px] uppercase tracking-wider text-white font-bold px-3 py-1 rounded-full bg-neutral-900 border border-white/15 shrink-0">
+                  {events.length} DISP.
+                </span>
+                
+                {/* Boutons de contrôle du slider */}
+                <div className="hidden sm:flex items-center gap-1.5">
+                  <button 
+                    onClick={() => scrollSlider('left')}
+                    className="w-8 h-8 rounded-full bg-neutral-900 border border-white/15 flex items-center justify-center text-white hover:bg-white hover:text-black transition-colors cursor-pointer"
+                    aria-label="Précédent"
+                  >
+                    <ChevronLeft className="w-4 h-4" />
+                  </button>
+                  <button 
+                    onClick={() => scrollSlider('right')}
+                    className="w-8 h-8 rounded-full bg-neutral-900 border border-white/15 flex items-center justify-center text-white hover:bg-white hover:text-black transition-colors cursor-pointer"
+                    aria-label="Suivant"
+                  >
+                    <ChevronRight className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
             </div>
 
             {loading ? (
@@ -178,24 +208,41 @@ export default function PublicHome() {
                 </p>
               </div>
             ) : (
-              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 max-h-[82vh] overflow-y-auto pr-1">
-                {events.slice(0, 6).map((evt) => {
-                  const eventPrice = Number(evt.price || evt.ticket_price || 0);
+              /* Conteneur du Slider Horizontal */
+              <div 
+                ref={sliderRef}
+                className="flex gap-4 overflow-x-auto scrollbar-none snap-x snap-mandatory pb-4 pt-1 px-1"
+                style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+              >
+                {events.map((evt) => {
+                  const basePrice = Number(evt.price || evt.ticket_price || 0);
+                  // Calcul du total avec les frais Stripe (ex: 1.4% + 0.25€ ou autre logique, appliqué ici sur le prix total si > 0)
+                  const finalPriceWithStripe = basePrice > 0 ? basePrice * 1.015 + 0.25 : 0;
+                  
                   const eventImage = evt.image_url || evt.image;
-                  const dateStr = evt.starts_at
-                    ? new Date(evt.starts_at).toLocaleDateString('fr-FR', {
+                  
+                  const dateObj = evt.starts_at ? new Date(evt.starts_at) : null;
+                  const dateStr = dateObj
+                    ? dateObj.toLocaleDateString('fr-FR', {
                         day: 'numeric',
                         month: 'short',
                         year: 'numeric',
                       })
                     : 'DATE À VENIR';
+                  
+                  const timeStr = dateObj
+                    ? dateObj.toLocaleTimeString('fr-FR', {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                      })
+                    : '';
 
                   return (
                     <article
                       key={evt.id}
-                      className="group flex flex-col bg-white text-black border border-white/15 rounded-[2rem] overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
+                      className="group flex flex-col bg-white text-black border border-white/15 rounded-[2rem] overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1 shrink-0 w-[280px] sm:w-[320px] snap-start"
                     >
-                      {/* Image strictement carrée */}
+                      {/* Image carrée (Sans le nom de l'orga en haut à droite) */}
                       <div className="relative w-full aspect-square bg-neutral-100 overflow-hidden border-b border-black/10 flex items-center justify-center">
                         {eventImage ? (
                           <img
@@ -209,41 +256,42 @@ export default function PublicHome() {
                             <span className="text-[9px] uppercase tracking-widest font-bold">TYKS</span>
                           </div>
                         )}
-                        <div className="absolute top-2.5 right-2.5 z-10">
-                          <span className="text-[9px] font-bold px-2 py-0.5 bg-black/80 backdrop-blur-md border border-white/20 text-white rounded-full shadow-xs">
-                            {evt.organizations?.name || 'EXCLUSIVITÉ'}
-                          </span>
-                        </div>
                       </div>
 
-                      {/* Infos optimisées sous l'affiche */}
-                      <div className="p-3.5 flex-1 space-y-1.5 flex flex-col justify-between">
-                        <div className="space-y-0.5">
-                          <span className="text-[10px] font-bold text-black/50 uppercase tracking-wider block">
-                            {dateStr}
-                          </span>
-                          <h3 className="text-xs font-bold text-black tracking-tight group-hover:underline transition-colors line-clamp-1">
+                      {/* Infos textuelles écrites verticalement sous l'affiche */}
+                      <div className="p-4 flex-1 space-y-2 flex flex-col justify-between">
+                        <div className="space-y-1.5">
+                          {/* 1. Nom de l'événement */}
+                          <h3 className="text-sm font-bold text-black tracking-tight group-hover:underline transition-colors line-clamp-1">
                             {evt.title}
                           </h3>
+                          
+                          {/* 2. Lieu en dessous */}
                           {evt.location && (
-                            <div className="flex items-center gap-1 text-[10px] text-black/70 font-medium">
+                            <div className="flex items-center gap-1.5 text-[11px] text-black/70 font-medium">
                               <MapPin className="h-3 w-3 text-black/40 shrink-0" />
                               <span className="truncate">{evt.location}</span>
                             </div>
                           )}
+
+                          {/* 3. Date et heure en dessous */}
+                          <div className="flex items-center gap-1.5 text-[10px] text-black/50 font-bold uppercase tracking-wider">
+                            <Calendar className="h-3 w-3 shrink-0" />
+                            <span>{dateStr} {timeStr ? `• ${timeStr}` : ''}</span>
+                          </div>
                         </div>
                       </div>
 
-                      {/* Barre du bas compacte */}
-                      <div className="flex items-center justify-between border-t border-black/10 px-3.5 py-2 bg-neutral-50">
-                        <span className="text-xs font-bold tracking-wide text-black">
-                          {eventPrice > 0 ? `${eventPrice.toLocaleString('fr-FR')} €` : 'LIBRE'}
+                      {/* Barre du bas : Bouton "À partir de..." avec le prix TTC frais Stripe inclus */}
+                      <div className="flex items-center justify-between border-t border-black/10 px-4 py-2.5 bg-neutral-50">
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-black/60">
+                          {basePrice > 0 ? `À partir de` : 'Gratuit'}
                         </span>
                         <Link
                           href={`/events/${evt.slug || evt.id}`}
-                          className="h-6 px-3 bg-black hover:bg-neutral-800 text-white font-bold text-[9px] uppercase tracking-wider transition-all duration-300 flex items-center gap-1 rounded-lg shadow-xs group-hover:gap-1.5 cursor-pointer"
+                          className="h-7 px-3.5 bg-black hover:bg-neutral-800 text-white font-bold text-[10px] uppercase tracking-wider transition-all duration-300 flex items-center gap-1.5 rounded-lg shadow-xs group-hover:gap-2 cursor-pointer"
                         >
-                          <span>RÉSERVER</span>
+                          <span>{basePrice > 0 ? `${finalPriceWithStripe.toFixed(2).replace('.', ',')} €` : 'LIBRE'}</span>
                           <ArrowUpRight className="w-3 h-3" />
                         </Link>
                       </div>
