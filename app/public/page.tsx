@@ -38,6 +38,25 @@ export default function PublicHome() {
   const [loading, setLoading] = useState(true);
   const [fetchError, setFetchError] = useState(false);
   const sliderRef = useRef<HTMLDivElement>(null);
+  const mainContainerRef = useRef<HTMLDivElement>(null);
+
+  // Sauvegarde et restauration de la position de scroll
+  useEffect(() => {
+    const container = mainContainerRef.current;
+    if (!container) return;
+
+    const savedScrollPos = sessionStorage.getItem('home_scroll_pos');
+    if (savedScrollPos) {
+      container.scrollTop = Number(savedScrollPos);
+    }
+
+    const handleScroll = () => {
+      sessionStorage.setItem('home_scroll_pos', container.scrollTop.toString());
+    };
+
+    container.addEventListener('scroll', handleScroll);
+    return () => container.removeEventListener('scroll', handleScroll);
+  }, []);
 
   useEffect(() => {
     const fetchPublishedEvents = async () => {
@@ -62,13 +81,16 @@ export default function PublicHome() {
 
   const scrollSlider = (direction: 'left' | 'right') => {
     if (sliderRef.current) {
-      const scrollAmount = direction === 'left' ? -400 : 400;
+      const scrollAmount = direction === 'left' ? -360 : 360;
       sliderRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
     }
   };
 
   return (
-    <div className="bg-[#0f0f0f] text-white selection:bg-white selection:text-black font-grotesque antialiased h-screen overflow-y-scroll snap-y snap-mandatory flex flex-col">
+    <div 
+      ref={mainContainerRef}
+      className="bg-[#0f0f0f] text-white selection:bg-white selection:text-black font-grotesque antialiased h-screen overflow-y-scroll snap-y snap-mandatory flex flex-col"
+    >
       
       {/* 1. NAVBAR */}
       <Navbar />
@@ -143,7 +165,7 @@ export default function PublicHome() {
           </div>
         </section>
 
-        {/* SECTION ÉVÉNEMENTS (SLIDER DE DROITE À GAUCHE AVEC FLÈCHES) */}
+        {/* SECTION ÉVÉNEMENTS (SLIDER AVEC FLÈCHES DE CHAQUE CÔTÉ) */}
         <section id="evenements" className="h-screen w-full snap-start snap-always flex items-center justify-between px-4 sm:px-8 lg:px-12 py-4 shrink-0 relative overflow-hidden">
           
           {/* Texte vertical gauche : PROCHAINS ÉVÉNEMENTS (de bas en haut) */}
@@ -153,44 +175,15 @@ export default function PublicHome() {
             </span>
           </div>
 
-          {/* Contenu central avec slider */}
-          <div className="flex-1 space-y-4 w-full max-w-6xl mx-auto px-2 sm:px-4 z-10">
+          {/* Contenu central avec carrousel et flèches latérales */}
+          <div className="flex-1 relative w-full max-w-5xl mx-auto px-4 sm:px-8 z-10 flex items-center justify-center">
             
-            {/* En-tête avec les flèches de navigation du slider */}
-            <div className="flex items-center justify-between border-b border-white/15 pb-3 gap-4">
-              <h2 className="text-lg font-bold text-white tracking-tight">PROCHAINS ÉVÉNEMENTS</h2>
-              
-              <div className="flex items-center gap-3">
-                <span className="text-[10px] uppercase tracking-wider text-white font-bold px-3 py-1 rounded-full bg-neutral-900 border border-white/15 shrink-0">
-                  {events.length} DISP.
-                </span>
-                
-                {/* Boutons de contrôle du slider */}
-                <div className="hidden sm:flex items-center gap-1.5">
-                  <button 
-                    onClick={() => scrollSlider('left')}
-                    className="w-8 h-8 rounded-full bg-neutral-900 border border-white/15 flex items-center justify-center text-white hover:bg-white hover:text-black transition-colors cursor-pointer"
-                    aria-label="Précédent"
-                  >
-                    <ChevronLeft className="w-4 h-4" />
-                  </button>
-                  <button 
-                    onClick={() => scrollSlider('right')}
-                    className="w-8 h-8 rounded-full bg-neutral-900 border border-white/15 flex items-center justify-center text-white hover:bg-white hover:text-black transition-colors cursor-pointer"
-                    aria-label="Suivant"
-                  >
-                    <ChevronRight className="w-4 h-4" />
-                  </button>
-                </div>
-              </div>
-            </div>
-
             {loading ? (
-              <div className="bg-neutral-900 border border-white/15 p-8 text-center text-xs text-white/60 rounded-[2rem] font-bold">
+              <div className="w-full bg-neutral-900 border border-white/15 p-12 text-center text-xs text-white/60 rounded-[2rem] font-bold">
                 CHARGEMENT DES EXPÉRIENCES EN COURS...
               </div>
             ) : fetchError ? (
-              <div className="bg-neutral-900 border border-white/15 p-8 text-center space-y-3 rounded-[2rem]">
+              <div className="w-full bg-neutral-900 border border-white/15 p-12 text-center space-y-3 rounded-[2rem]">
                 <div className="w-10 h-10 mx-auto rounded-xl bg-white/10 flex items-center justify-center text-white">
                   <Calendar className="h-4 w-4" />
                 </div>
@@ -199,7 +192,7 @@ export default function PublicHome() {
                 </p>
               </div>
             ) : events.length === 0 ? (
-              <div className="bg-neutral-900 border border-white/15 p-8 text-center space-y-3 rounded-[2rem]">
+              <div className="w-full bg-neutral-900 border border-white/15 p-12 text-center space-y-3 rounded-[2rem]">
                 <div className="w-10 h-10 mx-auto rounded-xl bg-white/10 flex items-center justify-center text-white">
                   <Calendar className="h-4 w-4" />
                 </div>
@@ -208,97 +201,115 @@ export default function PublicHome() {
                 </p>
               </div>
             ) : (
-              /* Conteneur du Slider Horizontal */
-              <div 
-                ref={sliderRef}
-                className="flex gap-4 overflow-x-auto scrollbar-none snap-x snap-mandatory pb-4 pt-1 px-1"
-                style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-              >
-                {events.map((evt) => {
-                  const basePrice = Number(evt.price || evt.ticket_price || 0);
-                  // Calcul du total avec les frais Stripe (ex: 1.4% + 0.25€ ou autre logique, appliqué ici sur le prix total si > 0)
-                  const finalPriceWithStripe = basePrice > 0 ? basePrice * 1.015 + 0.25 : 0;
-                  
-                  const eventImage = evt.image_url || evt.image;
-                  
-                  const dateObj = evt.starts_at ? new Date(evt.starts_at) : null;
-                  const dateStr = dateObj
-                    ? dateObj.toLocaleDateString('fr-FR', {
-                        day: 'numeric',
-                        month: 'short',
-                        year: 'numeric',
-                      })
-                    : 'DATE À VENIR';
-                  
-                  const timeStr = dateObj
-                    ? dateObj.toLocaleTimeString('fr-FR', {
-                        hour: '2-digit',
-                        minute: '2-digit',
-                      })
-                    : '';
+              <>
+                {/* Flèche Gauche externe */}
+                <button 
+                  onClick={() => scrollSlider('left')}
+                  className="hidden md:flex absolute -left-6 lg:-left-12 z-20 w-12 h-12 rounded-full bg-neutral-900 border border-white/20 items-center justify-center text-white hover:bg-white hover:text-black transition-all shadow-xl cursor-pointer"
+                  aria-label="Précédent"
+                >
+                  <ChevronLeft className="w-6 h-6" />
+                </button>
 
-                  return (
-                    <article
-                      key={evt.id}
-                      className="group flex flex-col bg-white text-black border border-white/15 rounded-[2rem] overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1 shrink-0 w-[280px] sm:w-[320px] snap-start"
-                    >
-                      {/* Image carrée (Sans le nom de l'orga en haut à droite) */}
-                      <div className="relative w-full aspect-square bg-neutral-100 overflow-hidden border-b border-black/10 flex items-center justify-center">
-                        {eventImage ? (
-                          <img
-                            src={eventImage}
-                            alt={evt.title || 'Événement'}
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
-                          />
-                        ) : (
-                          <div className="flex flex-col items-center justify-center text-black/30 space-y-1">
-                            <Calendar className="w-6 h-6 stroke-[1.5]" />
-                            <span className="text-[9px] uppercase tracking-widest font-bold">TYKS</span>
-                          </div>
-                        )}
-                      </div>
+                {/* Conteneur du Slider Horizontal */}
+                <div 
+                  ref={sliderRef}
+                  className="w-full flex gap-6 overflow-x-auto scrollbar-none snap-x snap-mandatory py-4 px-2"
+                  style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+                >
+                  {events.map((evt) => {
+                    const basePrice = Number(evt.price || evt.ticket_price || 0);
+                    const finalPriceWithStripe = basePrice > 0 ? basePrice * 1.015 + 0.25 : 0;
+                    const eventImage = evt.image_url || evt.image;
+                    
+                    const dateObj = evt.starts_at ? new Date(evt.starts_at) : null;
+                    const dateStr = dateObj
+                      ? dateObj.toLocaleDateString('fr-FR', {
+                          day: 'numeric',
+                          month: 'long',
+                          year: 'numeric',
+                        })
+                      : 'DATE À VENIR';
+                    
+                    const timeStr = dateObj
+                      ? dateObj.toLocaleTimeString('fr-FR', {
+                          hour: '2-digit',
+                          minute: '2-digit',
+                        })
+                      : '';
 
-                      {/* Infos textuelles écrites verticalement sous l'affiche */}
-                      <div className="p-4 flex-1 space-y-2 flex flex-col justify-between">
-                        <div className="space-y-1.5">
-                          {/* 1. Nom de l'événement */}
-                          <h3 className="text-sm font-bold text-black tracking-tight group-hover:underline transition-colors line-clamp-1">
-                            {evt.title}
-                          </h3>
-                          
-                          {/* 2. Lieu en dessous */}
-                          {evt.location && (
-                            <div className="flex items-center gap-1.5 text-[11px] text-black/70 font-medium">
-                              <MapPin className="h-3 w-3 text-black/40 shrink-0" />
-                              <span className="truncate">{evt.location}</span>
+                    return (
+                      <article
+                        key={evt.id}
+                        className="group flex flex-col bg-white text-black border border-white/15 rounded-[2.5rem] overflow-hidden transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 shrink-0 w-[300px] sm:w-[340px] snap-start"
+                      >
+                        {/* Image carrée propre */}
+                        <div className="relative w-full aspect-square bg-neutral-100 overflow-hidden border-b border-black/10 flex items-center justify-center">
+                          {eventImage ? (
+                            <img
+                              src={eventImage}
+                              alt={evt.title || 'Événement'}
+                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
+                            />
+                          ) : (
+                            <div className="flex flex-col items-center justify-center text-black/30 space-y-1">
+                              <Calendar className="w-6 h-6 stroke-[1.5]" />
+                              <span className="text-[10px] uppercase tracking-widest font-bold">TYKS</span>
                             </div>
                           )}
+                        </div>
 
-                          {/* 3. Date et heure en dessous */}
-                          <div className="flex items-center gap-1.5 text-[10px] text-black/50 font-bold uppercase tracking-wider">
-                            <Calendar className="h-3 w-3 shrink-0" />
-                            <span>{dateStr} {timeStr ? `• ${timeStr}` : ''}</span>
+                        {/* Infos textuelles bien lisibles */}
+                        <div className="p-5 flex-1 space-y-3 flex flex-col justify-between">
+                          <div className="space-y-2">
+                            {/* Nom de l'événement */}
+                            <h3 className="text-base font-bold text-black tracking-tight group-hover:underline transition-colors line-clamp-1">
+                              {evt.title}
+                            </h3>
+                            
+                            {/* Lieu en dessous */}
+                            {evt.location && (
+                              <div className="flex items-center gap-2 text-xs text-black/70 font-semibold">
+                                <MapPin className="h-3.5 w-3.5 text-black/50 shrink-0" />
+                                <span className="truncate">{evt.location}</span>
+                              </div>
+                            )}
+
+                            {/* Date et heure en dessous */}
+                            <div className="flex items-center gap-2 text-xs text-black/60 font-bold uppercase tracking-wider pt-1 border-t border-black/5">
+                              <Calendar className="h-3.5 w-3.5 shrink-0 text-black/40" />
+                              <span>{dateStr} {timeStr ? `• ${timeStr}` : ''}</span>
+                            </div>
                           </div>
                         </div>
-                      </div>
 
-                      {/* Barre du bas : Bouton "À partir de..." avec le prix TTC frais Stripe inclus */}
-                      <div className="flex items-center justify-between border-t border-black/10 px-4 py-2.5 bg-neutral-50">
-                        <span className="text-[10px] font-bold uppercase tracking-wider text-black/60">
-                          {basePrice > 0 ? `À partir de` : 'Gratuit'}
-                        </span>
-                        <Link
-                          href={`/events/${evt.slug || evt.id}`}
-                          className="h-7 px-3.5 bg-black hover:bg-neutral-800 text-white font-bold text-[10px] uppercase tracking-wider transition-all duration-300 flex items-center gap-1.5 rounded-lg shadow-xs group-hover:gap-2 cursor-pointer"
-                        >
-                          <span>{basePrice > 0 ? `${finalPriceWithStripe.toFixed(2).replace('.', ',')} €` : 'LIBRE'}</span>
-                          <ArrowUpRight className="w-3 h-3" />
-                        </Link>
-                      </div>
-                    </article>
-                  );
-                })}
-              </div>
+                        {/* Barre du bas avec "À partir de..." et prix TTC frais Stripe */}
+                        <div className="flex items-center justify-between border-t border-black/10 px-5 py-3.5 bg-neutral-50">
+                          <span className="text-xs font-bold uppercase tracking-wider text-black/70">
+                            {basePrice > 0 ? `À partir de` : 'Gratuit'}
+                          </span>
+                          <Link
+                            href={`/events/${evt.slug || evt.id}`}
+                            className="h-8 px-4 bg-black hover:bg-neutral-800 text-white font-bold text-xs uppercase tracking-wider transition-all duration-300 flex items-center gap-1.5 rounded-xl shadow-md group-hover:gap-2 cursor-pointer"
+                          >
+                            <span>{basePrice > 0 ? `${finalPriceWithStripe.toFixed(2).replace('.', ',')} €` : 'LIBRE'}</span>
+                            <ArrowUpRight className="w-3.5 h-3.5" />
+                          </Link>
+                        </div>
+                      </article>
+                    );
+                  })}
+                </div>
+
+                {/* Flèche Droite externe */}
+                <button 
+                  onClick={() => scrollSlider('right')}
+                  className="hidden md:flex absolute -right-6 lg:-right-12 z-20 w-12 h-12 rounded-full bg-neutral-900 border border-white/20 items-center justify-center text-white hover:bg-white hover:text-black transition-all shadow-xl cursor-pointer"
+                  aria-label="Suivant"
+                >
+                  <ChevronRight className="w-6 h-6" />
+                </button>
+              </>
             )}
           </div>
 
