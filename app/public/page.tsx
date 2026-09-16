@@ -150,9 +150,9 @@ export default function PublicHome() {
               return (
                 <article
                   key={evt.id}
-                  className="group flex flex-col bg-neutral-900 border border-white/15 rounded-[2.5rem] overflow-hidden transition-all duration-300 hover:border-white hover:shadow-xl hover:-translate-y-1"
+                  className="group flex flex-col bg-white text-black border border-white/15 rounded-[2.5rem] overflow-hidden transition-all duration-300 hover:shadow-2xl hover:-translate-y-1"
                 >
-                  <div className="relative w-full h-56 bg-neutral-800 overflow-hidden border-b border-white/10 flex items-center justify-center">
+                  <div className="relative w-full h-56 bg-neutral-100 overflow-hidden border-b border-black/10 flex items-center justify-center">
                     {eventImage ? (
                       <img
                         src={eventImage}
@@ -160,7 +160,7 @@ export default function PublicHome() {
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
                       />
                     ) : (
-                      <div className="flex flex-col items-center justify-center text-white/30 space-y-2">
+                      <div className="flex flex-col items-center justify-center text-black/30 space-y-2">
                         <Calendar className="w-8 h-8 stroke-[1.5]" />
                         <span className="text-[10px] uppercase tracking-widest font-bold">TYKS SELECTION</span>
                       </div>
@@ -175,36 +175,36 @@ export default function PublicHome() {
 
                   <div className="p-7 flex-1 space-y-4 flex flex-col justify-between">
                     <div className="space-y-3">
-                      <span className="text-xs font-bold text-white/50 uppercase tracking-wider block">
+                      <span className="text-xs font-bold text-black/50 uppercase tracking-wider block">
                         {dateStr}
                       </span>
 
-                      <h3 className="text-xl font-bold text-white tracking-tight group-hover:underline transition-colors line-clamp-1">
+                      <h3 className="text-xl font-bold text-black tracking-tight group-hover:underline transition-colors line-clamp-1">
                         {evt.title}
                       </h3>
 
                       {evt.description && (
-                        <p className="line-clamp-2 text-xs text-white/70 font-normal leading-relaxed normal-case">
+                        <p className="line-clamp-2 text-xs text-black/70 font-normal leading-relaxed normal-case">
                           {evt.description}
                         </p>
                       )}
                     </div>
 
                     {evt.location && (
-                      <div className="flex items-center gap-2 text-xs text-white/70 pt-2 border-t border-white/10 font-bold">
-                        <MapPin className="h-3.5 w-3.5 text-white/50 shrink-0" />
+                      <div className="flex items-center gap-2 text-xs text-black/70 pt-2 border-t border-black/10 font-bold">
+                        <MapPin className="h-3.5 w-3.5 text-black/50 shrink-0" />
                         <span className="truncate">{evt.location}</span>
                       </div>
                     )}
                   </div>
 
-                  <div className="flex items-center justify-between border-t border-white/10 px-7 py-4 bg-neutral-950">
-                    <span className="text-sm font-bold tracking-wide text-white">
+                  <div className="flex items-center justify-between border-t border-black/10 px-7 py-4 bg-neutral-50">
+                    <span className="text-sm font-bold tracking-wide text-black">
                       {eventPrice > 0 ? `${eventPrice.toLocaleString('fr-FR')} €` : 'ENTRÉE LIBRE'}
                     </span>
                     <Link
                       href={`/events/${evt.slug || evt.id}`}
-                      className="h-10 px-6 bg-white hover:bg-neutral-200 text-black font-bold text-xs uppercase tracking-wider transition-all duration-300 flex items-center gap-2 rounded-xl shadow-md group-hover:gap-3 cursor-pointer"
+                      className="h-10 px-6 bg-black hover:bg-neutral-800 text-white font-bold text-xs uppercase tracking-wider transition-all duration-300 flex items-center gap-2 rounded-xl shadow-md group-hover:gap-3 cursor-pointer"
                     >
                       <span>RÉSERVER</span>
                       <ArrowUpRight className="w-3.5 h-3.5" />
