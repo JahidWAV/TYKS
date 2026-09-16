@@ -4,11 +4,23 @@ import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { notFound, useParams } from 'next/navigation';
 import { supabaseBrowser } from '@/lib/supabase-browser';
-import { ArrowUpRight, Ticket, Minus, Plus, Users, X, CheckCircle2, ShieldAlert, Loader2, Calendar, MapPin, Clock, Building2 } from 'lucide-react';
+import { ArrowUpRight, Ticket, Minus, Plus, Users, X, CheckCircle2, ShieldCheck, Loader2, Calendar, MapPin, Clock, Building2 } from 'lucide-react';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements, PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js';
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
+
+interface TyksEvent {
+  id: string;
+  slug: string;
+  title: string;
+  description?: string;
+  location?: string;
+  starts_at?: string;
+  price?: number;
+  image_url?: string;
+  organizations?: { name?: string };
+}
 
 function CustomCheckoutForm({ slug, eventTitle, quantity, totalPrice, onSuccess }: { slug: string; eventTitle: string; quantity: number; totalPrice: number; onSuccess: () => void }) {
   const stripe = useStripe();
@@ -87,7 +99,7 @@ export default function PublicEventPage() {
   const params = useParams();
   const slug = params?.slug as string;
 
-  const [event, setEvent] = useState<any>(null);
+  const [event, setEvent] = useState<TyksEvent | null>(null);
   const [loading, setLoading] = useState(true);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
   const [quantity, setQuantity] = useState<number>(1);
@@ -96,7 +108,7 @@ export default function PublicEventPage() {
   const [isSuccess, setIsSuccess] = useState(false);
   const [mounted, setMounted] = useState(false);
 
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<{ id: string; email?: string } | null>(null);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [authEmail, setAuthEmail] = useState('');
   const [authLoading, setAuthLoading] = useState(false);
@@ -135,7 +147,7 @@ export default function PublicEventPage() {
     });
 
     return () => {
-      subscription.unsubscribe();
+      subscription?.unsubscribe();
     };
   }, [slug]);
 
@@ -145,6 +157,7 @@ export default function PublicEventPage() {
       setIsCheckoutOpen(true);
       handleInitCheckout();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
   const handleMagicLinkLogin = async (e: React.FormEvent) => {
@@ -330,6 +343,7 @@ export default function PublicEventPage() {
               <div className="bg-neutral-900 border border-white/15 p-8 max-w-md w-full space-y-6 relative shadow-2xl text-white rounded-3xl font-grotesque uppercase">
                 <button 
                   onClick={() => setShowAuthModal(false)}
+                  aria-label="Fermer"
                   className="absolute top-5 right-5 w-8 h-8 border border-white/10 bg-neutral-800 text-white flex items-center justify-center hover:bg-white hover:text-black transition-colors cursor-pointer rounded-xl"
                 >
                   <X className="w-4 h-4" />
@@ -411,6 +425,7 @@ export default function PublicEventPage() {
                     setClientSecret(null);
                     setIsSuccess(false);
                   }}
+                  aria-label="Fermer"
                   className="absolute top-5 right-5 w-8 h-8 border border-white/10 bg-neutral-800 text-white flex items-center justify-center hover:bg-white hover:text-black transition-colors cursor-pointer z-10 rounded-xl"
                 >
                   <X className="w-4 h-4" />
@@ -475,7 +490,7 @@ export default function PublicEventPage() {
                     {basePrice > 0 && (
                       <div className="border border-white/10 p-4 bg-neutral-950 space-y-2 rounded-2xl">
                         <div className="flex items-center gap-2 text-xs font-bold text-white/80">
-                          <ShieldAlert className="w-4 h-4" />
+                          <ShieldCheck className="w-4 h-4" />
                           <span>DÉTAIL DU TARIF</span>
                         </div>
                         <div className="space-y-1 text-xs text-white/50">
