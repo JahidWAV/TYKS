@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft, ArrowRight, Check, MapPin, FileText, Calendar, Euro, Loader2, Upload, Image as ImageIcon, Clock } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Check, MapPin, FileText, Loader2, Upload, Image as ImageIcon, Clock } from 'lucide-react';
 import { supabaseBrowser } from '@/lib/supabase-browser';
 
 export default function NewEventPage() {
@@ -22,7 +22,7 @@ export default function NewEventPage() {
     image_url: '',
   });
 
-  // États séparés pour le sélecteur de date/heure personnalisé (Début et Fin)
+  // États pour le sélecteur de date et d'heure personnalisé
   const now = new Date();
   const [startDate, setStartDate] = useState(now.toISOString().split('T')[0]);
   const [startHour, setStartHour] = useState(String(now.getHours()).padStart(2, '0'));
@@ -36,6 +36,7 @@ export default function NewEventPage() {
     setForm({ ...form, [e.target.name]: e.target.value });
   }
 
+  // Upload de l'image via l'API connectée à Vercel Blob (`put`)
   async function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -99,7 +100,6 @@ export default function NewEventPage() {
         return;
       }
 
-      // Construction des chaînes ISO à partir des champs personnalisés
       const startsAtIso = new Date(`${startDate}T${startHour}:${startMinute}:00`).toISOString();
       const endsAtIso = new Date(`${endDate}T${endHour}:${endMinute}:00`).toISOString();
 
@@ -138,7 +138,6 @@ export default function NewEventPage() {
     { number: 3, title: "3. PHOTO", icon: ImageIcon, desc: "IMAGE" },
   ];
 
-  // Génération des heures (00 à 23) et minutes (00, 15, 30, 45) pour le sélecteur personnalisé
   const hours = Array.from({ length: 24 }, (_, i) => String(i).padStart(2, '0'));
   const minutes = ['00', '15', '30', '45'];
 
