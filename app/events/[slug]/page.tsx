@@ -199,9 +199,18 @@ export default function PublicEventPage() {
   if (!event) return notFound();
 
   const basePrice = Number(event.price) || 0;
+  
+  // Calculs front-end correspondants à l'API
+  const organizerSharePerTicket = basePrice;
   const platformFeePerTicket = basePrice > 0 ? 0.90 : 0;
-  const organizerSharePerTicket = basePrice - platformFeePerTicket;
-  const totalPrice = basePrice * quantity;
+  const subtotalPerTicket = organizerSharePerTicket + platformFeePerTicket;
+
+  const stripePercentage = 0.015;
+  const stripeFixed = 0.25;
+  
+  const subtotal = subtotalPerTicket * quantity;
+  const estimatedStripeFees = basePrice > 0 ? ((subtotal + (stripeFixed * quantity)) / (1 - stripePercentage) - subtotal) : 0;
+  const totalPrice = subtotal + estimatedStripeFees;
 
   const startDate = event.starts_at ? new Date(event.starts_at) : null;
   const rawDate = startDate
@@ -249,10 +258,8 @@ export default function PublicEventPage() {
     <main className="w-full min-h-screen bg-[#0f0f0f] text-white font-grotesque selection:bg-white selection:text-black flex flex-col justify-center py-20 px-6 sm:px-12 uppercase">
       <div className="w-full max-w-5xl mx-auto">
         
-        {/* MISE EN PAGE HARMONIEUSE : AFFICHE CARRÉE À GAUCHE / INFOS & DESCRIPTION À DROITE */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-start">
           
-          {/* COLONNE GAUCHE : AFFICHE CARRÉE */}
           <div className="lg:col-span-5 flex justify-center">
             <div className="w-full max-w-md aspect-square bg-neutral-900/50 border border-white/10 rounded-3xl overflow-hidden shadow-2xl p-2.5">
               {event.image_url ? (
@@ -266,7 +273,6 @@ export default function PublicEventPage() {
             </div>
           </div>
 
-          {/* COLONNE DROITE : TITRE, INFOS, BOUTON ET DESCRIPTION INTÉGRÉE */}
           <div className="lg:col-span-7 space-y-8">
             
             <div className="space-y-4">
@@ -282,7 +288,6 @@ export default function PublicEventPage() {
               </h1>
             </div>
 
-            {/* DATES & LIEUX */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs font-bold tracking-wide">
               {formattedDate && (
                 <div className="flex items-center gap-3 bg-neutral-900/80 border border-white/10 p-3.5 rounded-2xl">
@@ -304,7 +309,6 @@ export default function PublicEventPage() {
               )}
             </div>
 
-            {/* BOUTON D'ACTION */}
             <div className="pt-2">
               <button
                 onClick={() => {
@@ -315,12 +319,11 @@ export default function PublicEventPage() {
                 className="w-full h-14 bg-white text-black text-xs uppercase tracking-widest hover:bg-neutral-200 transition-all flex items-center justify-center gap-3 cursor-pointer shadow-lg font-bold rounded-2xl"
               >
                 <Ticket className="w-4 h-4" />
-                <span>{basePrice === 0 ? 'RÉSERVER GRATUITEMENT' : `RÉSERVER • ${basePrice.toFixed(2)} €`}</span>
+                <span>{basePrice === 0 ? 'RÉSERVER GRATUITEMENT' : `RÉSERVER • À PARTIR DE ${basePrice.toFixed(2)} €`}</span>
                 <ArrowUpRight className="w-4 h-4" />
               </button>
             </div>
 
-            {/* DESCRIPTION INTÉGRÉE DANS LE FLUX DE DROITE */}
             {event.description && (
               <div className="bg-neutral-900/40 border border-white/10 p-6 sm:p-8 rounded-3xl space-y-3">
                 <h3 className="text-xs font-bold uppercase tracking-widest text-white/40">À PROPOS DE L&apos;ÉVÉNEMENT</h3>
@@ -493,14 +496,18 @@ export default function PublicEventPage() {
                           <ShieldCheck className="w-4 h-4" />
                           <span>DÉTAIL DU TARIF</span>
                         </div>
-                        <div className="space-y-1 text-xs text-white/50">
+                        <div className="space-y-1 text-xs text-white/50 font-medium">
                           <div className="flex justify-between">
-                            <span>ORGANISATEUR</span>
+                            <span>BILLET(S) ({quantity}X)</span>
                             <span className="text-white font-bold">{(organizerSharePerTicket * quantity).toFixed(2)} €</span>
                           </div>
                           <div className="flex justify-between">
-                            <span>PLATEFORME</span>
+                            <span>FRAIS DE SERVICE PLATEFORME</span>
                             <span className="text-white font-bold">{(platformFeePerTicket * quantity).toFixed(2)} €</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span>FRAIS DE PAIEMENT SÉCURISÉ (STRIPE)</span>
+                            <span className="text-white font-bold">{estimatedStripeFees.toFixed(2)} €</span>
                           </div>
                         </div>
                       </div>
@@ -508,7 +515,7 @@ export default function PublicEventPage() {
 
                     <div className="space-y-4 pt-2">
                       <div className="flex items-baseline justify-between">
-                        <span className="text-xs uppercase tracking-wider text-white/50 font-bold">TOTAL</span>
+                        <span className="text-xs uppercase tracking-wider text-white/50 font-bold">TOTAL À PAYER</span>
                         <p className="text-3xl font-normal tracking-tight">{totalPrice.toFixed(2)} €</p>
                       </div>
 
