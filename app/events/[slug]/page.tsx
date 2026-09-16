@@ -233,14 +233,14 @@ export default function PublicEventPage() {
   };
 
   return (
-    <main className="w-full min-h-screen bg-[#0f0f0f] text-white font-grotesque selection:bg-white selection:text-black pt-12 pb-20 px-6 sm:px-12 uppercase">
-      <div className="w-full max-w-5xl mx-auto space-y-16">
+    <main className="w-full min-h-screen bg-[#0f0f0f] text-white font-grotesque selection:bg-white selection:text-black pt-24 pb-20 px-6 sm:px-12 uppercase">
+      <div className="w-full max-w-5xl mx-auto">
         
-        {/* SECTION PRINCIPALE : L'AFFICHE CARRÉE & LES INFORMATIONS CENTRÉES */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-center">
+        {/* MISE EN PAGE HARMONIEUSE : AFFICHE CARRÉE À GAUCHE / INFOS & DESCRIPTION À DROITE */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-start">
           
-          {/* AFFICHE CARRÉE PARFAITE */}
-          <div className="lg:col-span-5 flex justify-center">
+          {/* COLONNE GAUCHE : AFFICHE CARRÉE FIXÉE */}
+          <div className="lg:col-span-5 lg:sticky lg:top-24 flex justify-center">
             <div className="w-full max-w-md aspect-square bg-neutral-900/50 border border-white/10 rounded-3xl overflow-hidden shadow-2xl p-2.5">
               {event.image_url ? (
                 <img src={event.image_url} alt={event.title} className="w-full h-full object-cover rounded-2xl" />
@@ -253,8 +253,8 @@ export default function PublicEventPage() {
             </div>
           </div>
 
-          {/* BLOC TITRE ET MÉTADONNÉES (BIEN ALIGNÉ AU MILIEU) */}
-          <div className="lg:col-span-7 space-y-8 flex flex-col justify-center">
+          {/* COLONNE DROITE : TITRE, INFOS, BOUTON ET DESCRIPTION INTÉGRÉE */}
+          <div className="lg:col-span-7 space-y-8">
             
             <div className="space-y-4">
               {event.organizations?.name && (
@@ -292,14 +292,14 @@ export default function PublicEventPage() {
             </div>
 
             {/* BOUTON D'ACTION */}
-            <div className="pt-2 flex items-center gap-6">
+            <div className="pt-2">
               <button
                 onClick={() => {
                   setClientSecret(null);
                   setIsSuccess(false);
                   setIsCheckoutOpen(true);
                 }}
-                className="flex-1 h-14 bg-white text-black text-xs uppercase tracking-widest hover:bg-neutral-200 transition-all flex items-center justify-center gap-3 cursor-pointer shadow-lg font-bold rounded-2xl"
+                className="w-full h-14 bg-white text-black text-xs uppercase tracking-widest hover:bg-neutral-200 transition-all flex items-center justify-center gap-3 cursor-pointer shadow-lg font-bold rounded-2xl"
               >
                 <Ticket className="w-4 h-4" />
                 <span>{basePrice === 0 ? 'RÉSERVER GRATUITEMENT' : `RÉSERVER • ${basePrice.toFixed(2)} €`}</span>
@@ -307,19 +307,19 @@ export default function PublicEventPage() {
               </button>
             </div>
 
+            {/* DESCRIPTION INTÉGRÉE DANS LE FLUX DE DROITE */}
+            {event.description && (
+              <div className="bg-neutral-900/40 border border-white/10 p-6 sm:p-8 rounded-3xl space-y-3">
+                <h3 className="text-xs font-bold uppercase tracking-widest text-white/40">À PROPOS DE L&apos;ÉVÉNEMENT</h3>
+                <p className="text-xs sm:text-sm leading-relaxed text-white/80 whitespace-pre-line font-normal">
+                  {event.description}
+                </p>
+              </div>
+            )}
+
           </div>
 
         </div>
-
-        {/* SECTION DESCRIPTION PROPRE */}
-        {event.description && (
-          <div className="bg-neutral-900/40 border border-white/10 p-8 sm:p-10 rounded-3xl space-y-4">
-            <h3 className="text-xs font-bold uppercase tracking-widest text-white/40">À PROPOS DE L&apos;ÉVÉNEMENT</h3>
-            <p className="text-xs sm:text-sm leading-relaxed text-white/80 whitespace-pre-line font-normal max-w-3xl">
-              {event.description}
-            </p>
-          </div>
-        )}
 
       </div>
 
