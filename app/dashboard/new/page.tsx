@@ -94,13 +94,20 @@ export default function NewEventPage() {
         return;
       }
 
+      // CORRECTION DU DÉCALAGE HORAIRE (Minuit reste minuit)
+      const payload = {
+        ...form,
+        starts_at: form.starts_at ? new Date(form.starts_at).toISOString() : '',
+        ends_at: form.ends_at ? new Date(form.ends_at).toISOString() : '',
+      };
+
       const res = await fetch('/api/events', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${session.access_token}`,
         },
-        body: JSON.stringify(form),
+        body: JSON.stringify(payload),
       });
 
       const data = await res.json();
