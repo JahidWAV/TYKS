@@ -187,7 +187,7 @@ export default function PublicEventPage() {
 
   if (loading) {
     return (
-      <div className="w-full min-h-[60vh] bg-black flex items-center justify-center font-grotesque text-xs uppercase tracking-widest text-white/60">
+      <div className="w-full min-h-[60vh] bg-[#0f0f0f] flex items-center justify-center font-grotesque text-xs uppercase tracking-widest text-white/60">
         CHARGEMENT...
       </div>
     );
@@ -246,7 +246,7 @@ export default function PublicEventPage() {
   };
 
   return (
-    <main className="w-full bg-black text-white font-grotesque selection:bg-white selection:text-black py-12 px-6 sm:px-12 uppercase">
+    <main className="w-full bg-[#0f0f0f] text-white font-grotesque selection:bg-white selection:text-black py-12 px-6 sm:px-12 uppercase">
       <div className="w-full max-w-6xl mx-auto space-y-12">
         
         <div className="flex flex-col items-center text-center space-y-6 border-b border-white/10 pb-10">
@@ -256,25 +256,25 @@ export default function PublicEventPage() {
 
           <div className="flex flex-wrap items-center justify-center gap-3 pt-1 text-xs font-bold uppercase tracking-wider text-white">
             {event.organizations?.name && (
-              <div className="flex items-center gap-2 bg-neutral-950 border border-white/15 px-4 py-2 rounded-full shadow-xs">
+              <div className="flex items-center gap-2 bg-neutral-900 border border-white/15 px-4 py-2 rounded-full shadow-xs">
                 <Building2 className="w-3.5 h-3.5 text-white" />
                 <span>{event.organizations.name}</span>
               </div>
             )}
             {formattedDate && (
-              <div className="flex items-center gap-2 bg-neutral-950 border border-white/15 px-4 py-2 rounded-full shadow-xs">
+              <div className="flex items-center gap-2 bg-neutral-900 border border-white/15 px-4 py-2 rounded-full shadow-xs">
                 <Calendar className="w-3.5 h-3.5 text-white" />
                 <span>{formattedDate}</span>
               </div>
             )}
             {formattedTime && (
-              <div className="flex items-center gap-2 bg-neutral-950 border border-white/15 px-4 py-2 rounded-full shadow-xs">
+              <div className="flex items-center gap-2 bg-neutral-900 border border-white/15 px-4 py-2 rounded-full shadow-xs">
                 <Clock className="w-3.5 h-3.5 text-white" />
                 <span>{formattedTime}</span>
               </div>
             )}
             {event.location && (
-              <div className="flex items-center gap-2 bg-neutral-950 border border-white/15 px-4 py-2 rounded-full shadow-xs max-w-xs truncate">
+              <div className="flex items-center gap-2 bg-neutral-900 border border-white/15 px-4 py-2 rounded-full shadow-xs max-w-xs truncate">
                 <MapPin className="w-3.5 h-3.5 text-white" />
                 <span className="truncate">{event.location}</span>
               </div>
@@ -282,14 +282,15 @@ export default function PublicEventPage() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch w-full">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start w-full">
           
-          <div className="lg:col-span-8 flex flex-col">
-            <div className="w-full h-full min-h-[400px] border border-white/10 bg-neutral-950 shadow-lg overflow-hidden rounded-3xl p-3 flex">
+          {/* AFFICHE AU FORMAT CARRÉ */}
+          <div className="lg:col-span-7 flex flex-col">
+            <div className="w-full aspect-square border border-white/15 bg-neutral-900 shadow-xl overflow-hidden rounded-[2.5rem] p-3 flex">
               {event.image_url ? (
-                <img src={event.image_url} alt={event.title} className="w-full h-full object-cover rounded-2xl" />
+                <img src={event.image_url} alt={event.title} className="w-full h-full object-cover rounded-3xl" />
               ) : (
-                <div className="w-full h-full p-8 flex flex-col justify-between bg-neutral-950 text-white rounded-2xl border border-white/10">
+                <div className="w-full h-full p-8 flex flex-col justify-between bg-neutral-900 text-white rounded-3xl border border-white/15">
                   <span className="text-xs uppercase tracking-widest text-white/50 font-bold">VISUEL BANNER</span>
                   <span className="text-4xl font-normal tracking-tighter text-white">LIVE</span>
                 </div>
@@ -297,8 +298,9 @@ export default function PublicEventPage() {
             </div>
           </div>
 
-          <div className="lg:col-span-4 flex flex-col">
-            <div className="w-full h-full bg-neutral-950 border border-white/10 p-6 sm:p-8 rounded-3xl shadow-lg flex flex-col justify-between space-y-6">
+          {/* PANNEAU DE RÉSERVATION & INFOS */}
+          <div className="lg:col-span-5 flex flex-col">
+            <div className="w-full bg-neutral-900 border border-white/15 p-6 sm:p-8 rounded-[2.5rem] shadow-xl flex flex-col justify-between space-y-6">
               
               <div className="space-y-4">
                 {event.description && (
@@ -307,7 +309,7 @@ export default function PublicEventPage() {
                       <h3 className="text-[10px] font-bold uppercase tracking-widest text-white/50">À PROPOS DE L&apos;ÉVÉNEMENT</h3>
                       <button
                         onClick={() => setIsDescriptionModalOpen(true)}
-                        className="flex items-center gap-1.5 text-[10px] uppercase tracking-wider font-bold text-white bg-black border border-white/15 hover:bg-white hover:text-black transition-all px-2.5 py-1 rounded-full cursor-pointer shadow-xs"
+                        className="flex items-center gap-1.5 text-[10px] uppercase tracking-wider font-bold text-white bg-black border border-white/15 hover:bg-white hover:text-black transition-all px-3 py-1.5 rounded-full cursor-pointer shadow-xs"
                       >
                         <Eye className="w-3 h-3" />
                         <span>DÉTAILS</span>
@@ -334,7 +336,7 @@ export default function PublicEventPage() {
                     setIsSuccess(false);
                     setIsCheckoutOpen(true);
                   }}
-                  className="w-full py-4 border border-white/20 bg-white text-black text-xs uppercase tracking-widest hover:bg-neutral-200 transition-all flex items-center justify-center gap-3 cursor-pointer shadow-md font-bold rounded-2xl"
+                  className="w-full h-14 border border-white/20 bg-white text-black text-xs uppercase tracking-widest hover:bg-neutral-200 transition-all flex items-center justify-center gap-3 cursor-pointer shadow-lg font-bold rounded-2xl"
                 >
                   <Ticket className="w-4 h-4" />
                   <span>{basePrice === 0 ? 'RÉSERVER MA PLACE' : 'RÉSERVER MES PLACES'}</span>
@@ -353,7 +355,7 @@ export default function PublicEventPage() {
         <>
           {isDescriptionModalOpen && (
             <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-200">
-              <div className="bg-neutral-950 border border-white/20 p-8 max-w-lg w-full space-y-6 relative shadow-2xl max-h-[85vh] overflow-y-auto text-white rounded-3xl font-grotesque uppercase">
+              <div className="bg-neutral-900 border border-white/20 p-8 max-w-lg w-full space-y-6 relative shadow-2xl max-h-[85vh] overflow-y-auto text-white rounded-[2.5rem] font-grotesque uppercase">
                 <button 
                   onClick={() => setIsDescriptionModalOpen(false)}
                   className="absolute top-5 right-5 w-8 h-8 border border-white/20 bg-black text-white flex items-center justify-center hover:bg-white hover:text-black transition-colors cursor-pointer rounded-xl"
@@ -375,7 +377,7 @@ export default function PublicEventPage() {
 
           {showAuthModal && (
             <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-200">
-              <div className="bg-neutral-950 border border-white/20 p-8 max-w-md w-full space-y-6 relative shadow-2xl text-white rounded-3xl font-grotesque uppercase">
+              <div className="bg-neutral-900 border border-white/20 p-8 max-w-md w-full space-y-6 relative shadow-2xl text-white rounded-[2.5rem] font-grotesque uppercase">
                 <button 
                   onClick={() => setShowAuthModal(false)}
                   className="absolute top-5 right-5 w-8 h-8 border border-white/20 bg-black text-white flex items-center justify-center hover:bg-white hover:text-black transition-colors cursor-pointer rounded-xl"
@@ -454,7 +456,7 @@ export default function PublicEventPage() {
 
           {isCheckoutOpen && (
             <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-200">
-              <div className="relative w-full max-w-lg bg-neutral-950 border border-white/20 p-8 space-y-6 shadow-2xl max-h-[90vh] overflow-y-auto text-white rounded-3xl font-grotesque uppercase">
+              <div className="relative w-full max-w-lg bg-neutral-900 border border-white/20 p-8 space-y-6 shadow-2xl max-h-[90vh] overflow-y-auto text-white rounded-[2.5rem] font-grotesque uppercase">
                 <button
                   onClick={() => {
                     setIsCheckoutOpen(false);
@@ -509,7 +511,7 @@ export default function PublicEventPage() {
                         <button
                           onClick={() => setQuantity(Math.max(1, quantity - 1))}
                           disabled={quantity <= 1}
-                          className="w-10 h-10 border border-white/15 bg-neutral-950 text-white flex items-center justify-center hover:bg-white hover:text-black disabled:opacity-30 transition-all cursor-pointer rounded-lg font-bold"
+                          className="w-10 h-10 border border-white/15 bg-neutral-900 text-white flex items-center justify-center hover:bg-white hover:text-black disabled:opacity-30 transition-all cursor-pointer rounded-lg font-bold"
                         >
                           <Minus className="w-4 h-4" />
                         </button>
@@ -517,7 +519,7 @@ export default function PublicEventPage() {
                         <button
                           onClick={() => setQuantity(Math.min(10, quantity + 1))}
                           disabled={quantity >= 10}
-                          className="w-10 h-10 border border-white/15 bg-neutral-950 text-white flex items-center justify-center hover:bg-white hover:text-black disabled:opacity-30 transition-all cursor-pointer rounded-lg font-bold"
+                          className="w-10 h-10 border border-white/15 bg-neutral-900 text-white flex items-center justify-center hover:bg-white hover:text-black disabled:opacity-30 transition-all cursor-pointer rounded-lg font-bold"
                         >
                           <Plus className="w-4 h-4" />
                         </button>
@@ -589,7 +591,7 @@ export default function PublicEventPage() {
                           theme: 'stripe',
                           variables: {
                             colorPrimary: '#ffffff',
-                            colorBackground: '#0a0a0a',
+                            colorBackground: '#0f0f0f',
                             colorText: '#ffffff',
                             colorDanger: '#ff4b4b',
                             fontFamily: 'inherit',
