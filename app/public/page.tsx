@@ -152,7 +152,8 @@ export default function PublicHome() {
                   key={evt.id}
                   className="group flex flex-col bg-white text-black border border-white/15 rounded-[2.5rem] overflow-hidden transition-all duration-300 hover:shadow-2xl hover:-translate-y-1"
                 >
-                  <div className="relative w-full h-56 bg-neutral-100 overflow-hidden border-b border-black/10 flex items-center justify-center">
+                  {/* Image au format carré */}
+                  <div className="relative w-full aspect-square bg-neutral-100 overflow-hidden border-b border-black/10 flex items-center justify-center">
                     {eventImage ? (
                       <img
                         src={eventImage}
