@@ -6,7 +6,7 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { 
   ArrowUpRight, Calendar, Search, Euro, Ticket, 
-  Bookmark, ThumbsUp, ThumbsDown, Edit3, Trash2
+  Edit3, Trash2
 } from 'lucide-react';
 import type { IortiEvent } from '@/types/event';
 import { supabaseBrowser } from '@/lib/supabase-browser';
@@ -302,7 +302,15 @@ export default function OrganizerDashboard() {
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {filteredEvents.map((evt: any) => {
               const eventPrice = Number(evt.price || evt.ticket_price || 0);
-              const imageUrl = evt.image_url || evt.cover_image || evt.flyer_url;
+              
+              // Résolution robuste de l'URL de l'affiche selon le schéma de la base de données
+              const rawImage = evt.image_url || evt.cover_image || evt.flyer_url || evt.poster_url;
+              let imageUrl = rawImage;
+              
+              if (rawImage && !rawImage.startsWith('http') && !rawImage.startsWith('/')) {
+                const { data } = supabaseBrowser.storage.from('events').getPublicUrl(rawImage);
+                imageUrl = data.publicUrl;
+              }
 
               return (
                 <article
@@ -316,10 +324,13 @@ export default function OrganizerDashboard() {
                         src={imageUrl} 
                         alt={evt.title || 'Event Flyer'} 
                         fill 
+                        sizes="(max-width: 768px) 100vw, 33vw"
                         className="object-cover object-center brightness-75 group-hover:scale-105 transition-transform duration-500"
                       />
                     ) : (
-                      <div className="absolute inset-0 bg-gradient-to-br from-neutral-800 to-neutral-950" />
+                      <div className="absolute inset-0 bg-gradient-to-br from-neutral-800 to-neutral-950 flex items-center justify-center">
+                        <span className="text-white/20 text-xs font-bold">AUCUNE AFFICHE</span>
+                      </div>
                     )}
 
                     {/* Dark Vignette Overlay for readability */}
@@ -355,8 +366,8 @@ export default function OrganizerDashboard() {
                       </div>
                     </div>
 
-                    {/* Center / Bottom overlay text (Like the provided image mockup) */}
-                    <div className="relative z-10 space-y-1 text-center my-auto">
+                    {/* Center overlay text (Titre sur l'image style flyer) */}
+                    <div className="relative z-10 space-y-1 text-center my-auto pointer-events-none">
                       <h2 className="text-2xl lg:text-3xl font-normal tracking-wider text-white drop-shadow-md">
                         {evt.title}
                       </h2>
@@ -368,12 +379,9 @@ export default function OrganizerDashboard() {
                     </div>
                   </div>
 
-                  {/* Bottom Section: Details & Interaction buttons */}
+                  {/* Bottom Section: Details & Price */}
                   <div className="p-6 space-y-4 bg-[#0f0f0f] flex-1 flex flex-col justify-between">
                     <div className="space-y-1">
-                      <span className="text-[10px] font-bold text-white/50 tracking-wider">
-                        FEATURED
-                      </span>
                       <h3 className="text-xl font-normal text-white">
                         {evt.title}
                       </h3>
@@ -391,27 +399,6 @@ export default function OrganizerDashboard() {
                       <span className="text-sm font-bold text-white">
                         {eventPrice > 0 ? `€${eventPrice.toLocaleString('fr-FR')}` : 'GRATUIT'}
                       </span>
-
-                      <div className="flex items-center gap-1.5">
-                        <button 
-                          className="w-9 h-9 rounded-full border border-white/15 bg-neutral-900 text-white/80 flex items-center justify-center hover:bg-white hover:text-black transition-colors cursor-pointer"
-                          title="Sauvegarder"
-                        >
-                          <Bookmark className="w-4 h-4" />
-                        </button>
-                        <button 
-                          className="w-9 h-9 rounded-full border border-white/15 bg-neutral-900 text-white/80 flex items-center justify-center hover:bg-white hover:text-black transition-colors cursor-pointer"
-                          title="J'aime"
-                        >
-                          <ThumbsUp className="w-4 h-4" />
-                        </button>
-                        <button 
-                          className="w-9 h-9 rounded-full border border-white/15 bg-neutral-900 text-white/80 flex items-center justify-center hover:bg-white hover:text-black transition-colors cursor-pointer"
-                          title="Je n'aime pas"
-                        >
-                          <ThumbsDown className="w-4 h-4" />
-                        </button>
-                      </div>
                     </div>
                   </div>
                 </article>
