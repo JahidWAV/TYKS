@@ -112,6 +112,7 @@ export default function NewEventPage() {
         ...form,
         starts_at: startsAtIso,
         ends_at: endsAtIso,
+        status: 'published', // <-- L'événement est créé directement en publié
       };
 
       const res = await fetch('/api/events', {
@@ -381,7 +382,6 @@ export default function NewEventPage() {
                 <div className="space-y-2">
                   <label className="text-sm text-white font-bold">CLIQUEZ POUR CHOISIR UNE PHOTO DEPUIS VOTRE APPAREIL</label>
                   
-                  {/* Utilisation d'une div cliquable propre à la place d'une imbrication de labels */}
                   <div 
                     onClick={() => document.getElementById('file-upload-input')?.click()}
                     className="flex flex-col items-center justify-center w-full h-44 border-3 border-dashed border-white/30 rounded-2xl bg-neutral-950 hover:border-white transition cursor-pointer shadow-inner"
