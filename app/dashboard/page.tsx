@@ -5,8 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { 
-  ArrowUpRight, Calendar, Search, Euro, Ticket, 
-  Edit3, Trash2
+  ArrowUpRight, Calendar, Search, Edit3, Trash2
 } from 'lucide-react';
 import type { IortiEvent } from '@/types/event';
 import { supabaseBrowser } from '@/lib/supabase-browser';
@@ -18,27 +17,12 @@ const STATUS_LABEL: Record<string, string> = {
   cancelled: 'ANNULÉ',
 };
 
-interface DashboardStats {
-  totalRevenue: number;
-  totalTicketsSold: number;
-  totalCapacity: number;
-  publishedEventsCount: number;
-  totalEventsCount: number;
-}
-
 export default function OrganizerDashboard() {
   const router = useRouter();
   const [user, setUser] = useState<any>(null);
   const [ready, setReady] = useState(false);
   const [loading, setLoading] = useState(true);
   const [events, setEvents] = useState<IortiEvent[]>([]);
-  const [stats, setStats] = useState<DashboardStats>({
-    totalRevenue: 0,
-    totalTicketsSold: 0,
-    totalCapacity: 0,
-    publishedEventsCount: 0,
-    totalEventsCount: 0,
-  });
   
   const [searchQuery, setSearchQuery] = useState('');
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
@@ -75,31 +59,6 @@ export default function OrganizerDashboard() {
 
       if (eventsData) {
         setEvents(eventsData);
-
-        const totalEventsCount = eventsData.length;
-        const publishedEventsCount = eventsData.filter((e) => e.status === 'published').length;
-
-        let calculatedRevenue = 0;
-        let calculatedTickets = 0;
-        let calculatedCapacity = 0;
-
-        eventsData.forEach((evt: any) => {
-          const price = Number(evt.price || evt.ticket_price || 0);
-          const sold = Number(evt.tickets_sold || evt.sold_count || 0);
-          const capacity = Number(evt.capacity || evt.max_attendees || 0);
-
-          calculatedRevenue += price * sold;
-          calculatedTickets += sold;
-          calculatedCapacity += capacity;
-        });
-
-        setStats({
-          totalRevenue: calculatedRevenue,
-          totalTicketsSold: calculatedTickets,
-          totalCapacity: calculatedCapacity,
-          publishedEventsCount,
-          totalEventsCount,
-        });
       }
     } catch (err) {
       console.error('Erreur de chargement du dashboard :', err);
@@ -216,62 +175,21 @@ export default function OrganizerDashboard() {
            evt.location?.toLowerCase().includes(searchQuery.toLowerCase());
   });
 
-  const fillRate = stats.totalCapacity > 0 
-    ? Math.round((stats.totalTicketsSold / stats.totalCapacity) * 100) 
-    : 0;
-
   return (
     <div className="w-full px-6 lg:px-12 pt-4 pb-12 space-y-8 font-grotesque text-white bg-[#0f0f0f] min-h-full uppercase">
       
-      {/* Stats Overview */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 font-grotesque">
-        <div className="p-6 rounded-3xl border border-white/15 bg-neutral-900 space-y-3 shadow-xs">
-          <div className="flex items-center justify-between">
-            <p className="text-xs text-white/60 font-bold">CHIFFRE D&apos;AFFAIRES</p>
-            <Euro className="w-4 h-4 text-white" />
-          </div>
-          <p className="text-3xl font-bold tracking-tight text-white">
-            {stats.totalRevenue.toLocaleString('fr-FR')} €
-          </p>
-          <p className="text-[11px] text-white/50">VOLUME BRUT ENCAISSÉ</p>
-        </div>
-
-        <div className="p-6 rounded-3xl border border-white/15 bg-neutral-900 space-y-3 shadow-xs">
-          <div className="flex items-center justify-between">
-            <p className="text-xs text-white/60 font-bold">BILLETS VENDUS</p>
-            <Ticket className="w-4 h-4 text-white" />
-          </div>
-          <p className="text-3xl font-bold tracking-tight text-white">
-            {stats.totalTicketsSold}
-          </p>
-          <p className="text-[11px] text-white/50">TAUX DE REMPLISSAGE : {fillRate}%</p>
-        </div>
-
-        <div className="p-6 rounded-3xl border border-white/15 bg-neutral-900 space-y-3 shadow-xs">
-          <div className="flex items-center justify-between">
-            <p className="text-xs text-white/60 font-bold">ÉVÉNEMENTS PUBLIÉS</p>
-            <Calendar className="w-4 h-4 text-white" />
-          </div>
-          <p className="text-3xl font-bold tracking-tight text-white">
-            {stats.publishedEventsCount} <span className="text-xs font-normal text-white/50">({stats.totalEventsCount} TOTAL)</span>
-          </p>
-          <p className="text-[11px] text-white/50">CRÉATION ILLIMITÉE</p>
-        </div>
-
-        <div className="p-6 rounded-3xl border border-white/15 bg-neutral-900 space-y-3 shadow-xs">
-          <div className="flex items-center justify-between">
-            <p className="text-xs text-white/60 font-bold">MODÈLE TARIFAIRE</p>
-            <span className="h-3 w-3 rounded-full bg-white animate-pulse" />
-          </div>
-          <p className="text-base font-bold tracking-tight pt-1 text-white">
-            COMMISSION SUR VENTES
-          </p>
-          <p className="text-[11px] text-white/50">0 € D&apos;ABONNEMENT FIXE</p>
-        </div>
+      {/* Header de la page */}
+      <div className="flex flex-col gap-2 pt-2">
+        <h1 className="text-3xl lg:text-4xl font-normal tracking-tight text-white">
+          VOS ÉVÉNEMENTS
+        </h1>
+        <p className="text-xs text-white/60">
+          GÉREZ VOS ÉVÉNEMENTS, MODIFIEZ VOS INFORMATIONS ET SUIVEZ VOTRE ACTIVITÉ EN DIRECT.
+        </p>
       </div>
 
       {/* Search & Counter */}
-      <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4 pt-4">
+      <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4 pt-2">
         <div className="relative flex-1 max-w-md">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-white/40" />
           <input
