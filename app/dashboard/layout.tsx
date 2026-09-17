@@ -82,7 +82,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       {/* Barre de navigation horizontale */}
       <header className="fixed top-0 left-0 right-0 h-20 border-b border-white/10 bg-[#0f0f0f] flex items-center justify-between px-8 z-50 select-none">
         
-        {/* 1. Logo à gauche avec une largeur fixe pour équilibrer la droite */}
+        {/* 1. Bloc gauche (Largeur fixe identique à la droite pour garantir le centrage absolu) */}
         <div className="flex items-center justify-start w-48 shrink-0">
           <Link href="/" className="flex items-center group py-2">
             <Image 
@@ -96,7 +96,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           </Link>
         </div>
 
-        {/* 2. Menu strictement centré par rapport à la fenêtre */}
+        {/* 2. Menu du milieu strictement centré */}
         <nav className="hidden lg:flex items-center justify-center gap-2 font-grotesque absolute left-1/2 -translate-x-1/2">
           {navItems.map((item) => {
             const isActive = pathname === item.href;
@@ -117,7 +117,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           })}
         </nav>
 
-        {/* 3. Bouton utilisateur à droite avec la même largeur fixe pour l'équilibre */}
+        {/* 3. Bloc droite (Largeur fixe identique à la gauche) */}
         <div className="flex items-center justify-end w-48 shrink-0">
           <div className="relative" ref={profileMenuRef}>
             <button 
