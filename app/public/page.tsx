@@ -62,25 +62,34 @@ export default function PublicHome() {
     return () => container.removeEventListener('scroll', handleScroll);
   }, []);
 
-  useEffect(() => {
-    const fetchPublishedEvents = async () => {
-      setLoading(true);
-      const { data, error } = await supabaseBrowser
-        .from('events')
-        .select('*')
-        .eq('status', 'published')
-        .order('starts_at', { ascending: true });
+  const fetchPublishedEvents = async () => {
+    const { data, error } = await supabaseBrowser
+      .from('events')
+      .select('*')
+      .eq('status', 'published')
+      .order('starts_at', { ascending: true });
 
-      if (!error && data) {
-        setEvents(data);
-        setFetchError(false);
-      } else {
-        setFetchError(true);
+    if (!error && data) {
+      setEvents(data);
+      setFetchError(false);
+    } else {
+      setFetchError(true);
+    }
+    setLoading(false);
+  };
+
+  // Chargement initial + Rafraîchissement automatique quand l'utilisateur revient sur l'onglet (ex: après un edit admin)
+  useEffect(() => {
+    fetchPublishedEvents();
+
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        fetchPublishedEvents();
       }
-      setLoading(false);
     };
 
-    fetchPublishedEvents();
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
   }, []);
 
   // Triplage du tableau pour le carrousel infini
@@ -106,12 +115,10 @@ export default function PublicHome() {
   const handleTransitionEnd = () => {
     if (events.length === 0) return;
 
-    // Si on dépasse trop à droite, on recule instantanément au bloc du milieu sans transition
     if (currentIndex >= totalLength * 2) {
       setIsTransitioning(false);
       setCurrentIndex((prev) => prev - totalLength);
     } 
-    // Si on dépasse trop à gauche, on avance instantanément au bloc du milieu sans transition
     else if (currentIndex < totalLength) {
       setIsTransitioning(false);
       setCurrentIndex((prev) => prev + totalLength);
@@ -151,7 +158,7 @@ export default function PublicHome() {
                   VOIR LA PROGRAMMATION
                 </a>
                 <a
-                  href="https://pro.tyks.app"
+                  href="https://pro.tyks.fr"
                   className="h-12 px-8 bg-transparent hover:bg-white/5 border border-white/20 text-white font-bold text-xs uppercase tracking-wider transition-all duration-300 flex items-center justify-center rounded-full cursor-pointer"
                 >
                   ESPACE ORGANISATEUR
@@ -202,14 +209,12 @@ export default function PublicHome() {
         {/* SECTION ÉVÉNEMENTS */}
         <section id="evenements" className="h-screen w-full snap-start snap-always flex items-center justify-between px-4 sm:px-8 lg:px-12 py-4 shrink-0 relative overflow-hidden">
           
-          {/* Texte vertical gauche */}
           <div className="hidden xl:flex items-center justify-center shrink-0 w-16 h-[460px] select-none self-center">
             <span className="text-white/[0.04] uppercase tracking-[0.2em] text-3xl font-black [writing-mode:vertical-lr] rotate-180 whitespace-nowrap">
               PROCHAINS ÉVÉNEMENTS
             </span>
           </div>
 
-          {/* Contenu central */}
           <div className="flex-1 relative w-full max-w-[1140px] mx-auto px-4 z-10 flex items-center justify-center">
             
             {loading ? (
@@ -236,7 +241,6 @@ export default function PublicHome() {
               </div>
             ) : (
               <>
-                {/* Flèche Gauche */}
                 <button 
                   onClick={() => handleSlide('prev')}
                   className="hidden md:flex absolute -left-4 lg:-left-12 z-30 w-12 h-12 rounded-full bg-neutral-900 border border-white/20 items-center justify-center text-white hover:bg-white hover:text-black transition-all shadow-xl cursor-pointer"
@@ -245,7 +249,6 @@ export default function PublicHome() {
                   <ChevronLeft className="w-6 h-6" />
                 </button>
 
-                {/* Fenêtre visible pour exactement 3 cartes */}
                 <div className="w-full max-w-[1068px] overflow-hidden py-4 mx-auto">
                   <div 
                     className={`flex gap-6 items-center ${isTransitioning ? 'transition-transform duration-500 ease-out' : 'transition-none'}`}
@@ -327,7 +330,6 @@ export default function PublicHome() {
                   </div>
                 </div>
 
-                {/* Flèche Droite */}
                 <button 
                   onClick={() => handleSlide('next')}
                   className="hidden md:flex absolute -right-4 lg:-right-12 z-30 w-12 h-12 rounded-full bg-neutral-900 border border-white/20 items-center justify-center text-white hover:bg-white hover:text-black transition-all shadow-xl cursor-pointer"
@@ -339,7 +341,6 @@ export default function PublicHome() {
             )}
           </div>
 
-          {/* Texte vertical droit */}
           <div className="hidden xl:flex items-center justify-center shrink-0 w-16 h-[460px] select-none self-center">
             <span className="text-white/[0.04] uppercase tracking-[0.2em] text-3xl font-black [writing-mode:vertical-lr] whitespace-nowrap">
               PROCHAINS ÉVÉNEMENTS
@@ -429,7 +430,7 @@ export default function PublicHome() {
               </p>
               <div className="pt-2 flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
                 <a
-                  href="https://pro.tyks.app"
+                  href="https://pro.tyks.fr"
                   className="h-12 px-8 bg-white hover:bg-neutral-200 text-black font-bold text-xs uppercase tracking-wider transition-all duration-300 inline-flex items-center justify-center rounded-full shadow-lg cursor-pointer"
                 >
                   DÉCOUVRIR L&apos;ESPACE PRO
