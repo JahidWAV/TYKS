@@ -37,7 +37,7 @@ export default function PublicHome() {
   const [loading, setLoading] = useState(true);
   const [fetchError, setFetchError] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [isTransitioning, setIsTransitioning] = useState(false);
+  const [isAnimating, setIsAnimating] = useState(false);
   const mainContainerRef = useRef<HTMLDivElement>(null);
 
   useLayoutEffect(() => {
@@ -83,38 +83,36 @@ export default function PublicHome() {
     fetchPublishedEvents();
   }, []);
 
-  // Triplage du tableau pour assurer une boucle infinie fluide dans les deux sens
+  // Triplage du tableau pour le carrousel infini
   const extendedEvents = events.length > 0 ? [...events, ...events, ...events] : [];
-  
-  // On se positionne au milieu (2ème bloc) au chargement
+
+  // Se positionner sur le bloc du milieu au chargement
   useEffect(() => {
     if (events.length > 0) {
       setCurrentIndex(events.length);
     }
   }, [events.length]);
 
-  // Navigation par les flèches avec contrôle de l'index et bouclage infini
+  // Navigation fluide d'une carte à la fois
   const handleSlide = (direction: 'next' | 'prev') => {
-    if (events.length === 0 || isTransitioning) return;
-    setIsTransitioning(true);
+    if (events.length === 0 || isAnimating) return;
+    setIsAnimating(true);
 
-    setCurrentIndex((prev) => {
-      const nextIndex = direction === 'next' ? prev + 1 : prev - 1;
-      return nextIndex;
-    });
+    setCurrentIndex((prev) => (direction === 'next' ? prev + 1 : prev - 1));
   };
 
-  // Réinitialisation invisible de la position pour l'effet infini une fois l'animation terminée
+  // Remise en position invisible pour créer l'illusion de l'infini sans à-coup
   const handleTransitionEnd = () => {
-    setIsTransitioning(false);
+    setIsAnimating(false);
     if (events.length === 0) return;
 
     const totalLength = events.length;
-    // Si on arrive dans le 3ème bloc, on ramène au 2ème discrètement
+
+    // Si on dépasse trop à droite, on recule instantanément au bloc du milieu
     if (currentIndex >= totalLength * 2) {
       setCurrentIndex((prev) => prev - totalLength);
     } 
-    // Si on arrive dans le 1er bloc, on ramène au 2ème discrètement
+    // Si on dépasse trop à gauche, on avance instantanément au bloc du milieu
     else if (currentIndex < totalLength) {
       setCurrentIndex((prev) => prev + totalLength);
     }
@@ -201,7 +199,7 @@ export default function PublicHome() {
           </div>
         </section>
 
-        {/* SECTION ÉVÉNEMENTS (Carrousel aligné, fluide et infini par index) */}
+        {/* SECTION ÉVÉNEMENTS */}
         <section id="evenements" className="h-screen w-full snap-start snap-always flex items-center justify-between px-4 sm:px-8 lg:px-12 py-4 shrink-0 relative overflow-hidden">
           
           {/* Texte vertical gauche */}
