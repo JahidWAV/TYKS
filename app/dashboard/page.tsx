@@ -347,8 +347,11 @@ export default function OrganizerDashboard() {
                       </div>
                     )}
 
+                    {/* Gradient fondu sombre par-dessus le bas de l'image pour créer la transition vers la modale */}
+                    <div className="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-neutral-950 via-neutral-950/80 to-transparent pointer-events-none z-10" />
+
                     {/* Badge de statut en haut à gauche */}
-                    <div className="absolute top-4 left-4 z-10">
+                    <div className="absolute top-4 left-4 z-20">
                       <span className={`inline-flex items-center px-2.5 py-1 rounded-full border text-[10px] font-bold backdrop-blur-md ${
                         evt.status === 'published' 
                           ? 'bg-black/60 text-white border-white/30' 
@@ -361,8 +364,8 @@ export default function OrganizerDashboard() {
                     </div>
                   </div>
 
-                  {/* Section des détails avec un dégradé global recouvrant le fond (effet fondu image -> modale texte) */}
-                  <div className="relative p-5 space-y-4 bg-gradient-to-b from-neutral-900 via-neutral-950 to-neutral-950 border-t border-white/10 flex-1 flex flex-col justify-between">
+                  {/* Section des détails (modale du bas) dans la continuité directe du gradient de l'image */}
+                  <div className="relative p-5 space-y-4 bg-neutral-950 flex-1 flex flex-col justify-between z-20 -mt-6">
                     <div className="space-y-1">
                       <p className="text-[10px] text-white/50 tracking-wider">FEATURED</p>
                       <h3 className="text-xl font-normal text-white tracking-wide">
