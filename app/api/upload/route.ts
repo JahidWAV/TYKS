@@ -1,26 +1,27 @@
-import { NextResponse } from 'next/server';
 import { put } from '@vercel/blob';
+import { NextResponse } from 'next/server';
 
 export async function POST(request: Request) {
   try {
-    const formData = await request.formData();
+    const formData = await request.FormData();
     const file = formData.get('file') as File;
+    const slug = formData.get('slug') as string; // On récupère le slug envoyé par le front
 
     if (!file) {
-      return NextResponse.json({ error: "Aucun fichier fourni" }, { status: 400 });
+      return NextResponse.json({ error: 'Aucun fichier fourni' }, { status: 400 });
     }
 
-    // Nom de fichier unique
-    const filename = `events/${Date.now()}-${file.name}`;
+    // Si on a un slug, on l'utilise pour nommer l'image proprement
+    const filename = slug 
+      ? `events/${slug}-${Date.now()}.jpg` 
+      : `events/${Date.now()}-${file.name}`;
 
-    // Upload vers Vercel Blob
     const blob = await put(filename, file, {
       access: 'public',
     });
 
-    return NextResponse.json({ url: blob.url }, { status: 200 });
-  } catch (err: any) {
-    console.error("Erreur upload blob:", err);
-    return NextResponse.json({ error: err.message || "Erreur lors de l'upload" }, { status: 500 });
+    return NextResponse.json(blob);
+  } catch (error: any) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
