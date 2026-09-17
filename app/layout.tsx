@@ -40,8 +40,9 @@ export default async function RootLayout({
   const headersList = await headers();
   const hostname = headersList.get('host') || '';
   
-  const isDashboard = hostname.startsWith('dashboard.');
-  const isPro = hostname.startsWith('pro.');
+  // Détection basée sur ton nouveau domaine d'application
+  const isAppDomain = hostname.includes('tyks.app');
+  const isPro = hostname.startsWith('pro.'); // Gardé au cas où tu gardes un sous-domaine pro
 
   return (
     <html
@@ -50,14 +51,14 @@ export default async function RootLayout({
     >
       <body className="min-h-screen bg-[#0f0f0f] text-white flex flex-col font-sans selection:bg-white selection:text-black">
         
-        {/* Navbar affichée partout sauf sur le dashboard */}
-        {!isDashboard && <Navbar isPro={isPro} />}
+        {/* Navbar publique masquée sur tyks.app */}
+        {!isAppDomain && <Navbar isPro={isPro} />}
 
         {/* Contenu de la page courante */}
         <main className="relative z-10 flex-1">{children}</main>
         
-        {/* Footer affiché partout sauf sur le dashboard */}
-        {!isDashboard && <Footer />}
+        {/* Footer public masqué sur tyks.app */}
+        {!isAppDomain && <Footer />}
 
       </body>
     </html>
