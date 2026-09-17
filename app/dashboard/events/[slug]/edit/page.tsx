@@ -205,7 +205,7 @@ export default function EditEventPage() {
       const { data: updatedData, error: updateError } = await supabaseBrowser
         .from('events')
         .update(updatePayload)
-        .eq('slug', eventSlug)
+        .eq('id', eventSlug)
         .select(); // .select() permet de voir ce qui a été réellement modifié en retour
 
       if (updateError) {
