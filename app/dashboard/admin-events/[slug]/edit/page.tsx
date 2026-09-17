@@ -144,20 +144,18 @@ export default function EditEventPage() {
       const formData = new FormData();
       formData.append('file', file);
 
-      // Appel de la route API existante /api/upload
       const response = await fetch('/api/upload', {
         method: 'POST',
         body: formData,
       });
 
       const data = await response.json();
-      console.log('Réponse de l\'API upload :', data); // Pour voir ce que renvoie ton API dans la console du navigateur
+      console.log('Réponse de l\'API upload :', data);
 
       if (!response.ok) {
         throw new Error(data.error || "Erreur lors de l'upload");
       }
 
-      // Sécurité : on gère toutes les variantes possibles de noms de propriétés renvoyées par l'API
       const uploadedUrl = data.url || data.imageUrl || data.fileUrl || (typeof data === 'string' ? data : '');
 
       if (!uploadedUrl) {
@@ -222,8 +220,8 @@ export default function EditEventPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0f0f0f] text-white selection:bg-white selection:text-black py-12 font-grotesque antialiased">
-      <div className="max-w-3xl mx-auto px-6 md:px-12 space-y-10">
+    <main className="flex-1 overflow-y-auto p-8 bg-[#0f0f0f] font-grotesque text-white">
+      <div className="max-w-3xl mx-auto space-y-10">
         <div>
           <Link
             href="/"
@@ -470,6 +468,6 @@ export default function EditEventPage() {
           </div>
         </div>
       )}
-    </div>
+    </main>
   );
 }
