@@ -82,7 +82,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       {/* Barre de navigation horizontale */}
       <header className="fixed top-0 left-0 right-0 h-20 border-b border-white/10 bg-[#0f0f0f] flex items-center justify-between px-8 z-50 select-none">
         
-        {/* 1. Bloc gauche (Largeur fixe identique à la droite pour garantir le centrage absolu) */}
+        {/* 1. Bloc gauche */}
         <div className="flex items-center justify-start w-48 shrink-0">
           <Link href="/" className="flex items-center group py-2">
             <Image 
@@ -96,8 +96,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           </Link>
         </div>
 
-        {/* 2. Menu du milieu strictement centré */}
-        <nav className="hidden lg:flex items-center justify-center gap-2 font-grotesque absolute left-1/2 -translate-x-1/2">
+        {/* 2. Menu du milieu : 3 bulles de taille rigoureusement identique (w-40) */}
+        <nav className="hidden lg:flex items-center justify-center gap-3 font-grotesque absolute left-1/2 -translate-x-1/2">
           {navItems.map((item) => {
             const isActive = pathname === item.href;
 
@@ -105,19 +105,19 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               <Link
                 key={item.href}
                 href={item.href}
-                className={`h-11 flex items-center justify-center px-6 rounded-full transition-all font-grotesque text-xs tracking-wider border whitespace-nowrap shadow-md leading-none ${
+                className={`h-11 w-40 flex items-center justify-center rounded-full transition-all font-grotesque text-xs tracking-wider border whitespace-nowrap shadow-md leading-none ${
                   isActive
                     ? 'bg-white text-black border-white font-bold'
                     : 'bg-transparent text-white/80 border-white/15 hover:bg-white/10 hover:text-white'
                 }`}
               >
-                <span>{item.label}</span>
+                <span className="truncate">{item.label}</span>
               </Link>
             );
           })}
         </nav>
 
-        {/* 3. Bloc droite (Largeur fixe identique à la gauche) */}
+        {/* 3. Bloc droite */}
         <div className="flex items-center justify-end w-48 shrink-0">
           <div className="relative" ref={profileMenuRef}>
             <button 
@@ -209,3 +209,4 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     </div>
   );
 }
+```[cite: 1]
