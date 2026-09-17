@@ -330,7 +330,7 @@ export default function OrganizerDashboard() {
                   key={evt.id}
                   className="group relative flex flex-col rounded-3xl border border-white/15 bg-neutral-950 overflow-hidden shadow-xl transition-all hover:border-white font-grotesque"
                 >
-                  {/* Partie supérieure : Affiche au format carré avec dégradé progressif vers le bas */}
+                  {/* Partie supérieure : Affiche au format carré avec dégradé progressif très haut */}
                   <div className="relative w-full aspect-square bg-neutral-900 overflow-hidden">
                     {imageUrl ? (
                       <Image 
@@ -347,8 +347,8 @@ export default function OrganizerDashboard() {
                       </div>
                     )}
 
-                    {/* Grand dégradé progressif en surimpression sur le bas de l'image (pour l'effacer en douceur) */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-neutral-950 via-neutral-950/40 to-transparent pointer-events-none z-10" />
+                    {/* Dégradé progressif de fondu couvrant les 2/3 inférieurs pour faire disparaître l'image en douceur */}
+                    <div className="absolute inset-x-0 bottom-0 h-4/5 bg-gradient-to-t from-neutral-950 via-neutral-950/70 to-transparent pointer-events-none z-10" />
 
                     {/* Badge de statut en haut à gauche */}
                     <div className="absolute top-4 left-4 z-20">
@@ -364,8 +364,8 @@ export default function OrganizerDashboard() {
                     </div>
                   </div>
 
-                  {/* Partie inférieure : Bloc d'informations séparé avec fond uni sombre et boutons */}
-                  <div className="p-5 space-y-4 bg-neutral-950 flex-1 flex flex-col justify-between border-t border-white/10">
+                  {/* Partie inférieure : Bloc d'informations positionné par-dessus le gradient de l'image */}
+                  <div className="relative p-5 pt-2 space-y-4 bg-neutral-950 flex-1 flex flex-col justify-between z-20 -mt-12">
                     <div className="space-y-1">
                       <p className="text-[10px] text-white/50 tracking-wider">FEATURED</p>
                       <h3 className="text-xl font-normal text-white tracking-wide">
