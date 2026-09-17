@@ -31,33 +31,46 @@ export async function middleware(request: NextRequest) {
   const url = request.nextUrl
   const hostname = request.headers.get('host') || ''
 
-  // Laisser passer directement toutes les requêtes vers les routes API
+  // Laisser passer directement toutes les requêtes vers les routes API et les fichiers statiques gérés par le matcher
   if (url.pathname.startsWith('/api')) {
     return NextResponse.next()
   }
 
-  const isDashboard = hostname.startsWith('dashboard.')
-  const isMarketingPro = hostname.startsWith('pro.')
+  // Détection des domaines (en gérant aussi le préfixe 'www.' par sécurité)
+  const isAppDomain = hostname.includes('tyks.app')
+  const isFrDomain = hostname.includes('tyks.fr')
 
-  // 1. Dashboard (`dashboard.tyks.app`) -> Réécriture vers le dossier /dashboard
-  if (isDashboard) {
-    url.pathname = `/dashboard${url.pathname}`
+  // 1. Sur tyks.app -> Tout va directement dans le dossier /dashboard (ou les pages de gestion connectées)
+  if (isAppDomain) {
+    // Si on tape la racine de tyks.app, on l'envoie sur /dashboard
+    if (url.pathname === '/') {
+      url.pathname = '/dashboard'
+      return NextResponse.rewrite(url)
+    }
+    
+    // Si l'URL n'est pas déjà préfixée par /dashboard, on l'ajoute pour correspondre à ton arborescence
+    if (!url.pathname.startsWith('/dashboard')) {
+      url.pathname = `/dashboard${url.pathname}`
+    }
     return NextResponse.rewrite(url)
   }
 
-  // 2. Landing Pro (`pro.tyks.app`) -> Réécriture vers le dossier /pro
-  if (isMarketingPro) {
-    url.pathname = `/pro${url.pathname}`
-    return NextResponse.rewrite(url)
-  }
-
-  // 3. Site Public (`tyks.app`) : Laisser passer les événements publics et la page settings directement
-  if (url.pathname.startsWith('/events') || url.pathname.startsWith('/settings')) {
+  // 2. Sur tyks.fr (Vitrine / Site Public)
+  // On route vers ton dossier /public pour la home, ou on laisse passer /events et /settings
+  if (url.pathname.startsWith('/events') || url.pathname.startsWith('/settings') || url.pathname.startsWith('/pro')) {
     return NextResponse.next()
   }
 
-  // 4. Site Public (`tyks.app`) par défaut -> Réécriture vers le dossier /public
-  url.pathname = `/public${url.pathname}`
+  if (url.pathname === '/') {
+    url.pathname = '/public'
+    return NextResponse.rewrite(url)
+  }
+
+  // Par défaut sur la vitrine, si l'URL n'est pas déjà dans /public
+  if (!url.pathname.startsWith('/public')) {
+    url.pathname = `/public${url.pathname}`
+  }
+  
   return NextResponse.rewrite(url)
 }
 
