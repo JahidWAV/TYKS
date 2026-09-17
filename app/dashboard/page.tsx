@@ -330,32 +330,28 @@ export default function OrganizerDashboard() {
                   key={evt.id}
                   className="group relative flex flex-col rounded-3xl border border-white/15 bg-neutral-950 overflow-hidden shadow-xl transition-all hover:border-white font-grotesque"
                 >
-                  {/* Conteneur global de la carte avec un fond en dégradé continu */}
-                  <div className="relative w-full aspect-square bg-neutral-950 overflow-hidden flex flex-col justify-between">
-                    
-                    {/* Image d'arrière-plan en position absolue sur toute la carte */}
+                  {/* Partie supérieure : Affiche au format carré avec dégradé progressif vers le bas */}
+                  <div className="relative w-full aspect-square bg-neutral-900 overflow-hidden">
                     {imageUrl ? (
-                      <div className="absolute inset-0 z-0">
-                        <Image 
-                          src={imageUrl} 
-                          alt={evt.title || 'Event Flyer'} 
-                          fill 
-                          sizes="(max-width: 768px) 100vw, 33vw"
-                          className="object-cover object-center brightness-90 group-hover:scale-105 transition-transform duration-500"
-                          unoptimized
-                        />
-                      </div>
+                      <Image 
+                        src={imageUrl} 
+                        alt={evt.title || 'Event Flyer'} 
+                        fill 
+                        sizes="(max-width: 768px) 100vw, 33vw"
+                        className="object-cover object-center brightness-90 group-hover:scale-105 transition-transform duration-500"
+                        unoptimized
+                      />
                     ) : (
-                      <div className="absolute inset-0 bg-neutral-900 flex items-center justify-center z-0">
+                      <div className="absolute inset-0 bg-neutral-900 flex items-center justify-center">
                         <span className="text-white/30 text-xs font-bold">AUCUNE AFFICHE</span>
                       </div>
                     )}
 
-                    {/* Grand dégradé progressif de bas en haut (couvre toute la carte pour noyer l'image dans le fond noir) */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-neutral-950 via-neutral-950/80 to-transparent pointer-events-none z-10" />
+                    {/* Grand dégradé progressif en surimpression sur le bas de l'image (pour l'effacer en douceur) */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-neutral-950 via-neutral-950/40 to-transparent pointer-events-none z-10" />
 
                     {/* Badge de statut en haut à gauche */}
-                    <div className="relative p-5 z-20 flex justify-between items-start">
+                    <div className="absolute top-4 left-4 z-20">
                       <span className={`inline-flex items-center px-2.5 py-1 rounded-full border text-[10px] font-bold backdrop-blur-md ${
                         evt.status === 'published' 
                           ? 'bg-black/60 text-white border-white/30' 
@@ -366,45 +362,44 @@ export default function OrganizerDashboard() {
                         {STATUS_LABEL[evt.status] ?? evt.status}
                       </span>
                     </div>
+                  </div>
 
-                    {/* Section des détails superposée par-dessus le gradient (dans la zone sombre du bas) */}
-                    <div className="relative p-5 space-y-4 z-20 mt-auto">
-                      <div className="space-y-1">
-                        <p className="text-[10px] text-white/50 tracking-wider">FEATURED</p>
-                        <h3 className="text-xl font-normal text-white tracking-wide">
-                          {evt.title}
-                        </h3>
-                        <p className="text-xs text-white/70">
-                          {formattedDate}{evt.location ? `, ${evt.location}` : ''}
-                        </p>
-                      </div>
-
-                      <div className="flex items-center justify-between pt-2">
-                        <span className="text-sm font-bold text-white tracking-wider">
-                          {eventPrice > 0 ? `€${eventPrice.toLocaleString('fr-FR')}` : 'GRATUIT'}
-                        </span>
-
-                        {/* Boutons modifier et supprimer ancrés en bas à droite */}
-                        <div className="flex items-center gap-2">
-                          <Link
-                            href={`/dashboard/admin-events/${evt.slug || evt.id}/edit`}
-                            className="w-9 h-9 rounded-full border border-white/20 bg-neutral-900 text-white flex items-center justify-center hover:bg-white hover:text-black transition-colors cursor-pointer shadow-xs"
-                            title="MODIFIER"
-                          >
-                            <Edit3 className="h-3.5 w-3.5" />
-                          </Link>
-                          <button
-                            key={`delete-${evt.id}`}
-                            onClick={() => handleDeleteEvent(evt.id)}
-                            className="w-9 h-9 rounded-full border border-white/20 bg-neutral-900 text-white flex items-center justify-center hover:bg-white hover:text-black transition-colors cursor-pointer shadow-xs"
-                            title="SUPPRIMER"
-                          >
-                            <Trash2 className="h-3.5 w-3.5" />
-                          </button>
-                        </div>
-                      </div>
+                  {/* Partie inférieure : Bloc d'informations séparé avec fond uni sombre et boutons */}
+                  <div className="p-5 space-y-4 bg-neutral-950 flex-1 flex flex-col justify-between border-t border-white/10">
+                    <div className="space-y-1">
+                      <p className="text-[10px] text-white/50 tracking-wider">FEATURED</p>
+                      <h3 className="text-xl font-normal text-white tracking-wide">
+                        {evt.title}
+                      </h3>
+                      <p className="text-xs text-white/70">
+                        {formattedDate}{evt.location ? `, ${evt.location}` : ''}
+                      </p>
                     </div>
 
+                    <div className="flex items-center justify-between pt-2">
+                      <span className="text-sm font-bold text-white tracking-wider">
+                        {eventPrice > 0 ? `€${eventPrice.toLocaleString('fr-FR')}` : 'GRATUIT'}
+                      </span>
+
+                      {/* Boutons modifier et supprimer */}
+                      <div className="flex items-center gap-2">
+                        <Link
+                          href={`/dashboard/admin-events/${evt.slug || evt.id}/edit`}
+                          className="w-9 h-9 rounded-full border border-white/20 bg-neutral-900 text-white flex items-center justify-center hover:bg-white hover:text-black transition-colors cursor-pointer shadow-xs"
+                          title="MODIFIER"
+                        >
+                          <Edit3 className="h-3.5 w-3.5" />
+                        </Link>
+                        <button
+                          key={`delete-${evt.id}`}
+                          onClick={() => handleDeleteEvent(evt.id)}
+                          className="w-9 h-9 rounded-full border border-white/20 bg-neutral-900 text-white flex items-center justify-center hover:bg-white hover:text-black transition-colors cursor-pointer shadow-xs"
+                          title="SUPPRIMER"
+                        >
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </button>
+                      </div>
+                    </div>
                   </div>
                 </article>
               );
