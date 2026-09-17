@@ -303,7 +303,7 @@ export default function OrganizerDashboard() {
             {filteredEvents.map((evt: any) => {
               const eventPrice = Number(evt.price || evt.ticket_price || 0);
               
-              // Résolution de l'URL de l'affiche
+              // Résolution robuste de l'URL de l'affiche
               const rawImage = evt.image_url || evt.cover_image || evt.flyer_url || evt.poster_url;
               let imageUrl = '';
               
@@ -328,10 +328,10 @@ export default function OrganizerDashboard() {
               return (
                 <article
                   key={evt.id}
-                  className="group relative flex flex-col rounded-3xl border border-white/15 bg-neutral-900 overflow-hidden shadow-xl transition-all hover:border-white font-grotesque"
+                  className="group relative flex flex-col rounded-3xl border border-white/15 bg-neutral-950 overflow-hidden shadow-xl transition-all hover:border-white font-grotesque"
                 >
-                  {/* Style affiche cinématique plein format avec gradient */}
-                  <div className="relative w-full h-[360px] bg-neutral-950 flex flex-col justify-between overflow-hidden">
+                  {/* Affiche au format carré strict avec gradient assombrissant par-dessus */}
+                  <div className="relative w-full aspect-square bg-neutral-900 overflow-hidden">
                     {imageUrl ? (
                       <Image 
                         src={imageUrl} 
@@ -347,11 +347,11 @@ export default function OrganizerDashboard() {
                       </div>
                     )}
 
-                    {/* Gradient sombre par-dessus l'affiche pour l'ambiance */}
+                    {/* Gradient similaire au modèle (effet vignette sombre) */}
                     <div className="absolute inset-0 bg-gradient-to-t from-neutral-950 via-neutral-950/20 to-black/30 pointer-events-none" />
 
-                    {/* Statut en haut à gauche */}
-                    <div className="relative z-10 p-5 flex items-center justify-between">
+                    {/* Badge de statut en haut à gauche */}
+                    <div className="absolute top-4 left-4 z-10">
                       <span className={`inline-flex items-center px-2.5 py-1 rounded-full border text-[10px] font-bold backdrop-blur-md ${
                         evt.status === 'published' 
                           ? 'bg-black/60 text-white border-white/30' 
@@ -364,7 +364,7 @@ export default function OrganizerDashboard() {
                     </div>
                   </div>
 
-                  {/* Section inférieure avec les détails du concert et boutons d'action en bas à droite */}
+                  {/* Section des détails et des boutons en bas */}
                   <div className="p-5 space-y-4 bg-neutral-950 border-t border-white/10 flex-1 flex flex-col justify-between">
                     <div className="space-y-1">
                       <p className="text-[10px] text-white/50 tracking-wider">FEATURED</p>
