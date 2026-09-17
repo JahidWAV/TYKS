@@ -63,7 +63,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     { label: "VUE D'ENSEMBLE", href: '/', icon: LayoutDashboard },
     { label: 'ÉVÉNEMENTS', href: '/events', icon: Calendar },
     { label: 'STATISTIQUES', href: '/stats', icon: BarChart3 },
-    { label: 'FINANCES', href: '/banking', icon: Wallet }, // Raccourci pour garantir une seule ligne propre
+    { label: 'FINANCES', href: '/banking', icon: Wallet },
   ];
 
   if (user === undefined) {
@@ -81,25 +81,25 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   return (
     <div className="min-h-screen bg-[#0f0f0f] text-white font-sans selection:bg-white selection:text-black flex flex-col uppercase overflow-x-hidden">
 
-      {/* Barre de navigation horizontale élégante */}
+      {/* Barre de navigation horizontale */}
       <header className="fixed top-0 left-0 right-0 h-20 border-b border-white/10 bg-[#0f0f0f] flex items-center justify-between px-8 z-50 select-none">
         
-        {/* 1. Logo grand format aligné à gauche */}
+        {/* 1. Logo aligné à gauche */}
         <div className="flex items-center shrink-0">
           <Link href="/" className="flex items-center group py-2">
             <Image 
               src="/tyks.svg" 
               alt="TYKS" 
-              width={160} 
-              height={55} 
+              width={180} 
+              height={60} 
               priority 
-              className="h-8 w-auto object-contain brightness-0 invert transition-transform group-hover:scale-105" 
+              className="h-9 w-auto object-contain brightness-0 invert transition-transform group-hover:scale-105" 
             />
           </Link>
         </div>
 
-        {/* 2. Catégories du menu parfaitement centrées (flex-1 avec absolute center ou conteneur centré) */}
-        <nav className="hidden lg:flex items-center justify-center gap-2.5 font-grotesque absolute left-1/2 -translate-x-1/2">
+        {/* 2. Catégories du menu centrées avec arrondi identique (rounded-full) */}
+        <nav className="hidden lg:flex items-center justify-center gap-2 font-grotesque absolute left-1/2 -translate-x-1/2">
           {navItems.map((item) => {
             const Icon = item.icon;
             const isActive = pathname === item.href;
@@ -108,10 +108,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               <Link
                 key={item.href}
                 href={item.href}
-                className={`flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all font-grotesque text-xs tracking-wider border whitespace-nowrap ${
+                className={`flex items-center gap-2 px-5 py-2.5 rounded-full transition-all font-grotesque text-xs tracking-wider border whitespace-nowrap ${
                   isActive
                     ? 'bg-white text-black border-white font-bold shadow-md'
-                    : 'bg-neutral-900 text-white/80 border-white/10 hover:bg-white/10 hover:text-white'
+                    : 'bg-neutral-900 text-white/80 border-white/15 hover:bg-white/10 hover:text-white'
                 }`}
               >
                 <Icon className={`w-4 h-4 shrink-0 ${isActive ? 'text-black' : 'text-white'}`} />
@@ -196,8 +196,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             <Link
               key={item.href}
               href={item.href}
-              className={`p-2.5 rounded-xl border transition-all ${
-                isActive ? 'bg-white text-black border-white' : 'bg-neutral-900 text-white/80 border-white/10'
+              className={`p-2.5 rounded-full border transition-all ${
+                isActive ? 'bg-white text-black border-white' : 'bg-neutral-900 text-white/80 border-white/15'
               }`}
               title={item.label}
             >
