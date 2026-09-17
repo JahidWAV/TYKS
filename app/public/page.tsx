@@ -36,9 +36,7 @@ export default function PublicHome() {
   const [events, setEvents] = useState<TyksEvent[]>([]);
   const [loading, setLoading] = useState(true);
   const [fetchError, setFetchError] = useState(false);
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [slideDirection, setSlideDirection] = useState<'left' | 'right' | null>(null);
-  const [isAnimating, setIsAnimating] = useState(false);
+  const sliderRef = useRef<HTMLDivElement>(null);
   const mainContainerRef = useRef<HTMLDivElement>(null);
 
   useLayoutEffect(() => {
@@ -84,37 +82,38 @@ export default function PublicHome() {
     fetchPublishedEvents();
   }, []);
 
-  // Navigation avec direction de slide
-  const handleSlideChange = (direction: 'next' | 'prev') => {
-    if (events.length === 0 || isAnimating) return;
-    setIsAnimating(true);
-    setSlideDirection(direction === 'next' ? 'left' : 'right');
-
-    setTimeout(() => {
-      setCurrentIndex((prev) => {
-        if (direction === 'next') {
-          return (prev + 1) % events.length;
-        } else {
-          return (prev - 1 + events.length) % events.length;
-        }
-      });
-      setSlideDirection(null);
-      setIsAnimating(false);
-    }, 350); // Temps de la transition de glissement
-  };
-
-  // Récupérer les 3 événements à afficher
-  const getVisibleEvents = () => {
-    if (events.length === 0) return [];
-    const visible = [];
-    for (let i = 0; i < Math.min(3, events.length); i++) {
-      const index = (currentIndex + i) % events.length;
-      visible.push(events[index]);
+  // Positionner le scroll au milieu de la liste triplée au premier chargement pour l'effet infini
+  useEffect(() => {
+    if (events.length > 0 && sliderRef.current) {
+      const slider = sliderRef.current;
+      slider.scrollLeft = slider.scrollWidth / 3;
     }
-    return visible;
+  }, [events]);
+
+  // Boucle invisible pour l'infini
+  const handleInfiniteScroll = () => {
+    const slider = sliderRef.current;
+    if (!slider) return;
+
+    const thirdWidth = slider.scrollWidth / 3;
+    if (slider.scrollLeft < thirdWidth * 0.5) {
+      slider.scrollLeft += thirdWidth;
+    } else if (slider.scrollLeft > thirdWidth * 2.5) {
+      slider.scrollLeft -= thirdWidth;
+    }
   };
 
-  const visibleEvents = getVisibleEvents();
+  // Défilement fluide par clic sur les flèches (équivalent à la largeur d'une carte + gap)
+  const scrollSlider = (direction: 'left' | 'right') => {
+    if (sliderRef.current) {
+      const cardWidth = 364; // Largeur d'une carte (340px) + gap (24px)
+      const scrollAmount = direction === 'left' ? -cardWidth : cardWidth;
+      sliderRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+    }
+  };
+
+  // On duplique les événements x3 pour assurer la boucle fluide
+  const extendedEvents = events.length > 0 ? [...events, ...events, ...events] : [];
 
   return (
     <div 
@@ -195,7 +194,7 @@ export default function PublicHome() {
           </div>
         </section>
 
-        {/* SECTION ÉVÉNEMENTS (Avec effet de slide latéral fluide) */}
+        {/* SECTION ÉVÉNEMENTS (Carrousel infini fluide de droite à gauche avec flèches fixes) */}
         <section id="evenements" className="h-screen w-full snap-start snap-always flex items-center justify-between px-4 sm:px-8 lg:px-12 py-4 shrink-0 relative overflow-hidden">
           
           {/* Texte vertical gauche */}
@@ -206,7 +205,7 @@ export default function PublicHome() {
           </div>
 
           {/* Contenu central */}
-          <div className="flex-1 relative w-full max-w-6xl mx-auto px-4 sm:px-8 z-10 flex items-center justify-center overflow-hidden">
+          <div className="flex-1 relative w-full max-w-6xl mx-auto px-4 sm:px-8 z-10 flex items-center justify-center">
             
             {loading ? (
               <div className="w-full bg-neutral-900 border border-white/15 p-12 text-center text-xs text-white/60 rounded-[2rem] font-bold">
@@ -232,114 +231,105 @@ export default function PublicHome() {
               </div>
             ) : (
               <>
-                {/* Flèche Gauche */}
-                {events.length > 3 && (
-                  <button 
-                    onClick={() => handleSlideChange('prev')}
-                    className="hidden md:flex absolute -left-4 lg:-left-10 z-20 w-12 h-12 rounded-full bg-neutral-900 border border-white/20 items-center justify-center text-white hover:bg-white hover:text-black transition-all shadow-xl cursor-pointer"
-                    aria-label="Précédent"
-                  >
-                    <ChevronLeft className="w-6 h-6" />
-                  </button>
-                )}
+                {/* Flèche Gauche (Toujours visible et fixe) */}
+                <button 
+                  onClick={() => scrollSlider('left')}
+                  className="hidden md:flex absolute -left-4 lg:-left-10 z-30 w-12 h-12 rounded-full bg-neutral-900 border border-white/20 items-center justify-center text-white hover:bg-white hover:text-black transition-all shadow-xl cursor-pointer"
+                  aria-label="Précédent"
+                >
+                  <ChevronLeft className="w-6 h-6" />
+                </button>
 
-                {/* Conteneur avec animation de glissement latéral (Slide) */}
-                <div className="w-full overflow-hidden py-2">
-                  <div 
-                    className={`w-full grid grid-cols-1 md:grid-cols-3 gap-6 items-center justify-center transition-transform duration-300 ease-out ${
-                      slideDirection === 'left' 
-                        ? '-translate-x-10 opacity-0' 
-                        : slideDirection === 'right' 
-                        ? 'translate-x-10 opacity-0' 
-                        : 'translate-x-0 opacity-100'
-                    }`}
-                  >
-                    {visibleEvents.map((evt, idx) => {
-                      const basePrice = Number(evt.price || evt.ticket_price || 0);
-                      const finalPriceWithStripe = basePrice > 0 ? Math.round((basePrice * 1.015 + 0.25) * 100) / 100 : 0;
-                      
-                      const eventImage = evt.image_url;
-                      
-                      const dateObj = evt.starts_at ? new Date(evt.starts_at) : null;
-                      const dateStr = dateObj
-                        ? dateObj.toLocaleDateString('fr-FR', {
-                            day: 'numeric',
-                            month: 'long',
-                            year: 'numeric',
-                          })
-                        : 'DATE À VENIR';
-                      
-                      const timeStr = dateObj
-                        ? dateObj.toLocaleTimeString('fr-FR', {
-                            hour: '2-digit',
-                            minute: '2-digit',
-                          })
-                        : '';
+                {/* Conteneur de défilement horizontal fluide */}
+                <div 
+                  ref={sliderRef}
+                  onScroll={handleInfiniteScroll}
+                  className="w-full flex gap-6 overflow-x-auto scrollbar-none py-6 px-2 items-center justify-start scroll-smooth"
+                  style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+                >
+                  {extendedEvents.map((evt, index) => {
+                    const basePrice = Number(evt.price || evt.ticket_price || 0);
+                    const finalPriceWithStripe = basePrice > 0 ? Math.round((basePrice * 1.015 + 0.25) * 100) / 100 : 0;
+                    
+                    const eventImage = evt.image_url;
+                    
+                    const dateObj = evt.starts_at ? new Date(evt.starts_at) : null;
+                    const dateStr = dateObj
+                      ? dateObj.toLocaleDateString('fr-FR', {
+                          day: 'numeric',
+                          month: 'long',
+                          year: 'numeric',
+                        })
+                      : 'DATE À VENIR';
+                    
+                    const timeStr = dateObj
+                      ? dateObj.toLocaleTimeString('fr-FR', {
+                          hour: '2-digit',
+                          minute: '2-digit',
+                        })
+                      : '';
 
-                      const eventUrl = `/events/${evt.slug || evt.id}`;
+                    const eventUrl = `/events/${evt.slug || evt.id}`;
 
-                      return (
-                        <article
-                          key={`${evt.id}-${idx}`}
-                          onClick={() => router.push(eventUrl)}
-                          className="group cursor-pointer flex flex-col bg-white text-black border border-white/15 rounded-[2.5rem] overflow-hidden transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 w-full max-w-[340px] mx-auto"
-                        >
-                          {/* Image carrée ou fallback stylé */}
-                          <div className="relative w-full aspect-square bg-neutral-900 overflow-hidden border-b border-black/10 flex items-center justify-center">
-                            {eventImage && eventImage.trim() !== '' ? (
-                              <img
-                                src={eventImage}
-                                alt={evt.title || 'Événement'}
-                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
-                              />
-                            ) : (
-                              <div className="w-full h-full bg-gradient-to-br from-neutral-900 to-neutral-800 flex flex-col items-center justify-center p-6 text-center space-y-2">
-                                <span className="text-[10px] tracking-widest uppercase text-white/50 font-bold">TYKS LIVE</span>
-                                <span className="text-sm font-bold text-white line-clamp-2">{evt.title}</span>
-                              </div>
-                            )}
-                          </div>
-
-                          {/* Infos textuelles centrées */}
-                          <div className="p-5 flex-1 space-y-2 flex flex-col justify-center text-center">
-                            <h3 className="text-base font-bold text-black tracking-tight group-hover:underline transition-colors line-clamp-1">
-                              {evt.title}
-                            </h3>
-                            
-                            {evt.location && (
-                              <p className="text-xs text-black/70 font-semibold truncate">
-                                {evt.location}
-                              </p>
-                            )}
-
-                            <p className="text-xs text-black/50 font-bold uppercase tracking-wider pt-0.5">
-                              {dateStr} {timeStr ? `• ${timeStr}` : ''}
-                            </p>
-                          </div>
-
-                          {/* Bouton du bas cliquable */}
-                          <div className="flex items-center justify-center border-t border-black/10 p-3.5 bg-neutral-50">
-                            <div className="w-full h-9 px-4 bg-black group-hover:bg-neutral-800 text-white font-bold text-xs uppercase tracking-wider transition-all duration-300 flex items-center justify-center gap-2 rounded-xl shadow-md">
-                              <span>{basePrice > 0 ? `À partir de ${finalPriceWithStripe.toFixed(2).replace('.', ',')} €` : 'Entrée Libre'}</span>
-                              <ArrowUpRight className="w-3.5 h-3.5" />
+                    return (
+                      <article
+                        key={`${evt.id}-${index}`}
+                        onClick={() => router.push(eventUrl)}
+                        className="group cursor-pointer flex flex-col bg-white text-black border border-white/15 rounded-[2.5rem] overflow-hidden transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 shrink-0 w-[340px]"
+                      >
+                        {/* Image carrée ou fallback stylé */}
+                        <div className="relative w-full aspect-square bg-neutral-900 overflow-hidden border-b border-black/10 flex items-center justify-center">
+                          {eventImage && eventImage.trim() !== '' ? (
+                            <img
+                              src={eventImage}
+                              alt={evt.title || 'Événement'}
+                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
+                            />
+                          ) : (
+                            <div className="w-full h-full bg-gradient-to-br from-neutral-900 to-neutral-800 flex flex-col items-center justify-center p-6 text-center space-y-2">
+                              <span className="text-[10px] tracking-widest uppercase text-white/50 font-bold">TYKS LIVE</span>
+                              <span className="text-sm font-bold text-white line-clamp-2">{evt.title}</span>
                             </div>
+                          )}
+                        </div>
+
+                        {/* Infos textuelles centrées */}
+                        <div className="p-5 flex-1 space-y-2 flex flex-col justify-center text-center">
+                          <h3 className="text-base font-bold text-black tracking-tight group-hover:underline transition-colors line-clamp-1">
+                            {evt.title}
+                          </h3>
+                          
+                          {evt.location && (
+                            <p className="text-xs text-black/70 font-semibold truncate">
+                              {evt.location}
+                            </p>
+                          )}
+
+                          <p className="text-xs text-black/50 font-bold uppercase tracking-wider pt-0.5">
+                            {dateStr} {timeStr ? `• ${timeStr}` : ''}
+                          </p>
+                        </div>
+
+                        {/* Bouton du bas cliquable */}
+                        <div className="flex items-center justify-center border-t border-black/10 p-3.5 bg-neutral-50">
+                          <div className="w-full h-9 px-4 bg-black group-hover:bg-neutral-800 text-white font-bold text-xs uppercase tracking-wider transition-all duration-300 flex items-center justify-center gap-2 rounded-xl shadow-md">
+                            <span>{basePrice > 0 ? `À partir de ${finalPriceWithStripe.toFixed(2).replace('.', ',')} €` : 'Entrée Libre'}</span>
+                            <ArrowUpRight className="w-3.5 h-3.5" />
                           </div>
-                        </article>
-                      );
-                    })}
-                  </div>
+                        </div>
+                      </article>
+                    );
+                  })}
                 </div>
 
-                {/* Flèche Droite */}
-                {events.length > 3 && (
-                  <button 
-                    onClick={() => handleSlideChange('next')}
-                    className="hidden md:flex absolute -right-4 lg:-right-10 z-20 w-12 h-12 rounded-full bg-neutral-900 border border-white/20 items-center justify-center text-white hover:bg-white hover:text-black transition-all shadow-xl cursor-pointer"
-                    aria-label="Suivant"
-                  >
-                    <ChevronRight className="w-6 h-6" />
-                  </button>
-                )}
+                {/* Flèche Droite (Toujours visible et fixe) */}
+                <button 
+                  onClick={() => scrollSlider('right')}
+                  className="hidden md:flex absolute -right-4 lg:-right-10 z-30 w-12 h-12 rounded-full bg-neutral-900 border border-white/20 items-center justify-center text-white hover:bg-white hover:text-black transition-all shadow-xl cursor-pointer"
+                  aria-label="Suivant"
+                >
+                  <ChevronRight className="w-6 h-6" />
+                </button>
               </>
             )}
           </div>
