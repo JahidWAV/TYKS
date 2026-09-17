@@ -5,7 +5,6 @@ import { useRouter, useParams } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, Check, MapPin, Loader2, Upload, X, ZoomIn } from 'lucide-react';
 import Cropper from 'react-easy-crop';
-import { upload } from '@vercel/blob/client';
 import { supabaseBrowser } from '@/lib/supabase-browser';
 
 async function getCroppedImg(imageSrc: string, pixelCrop: { x: number; y: number; width: number; height: number }): Promise<Blob> {
@@ -140,15 +139,24 @@ export default function EditEventPage() {
       setSaving(true);
 
       const croppedBlob = await getCroppedImg(imageSrc, croppedAreaPixels);
-      const fileName = `event-${Date.now()}.jpg`;
+      const file = new File([croppedBlob], `event-${Date.now()}.jpg`, { type: 'image/jpeg' });
 
-      // Upload direct via Vercel Blob client
-      const newBlob = await upload(fileName, croppedBlob, {
-        access: 'public',
-        handleUploadUrl: '/api/upload', // Assure-toi d'avoir une route API Vercel Blob ou adapte selon ta configuration
+      const formData = new FormData();
+      formData.append('file', file);
+
+      // Appel de la route API existante /api/upload
+      const response = await fetch('/api/upload', {
+        method: 'POST',
+        body: formData,
       });
 
-      setForm((prev) => ({ ...prev, image_url: newBlob.url }));
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Erreur lors de l'upload");
+      }
+
+      setForm((prev) => ({ ...prev, image_url: data.url }));
       setShowCropperModal(false);
       setImageSrc(null);
     } catch (err: any) {
