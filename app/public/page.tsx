@@ -38,8 +38,6 @@ export default function PublicHome() {
   const [fetchError, setFetchError] = useState(false);
   const sliderRef = useRef<HTMLDivElement>(null);
   const mainContainerRef = useRef<HTMLDivElement>(null);
-  const [canScrollLeft, setCanScrollLeft] = useState(false);
-  const [canScrollRight, setCanScrollRight] = useState(false);
 
   useLayoutEffect(() => {
     const container = mainContainerRef.current;
@@ -84,26 +82,31 @@ export default function PublicHome() {
     fetchPublishedEvents();
   }, []);
 
-  const checkScroll = () => {
-    if (sliderRef.current) {
-      const { scrollLeft, scrollWidth, clientWidth } = sliderRef.current;
-      setCanScrollLeft(scrollLeft > 5);
-      setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 5);
-    }
-  };
-
+  // Positionner le scroll au milieu de la liste triplée au premier chargement pour permettre l'infini dans les deux sens
   useEffect(() => {
-    checkScroll();
-    const slider = sliderRef.current;
-    if (slider) {
-      slider.addEventListener('scroll', checkScroll);
-      window.addEventListener('resize', checkScroll);
-      return () => {
-        slider.removeEventListener('scroll', checkScroll);
-        window.removeEventListener('resize', checkScroll);
-      };
+    if (events.length > 0 && sliderRef.current) {
+      const slider = sliderRef.current;
+      // On se place au milieu exact pour pouvoir scroller à gauche ou à droite indéfiniment
+      slider.scrollLeft = slider.scrollWidth / 3;
     }
   }, [events]);
+
+  // Gestion de la boucle infinie au scroll (effet rebond invisible)
+  const handleInfiniteScroll = () => {
+    const slider = sliderRef.current;
+    if (!slider) return;
+
+    const thirdWidth = slider.scrollWidth / 3;
+    
+    // Si on arrive trop près du début, on décale instantanément d'un bloc vers la droite
+    if (slider.scrollLeft < thirdWidth * 0.5) {
+      slider.scrollLeft += thirdWidth;
+    } 
+    // Si on arrive trop près de la fin, on décale instantanément d'un bloc vers la gauche
+    else if (slider.scrollLeft > thirdWidth * 2.5) {
+      slider.scrollLeft -= thirdWidth;
+    }
+  };
 
   const scrollSlider = (direction: 'left' | 'right') => {
     if (sliderRef.current) {
@@ -111,6 +114,9 @@ export default function PublicHome() {
       sliderRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
     }
   };
+
+  // On duplique les événements x3 pour créer la boucle infinie visuelle
+  const extendedEvents = [...events, ...events, ...events];
 
   return (
     <div 
@@ -201,7 +207,7 @@ export default function PublicHome() {
             </span>
           </div>
 
-          {/* Contenu central avec carrousel et flèches conditionnelles */}
+          {/* Contenu central avec carrousel infini et flèches permanentes */}
           <div className="flex-1 relative w-full max-w-5xl mx-auto px-4 sm:px-8 z-10 flex items-center justify-center">
             
             {loading ? (
@@ -228,25 +234,23 @@ export default function PublicHome() {
               </div>
             ) : (
               <>
-                {/* Flèche Gauche */}
-                {canScrollLeft && (
-                  <button 
-                    onClick={() => scrollSlider('left')}
-                    className="hidden md:flex absolute -left-6 lg:-left-12 z-20 w-12 h-12 rounded-full bg-neutral-900 border border-white/20 items-center justify-center text-white hover:bg-white hover:text-black transition-all shadow-xl cursor-pointer"
-                    aria-label="Précédent"
-                  >
-                    <ChevronLeft className="w-6 h-6" />
-                  </button>
-                )}
+                {/* Flèche Gauche (toujours active pour défiler à l'infini) */}
+                <button 
+                  onClick={() => scrollSlider('left')}
+                  className="hidden md:flex absolute -left-6 lg:-left-12 z-20 w-12 h-12 rounded-full bg-neutral-900 border border-white/20 items-center justify-center text-white hover:bg-white hover:text-black transition-all shadow-xl cursor-pointer"
+                  aria-label="Précédent"
+                >
+                  <ChevronLeft className="w-6 h-6" />
+                </button>
 
-                {/* Conteneur du Slider Horizontal CORRIGÉ pour alignement et visibilité parfaite */}
+                {/* Conteneur du Slider Infini */}
                 <div 
                   ref={sliderRef}
-                  onScroll={checkScroll}
-                  className="w-full flex gap-6 overflow-x-auto scrollbar-none snap-x snap-mandatory py-4 px-2 items-center justify-start"
+                  onScroll={handleInfiniteScroll}
+                  className="w-full flex gap-6 overflow-x-auto scrollbar-none snap-x py-4 px-2 items-center justify-start"
                   style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
                 >
-                  {events.map((evt) => {
+                  {extendedEvents.map((evt, index) => {
                     const basePrice = Number(evt.price || evt.ticket_price || 0);
                     const finalPriceWithStripe = basePrice > 0 ? Math.round((basePrice * 1.015 + 0.25) * 100) / 100 : 0;
                     
@@ -272,7 +276,7 @@ export default function PublicHome() {
 
                     return (
                       <article
-                        key={evt.id}
+                        key={`${evt.id}-${index}`}
                         onClick={() => router.push(eventUrl)}
                         className="group cursor-pointer flex flex-col bg-white text-black border border-white/15 rounded-[2.5rem] overflow-hidden transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 shrink-0 w-[300px] sm:w-[340px] snap-start"
                       >
@@ -321,16 +325,14 @@ export default function PublicHome() {
                   })}
                 </div>
 
-                {/* Flèche Droite */}
-                {canScrollRight && (
-                  <button 
-                    onClick={() => scrollSlider('right')}
-                    className="hidden md:flex absolute -right-6 lg:-right-12 z-20 w-12 h-12 rounded-full bg-neutral-900 border border-white/20 items-center justify-center text-white hover:bg-white hover:text-black transition-all shadow-xl cursor-pointer"
-                    aria-label="Suivant"
-                  >
-                    <ChevronRight className="w-6 h-6" />
-                  </button>
-                )}
+                {/* Flèche Droite (toujours active pour défiler à l'infini) */}
+                <button 
+                  onClick={() => scrollSlider('right')}
+                  className="hidden md:flex absolute -right-6 lg:-right-12 z-20 w-12 h-12 rounded-full bg-neutral-900 border border-white/20 items-center justify-center text-white hover:bg-white hover:text-black transition-all shadow-xl cursor-pointer"
+                  aria-label="Suivant"
+                >
+                  <ChevronRight className="w-6 h-6" />
+                </button>
               </>
             )}
           </div>
