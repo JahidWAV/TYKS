@@ -330,7 +330,7 @@ export default function OrganizerDashboard() {
                   key={evt.id}
                   className="group relative flex flex-col rounded-3xl border border-white/15 bg-neutral-950 overflow-hidden shadow-xl transition-all hover:border-white font-grotesque"
                 >
-                  {/* Affiche au format carré strict avec gradient assombrissant par-dessus */}
+                  {/* Affiche au format carré strict avec gradient fondu en bas */}
                   <div className="relative w-full aspect-square bg-neutral-900 overflow-hidden">
                     {imageUrl ? (
                       <Image 
@@ -347,8 +347,8 @@ export default function OrganizerDashboard() {
                       </div>
                     )}
 
-                    {/* Gradient similaire au modèle (effet vignette sombre) */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-neutral-950 via-neutral-950/20 to-black/30 pointer-events-none" />
+                    {/* Gradient fondu sombre positionné précisément sur la partie inférieure de l'image */}
+                    <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-neutral-950 via-neutral-950/60 to-transparent pointer-events-none" />
 
                     {/* Badge de statut en haut à gauche */}
                     <div className="absolute top-4 left-4 z-10">
