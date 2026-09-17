@@ -37,7 +37,7 @@ export default function PublicHome() {
   const [loading, setLoading] = useState(true);
   const [fetchError, setFetchError] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [isAnimating, setIsAnimating] = useState(false);
+  const [isTransitioning, setIsTransitioning] = useState(true);
   const mainContainerRef = useRef<HTMLDivElement>(null);
 
   useLayoutEffect(() => {
@@ -85,6 +85,7 @@ export default function PublicHome() {
 
   // Triplage du tableau pour le carrousel infini
   const extendedEvents = events.length > 0 ? [...events, ...events, ...events] : [];
+  const totalLength = events.length;
 
   // Se positionner sur le bloc du milieu au chargement
   useEffect(() => {
@@ -95,25 +96,24 @@ export default function PublicHome() {
 
   // Navigation fluide d'une carte à la fois
   const handleSlide = (direction: 'next' | 'prev') => {
-    if (events.length === 0 || isAnimating) return;
-    setIsAnimating(true);
+    if (events.length === 0) return;
 
+    setIsTransitioning(true);
     setCurrentIndex((prev) => (direction === 'next' ? prev + 1 : prev - 1));
   };
 
   // Remise en position invisible pour créer l'illusion de l'infini sans à-coup
   const handleTransitionEnd = () => {
-    setIsAnimating(false);
     if (events.length === 0) return;
 
-    const totalLength = events.length;
-
-    // Si on dépasse trop à droite, on recule instantanément au bloc du milieu
+    // Si on dépasse trop à droite, on recule instantanément au bloc du milieu sans transition
     if (currentIndex >= totalLength * 2) {
+      setIsTransitioning(false);
       setCurrentIndex((prev) => prev - totalLength);
     } 
-    // Si on dépasse trop à gauche, on avance instantanément au bloc du milieu
+    // Si on dépasse trop à gauche, on avance instantanément au bloc du milieu sans transition
     else if (currentIndex < totalLength) {
+      setIsTransitioning(false);
       setCurrentIndex((prev) => prev + totalLength);
     }
   };
@@ -248,7 +248,7 @@ export default function PublicHome() {
                 {/* Fenêtre visible pour exactement 3 cartes */}
                 <div className="w-full max-w-[1068px] overflow-hidden py-4 mx-auto">
                   <div 
-                    className="flex gap-6 transition-transform duration-500 ease-out items-center"
+                    className={`flex gap-6 items-center ${isTransitioning ? 'transition-transform duration-500 ease-out' : 'transition-none'}`}
                     style={{ transform: `translateX(-${currentIndex * cardWidthPx}px)` }}
                     onTransitionEnd={handleTransitionEnd}
                   >
