@@ -205,8 +205,8 @@ export default function EditEventPage() {
       const { data: updatedData, error: updateError } = await supabaseBrowser
         .from('events')
         .update(updatePayload)
-        .eq('id', eventSlug)
-        .select(); // .select() permet de voir ce qui a été réellement modifié en retour
+        .eq('slug', eventSlug) // <-- Utiliser 'slug' au lieu de 'id'
+        .select();
 
       if (updateError) {
         console.error("Erreur renvoyée par Supabase :", updateError);
