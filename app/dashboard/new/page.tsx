@@ -191,152 +191,154 @@ export default function NewEventPage() {
   }
 
   return (
-    <main className="w-full h-full min-h-[calc(100vh-2rem)] bg-[#0f0f0f] text-white font-grotesque flex flex-col p-6 overflow-hidden">
-      <div className="w-full h-full flex flex-col justify-between space-y-4 max-w-7xl mx-auto">
+    <main className="w-full min-h-screen bg-[#0f0f0f] text-white font-grotesque flex flex-col p-8 lg:p-12 overflow-hidden">
+      <div className="w-full flex-1 flex flex-col justify-between space-y-6 max-w-[1600px] mx-auto">
         
-        {/* En-tête plein écran */}
-        <div className="flex items-center justify-between shrink-0">
+        {/* En-tête visible et bien dimensionné */}
+        <div className="flex items-center justify-between shrink-0 pb-4 border-b border-white/10">
           <Link
             href="/dashboard"
-            className="inline-flex items-center gap-2 text-xs font-bold text-white/70 hover:text-white transition-colors uppercase tracking-wider bg-neutral-900 px-4 py-2 rounded-full border border-white/10"
+            className="inline-flex items-center gap-2.5 text-sm font-bold text-white/80 hover:text-white transition-colors uppercase tracking-wider bg-neutral-900 px-5 py-3 rounded-2xl border border-white/10 shadow-md"
           >
-            <ArrowLeft className="w-4 h-4" />
-            <span>Retour</span>
+            <ArrowLeft className="w-5 h-5" />
+            <span>Retour au tableau de bord</span>
           </Link>
-          <h1 className="text-base md:text-lg font-bold tracking-tight text-white uppercase">Créer un événement</h1>
+          <h1 className="text-2xl lg:text-3xl font-extrabold tracking-tight text-white uppercase">Créer un événement</h1>
         </div>
 
         {error && (
-          <div className="rounded-xl border border-red-500/20 bg-red-950/40 px-4 py-2 text-xs text-red-400 font-bold shrink-0">
+          <div className="rounded-2xl border border-red-500/30 bg-red-950/60 px-6 py-4 text-sm text-red-300 font-bold shrink-0 shadow-lg">
             <span>{error}</span>
           </div>
         )}
 
-        {/* Formulaire plein écran en 2 colonnes bien réparties */}
-        <form onSubmit={handleSubmit} className="flex-1 flex flex-col justify-between space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 h-full items-center">
+        {/* Formulaire grand format en 2 colonnes parfaitement proportionnées */}
+        <form onSubmit={handleSubmit} className="flex-1 flex flex-col justify-between space-y-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch">
             
             {/* Colonne Gauche */}
-            <div className="space-y-4 bg-neutral-900/40 border border-white/10 p-6 rounded-3xl backdrop-blur-sm h-full flex flex-col justify-around">
-              <div className="space-y-1">
-                <label className="text-xs text-white/70 font-bold uppercase tracking-wider flex items-center gap-1.5">
-                  <FileText className="w-3.5 h-3.5" /> Titre *
-                </label>
-                <input
-                  type="text"
-                  name="title"
-                  value={form.title}
-                  onChange={handleChange}
-                  required
-                  placeholder="Ex: Concert exceptionnel"
-                  className="w-full rounded-xl border border-white/15 bg-black px-4 py-3 text-sm text-white focus:outline-none focus:border-white transition-colors"
-                />
-              </div>
-
-              <div className="space-y-1">
-                <label className="text-xs text-white/70 font-bold uppercase tracking-wider flex items-center gap-1.5">
-                  <MapPin className="w-3.5 h-3.5" /> Lieu / Adresse *
-                </label>
-                <input
-                  type="text"
-                  name="location"
-                  value={form.location}
-                  onChange={handleChange}
-                  required
-                  placeholder="Ex: Le Zénith, Paris"
-                  className="w-full rounded-xl border border-white/15 bg-black px-4 py-3 text-sm text-white focus:outline-none focus:border-white transition-colors"
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-1">
-                  <label className="text-xs text-white/70 font-bold uppercase tracking-wider flex items-center gap-1.5">
-                    <Clock className="w-3.5 h-3.5" /> Début *
+            <div className="space-y-6 bg-neutral-900/60 border border-white/15 p-8 rounded-[2.5rem] shadow-xl flex flex-col justify-between">
+              <div className="space-y-5">
+                <div className="space-y-2">
+                  <label className="text-sm text-white font-bold uppercase tracking-wider flex items-center gap-2">
+                    <FileText className="w-4 h-4 text-white/70" /> Titre de l&apos;événement *
                   </label>
                   <input
-                    type="datetime-local"
-                    name="starts_at"
-                    value={form.starts_at}
+                    type="text"
+                    name="title"
+                    value={form.title}
                     onChange={handleChange}
                     required
-                    className="w-full rounded-xl border border-white/15 bg-black px-3 py-3 text-xs text-white focus:outline-none focus:border-white transition-colors"
+                    placeholder="Ex: Concert exceptionnel"
+                    className="w-full rounded-2xl border-2 border-white/20 bg-black px-5 py-4 text-base text-white placeholder:text-white/30 focus:outline-none focus:border-white transition-colors shadow-inner"
                   />
                 </div>
-                <div className="space-y-1">
-                  <label className="text-xs text-white/70 font-bold uppercase tracking-wider flex items-center gap-1.5">
-                    <Clock className="w-3.5 h-3.5" /> Fin
-                  </label>
-                  <input
-                    type="datetime-local"
-                    name="ends_at"
-                    value={form.ends_at}
-                    onChange={handleChange}
-                    className="w-full rounded-xl border border-white/15 bg-black px-3 py-3 text-xs text-white focus:outline-none focus:border-white transition-colors"
-                  />
-                </div>
-              </div>
 
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-1">
-                  <label className="text-xs text-white/70 font-bold uppercase tracking-wider flex items-center gap-1.5">
-                    <DollarSign className="w-3.5 h-3.5" /> Prix (€)
+                <div className="space-y-2">
+                  <label className="text-sm text-white font-bold uppercase tracking-wider flex items-center gap-2">
+                    <MapPin className="w-4 h-4 text-white/70" /> Lieu / Adresse *
                   </label>
                   <input
-                    type="number"
-                    step="0.01"
-                    name="price"
-                    value={form.price}
+                    type="text"
+                    name="location"
+                    value={form.location}
                     onChange={handleChange}
-                    className="w-full rounded-xl border border-white/15 bg-black px-4 py-3 text-sm text-white focus:outline-none focus:border-white transition-colors"
+                    required
+                    placeholder="Ex: Le Zénith, Paris"
+                    className="w-full rounded-2xl border-2 border-white/20 bg-black px-5 py-4 text-base text-white placeholder:text-white/30 focus:outline-none focus:border-white transition-colors shadow-inner"
                   />
                 </div>
-                <div className="space-y-1">
-                  <label className="text-xs text-white/70 font-bold uppercase tracking-wider flex items-center gap-1.5">
-                    <Users className="w-3.5 h-3.5" /> Jauge max
-                  </label>
-                  <input
-                    type="number"
-                    name="capacity"
-                    value={form.capacity}
-                    onChange={handleChange}
-                    placeholder="Illimitée"
-                    className="w-full rounded-xl border border-white/15 bg-black px-4 py-3 text-sm text-white focus:outline-none focus:border-white transition-colors"
-                  />
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <label className="text-sm text-white font-bold uppercase tracking-wider flex items-center gap-2">
+                      <Clock className="w-4 h-4 text-white/70" /> Début *
+                    </label>
+                    <input
+                      type="datetime-local"
+                      name="starts_at"
+                      value={form.starts_at}
+                      onChange={handleChange}
+                      required
+                      className="w-full rounded-2xl border-2 border-white/20 bg-black px-4 py-4 text-sm text-white focus:outline-none focus:border-white transition-colors shadow-inner"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-sm text-white font-bold uppercase tracking-wider flex items-center gap-2">
+                      <Clock className="w-4 h-4 text-white/70" /> Fin
+                    </label>
+                    <input
+                      type="datetime-local"
+                      name="ends_at"
+                      value={form.ends_at}
+                      onChange={handleChange}
+                      className="w-full rounded-2xl border-2 border-white/20 bg-black px-4 py-4 text-sm text-white focus:outline-none focus:border-white transition-colors shadow-inner"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <label className="text-sm text-white font-bold uppercase tracking-wider flex items-center gap-2">
+                      <DollarSign className="w-4 h-4 text-white/70" /> Prix (€)
+                    </label>
+                    <input
+                      type="number"
+                      step="0.01"
+                      name="price"
+                      value={form.price}
+                      onChange={handleChange}
+                      className="w-full rounded-2xl border-2 border-white/20 bg-black px-5 py-4 text-base text-white focus:outline-none focus:border-white transition-colors shadow-inner"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-sm text-white font-bold uppercase tracking-wider flex items-center gap-2">
+                      <Users className="w-4 h-4 text-white/70" /> Jauge max
+                    </label>
+                    <input
+                      type="number"
+                      name="capacity"
+                      value={form.capacity}
+                      onChange={handleChange}
+                      placeholder="Illimitée"
+                      className="w-full rounded-2xl border-2 border-white/20 bg-black px-5 py-4 text-base text-white placeholder:text-white/30 focus:outline-none focus:border-white transition-colors shadow-inner"
+                    />
+                  </div>
                 </div>
               </div>
             </div>
 
             {/* Colonne Droite */}
-            <div className="space-y-6 bg-neutral-900/40 border border-white/10 p-6 rounded-3xl backdrop-blur-sm h-full flex flex-col justify-between">
-              <div className="space-y-2 flex-1 flex flex-col">
-                <label className="text-xs text-white/70 font-bold uppercase tracking-wider">Description</label>
+            <div className="space-y-6 bg-neutral-900/60 border border-white/15 p-8 rounded-[2.5rem] shadow-xl flex flex-col justify-between">
+              <div className="space-y-4 flex-1 flex flex-col">
+                <label className="text-sm text-white font-bold uppercase tracking-wider">Description de l&apos;événement</label>
                 <textarea
                   name="description"
-                  rows={6}
+                  rows={7}
                   value={form.description}
                   onChange={handleChange}
-                  placeholder="Détails de l'événement..."
-                  className="w-full flex-1 rounded-xl border border-white/15 bg-black p-4 text-sm text-white focus:outline-none focus:border-white transition-colors resize-none"
+                  placeholder="Détails, programme, informations importantes..."
+                  className="w-full flex-1 rounded-2xl border-2 border-white/20 bg-black p-5 text-base text-white placeholder:text-white/30 focus:outline-none focus:border-white transition-colors resize-none shadow-inner"
                 />
               </div>
 
-              <div className="space-y-2">
-                <label className="text-xs text-white/70 font-bold uppercase tracking-wider">Affiche (Carré 1:1) *</label>
-                <div className="flex items-center gap-4">
+              <div className="space-y-3 pt-2">
+                <label className="text-sm text-white font-bold uppercase tracking-wider">Affiche de l&apos;événement (Carré 1:1) *</label>
+                <div className="flex items-center gap-5">
                   {form.image_url ? (
-                    <div className="relative w-20 h-20 rounded-2xl border border-white/15 overflow-hidden bg-black shrink-0">
+                    <div className="relative w-28 h-28 rounded-2xl border-2 border-white/30 overflow-hidden bg-black shrink-0 shadow-lg">
                       <img src={form.image_url} alt="Aperçu" className="w-full h-full object-cover" />
                       <button
                         type="button"
                         onClick={() => setForm((prev) => ({ ...prev, image_url: '' }))}
-                        className="absolute top-1 right-1 w-5 h-5 rounded-full bg-black/80 text-white flex items-center justify-center hover:bg-red-600 transition-colors"
+                        className="absolute top-2 right-2 w-7 h-7 rounded-full bg-black/80 text-white flex items-center justify-center hover:bg-red-600 transition-colors shadow"
                       >
-                        <X className="w-3 h-3" />
+                        <X className="w-4 h-4" />
                       </button>
                     </div>
                   ) : (
-                    <div className="w-20 h-20 rounded-2xl border border-dashed border-white/20 bg-black flex items-center justify-center text-white/30 shrink-0">
-                      <Upload className="w-6 h-6" />
+                    <div className="w-28 h-28 rounded-2xl border-2 border-dashed border-white/30 bg-black flex items-center justify-center text-white/30 shrink-0">
+                      <Upload className="w-8 h-8" />
                     </div>
                   )}
 
@@ -351,9 +353,9 @@ export default function NewEventPage() {
                     <button
                       type="button"
                       onClick={() => fileInputRef.current?.click()}
-                      className="h-12 px-4 bg-neutral-900 hover:bg-neutral-800 text-white text-xs font-bold uppercase tracking-wider rounded-xl border border-white/15 transition-colors inline-flex items-center gap-2 cursor-pointer w-full justify-center"
+                      className="h-16 px-6 bg-neutral-800 hover:bg-neutral-700 text-white text-sm font-bold uppercase tracking-wider rounded-2xl border-2 border-white/20 transition-colors inline-flex items-center gap-3 cursor-pointer w-full justify-center shadow-md"
                     >
-                      <Upload className="w-4 h-4" />
+                      <Upload className="w-5 h-5" />
                       <span>{form.image_url ? 'Changer l\'image' : 'Importer une affiche'}</span>
                     </button>
                   </div>
@@ -363,14 +365,14 @@ export default function NewEventPage() {
 
           </div>
 
-          <div className="flex items-center justify-end pt-2 shrink-0">
+          <div className="flex items-center justify-end pt-4 shrink-0">
             <button
               type="submit"
               disabled={loading || uploading || !form.image_url}
-              className="h-12 px-10 bg-white hover:bg-neutral-200 text-black font-bold text-xs uppercase tracking-wider transition-all duration-300 inline-flex items-center gap-2 rounded-full shadow-lg disabled:opacity-50 cursor-pointer justify-center w-full md:w-auto"
+              className="h-16 px-12 bg-white hover:bg-neutral-200 text-black font-extrabold text-sm uppercase tracking-wider transition-all duration-300 inline-flex items-center gap-3 rounded-full shadow-2xl disabled:opacity-50 cursor-pointer justify-center w-full lg:w-auto"
             >
-              {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
-              <span>{loading ? 'Création...' : 'Publier l\'événement'}</span>
+              {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Check className="w-5 h-5" />}
+              <span>{loading ? 'Création en cours...' : 'Publier l\'événement'}</span>
             </button>
           </div>
         </form>
@@ -378,19 +380,19 @@ export default function NewEventPage() {
 
       {/* Modal de recadrage */}
       {showCropperModal && imageSrc && (
-        <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="bg-[#0f0f0f] border border-white/15 w-full max-w-md rounded-[2rem] p-6 space-y-4 shadow-2xl flex flex-col">
-            <div className="flex items-center justify-between pb-3 border-b border-white/10">
-              <h3 className="text-xs font-bold text-white uppercase tracking-wider">Recadrer l&apos;image (Carré 1:1)</h3>
+        <div className="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center p-6">
+          <div className="bg-[#141414] border-2 border-white/20 w-full max-w-xl rounded-[2.5rem] p-8 space-y-6 shadow-2xl flex flex-col">
+            <div className="flex items-center justify-between pb-4 border-b border-white/10">
+              <h3 className="text-base font-bold text-white uppercase tracking-wider">Recadrer l&apos;image (Carré 1:1)</h3>
               <button
                 onClick={() => { setShowCropperModal(false); setImageSrc(null); }}
-                className="w-8 h-8 rounded-full bg-white/10 text-white flex items-center justify-center hover:bg-white/20 transition-colors"
+                className="w-10 h-10 rounded-full bg-white/10 text-white flex items-center justify-center hover:bg-white/20 transition-colors"
               >
-                <X className="w-4 h-4" />
+                <X className="w-5 h-5" />
               </button>
             </div>
 
-            <div className="relative w-full h-72 bg-black rounded-2xl overflow-hidden border border-white/10">
+            <div className="relative w-full h-96 bg-black rounded-3xl overflow-hidden border-2 border-white/15 shadow-inner">
               <Cropper
                 image={imageSrc}
                 crop={crop}
@@ -402,9 +404,9 @@ export default function NewEventPage() {
               />
             </div>
 
-            <div className="space-y-2">
-              <div className="flex items-center justify-between text-xs text-white/70 font-bold uppercase tracking-wider">
-                <span className="flex items-center gap-1.5"><ZoomIn className="w-4 h-4" /> Zoom</span>
+            <div className="space-y-3">
+              <div className="flex items-center justify-between text-sm text-white/80 font-bold uppercase tracking-wider">
+                <span className="flex items-center gap-2"><ZoomIn className="w-5 h-5" /> Zoom</span>
                 <span>{Math.round(zoom * 100)}%</span>
               </div>
               <input
@@ -415,15 +417,15 @@ export default function NewEventPage() {
                 step={0.1}
                 aria-label="Zoom de l'image"
                 onChange={(e) => setZoom(Number(e.target.value))}
-                className="w-full accent-white cursor-pointer"
+                className="w-full accent-white cursor-pointer h-2 bg-neutral-800 rounded-lg"
               />
             </div>
 
-            <div className="flex items-center justify-end gap-3 pt-2">
+            <div className="flex items-center justify-end gap-4 pt-4">
               <button
                 type="button"
                 onClick={() => { setShowCropperModal(false); setImageSrc(null); }}
-                className="h-10 px-5 bg-transparent hover:bg-white/5 border border-white/20 text-white font-bold text-xs uppercase tracking-wider rounded-full transition-all cursor-pointer"
+                className="h-14 px-8 bg-transparent hover:bg-white/5 border-2 border-white/25 text-white font-bold text-sm uppercase tracking-wider rounded-full transition-all cursor-pointer"
               >
                 Annuler
               </button>
@@ -431,10 +433,10 @@ export default function NewEventPage() {
                 type="button"
                 disabled={uploading}
                 onClick={handleConfirmCrop}
-                className="h-10 px-8 bg-white hover:bg-neutral-200 text-black font-bold text-xs uppercase tracking-wider rounded-full transition-all shadow-lg flex items-center gap-2 cursor-pointer disabled:opacity-50"
+                className="h-14 px-10 bg-white hover:bg-neutral-200 text-black font-extrabold text-sm uppercase tracking-wider rounded-full transition-all shadow-xl flex items-center gap-3 cursor-pointer disabled:opacity-50"
               >
-                {uploading && <Loader2 className="w-4 h-4 animate-spin" />}
-                <span>Valider</span>
+                {uploading && <Loader2 className="w-5 h-5 animate-spin" />}
+                <span>Valider le recadrage</span>
               </button>
             </div>
           </div>
