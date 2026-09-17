@@ -37,6 +37,7 @@ export default function PublicHome() {
   const [loading, setLoading] = useState(true);
   const [fetchError, setFetchError] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [isAnimating, setIsAnimating] = useState(false);
   const mainContainerRef = useRef<HTMLDivElement>(null);
 
   useLayoutEffect(() => {
@@ -82,18 +83,24 @@ export default function PublicHome() {
     fetchPublishedEvents();
   }, []);
 
-  // Navigation par index pour afficher exactement 3 éléments en boucle infinie
-  const nextSlide = () => {
-    if (events.length === 0) return;
-    setCurrentIndex((prev) => (prev + 1) % events.length);
+  // Navigation avec déclenchement de l'animation fluide
+  const handleSlideChange = (direction: 'next' | 'prev') => {
+    if (events.length === 0 || isAnimating) return;
+    setIsAnimating(true);
+
+    setTimeout(() => {
+      setCurrentIndex((prev) => {
+        if (direction === 'next') {
+          return (prev + 1) % events.length;
+        } else {
+          return (prev - 1 + events.length) % events.length;
+        }
+      });
+      setIsAnimating(false);
+    }, 200); // Durée de la transition de fondu (correspond au délai visuel)
   };
 
-  const prevSlide = () => {
-    if (events.length === 0) return;
-    setCurrentIndex((prev) => (prev - 1 + events.length) % events.length);
-  };
-
-  // Récupérer les 3 événements à afficher à partir de l'index actuel (avec boucle)
+  // Récupérer les 3 événements à afficher
   const getVisibleEvents = () => {
     if (events.length === 0) return [];
     const visible = [];
@@ -185,7 +192,7 @@ export default function PublicHome() {
           </div>
         </section>
 
-        {/* SECTION ÉVÉNEMENTS (Centrée parfaitement avec exactement 3 cartes) */}
+        {/* SECTION ÉVÉNEMENTS (Avec transition fluide smooth) */}
         <section id="evenements" className="h-screen w-full snap-start snap-always flex items-center justify-between px-4 sm:px-8 lg:px-12 py-4 shrink-0 relative overflow-hidden">
           
           {/* Texte vertical gauche */}
@@ -225,7 +232,7 @@ export default function PublicHome() {
                 {/* Flèche Gauche */}
                 {events.length > 3 && (
                   <button 
-                    onClick={prevSlide}
+                    onClick={() => handleSlideChange('prev')}
                     className="hidden md:flex absolute -left-4 lg:-left-10 z-20 w-12 h-12 rounded-full bg-neutral-900 border border-white/20 items-center justify-center text-white hover:bg-white hover:text-black transition-all shadow-xl cursor-pointer"
                     aria-label="Précédent"
                   >
@@ -233,8 +240,8 @@ export default function PublicHome() {
                   </button>
                 )}
 
-                {/* Grille fixe affichant exactement 3 cartes parfaitement centrées */}
-                <div className="w-full grid grid-cols-1 md:grid-cols-3 gap-6 items-center justify-center">
+                {/* Grille avec effet de transition fluide */}
+                <div className={`w-full grid grid-cols-1 md:grid-cols-3 gap-6 items-center justify-center transition-all duration-300 ease-out ${isAnimating ? 'opacity-0 scale-[0.98] translate-y-2' : 'opacity-100 scale-100 translate-y-0'}`}>
                   {visibleEvents.map((evt, idx) => {
                     const basePrice = Number(evt.price || evt.ticket_price || 0);
                     const finalPriceWithStripe = basePrice > 0 ? Math.round((basePrice * 1.015 + 0.25) * 100) / 100 : 0;
@@ -313,7 +320,7 @@ export default function PublicHome() {
                 {/* Flèche Droite */}
                 {events.length > 3 && (
                   <button 
-                    onClick={nextSlide}
+                    onClick={() => handleSlideChange('next')}
                     className="hidden md:flex absolute -right-4 lg:-right-10 z-20 w-12 h-12 rounded-full bg-neutral-900 border border-white/20 items-center justify-center text-white hover:bg-white hover:text-black transition-all shadow-xl cursor-pointer"
                     aria-label="Suivant"
                   >
