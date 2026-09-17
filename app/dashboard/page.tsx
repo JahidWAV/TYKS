@@ -5,8 +5,8 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { 
-  ArrowUpRight, Plus, Calendar, MapPin, Trash2, Edit3, 
-  Euro, Ticket, Search, ShieldCheck
+  ArrowUpRight, Calendar, Search, Euro, Ticket, 
+  Bookmark, ThumbsUp, ThumbsDown, Edit3, Trash2
 } from 'lucide-react';
 import type { IortiEvent } from '@/types/event';
 import { supabaseBrowser } from '@/lib/supabase-browser';
@@ -144,7 +144,6 @@ export default function OrganizerDashboard() {
   if (!user) {
     return (
       <div className="min-h-screen bg-[#0f0f0f] text-white flex flex-col lg:flex-row w-full overflow-hidden selection:bg-white selection:text-black font-grotesque uppercase">
-        
         <div className="w-full lg:w-1/2 flex flex-col justify-between p-8 lg:p-16 z-10 bg-[#0f0f0f] border-b lg:border-b-0 lg:border-r border-white/10">
           <div className="flex items-center">
             <Image 
@@ -200,7 +199,6 @@ export default function OrganizerDashboard() {
           isOpen={isAuthModalOpen} 
           onClose={() => setIsAuthModalOpen(false)} 
         />
-
       </div>
     );
   }
@@ -225,6 +223,7 @@ export default function OrganizerDashboard() {
   return (
     <div className="w-full px-6 lg:px-12 pt-4 pb-12 space-y-8 font-grotesque text-white bg-[#0f0f0f] min-h-full uppercase">
       
+      {/* Stats Overview */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 font-grotesque">
         <div className="p-6 rounded-3xl border border-white/15 bg-neutral-900 space-y-3 shadow-xs">
           <div className="flex items-center justify-between">
@@ -271,6 +270,7 @@ export default function OrganizerDashboard() {
         </div>
       </div>
 
+      {/* Search & Counter */}
       <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4 pt-4">
         <div className="relative flex-1 max-w-md">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-white/40" />
@@ -287,6 +287,7 @@ export default function OrganizerDashboard() {
         </span>
       </div>
 
+      {/* Event Cards Grid */}
       <div className="space-y-6">
         {filteredEvents.length === 0 ? (
           <div className="rounded-3xl border border-white/15 bg-neutral-900 p-16 text-center space-y-4 shadow-xs font-grotesque">
@@ -301,70 +302,116 @@ export default function OrganizerDashboard() {
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {filteredEvents.map((evt: any) => {
               const eventPrice = Number(evt.price || evt.ticket_price || 0);
+              const imageUrl = evt.image_url || evt.cover_image || evt.flyer_url;
+
               return (
                 <article
                   key={evt.id}
-                  className="group flex flex-col rounded-3xl border border-white/15 bg-neutral-900 shadow-xs transition-all hover:border-white hover:shadow-md overflow-hidden font-grotesque"
+                  className="group relative flex flex-col rounded-3xl border border-white/15 bg-neutral-900 overflow-hidden shadow-md transition-all hover:border-white font-grotesque"
                 >
-                  <div className="space-y-3 p-6 flex-1">
-                    <div className="flex items-center justify-between font-grotesque">
-                      <span className="text-[11px] text-white/50 font-bold">
-                        {evt.starts_at ? new Date(evt.starts_at).toLocaleDateString('fr-FR', {
-                          day: '2-digit',
-                          month: 'short',
-                          year: 'numeric',
-                          hour: '2-digit',
-                          minute: '2-digit',
-                        }).toUpperCase() : 'DATE NON DÉFINIE'}
-                      </span>
-                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full border text-[10px] font-bold ${
+                  {/* Top Section: Flyer / Cover Background */}
+                  <div className="relative w-full h-80 bg-neutral-950 flex flex-col justify-between p-6 overflow-hidden">
+                    {imageUrl ? (
+                      <Image 
+                        src={imageUrl} 
+                        alt={evt.title || 'Event Flyer'} 
+                        fill 
+                        className="object-cover object-center brightness-75 group-hover:scale-105 transition-transform duration-500"
+                      />
+                    ) : (
+                      <div className="absolute inset-0 bg-gradient-to-br from-neutral-800 to-neutral-950" />
+                    )}
+
+                    {/* Dark Vignette Overlay for readability */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#0f0f0f] via-black/40 to-black/30 pointer-events-none" />
+
+                    {/* Top row inside image: Status badge & Management buttons */}
+                    <div className="relative z-10 flex items-center justify-between">
+                      <span className={`inline-flex items-center px-2.5 py-1 rounded-full border text-[10px] font-bold backdrop-blur-md ${
                         evt.status === 'published' 
-                          ? 'bg-white/10 text-white border-white/20' 
+                          ? 'bg-black/40 text-white border-white/30' 
                           : evt.status === 'cancelled'
-                          ? 'bg-neutral-800 text-white/60 border-white/20 line-through'
-                          : 'bg-neutral-950 text-white/60 border-white/20'
+                          ? 'bg-neutral-900/60 text-white/60 border-white/20 line-through'
+                          : 'bg-black/40 text-white/70 border-white/20'
                       }`}>
                         {STATUS_LABEL[evt.status] ?? evt.status}
                       </span>
+
+                      <div className="flex items-center gap-2">
+                        <Link
+                          href={`/dashboard/admin-events/${evt.slug || evt.id}/edit`}
+                          className="w-9 h-9 rounded-full border border-white/30 bg-black/40 backdrop-blur-md text-white flex items-center justify-center hover:bg-white hover:text-black transition-colors cursor-pointer shadow-xs"
+                          title="MODIFIER"
+                        >
+                          <Edit3 className="h-3.5 w-3.5" />
+                        </Link>
+                        <button
+                          onClick={() => handleDeleteEvent(evt.id)}
+                          className="w-9 h-9 rounded-full border border-white/30 bg-black/40 backdrop-blur-md text-white flex items-center justify-center hover:bg-white hover:text-black transition-colors cursor-pointer shadow-xs"
+                          title="SUPPRIMER"
+                        >
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </button>
+                      </div>
                     </div>
 
-                    <h3 className="text-xl font-grotesque font-normal leading-snug text-white">
-                      {evt.title}
-                    </h3>
-
-                    {evt.description && (
-                      <p className="line-clamp-2 text-xs font-grotesque text-white/70 leading-relaxed font-light">
-                        {evt.description}
-                      </p>
-                    )}
-
-                    {evt.location && (
-                      <div className="flex items-center gap-2 font-grotesque text-xs text-white/70 pt-1">
-                        <MapPin className="h-3.5 w-3.5 shrink-0 text-white" />
-                        <span className="truncate">{evt.location}</span>
-                      </div>
-                    )}
+                    {/* Center / Bottom overlay text (Like the provided image mockup) */}
+                    <div className="relative z-10 space-y-1 text-center my-auto">
+                      <h2 className="text-2xl lg:text-3xl font-normal tracking-wider text-white drop-shadow-md">
+                        {evt.title}
+                      </h2>
+                      {evt.location && (
+                        <p className="text-[11px] tracking-wide text-white/80 uppercase font-light drop-shadow">
+                          {evt.location}
+                        </p>
+                      )}
+                    </div>
                   </div>
 
-                  <div className="flex items-center justify-between border-t border-white/10 px-6 py-4 bg-neutral-950 font-grotesque">
-                    <span className="font-grotesque text-xs font-bold text-white">
-                      {eventPrice > 0 ? `${eventPrice.toLocaleString('fr-FR')} €` : 'GRATUIT'}
-                    </span>
-                    <div className="flex items-center gap-2">
-                      <Link
-                        href={`/dashboard/admin-events/${evt.slug || evt.id}/edit`}
-                        className="w-10 h-10 rounded-full border border-white/20 bg-neutral-900 text-white flex items-center justify-center hover:bg-white hover:text-black transition-colors cursor-pointer shadow-xs"
-                        title="MODIFIER"
-                      >
-                        <Edit3 className="h-4 w-4" />
-                      </Link>
-                      <button
-                        onClick={() => handleDeleteEvent(evt.id)}
-                        className="w-10 h-10 rounded-full border border-white/20 bg-neutral-900 text-white flex items-center justify-center hover:bg-white hover:text-black transition-colors cursor-pointer shadow-xs"
-                        title="SUPPRIMER"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </button>
+                  {/* Bottom Section: Details & Interaction buttons */}
+                  <div className="p-6 space-y-4 bg-[#0f0f0f] flex-1 flex flex-col justify-between">
+                    <div className="space-y-1">
+                      <span className="text-[10px] font-bold text-white/50 tracking-wider">
+                        FEATURED
+                      </span>
+                      <h3 className="text-xl font-normal text-white">
+                        {evt.title}
+                      </h3>
+                      <p className="text-xs text-white/70">
+                        {evt.starts_at ? new Date(evt.starts_at).toLocaleDateString('fr-FR', {
+                          weekday: 'short',
+                          day: 'numeric',
+                          month: 'short',
+                        }).toUpperCase() : ''}
+                        {evt.location ? `, ${evt.location}` : ''}
+                      </p>
+                    </div>
+
+                    <div className="flex items-center justify-between pt-2">
+                      <span className="text-sm font-bold text-white">
+                        {eventPrice > 0 ? `€${eventPrice.toLocaleString('fr-FR')}` : 'GRATUIT'}
+                      </span>
+
+                      <div className="flex items-center gap-1.5">
+                        <button 
+                          className="w-9 h-9 rounded-full border border-white/15 bg-neutral-900 text-white/80 flex items-center justify-center hover:bg-white hover:text-black transition-colors cursor-pointer"
+                          title="Sauvegarder"
+                        >
+                          <Bookmark className="w-4 h-4" />
+                        </button>
+                        <button 
+                          className="w-9 h-9 rounded-full border border-white/15 bg-neutral-900 text-white/80 flex items-center justify-center hover:bg-white hover:text-black transition-colors cursor-pointer"
+                          title="J'aime"
+                        >
+                          <ThumbsUp className="w-4 h-4" />
+                        </button>
+                        <button 
+                          className="w-9 h-9 rounded-full border border-white/15 bg-neutral-900 text-white/80 flex items-center justify-center hover:bg-white hover:text-black transition-colors cursor-pointer"
+                          title="Je n'aime pas"
+                        >
+                          <ThumbsDown className="w-4 h-4" />
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </article>
