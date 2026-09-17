@@ -37,6 +37,7 @@ export default function PublicHome() {
   const [loading, setLoading] = useState(true);
   const [fetchError, setFetchError] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [slideDirection, setSlideDirection] = useState<'left' | 'right' | null>(null);
   const [isAnimating, setIsAnimating] = useState(false);
   const mainContainerRef = useRef<HTMLDivElement>(null);
 
@@ -83,10 +84,11 @@ export default function PublicHome() {
     fetchPublishedEvents();
   }, []);
 
-  // Navigation avec déclenchement de l'animation fluide
+  // Navigation avec direction de slide
   const handleSlideChange = (direction: 'next' | 'prev') => {
     if (events.length === 0 || isAnimating) return;
     setIsAnimating(true);
+    setSlideDirection(direction === 'next' ? 'left' : 'right');
 
     setTimeout(() => {
       setCurrentIndex((prev) => {
@@ -96,8 +98,9 @@ export default function PublicHome() {
           return (prev - 1 + events.length) % events.length;
         }
       });
+      setSlideDirection(null);
       setIsAnimating(false);
-    }, 200); // Durée de la transition de fondu (correspond au délai visuel)
+    }, 350); // Temps de la transition de glissement
   };
 
   // Récupérer les 3 événements à afficher
@@ -192,7 +195,7 @@ export default function PublicHome() {
           </div>
         </section>
 
-        {/* SECTION ÉVÉNEMENTS (Avec transition fluide smooth) */}
+        {/* SECTION ÉVÉNEMENTS (Avec effet de slide latéral fluide) */}
         <section id="evenements" className="h-screen w-full snap-start snap-always flex items-center justify-between px-4 sm:px-8 lg:px-12 py-4 shrink-0 relative overflow-hidden">
           
           {/* Texte vertical gauche */}
@@ -203,7 +206,7 @@ export default function PublicHome() {
           </div>
 
           {/* Contenu central */}
-          <div className="flex-1 relative w-full max-w-6xl mx-auto px-4 sm:px-8 z-10 flex items-center justify-center">
+          <div className="flex-1 relative w-full max-w-6xl mx-auto px-4 sm:px-8 z-10 flex items-center justify-center overflow-hidden">
             
             {loading ? (
               <div className="w-full bg-neutral-900 border border-white/15 p-12 text-center text-xs text-white/60 rounded-[2rem] font-bold">
@@ -240,81 +243,91 @@ export default function PublicHome() {
                   </button>
                 )}
 
-                {/* Grille avec effet de transition fluide */}
-                <div className={`w-full grid grid-cols-1 md:grid-cols-3 gap-6 items-center justify-center transition-all duration-300 ease-out ${isAnimating ? 'opacity-0 scale-[0.98] translate-y-2' : 'opacity-100 scale-100 translate-y-0'}`}>
-                  {visibleEvents.map((evt, idx) => {
-                    const basePrice = Number(evt.price || evt.ticket_price || 0);
-                    const finalPriceWithStripe = basePrice > 0 ? Math.round((basePrice * 1.015 + 0.25) * 100) / 100 : 0;
-                    
-                    const eventImage = evt.image_url;
-                    
-                    const dateObj = evt.starts_at ? new Date(evt.starts_at) : null;
-                    const dateStr = dateObj
-                      ? dateObj.toLocaleDateString('fr-FR', {
-                          day: 'numeric',
-                          month: 'long',
-                          year: 'numeric',
-                        })
-                      : 'DATE À VENIR';
-                    
-                    const timeStr = dateObj
-                      ? dateObj.toLocaleTimeString('fr-FR', {
-                          hour: '2-digit',
-                          minute: '2-digit',
-                        })
-                      : '';
+                {/* Conteneur avec animation de glissement latéral (Slide) */}
+                <div className="w-full overflow-hidden py-2">
+                  <div 
+                    className={`w-full grid grid-cols-1 md:grid-cols-3 gap-6 items-center justify-center transition-transform duration-300 ease-out ${
+                      slideDirection === 'left' 
+                        ? '-translate-x-10 opacity-0' 
+                        : slideDirection === 'right' 
+                        ? 'translate-x-10 opacity-0' 
+                        : 'translate-x-0 opacity-100'
+                    }`}
+                  >
+                    {visibleEvents.map((evt, idx) => {
+                      const basePrice = Number(evt.price || evt.ticket_price || 0);
+                      const finalPriceWithStripe = basePrice > 0 ? Math.round((basePrice * 1.015 + 0.25) * 100) / 100 : 0;
+                      
+                      const eventImage = evt.image_url;
+                      
+                      const dateObj = evt.starts_at ? new Date(evt.starts_at) : null;
+                      const dateStr = dateObj
+                        ? dateObj.toLocaleDateString('fr-FR', {
+                            day: 'numeric',
+                            month: 'long',
+                            year: 'numeric',
+                          })
+                        : 'DATE À VENIR';
+                      
+                      const timeStr = dateObj
+                        ? dateObj.toLocaleTimeString('fr-FR', {
+                            hour: '2-digit',
+                            minute: '2-digit',
+                          })
+                        : '';
 
-                    const eventUrl = `/events/${evt.slug || evt.id}`;
+                      const eventUrl = `/events/${evt.slug || evt.id}`;
 
-                    return (
-                      <article
-                        key={`${evt.id}-${idx}`}
-                        onClick={() => router.push(eventUrl)}
-                        className="group cursor-pointer flex flex-col bg-white text-black border border-white/15 rounded-[2.5rem] overflow-hidden transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 w-full max-w-[340px] mx-auto"
-                      >
-                        {/* Image carrée ou fallback stylé */}
-                        <div className="relative w-full aspect-square bg-neutral-900 overflow-hidden border-b border-black/10 flex items-center justify-center">
-                          {eventImage && eventImage.trim() !== '' ? (
-                            <img
-                              src={eventImage}
-                              alt={evt.title || 'Événement'}
-                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
-                            />
-                          ) : (
-                            <div className="w-full h-full bg-gradient-to-br from-neutral-900 to-neutral-800 flex flex-col items-center justify-center p-6 text-center space-y-2">
-                              <span className="text-[10px] tracking-widest uppercase text-white/50 font-bold">TYKS LIVE</span>
-                              <span className="text-sm font-bold text-white line-clamp-2">{evt.title}</span>
-                            </div>
-                          )}
-                        </div>
-
-                        {/* Infos textuelles centrées */}
-                        <div className="p-5 flex-1 space-y-2 flex flex-col justify-center text-center">
-                          <h3 className="text-base font-bold text-black tracking-tight group-hover:underline transition-colors line-clamp-1">
-                            {evt.title}
-                          </h3>
-                          
-                          {evt.location && (
-                            <p className="text-xs text-black/70 font-semibold truncate">
-                              {evt.location}
-                            </p>
-                          )}
-
-                          <p className="text-xs text-black/50 font-bold uppercase tracking-wider pt-0.5">
-                            {dateStr} {timeStr ? `• ${timeStr}` : ''}
-                          </p>
-                        </div>
-
-                        {/* Bouton du bas cliquable */}
-                        <div className="flex items-center justify-center border-t border-black/10 p-3.5 bg-neutral-50">
-                          <div className="w-full h-9 px-4 bg-black group-hover:bg-neutral-800 text-white font-bold text-xs uppercase tracking-wider transition-all duration-300 flex items-center justify-center gap-2 rounded-xl shadow-md">
-                            <span>{basePrice > 0 ? `À partir de ${finalPriceWithStripe.toFixed(2).replace('.', ',')} €` : 'Entrée Libre'}</span>
-                            <ArrowUpRight className="w-3.5 h-3.5" />
+                      return (
+                        <article
+                          key={`${evt.id}-${idx}`}
+                          onClick={() => router.push(eventUrl)}
+                          className="group cursor-pointer flex flex-col bg-white text-black border border-white/15 rounded-[2.5rem] overflow-hidden transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 w-full max-w-[340px] mx-auto"
+                        >
+                          {/* Image carrée ou fallback stylé */}
+                          <div className="relative w-full aspect-square bg-neutral-900 overflow-hidden border-b border-black/10 flex items-center justify-center">
+                            {eventImage && eventImage.trim() !== '' ? (
+                              <img
+                                src={eventImage}
+                                alt={evt.title || 'Événement'}
+                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
+                              />
+                            ) : (
+                              <div className="w-full h-full bg-gradient-to-br from-neutral-900 to-neutral-800 flex flex-col items-center justify-center p-6 text-center space-y-2">
+                                <span className="text-[10px] tracking-widest uppercase text-white/50 font-bold">TYKS LIVE</span>
+                                <span className="text-sm font-bold text-white line-clamp-2">{evt.title}</span>
+                              </div>
+                            )}
                           </div>
-                        </div>
-                      </article>
-                    );
-                  })}
+
+                          {/* Infos textuelles centrées */}
+                          <div className="p-5 flex-1 space-y-2 flex flex-col justify-center text-center">
+                            <h3 className="text-base font-bold text-black tracking-tight group-hover:underline transition-colors line-clamp-1">
+                              {evt.title}
+                            </h3>
+                            
+                            {evt.location && (
+                              <p className="text-xs text-black/70 font-semibold truncate">
+                                {evt.location}
+                              </p>
+                            )}
+
+                            <p className="text-xs text-black/50 font-bold uppercase tracking-wider pt-0.5">
+                              {dateStr} {timeStr ? `• ${timeStr}` : ''}
+                            </p>
+                          </div>
+
+                          {/* Bouton du bas cliquable */}
+                          <div className="flex items-center justify-center border-t border-black/10 p-3.5 bg-neutral-50">
+                            <div className="w-full h-9 px-4 bg-black group-hover:bg-neutral-800 text-white font-bold text-xs uppercase tracking-wider transition-all duration-300 flex items-center justify-center gap-2 rounded-xl shadow-md">
+                              <span>{basePrice > 0 ? `À partir de ${finalPriceWithStripe.toFixed(2).replace('.', ',')} €` : 'Entrée Libre'}</span>
+                              <ArrowUpRight className="w-3.5 h-3.5" />
+                            </div>
+                          </div>
+                        </article>
+                      );
+                    })}
+                  </div>
                 </div>
 
                 {/* Flèche Droite */}
