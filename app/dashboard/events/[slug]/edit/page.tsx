@@ -178,6 +178,8 @@ export default function EditEventPage() {
     setError(null);
 
     try {
+      console.log("Tentative de sauvegarde avec l'URL image :", form.image_url);
+
       const { data: { session } } = await supabaseBrowser.auth.getSession();
       if (!session) {
         setError("Vous devez être connecté.");
@@ -185,22 +187,33 @@ export default function EditEventPage() {
         return;
       }
 
-      const { error: updateError } = await supabaseBrowser
-        .from('events')
-        .update({
-          title: form.title,
-          description: form.description,
-          location: form.location,
-          starts_at: form.starts_at ? new Date(form.starts_at).toISOString() : null,
-          ends_at: form.ends_at ? new Date(form.ends_at).toISOString() : null,
-          price: parseFloat(form.price) || 0,
-          capacity: form.capacity ? parseInt(form.capacity, 10) : null,
-          image_url: form.image_url,
-          status: form.status,
-        })
-        .eq('slug', eventSlug);
+      // Objet des données à mettre à jour
+      const updatePayload = {
+        title: form.title,
+        description: form.description,
+        location: form.location,
+        starts_at: form.starts_at ? new Date(form.starts_at).toISOString() : null,
+        ends_at: form.ends_at ? new Date(form.ends_at).toISOString() : null,
+        price: parseFloat(form.price) || 0,
+        capacity: form.capacity ? parseInt(form.capacity, 10) : null,
+        image_url: form.image_url,
+        status: form.status,
+      };
 
-      if (updateError) throw updateError;
+      console.log("Payload envoyé à Supabase :", updatePayload);
+
+      const { data: updatedData, error: updateError } = await supabaseBrowser
+        .from('events')
+        .update(updatePayload)
+        .eq('slug', eventSlug)
+        .select(); // .select() permet de voir ce qui a été réellement modifié en retour
+
+      if (updateError) {
+        console.error("Erreur renvoyée par Supabase :", updateError);
+        throw updateError;
+      }
+
+      console.log("Réponse de Supabase après update :", updatedData);
 
       router.push('/');
       router.refresh();
