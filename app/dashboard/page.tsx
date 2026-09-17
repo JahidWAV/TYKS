@@ -303,13 +303,21 @@ export default function OrganizerDashboard() {
             {filteredEvents.map((evt: any) => {
               const eventPrice = Number(evt.price || evt.ticket_price || 0);
               
-              // Résolution robuste de l'URL de l'affiche selon le schéma de la base de données
+              // Récupération et résolution robuste de l'URL de l'affiche
               const rawImage = evt.image_url || evt.cover_image || evt.flyer_url || evt.poster_url;
-              let imageUrl = rawImage;
+              let imageUrl = '';
               
-              if (rawImage && !rawImage.startsWith('http') && !rawImage.startsWith('/')) {
-                const { data } = supabaseBrowser.storage.from('events').getPublicUrl(rawImage);
-                imageUrl = data.publicUrl;
+              if (rawImage) {
+                if (rawImage.startsWith('http://') || rawImage.startsWith('https://')) {
+                  imageUrl = rawImage;
+                } else if (rawImage.startsWith('/')) {
+                  imageUrl = rawImage;
+                } else {
+                  // Si c'est un chemin dans un bucket Supabase (ex: 'events/abc.jpg' ou juste 'abc.jpg')
+                  const cleanPath = rawImage.startsWith('events/') ? rawImage.replace('events/', '') : rawImage;
+                  const { data } = supabaseBrowser.storage.from('events').getPublicUrl(cleanPath);
+                  imageUrl = data.publicUrl;
+                }
               }
 
               return (
@@ -326,6 +334,7 @@ export default function OrganizerDashboard() {
                         fill 
                         sizes="(max-width: 768px) 100vw, 33vw"
                         className="object-cover object-center brightness-75 group-hover:scale-105 transition-transform duration-500"
+                        unoptimized
                       />
                     ) : (
                       <div className="absolute inset-0 bg-gradient-to-br from-neutral-800 to-neutral-950 flex items-center justify-center">
@@ -336,7 +345,7 @@ export default function OrganizerDashboard() {
                     {/* Dark Vignette Overlay for readability */}
                     <div className="absolute inset-0 bg-gradient-to-t from-[#0f0f0f] via-black/40 to-black/30 pointer-events-none" />
 
-                    {/* Top row inside image: Status badge & Management buttons */}
+                    {/* Top row inside image: Status badge */}
                     <div className="relative z-10 flex items-center justify-between">
                       <span className={`inline-flex items-center px-2.5 py-1 rounded-full border text-[10px] font-bold backdrop-blur-md ${
                         evt.status === 'published' 
@@ -347,23 +356,6 @@ export default function OrganizerDashboard() {
                       }`}>
                         {STATUS_LABEL[evt.status] ?? evt.status}
                       </span>
-
-                      <div className="flex items-center gap-2">
-                        <Link
-                          href={`/dashboard/admin-events/${evt.slug || evt.id}/edit`}
-                          className="w-9 h-9 rounded-full border border-white/30 bg-black/40 backdrop-blur-md text-white flex items-center justify-center hover:bg-white hover:text-black transition-colors cursor-pointer shadow-xs"
-                          title="MODIFIER"
-                        >
-                          <Edit3 className="h-3.5 w-3.5" />
-                        </Link>
-                        <button
-                          onClick={() => handleDeleteEvent(evt.id)}
-                          className="w-9 h-9 rounded-full border border-white/30 bg-black/40 backdrop-blur-md text-white flex items-center justify-center hover:bg-white hover:text-black transition-colors cursor-pointer shadow-xs"
-                          title="SUPPRIMER"
-                        >
-                          <Trash2 className="h-3.5 w-3.5" />
-                        </button>
-                      </div>
                     </div>
 
                     {/* Center overlay text (Titre sur l'image style flyer) */}
@@ -379,7 +371,7 @@ export default function OrganizerDashboard() {
                     </div>
                   </div>
 
-                  {/* Bottom Section: Details & Price */}
+                  {/* Bottom Section: Details, Price & Action buttons */}
                   <div className="p-6 space-y-4 bg-[#0f0f0f] flex-1 flex flex-col justify-between">
                     <div className="space-y-1">
                       <h3 className="text-xl font-normal text-white">
@@ -399,6 +391,24 @@ export default function OrganizerDashboard() {
                       <span className="text-sm font-bold text-white">
                         {eventPrice > 0 ? `€${eventPrice.toLocaleString('fr-FR')}` : 'GRATUIT'}
                       </span>
+
+                      {/* Boutons modifier et supprimer en bas à droite */}
+                      <div className="flex items-center gap-2">
+                        <Link
+                          href={`/dashboard/admin-events/${evt.slug || evt.id}/edit`}
+                          className="w-9 h-9 rounded-full border border-white/20 bg-neutral-900 text-white flex items-center justify-center hover:bg-white hover:text-black transition-colors cursor-pointer shadow-xs"
+                          title="MODIFIER"
+                        >
+                          <Edit3 className="h-3.5 w-3.5" />
+                        </Link>
+                        <button
+                          onClick={() => handleDeleteEvent(evt.id)}
+                          className="w-9 h-9 rounded-full border border-white/20 bg-neutral-900 text-white flex items-center justify-center hover:bg-white hover:text-black transition-colors cursor-pointer shadow-xs"
+                          title="SUPPRIMER"
+                        >
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </article>
