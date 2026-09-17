@@ -5,6 +5,7 @@ import { useRouter, useParams } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, Check, MapPin, Loader2, Upload, X, ZoomIn } from 'lucide-react';
 import Cropper from 'react-easy-crop';
+import { upload } from '@vercel/blob/client';
 import { supabaseBrowser } from '@/lib/supabase-browser';
 
 async function getCroppedImg(imageSrc: string, pixelCrop: { x: number; y: number; width: number; height: number }): Promise<Blob> {
@@ -140,22 +141,14 @@ export default function EditEventPage() {
 
       const croppedBlob = await getCroppedImg(imageSrc, croppedAreaPixels);
       const fileName = `event-${Date.now()}.jpg`;
-      const filePath = `events/${fileName}`;
 
-      const { error: uploadError } = await supabaseBrowser.storage
-        .from('events')
-        .upload(filePath, croppedBlob, {
-          contentType: 'image/jpeg',
-          upsert: true,
-        });
+      // Upload direct via Vercel Blob client
+      const newBlob = await upload(fileName, croppedBlob, {
+        access: 'public',
+        handleUploadUrl: '/api/upload', // Assure-toi d'avoir une route API Vercel Blob ou adapte selon ta configuration
+      });
 
-      if (uploadError) throw uploadError;
-
-      const { data: publicUrlData } = supabaseBrowser.storage
-        .from('events')
-        .getPublicUrl(filePath);
-
-      setForm((prev) => ({ ...prev, image_url: publicUrlData.publicUrl }));
+      setForm((prev) => ({ ...prev, image_url: newBlob.url }));
       setShowCropperModal(false);
       setImageSrc(null);
     } catch (err: any) {
@@ -206,14 +199,14 @@ export default function EditEventPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#000000] text-white/50 font-grotesque text-xs uppercase tracking-widest flex items-center justify-center">
+      <div className="min-h-screen bg-[#0f0f0f] text-white/50 font-grotesque text-xs uppercase tracking-widest flex items-center justify-center">
         <Loader2 className="w-5 h-5 animate-spin mr-2" /> Chargement...
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#000000] text-white selection:bg-white selection:text-black py-12 font-grotesque antialiased">
+    <div className="min-h-screen bg-[#0f0f0f] text-white selection:bg-white selection:text-black py-12 font-grotesque antialiased">
       <div className="max-w-3xl mx-auto px-6 md:px-12 space-y-10">
         <div>
           <Link
@@ -236,7 +229,7 @@ export default function EditEventPage() {
           </div>
         )}
 
-        <div className="rounded-[2.5rem] border border-white/15 bg-[#0a0a0a] p-6 md:p-8 shadow-2xl">
+        <div className="rounded-[2.5rem] border border-white/15 bg-[#0f0f0f] p-6 md:p-8 shadow-2xl">
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="space-y-4">
               <div className="space-y-1.5">
@@ -400,7 +393,7 @@ export default function EditEventPage() {
       {/* Modal de recadrage */}
       {showCropperModal && imageSrc && (
         <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="bg-[#0a0a0a] border border-white/15 w-full max-w-xl rounded-[2.5rem] p-6 space-y-6 shadow-2xl flex flex-col">
+          <div className="bg-[#0f0f0f] border border-white/15 w-full max-w-xl rounded-[2.5rem] p-6 space-y-6 shadow-2xl flex flex-col">
             <div className="flex items-center justify-between pb-4 border-b border-white/10">
               <h3 className="text-sm font-bold text-white uppercase tracking-wider">Recadrer l&apos;image (Carré 1:1)</h3>
               <button
