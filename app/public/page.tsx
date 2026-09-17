@@ -36,7 +36,8 @@ export default function PublicHome() {
   const [events, setEvents] = useState<TyksEvent[]>([]);
   const [loading, setLoading] = useState(true);
   const [fetchError, setFetchError] = useState(false);
-  const sliderRef = useRef<HTMLDivElement>(null);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isTransitioning, setIsTransitioning] = useState(false);
   const mainContainerRef = useRef<HTMLDivElement>(null);
 
   useLayoutEffect(() => {
@@ -82,45 +83,44 @@ export default function PublicHome() {
     fetchPublishedEvents();
   }, []);
 
-  // On multiplie les éléments par 5 pour avoir une grande marge de défilement infini de chaque côté
-  const extendedEvents = events.length > 0 ? [...events, ...events, ...events, ...events, ...events] : [];
-
-  // Positionner le scroll au milieu exact au premier chargement
+  // Triplage du tableau pour assurer une boucle infinie fluide dans les deux sens
+  const extendedEvents = events.length > 0 ? [...events, ...events, ...events] : [];
+  
+  // On se positionne au milieu (2ème bloc) au chargement
   useEffect(() => {
-    if (events.length > 0 && sliderRef.current) {
-      const slider = sliderRef.current;
-      const cardWidth = 364; // Largeur d'une carte (340px) + gap (24px)
-      // On se place au milieu du bloc (sur la 3ème copie)
-      slider.scrollLeft = cardWidth * events.length * 2;
+    if (events.length > 0) {
+      setCurrentIndex(events.length);
     }
-  }, [events]);
+  }, [events.length]);
 
-  // Gestion de la boucle infinie sans à-coup lors du scroll (manuel ou flèches)
-  const handleInfiniteScroll = () => {
-    const slider = sliderRef.current;
-    if (!slider || events.length === 0) return;
+  // Navigation par les flèches avec contrôle de l'index et bouclage infini
+  const handleSlide = (direction: 'next' | 'prev') => {
+    if (events.length === 0 || isTransitioning) return;
+    setIsTransitioning(true);
 
-    const cardWidth = 364;
-    const singleSetWidth = cardWidth * events.length;
+    setCurrentIndex((prev) => {
+      const nextIndex = direction === 'next' ? prev + 1 : prev - 1;
+      return nextIndex;
+    });
+  };
 
-    // Si on arrive trop près du début (1ère copie), on décale instantanément vers la 3ème copie
-    if (slider.scrollLeft <= singleSetWidth) {
-      slider.scrollLeft += singleSetWidth * 2;
+  // Réinitialisation invisible de la position pour l'effet infini une fois l'animation terminée
+  const handleTransitionEnd = () => {
+    setIsTransitioning(false);
+    if (events.length === 0) return;
+
+    const totalLength = events.length;
+    // Si on arrive dans le 3ème bloc, on ramène au 2ème discrètement
+    if (currentIndex >= totalLength * 2) {
+      setCurrentIndex((prev) => prev - totalLength);
     } 
-    // Si on arrive trop près de la fin (5ème copie), on décale instantanément vers la 3ème copie
-    else if (slider.scrollLeft >= singleSetWidth * 3) {
-      slider.scrollLeft -= singleSetWidth * 2;
+    // Si on arrive dans le 1er bloc, on ramène au 2ème discrètement
+    else if (currentIndex < totalLength) {
+      setCurrentIndex((prev) => prev + totalLength);
     }
   };
 
-  // Défilement fluide par clic sur les flèches
-  const scrollSlider = (direction: 'left' | 'right') => {
-    if (sliderRef.current) {
-      const cardWidth = 364; // Largeur d'une carte (340px) + gap (24px)
-      const scrollAmount = direction === 'left' ? -cardWidth : cardWidth;
-      sliderRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
-    }
-  };
+  const cardWidthPx = 364; // Largeur carte (340px) + Gap (24px)
 
   return (
     <div 
@@ -201,7 +201,7 @@ export default function PublicHome() {
           </div>
         </section>
 
-        {/* SECTION ÉVÉNEMENTS (Carrousel infini bidirectionnel fluide) */}
+        {/* SECTION ÉVÉNEMENTS (Carrousel aligné, fluide et infini par index) */}
         <section id="evenements" className="h-screen w-full snap-start snap-always flex items-center justify-between px-4 sm:px-8 lg:px-12 py-4 shrink-0 relative overflow-hidden">
           
           {/* Texte vertical gauche */}
@@ -212,7 +212,7 @@ export default function PublicHome() {
           </div>
 
           {/* Contenu central */}
-          <div className="flex-1 relative w-full max-w-6xl mx-auto px-4 sm:px-8 z-10 flex items-center justify-center">
+          <div className="flex-1 relative w-full max-w-[1140px] mx-auto px-4 z-10 flex items-center justify-center">
             
             {loading ? (
               <div className="w-full bg-neutral-900 border border-white/15 p-12 text-center text-xs text-white/60 rounded-[2rem] font-bold">
@@ -240,99 +240,99 @@ export default function PublicHome() {
               <>
                 {/* Flèche Gauche */}
                 <button 
-                  onClick={() => scrollSlider('left')}
-                  className="hidden md:flex absolute -left-4 lg:-left-10 z-30 w-12 h-12 rounded-full bg-neutral-900 border border-white/20 items-center justify-center text-white hover:bg-white hover:text-black transition-all shadow-xl cursor-pointer"
+                  onClick={() => handleSlide('prev')}
+                  className="hidden md:flex absolute -left-4 lg:-left-12 z-30 w-12 h-12 rounded-full bg-neutral-900 border border-white/20 items-center justify-center text-white hover:bg-white hover:text-black transition-all shadow-xl cursor-pointer"
                   aria-label="Précédent"
                 >
                   <ChevronLeft className="w-6 h-6" />
                 </button>
 
-                {/* Conteneur de défilement horizontal infini */}
-                <div 
-                  ref={sliderRef}
-                  onScroll={handleInfiniteScroll}
-                  className="w-full flex gap-6 overflow-x-auto scrollbar-none py-6 px-2 items-center justify-start scroll-smooth"
-                  style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-                >
-                  {extendedEvents.map((evt, index) => {
-                    const basePrice = Number(evt.price || evt.ticket_price || 0);
-                    const finalPriceWithStripe = basePrice > 0 ? Math.round((basePrice * 1.015 + 0.25) * 100) / 100 : 0;
-                    
-                    const eventImage = evt.image_url;
-                    
-                    const dateObj = evt.starts_at ? new Date(evt.starts_at) : null;
-                    const dateStr = dateObj
-                      ? dateObj.toLocaleDateString('fr-FR', {
-                          day: 'numeric',
-                          month: 'long',
-                          year: 'numeric',
-                        })
-                      : 'DATE À VENIR';
-                    
-                    const timeStr = dateObj
-                      ? dateObj.toLocaleTimeString('fr-FR', {
-                          hour: '2-digit',
-                          minute: '2-digit',
-                        })
-                      : '';
+                {/* Fenêtre visible pour exactement 3 cartes */}
+                <div className="w-full max-w-[1068px] overflow-hidden py-4 mx-auto">
+                  <div 
+                    className="flex gap-6 transition-transform duration-500 ease-out items-center"
+                    style={{ transform: `translateX(-${currentIndex * cardWidthPx}px)` }}
+                    onTransitionEnd={handleTransitionEnd}
+                  >
+                    {extendedEvents.map((evt, index) => {
+                      const basePrice = Number(evt.price || evt.ticket_price || 0);
+                      const finalPriceWithStripe = basePrice > 0 ? Math.round((basePrice * 1.015 + 0.25) * 100) / 100 : 0;
+                      const eventImage = evt.image_url;
+                      
+                      const dateObj = evt.starts_at ? new Date(evt.starts_at) : null;
+                      const dateStr = dateObj
+                        ? dateObj.toLocaleDateString('fr-FR', {
+                            day: 'numeric',
+                            month: 'long',
+                            year: 'numeric',
+                          })
+                        : 'DATE À VENIR';
+                      
+                      const timeStr = dateObj
+                        ? dateObj.toLocaleTimeString('fr-FR', {
+                            hour: '2-digit',
+                            minute: '2-digit',
+                          })
+                        : '';
 
-                    const eventUrl = `/events/${evt.slug || evt.id}`;
+                      const eventUrl = `/events/${evt.slug || evt.id}`;
 
-                    return (
-                      <article
-                        key={`${evt.id}-${index}`}
-                        onClick={() => router.push(eventUrl)}
-                        className="group cursor-pointer flex flex-col bg-white text-black border border-white/15 rounded-[2.5rem] overflow-hidden transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 shrink-0 w-[340px]"
-                      >
-                        {/* Image carrée ou fallback stylé */}
-                        <div className="relative w-full aspect-square bg-neutral-900 overflow-hidden border-b border-black/10 flex items-center justify-center">
-                          {eventImage && eventImage.trim() !== '' ? (
-                            <img
-                              src={eventImage}
-                              alt={evt.title || 'Événement'}
-                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
-                            />
-                          ) : (
-                            <div className="w-full h-full bg-gradient-to-br from-neutral-900 to-neutral-800 flex flex-col items-center justify-center p-6 text-center space-y-2">
-                              <span className="text-[10px] tracking-widest uppercase text-white/50 font-bold">TYKS LIVE</span>
-                              <span className="text-sm font-bold text-white line-clamp-2">{evt.title}</span>
-                            </div>
-                          )}
-                        </div>
-
-                        {/* Infos textuelles centrées */}
-                        <div className="p-5 flex-1 space-y-2 flex flex-col justify-center text-center">
-                          <h3 className="text-base font-bold text-black tracking-tight group-hover:underline transition-colors line-clamp-1">
-                            {evt.title}
-                          </h3>
-                          
-                          {evt.location && (
-                            <p className="text-xs text-black/70 font-semibold truncate">
-                              {evt.location}
-                            </p>
-                          )}
-
-                          <p className="text-xs text-black/50 font-bold uppercase tracking-wider pt-0.5">
-                            {dateStr} {timeStr ? `• ${timeStr}` : ''}
-                          </p>
-                        </div>
-
-                        {/* Bouton du bas cliquable */}
-                        <div className="flex items-center justify-center border-t border-black/10 p-3.5 bg-neutral-50">
-                          <div className="w-full h-9 px-4 bg-black group-hover:bg-neutral-800 text-white font-bold text-xs uppercase tracking-wider transition-all duration-300 flex items-center justify-center gap-2 rounded-xl shadow-md">
-                            <span>{basePrice > 0 ? `À partir de ${finalPriceWithStripe.toFixed(2).replace('.', ',')} €` : 'Entrée Libre'}</span>
-                            <ArrowUpRight className="w-3.5 h-3.5" />
+                      return (
+                        <article
+                          key={`${evt.id}-${index}`}
+                          onClick={() => router.push(eventUrl)}
+                          className="group cursor-pointer flex flex-col bg-white text-black border border-white/15 rounded-[2.5rem] overflow-hidden transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 shrink-0 w-[340px]"
+                        >
+                          {/* Image */}
+                          <div className="relative w-full aspect-square bg-neutral-900 overflow-hidden border-b border-black/10 flex items-center justify-center">
+                            {eventImage && eventImage.trim() !== '' ? (
+                              <img
+                                src={eventImage}
+                                alt={evt.title || 'Événement'}
+                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
+                              />
+                            ) : (
+                              <div className="w-full h-full bg-gradient-to-br from-neutral-900 to-neutral-800 flex flex-col items-center justify-center p-6 text-center space-y-2">
+                                <span className="text-[10px] tracking-widest uppercase text-white/50 font-bold">TYKS LIVE</span>
+                                <span className="text-sm font-bold text-white line-clamp-2">{evt.title}</span>
+                              </div>
+                            )}
                           </div>
-                        </div>
-                      </article>
-                    );
-                  })}
+
+                          {/* Infos textuelles */}
+                          <div className="p-5 flex-1 space-y-2 flex flex-col justify-center text-center">
+                            <h3 className="text-base font-bold text-black tracking-tight group-hover:underline transition-colors line-clamp-1">
+                              {evt.title}
+                            </h3>
+                            
+                            {evt.location && (
+                              <p className="text-xs text-black/70 font-semibold truncate">
+                                {evt.location}
+                              </p>
+                            )}
+
+                            <p className="text-xs text-black/50 font-bold uppercase tracking-wider pt-0.5">
+                              {dateStr} {timeStr ? `• ${timeStr}` : ''}
+                            </p>
+                          </div>
+
+                          {/* Bouton */}
+                          <div className="flex items-center justify-center border-t border-black/10 p-3.5 bg-neutral-50">
+                            <div className="w-full h-9 px-4 bg-black group-hover:bg-neutral-800 text-white font-bold text-xs uppercase tracking-wider transition-all duration-300 flex items-center justify-center gap-2 rounded-xl shadow-md">
+                              <span>{basePrice > 0 ? `À partir de ${finalPriceWithStripe.toFixed(2).replace('.', ',')} €` : 'Entrée Libre'}</span>
+                              <ArrowUpRight className="w-3.5 h-3.5" />
+                            </div>
+                          </div>
+                        </article>
+                      );
+                    })}
+                  </div>
                 </div>
 
                 {/* Flèche Droite */}
                 <button 
-                  onClick={() => scrollSlider('right')}
-                  className="hidden md:flex absolute -right-4 lg:-right-10 z-30 w-12 h-12 rounded-full bg-neutral-900 border border-white/20 items-center justify-center text-white hover:bg-white hover:text-black transition-all shadow-xl cursor-pointer"
+                  onClick={() => handleSlide('next')}
+                  className="hidden md:flex absolute -right-4 lg:-right-12 z-30 w-12 h-12 rounded-full bg-neutral-900 border border-white/20 items-center justify-center text-white hover:bg-white hover:text-black transition-all shadow-xl cursor-pointer"
                   aria-label="Suivant"
                 >
                   <ChevronRight className="w-6 h-6" />
