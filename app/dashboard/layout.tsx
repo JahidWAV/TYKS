@@ -79,11 +79,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   return (
     <div className="min-h-screen bg-[#0f0f0f] text-white font-sans selection:bg-white selection:text-black flex flex-col uppercase overflow-x-hidden">
 
-      {/* Barre de navigation horizontale en grille 3 colonnes pour un centrage parfait */}
-      <header className="fixed top-0 left-0 right-0 h-20 border-b border-white/10 bg-[#0f0f0f] grid grid-cols-3 items-center px-8 z-50 select-none">
+      {/* Barre de navigation horizontale */}
+      <header className="fixed top-0 left-0 right-0 h-20 border-b border-white/10 bg-[#0f0f0f] flex items-center justify-between px-8 z-50 select-none">
         
-        {/* 1. Logo à gauche */}
-        <div className="flex items-center justify-start shrink-0">
+        {/* 1. Logo à gauche avec une largeur fixe pour équilibrer la droite */}
+        <div className="flex items-center justify-start w-48 shrink-0">
           <Link href="/" className="flex items-center group py-2">
             <Image 
               src="/tyks.svg" 
@@ -96,8 +96,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           </Link>
         </div>
 
-        {/* 2. Catégories du menu parfaitement centrées */}
-        <nav className="hidden lg:flex items-center justify-center gap-2 font-grotesque w-full">
+        {/* 2. Menu strictement centré par rapport à la fenêtre */}
+        <nav className="hidden lg:flex items-center justify-center gap-2 font-grotesque absolute left-1/2 -translate-x-1/2">
           {navItems.map((item) => {
             const isActive = pathname === item.href;
 
@@ -117,8 +117,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           })}
         </nav>
 
-        {/* 3. Bouton utilisateur & profil aligné à droite */}
-        <div className="flex items-center justify-end shrink-0">
+        {/* 3. Bouton utilisateur à droite avec la même largeur fixe pour l'équilibre */}
+        <div className="flex items-center justify-end w-48 shrink-0">
           <div className="relative" ref={profileMenuRef}>
             <button 
               onClick={() => setProfileOpen(!profileOpen)}
