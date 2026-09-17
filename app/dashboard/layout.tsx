@@ -81,25 +81,25 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   return (
     <div className="min-h-screen bg-[#0f0f0f] text-white font-sans selection:bg-white selection:text-black flex flex-col uppercase overflow-x-hidden">
 
-      {/* Barre de navigation horizontale classique */}
-      <header className="fixed top-0 left-0 right-0 h-20 border-b border-white/10 bg-[#0f0f0f] flex items-center justify-between px-8 z-50 select-none">
+      {/* Barre de navigation horizontale classique en grille 3 colonnes pour un centrage parfait */}
+      <header className="fixed top-0 left-0 right-0 h-20 border-b border-white/10 bg-[#0f0f0f] grid grid-cols-3 items-center px-8 z-50 select-none">
         
-        {/* Logo */}
-        <div className="flex items-center">
+        {/* Colonne 1 : Logo grand format */}
+        <div className="flex items-center justify-start">
           <Link href="/" className="flex items-center group py-2">
             <Image 
               src="/tyks.svg" 
               alt="TYKS" 
-              width={120} 
-              height={40} 
+              width={150} 
+              height={50} 
               priority 
-              className="h-7 w-auto object-contain brightness-0 invert transition-transform group-hover:scale-105" 
+              className="h-9 w-auto object-contain brightness-0 invert transition-transform group-hover:scale-105" 
             />
           </Link>
         </div>
 
-        {/* Catégories du menu au centre */}
-        <nav className="hidden lg:flex items-center gap-2 font-grotesque">
+        {/* Colonne 2 : Catégories du menu parfaitement centrées */}
+        <nav className="hidden lg:flex items-center justify-center gap-2 font-grotesque">
           {navItems.map((item) => {
             const Icon = item.icon;
             const isActive = pathname === item.href;
@@ -108,7 +108,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               <Link
                 key={item.href}
                 href={item.href}
-                className={`flex items-center gap-2.5 px-4 py-2.5 rounded-xl transition-all font-grotesque text-xs tracking-wide border ${
+                className={`flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all font-grotesque text-xs tracking-wide border ${
                   isActive
                     ? 'bg-white text-black border-white font-bold shadow-md'
                     : 'bg-neutral-900 text-white/80 border-white/10 hover:bg-white/10 hover:text-white'
@@ -121,70 +121,73 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           })}
         </nav>
 
-        {/* Bouton utilisateur & profil */}
-        <div className="relative" ref={profileMenuRef}>
-          <button 
-            onClick={() => setProfileOpen(!profileOpen)}
-            className="h-11 px-7 bg-transparent hover:bg-white/10 text-white border border-white/15 transition-all text-xs tracking-wider font-grotesque font-bold rounded-full shadow-md flex items-center justify-center shrink-0 cursor-pointer"
-          >
-            {userName}
-          </button>
+        {/* Colonne 3 : Bouton utilisateur & profil aligné à droite */}
+        <div className="flex items-center justify-end">
+          <div className="relative" ref={profileMenuRef}>
+            <button 
+              onClick={() => setProfileOpen(!profileOpen)}
+              className="h-11 px-7 bg-transparent hover:bg-white/10 text-white border border-white/15 transition-all text-xs tracking-wider font-grotesque font-bold rounded-full shadow-md flex items-center justify-center shrink-0 cursor-pointer"
+            >
+              {userName}
+            </button>
 
-          {profileOpen && (
-            <div className="absolute right-0 mt-3 w-72 bg-neutral-900 border border-white/15 shadow-2xl rounded-3xl py-2 z-50 font-grotesque text-xs text-white">
-              <div className="flex items-center gap-3 px-5 py-3 border-b border-white/10 bg-neutral-950/50">
-                <div className="min-w-0">
-                  <p className="font-bold truncate text-white">{userName}</p>
-                  <p className="text-[10px] text-white/50 truncate lowercase">{user.email}</p>
+            {profileOpen && (
+              <div className="absolute right-0 mt-3 w-72 bg-neutral-900 border border-white/15 shadow-2xl rounded-3xl py-2 z-50 font-grotesque text-xs text-white">
+                <div className="flex items-center gap-3 px-5 py-3 border-b border-white/10 bg-neutral-950/50">
+                  <div className="min-w-0">
+                    <p className="font-bold truncate text-white">{userName}</p>
+                    <p className="text-[10px] text-white/50 truncate lowercase">{user.email}</p>
+                  </div>
+                </div>
+
+                <div className="py-2 space-y-1 px-2">
+                  <Link 
+                    href="/settings" 
+                    onClick={() => setProfileOpen(false)}
+                    className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 hover:text-white transition-colors tracking-wide font-bold text-white/80"
+                  >
+                    <span>PROFIL</span>
+                  </Link>
+
+                  <Link 
+                    href="/settings/security" 
+                    onClick={() => setProfileOpen(false)}
+                    className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 hover:text-white transition-colors tracking-wide font-bold text-white/80"
+                  >
+                    <Shield className="w-4 h-4 text-white" />
+                    <span>SÉCURITÉ</span>
+                  </Link>
+
+                  <Link 
+                    href="/settings/preferences" 
+                    onClick={() => setProfileOpen(false)}
+                    className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 hover:text-white transition-colors tracking-wide font-bold text-white/80"
+                  >
+                    <Sliders className="w-4 h-4 text-white" />
+                    <span>PRÉFÉRENCES</span>
+                  </Link>
+                </div>
+
+                <div className="border-t border-white/10 pt-2 px-2">
+                  <button
+                    onClick={() => {
+                      setProfileOpen(false);
+                      handleLogout();
+                    }}
+                    className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-white hover:bg-neutral-800 transition-colors tracking-wide font-bold cursor-pointer"
+                  >
+                    <LogOut className="w-4 h-4" />
+                    <span>SE DÉCONNECTER</span>
+                  </button>
                 </div>
               </div>
-
-              <div className="py-2 space-y-1 px-2">
-                <Link 
-                  href="/settings" 
-                  onClick={() => setProfileOpen(false)}
-                  className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 hover:text-white transition-colors tracking-wide font-bold text-white/80"
-                >
-                  <span>PROFIL</span>
-                </Link>
-
-                <Link 
-                  href="/settings/security" 
-                  onClick={() => setProfileOpen(false)}
-                  className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 hover:text-white transition-colors tracking-wide font-bold text-white/80"
-                >
-                  <Shield className="w-4 h-4 text-white" />
-                  <span>SÉCURITÉ</span>
-                </Link>
-
-                <Link 
-                  href="/settings/preferences" 
-                  onClick={() => setProfileOpen(false)}
-                  className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 hover:text-white transition-colors tracking-wide font-bold text-white/80"
-                >
-                  <Sliders className="w-4 h-4 text-white" />
-                  <span>PRÉFÉRENCES</span>
-                </Link>
-              </div>
-
-              <div className="border-t border-white/10 pt-2 px-2">
-                <button
-                  onClick={() => {
-                    setProfileOpen(false);
-                    handleLogout();
-                  }}
-                  className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-white hover:bg-neutral-800 transition-colors tracking-wide font-bold cursor-pointer"
-                >
-                  <LogOut className="w-4 h-4" />
-                  <span>SE DÉCONNECTER</span>
-                </button>
-              </div>
-            </div>
-          )}
+            )}
+          </div>
         </div>
+
       </header>
 
-      {/* Menu mobile (si l'écran est trop petit pour afficher la navbar horizontale complète) */}
+      {/* Menu mobile (si l'écran est trop petit) */}
       <div className="flex lg:hidden items-center justify-around bg-neutral-950 border-b border-white/10 px-4 py-3 fixed top-20 left-0 right-0 z-40">
         {navItems.map((item) => {
           const Icon = item.icon;
@@ -204,7 +207,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         })}
       </div>
 
-      {/* Conteneur principal (avec espacement haut pour ne pas être caché par la navbar fixe) */}
+      {/* Conteneur principal */}
       <main className="flex-1 w-full pt-20 lg:pt-20 p-8 bg-[#0f0f0f] font-grotesque text-white">
         {children}
       </main>
