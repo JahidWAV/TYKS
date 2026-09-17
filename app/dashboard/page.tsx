@@ -303,7 +303,7 @@ export default function OrganizerDashboard() {
             {filteredEvents.map((evt: any) => {
               const eventPrice = Number(evt.price || evt.ticket_price || 0);
               
-              // Récupération et résolution robuste de l'URL de l'affiche
+              // Résolution robuste de l'URL de l'affiche
               const rawImage = evt.image_url || evt.cover_image || evt.flyer_url || evt.poster_url;
               let imageUrl = '';
               
@@ -313,7 +313,6 @@ export default function OrganizerDashboard() {
                 } else if (rawImage.startsWith('/')) {
                   imageUrl = rawImage;
                 } else {
-                  // Si c'est un chemin dans un bucket Supabase (ex: 'events/abc.jpg' ou juste 'abc.jpg')
                   const cleanPath = rawImage.startsWith('events/') ? rawImage.replace('events/', '') : rawImage;
                   const { data } = supabaseBrowser.storage.from('events').getPublicUrl(cleanPath);
                   imageUrl = data.publicUrl;
@@ -323,92 +322,75 @@ export default function OrganizerDashboard() {
               return (
                 <article
                   key={evt.id}
-                  className="group relative flex flex-col rounded-3xl border border-white/15 bg-neutral-900 overflow-hidden shadow-md transition-all hover:border-white font-grotesque"
+                  className="group relative flex flex-col rounded-3xl border border-white/15 bg-neutral-900 overflow-hidden shadow-md transition-all hover:border-white font-grotesque p-5 space-y-4"
                 >
-                  {/* Top Section: Flyer / Cover Background */}
-                  <div className="relative w-full h-80 bg-neutral-950 flex flex-col justify-between p-6 overflow-hidden">
+                  {/* Format Carré strict pour l'affiche (sans texte par-dessus) */}
+                  <div className="relative w-full aspect-square bg-neutral-950 rounded-2xl overflow-hidden border border-white/10">
                     {imageUrl ? (
                       <Image 
                         src={imageUrl} 
                         alt={evt.title || 'Event Flyer'} 
                         fill 
                         sizes="(max-width: 768px) 100vw, 33vw"
-                        className="object-cover object-center brightness-75 group-hover:scale-105 transition-transform duration-500"
+                        className="object-cover object-center group-hover:scale-105 transition-transform duration-500"
                         unoptimized
                       />
                     ) : (
-                      <div className="absolute inset-0 bg-gradient-to-br from-neutral-800 to-neutral-950 flex items-center justify-center">
-                        <span className="text-white/20 text-xs font-bold">AUCUNE AFFICHE</span>
+                      <div className="absolute inset-0 bg-neutral-900 flex items-center justify-center">
+                        <span className="text-white/30 text-xs font-bold">AUCUNE AFFICHE</span>
                       </div>
                     )}
 
-                    {/* Dark Vignette Overlay for readability */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#0f0f0f] via-black/40 to-black/30 pointer-events-none" />
-
-                    {/* Top row inside image: Status badge */}
-                    <div className="relative z-10 flex items-center justify-between">
+                    {/* Badge de statut positionné proprement en haut à gauche de l'image */}
+                    <div className="absolute top-3 left-3 z-10">
                       <span className={`inline-flex items-center px-2.5 py-1 rounded-full border text-[10px] font-bold backdrop-blur-md ${
                         evt.status === 'published' 
-                          ? 'bg-black/40 text-white border-white/30' 
+                          ? 'bg-black/60 text-white border-white/30' 
                           : evt.status === 'cancelled'
-                          ? 'bg-neutral-900/60 text-white/60 border-white/20 line-through'
-                          : 'bg-black/40 text-white/70 border-white/20'
+                          ? 'bg-neutral-900/80 text-white/60 border-white/20 line-through'
+                          : 'bg-black/60 text-white/70 border-white/20'
                       }`}>
                         {STATUS_LABEL[evt.status] ?? evt.status}
                       </span>
                     </div>
-
-                    {/* Center overlay text (Titre sur l'image style flyer) */}
-                    <div className="relative z-10 space-y-1 text-center my-auto pointer-events-none">
-                      <h2 className="text-2xl lg:text-3xl font-normal tracking-wider text-white drop-shadow-md">
-                        {evt.title}
-                      </h2>
-                      {evt.location && (
-                        <p className="text-[11px] tracking-wide text-white/80 uppercase font-light drop-shadow">
-                          {evt.location}
-                        </p>
-                      )}
-                    </div>
                   </div>
 
-                  {/* Bottom Section: Details, Price & Action buttons */}
-                  <div className="p-6 space-y-4 bg-[#0f0f0f] flex-1 flex flex-col justify-between">
-                    <div className="space-y-1">
-                      <h3 className="text-xl font-normal text-white">
-                        {evt.title}
-                      </h3>
-                      <p className="text-xs text-white/70">
-                        {evt.starts_at ? new Date(evt.starts_at).toLocaleDateString('fr-FR', {
-                          weekday: 'short',
-                          day: 'numeric',
-                          month: 'short',
-                        }).toUpperCase() : ''}
-                        {evt.location ? `, ${evt.location}` : ''}
-                      </p>
-                    </div>
+                  {/* Section Informations de l'événement */}
+                  <div className="space-y-1">
+                    <h3 className="text-xl font-normal text-white">
+                      {evt.title}
+                    </h3>
+                    <p className="text-xs text-white/70">
+                      {evt.starts_at ? new Date(evt.starts_at).toLocaleDateString('fr-FR', {
+                        weekday: 'short',
+                        day: 'numeric',
+                        month: 'short',
+                      }).toUpperCase() : ''}
+                      {evt.location ? `, ${evt.location}` : ''}
+                    </p>
+                  </div>
 
-                    <div className="flex items-center justify-between pt-2">
-                      <span className="text-sm font-bold text-white">
-                        {eventPrice > 0 ? `€${eventPrice.toLocaleString('fr-FR')}` : 'GRATUIT'}
-                      </span>
+                  {/* Prix et boutons d'action en bas à droite */}
+                  <div className="flex items-center justify-between pt-2 border-t border-white/10">
+                    <span className="text-sm font-bold text-white">
+                      {eventPrice > 0 ? `€${eventPrice.toLocaleString('fr-FR')}` : 'GRATUIT'}
+                    </span>
 
-                      {/* Boutons modifier et supprimer en bas à droite */}
-                      <div className="flex items-center gap-2">
-                        <Link
-                          href={`/dashboard/admin-events/${evt.slug || evt.id}/edit`}
-                          className="w-9 h-9 rounded-full border border-white/20 bg-neutral-900 text-white flex items-center justify-center hover:bg-white hover:text-black transition-colors cursor-pointer shadow-xs"
-                          title="MODIFIER"
-                        >
-                          <Edit3 className="h-3.5 w-3.5" />
-                        </Link>
-                        <button
-                          onClick={() => handleDeleteEvent(evt.id)}
-                          className="w-9 h-9 rounded-full border border-white/20 bg-neutral-900 text-white flex items-center justify-center hover:bg-white hover:text-black transition-colors cursor-pointer shadow-xs"
-                          title="SUPPRIMER"
-                        >
-                          <Trash2 className="h-3.5 w-3.5" />
-                        </button>
-                      </div>
+                    <div className="flex items-center gap-2">
+                      <Link
+                        href={`/dashboard/admin-events/${evt.slug || evt.id}/edit`}
+                        className="w-9 h-9 rounded-full border border-white/20 bg-neutral-900 text-white flex items-center justify-center hover:bg-white hover:text-black transition-colors cursor-pointer shadow-xs"
+                        title="MODIFIER"
+                      >
+                        <Edit3 className="h-3.5 w-3.5" />
+                      </Link>
+                      <button
+                        onClick={() => handleDeleteEvent(evt.id)}
+                        className="w-9 h-9 rounded-full border border-white/20 bg-neutral-900 text-white flex items-center justify-center hover:bg-white hover:text-black transition-colors cursor-pointer shadow-xs"
+                        title="SUPPRIMER"
+                      >
+                        <Trash2 className="h-3.5 w-3.5" />
+                      </button>
                     </div>
                   </div>
                 </article>
