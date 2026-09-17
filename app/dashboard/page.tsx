@@ -178,16 +178,6 @@ export default function OrganizerDashboard() {
   return (
     <div className="w-full px-6 lg:px-12 pt-4 pb-12 space-y-8 font-grotesque text-white bg-[#0f0f0f] min-h-full uppercase">
       
-      {/* Header de la page */}
-      <div className="flex flex-col gap-2 pt-2">
-        <h1 className="text-3xl lg:text-4xl font-normal tracking-tight text-white">
-          VOS ÉVÉNEMENTS
-        </h1>
-        <p className="text-xs text-white/60">
-          GÉREZ VOS ÉVÉNEMENTS, MODIFIEZ VOS INFORMATIONS ET SUIVEZ VOTRE ACTIVITÉ EN DIRECT.
-        </p>
-      </div>
-
       {/* Search & Counter */}
       <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4 pt-2">
         <div className="relative flex-1 max-w-md">
