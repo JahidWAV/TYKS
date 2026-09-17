@@ -31,32 +31,38 @@ export async function middleware(request: NextRequest) {
   const url = request.nextUrl
   const hostname = request.headers.get('host') || ''
 
-  // Laisser passer directement toutes les requêtes vers les routes API et les fichiers statiques gérés par le matcher
   if (url.pathname.startsWith('/api')) {
     return NextResponse.next()
   }
 
-  // Détection des domaines (en gérant aussi le préfixe 'www.' par sécurité)
   const isAppDomain = hostname.includes('tyks.app')
-  const isFrDomain = hostname.includes('tyks.fr')
+  const isProDomain = hostname.startsWith('pro.') // Détecte pro.tyks.fr (ou pro.tyks.app)
 
-  // 1. Sur tyks.app -> Tout va directement dans le dossier /dashboard (ou les pages de gestion connectées)
+  // 1. Landing Pro (`pro.tyks.fr`) -> Réécriture vers le dossier /pro
+  if (isProDomain) {
+    if (url.pathname === '/') {
+      url.pathname = '/pro'
+      return NextResponse.rewrite(url)
+    }
+    if (!url.pathname.startsWith('/pro')) {
+      url.pathname = `/pro${url.pathname}`
+    }
+    return NextResponse.rewrite(url)
+  }
+
+  // 2. Sur tyks.app -> Dashboard
   if (isAppDomain) {
-    // Si on tape la racine de tyks.app, on l'envoie sur /dashboard
     if (url.pathname === '/') {
       url.pathname = '/dashboard'
       return NextResponse.rewrite(url)
     }
-    
-    // Si l'URL n'est pas déjà préfixée par /dashboard, on l'ajoute pour correspondre à ton arborescence
     if (!url.pathname.startsWith('/dashboard')) {
       url.pathname = `/dashboard${url.pathname}`
     }
     return NextResponse.rewrite(url)
   }
 
-  // 2. Sur tyks.fr (Vitrine / Site Public)
-  // On route vers ton dossier /public pour la home, ou on laisse passer /events et /settings
+  // 3. Site Public (`tyks.fr`)
   if (url.pathname.startsWith('/events') || url.pathname.startsWith('/settings') || url.pathname.startsWith('/pro')) {
     return NextResponse.next()
   }
@@ -66,7 +72,6 @@ export async function middleware(request: NextRequest) {
     return NextResponse.rewrite(url)
   }
 
-  // Par défaut sur la vitrine, si l'URL n'est pas déjà dans /public
   if (!url.pathname.startsWith('/public')) {
     url.pathname = `/public${url.pathname}`
   }
@@ -76,13 +81,6 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    /*
-     * Match all request paths except for the ones starting with:
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico, auth/callback
-     * - Any file with an extension (e.g. .svg, .png, etc.)
-     */
     '/((?!_next/static|_next/image|favicon.ico|auth/callback|.*\\..*).*)',
   ],
 }
