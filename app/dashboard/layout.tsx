@@ -59,8 +59,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   };
 
   const navItems = [
-    { label: "VUE D'ENSEMBLE", href: '/' },
-    { label: 'ÉVÉNEMENTS', href: '/events' },
+    { label: "ÉVÉNEMENTS", href: '/' },
     { label: 'STATISTIQUES', href: '/stats' },
     { label: 'FINANCES', href: '/banking' },
   ];
