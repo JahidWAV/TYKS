@@ -5,8 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import { 
-  LayoutDashboard, Calendar, BarChart3, 
-  Wallet, LogOut, Shield, Sliders 
+  LogOut, Shield, Sliders 
 } from 'lucide-react';
 import { supabaseBrowser } from '@/lib/supabase-browser';
 
@@ -60,10 +59,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   };
 
   const navItems = [
-    { label: "VUE D'ENSEMBLE", href: '/', icon: LayoutDashboard },
-    { label: 'ÉVÉNEMENTS', href: '/events', icon: Calendar },
-    { label: 'STATISTIQUES', href: '/stats', icon: BarChart3 },
-    { label: 'FINANCES', href: '/banking', icon: Wallet },
+    { label: "VUE D'ENSEMBLE", href: '/' },
+    { label: 'ÉVÉNEMENTS', href: '/events' },
+    { label: 'STATISTIQUES', href: '/stats' },
+    { label: 'FINANCES', href: '/banking' },
   ];
 
   if (user === undefined) {
@@ -84,37 +83,35 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       {/* Barre de navigation horizontale */}
       <header className="fixed top-0 left-0 right-0 h-20 border-b border-white/10 bg-[#0f0f0f] flex items-center justify-between px-8 z-50 select-none">
         
-        {/* 1. Logo plus grand aligné à gauche */}
+        {/* 1. Logo à la taille exacte des pages publiques */}
         <div className="flex items-center shrink-0">
           <Link href="/" className="flex items-center group py-2">
             <Image 
               src="/tyks.svg" 
               alt="TYKS" 
-              width={200} 
-              height={70} 
+              width={100} 
+              height={32} 
               priority 
-              className="h-10 w-auto object-contain brightness-0 invert transition-transform group-hover:scale-105" 
+              className="h-7 w-auto object-contain brightness-0 invert transition-transform group-hover:scale-105" 
             />
           </Link>
         </div>
 
-        {/* 2. Catégories du menu centrées (même hauteur h-11 et même style transparent que le bouton profil) */}
+        {/* 2. Catégories du menu centrées, sans icônes, style transparent identique */}
         <nav className="hidden lg:flex items-center justify-center gap-2 font-grotesque absolute left-1/2 -translate-x-1/2">
           {navItems.map((item) => {
-            const Icon = item.icon;
             const isActive = pathname === item.href;
 
             return (
               <Link
                 key={item.href}
                 href={item.href}
-                className={`h-11 flex items-center gap-2 px-6 rounded-full transition-all font-grotesque text-xs tracking-wider border whitespace-nowrap shadow-md ${
+                className={`h-11 flex items-center px-6 rounded-full transition-all font-grotesque text-xs tracking-wider border whitespace-nowrap shadow-md ${
                   isActive
                     ? 'bg-white text-black border-white font-bold'
                     : 'bg-transparent text-white/80 border-white/15 hover:bg-white/10 hover:text-white'
                 }`}
               >
-                <Icon className={`w-4 h-4 shrink-0 ${isActive ? 'text-black' : 'text-white'}`} />
                 <span>{item.label}</span>
               </Link>
             );
@@ -190,18 +187,16 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       {/* Menu mobile (écrans petits) */}
       <div className="flex lg:hidden items-center justify-around bg-neutral-950 border-b border-white/10 px-4 py-3 fixed top-20 left-0 right-0 z-40">
         {navItems.map((item) => {
-          const Icon = item.icon;
           const isActive = pathname === item.href;
           return (
             <Link
               key={item.href}
               href={item.href}
-              className={`p-2.5 rounded-full border transition-all ${
+              className={`px-4 py-2 rounded-full border text-[10px] font-bold transition-all ${
                 isActive ? 'bg-white text-black border-white' : 'bg-transparent text-white/80 border-white/15'
               }`}
-              title={item.label}
             >
-              <Icon className="w-4 h-4" />
+              {item.label}
             </Link>
           );
         })}
