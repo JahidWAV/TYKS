@@ -36,7 +36,7 @@ export default function PublicHome() {
   const [events, setEvents] = useState<TyksEvent[]>([]);
   const [loading, setLoading] = useState(true);
   const [fetchError, setFetchError] = useState(false);
-  const sliderRef = useRef<HTMLDivElement>(null);
+  const [currentIndex, setCurrentIndex] = useState(0);
   const mainContainerRef = useRef<HTMLDivElement>(null);
 
   useLayoutEffect(() => {
@@ -82,41 +82,29 @@ export default function PublicHome() {
     fetchPublishedEvents();
   }, []);
 
-  // Positionner le scroll au milieu de la liste triplée au premier chargement pour permettre l'infini dans les deux sens
-  useEffect(() => {
-    if (events.length > 0 && sliderRef.current) {
-      const slider = sliderRef.current;
-      // On se place au milieu exact pour pouvoir scroller à gauche ou à droite indéfiniment
-      slider.scrollLeft = slider.scrollWidth / 3;
-    }
-  }, [events]);
-
-  // Gestion de la boucle infinie au scroll (effet rebond invisible)
-  const handleInfiniteScroll = () => {
-    const slider = sliderRef.current;
-    if (!slider) return;
-
-    const thirdWidth = slider.scrollWidth / 3;
-    
-    // Si on arrive trop près du début, on décale instantanément d'un bloc vers la droite
-    if (slider.scrollLeft < thirdWidth * 0.5) {
-      slider.scrollLeft += thirdWidth;
-    } 
-    // Si on arrive trop près de la fin, on décale instantanément d'un bloc vers la gauche
-    else if (slider.scrollLeft > thirdWidth * 2.5) {
-      slider.scrollLeft -= thirdWidth;
-    }
+  // Navigation par index pour afficher exactement 3 éléments en boucle infinie
+  const nextSlide = () => {
+    if (events.length === 0) return;
+    setCurrentIndex((prev) => (prev + 1) % events.length);
   };
 
-  const scrollSlider = (direction: 'left' | 'right') => {
-    if (sliderRef.current) {
-      const scrollAmount = direction === 'left' ? -360 : 360;
-      sliderRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
-    }
+  const prevSlide = () => {
+    if (events.length === 0) return;
+    setCurrentIndex((prev) => (prev - 1 + events.length) % events.length);
   };
 
-  // On duplique les événements x3 pour créer la boucle infinie visuelle
-  const extendedEvents = [...events, ...events, ...events];
+  // Récupérer les 3 événements à afficher à partir de l'index actuel (avec boucle)
+  const getVisibleEvents = () => {
+    if (events.length === 0) return [];
+    const visible = [];
+    for (let i = 0; i < Math.min(3, events.length); i++) {
+      const index = (currentIndex + i) % events.length;
+      visible.push(events[index]);
+    }
+    return visible;
+  };
+
+  const visibleEvents = getVisibleEvents();
 
   return (
     <div 
@@ -197,7 +185,7 @@ export default function PublicHome() {
           </div>
         </section>
 
-        {/* SECTION ÉVÉNEMENTS */}
+        {/* SECTION ÉVÉNEMENTS (Centrée parfaitement avec exactement 3 cartes) */}
         <section id="evenements" className="h-screen w-full snap-start snap-always flex items-center justify-between px-4 sm:px-8 lg:px-12 py-4 shrink-0 relative overflow-hidden">
           
           {/* Texte vertical gauche */}
@@ -207,8 +195,8 @@ export default function PublicHome() {
             </span>
           </div>
 
-          {/* Contenu central avec carrousel infini et flèches permanentes */}
-          <div className="flex-1 relative w-full max-w-5xl mx-auto px-4 sm:px-8 z-10 flex items-center justify-center">
+          {/* Contenu central */}
+          <div className="flex-1 relative w-full max-w-6xl mx-auto px-4 sm:px-8 z-10 flex items-center justify-center">
             
             {loading ? (
               <div className="w-full bg-neutral-900 border border-white/15 p-12 text-center text-xs text-white/60 rounded-[2rem] font-bold">
@@ -234,23 +222,20 @@ export default function PublicHome() {
               </div>
             ) : (
               <>
-                {/* Flèche Gauche (toujours active pour défiler à l'infini) */}
-                <button 
-                  onClick={() => scrollSlider('left')}
-                  className="hidden md:flex absolute -left-6 lg:-left-12 z-20 w-12 h-12 rounded-full bg-neutral-900 border border-white/20 items-center justify-center text-white hover:bg-white hover:text-black transition-all shadow-xl cursor-pointer"
-                  aria-label="Précédent"
-                >
-                  <ChevronLeft className="w-6 h-6" />
-                </button>
+                {/* Flèche Gauche */}
+                {events.length > 3 && (
+                  <button 
+                    onClick={prevSlide}
+                    className="hidden md:flex absolute -left-4 lg:-left-10 z-20 w-12 h-12 rounded-full bg-neutral-900 border border-white/20 items-center justify-center text-white hover:bg-white hover:text-black transition-all shadow-xl cursor-pointer"
+                    aria-label="Précédent"
+                  >
+                    <ChevronLeft className="w-6 h-6" />
+                  </button>
+                )}
 
-                {/* Conteneur du Slider Infini */}
-                <div 
-                  ref={sliderRef}
-                  onScroll={handleInfiniteScroll}
-                  className="w-full flex gap-6 overflow-x-auto scrollbar-none snap-x py-4 px-2 items-center justify-start"
-                  style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-                >
-                  {extendedEvents.map((evt, index) => {
+                {/* Grille fixe affichant exactement 3 cartes parfaitement centrées */}
+                <div className="w-full grid grid-cols-1 md:grid-cols-3 gap-6 items-center justify-center">
+                  {visibleEvents.map((evt, idx) => {
                     const basePrice = Number(evt.price || evt.ticket_price || 0);
                     const finalPriceWithStripe = basePrice > 0 ? Math.round((basePrice * 1.015 + 0.25) * 100) / 100 : 0;
                     
@@ -276,9 +261,9 @@ export default function PublicHome() {
 
                     return (
                       <article
-                        key={`${evt.id}-${index}`}
+                        key={`${evt.id}-${idx}`}
                         onClick={() => router.push(eventUrl)}
-                        className="group cursor-pointer flex flex-col bg-white text-black border border-white/15 rounded-[2.5rem] overflow-hidden transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 shrink-0 w-[300px] sm:w-[340px] snap-start"
+                        className="group cursor-pointer flex flex-col bg-white text-black border border-white/15 rounded-[2.5rem] overflow-hidden transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 w-full max-w-[340px] mx-auto"
                       >
                         {/* Image carrée ou fallback stylé */}
                         <div className="relative w-full aspect-square bg-neutral-900 overflow-hidden border-b border-black/10 flex items-center justify-center">
@@ -325,14 +310,16 @@ export default function PublicHome() {
                   })}
                 </div>
 
-                {/* Flèche Droite (toujours active pour défiler à l'infini) */}
-                <button 
-                  onClick={() => scrollSlider('right')}
-                  className="hidden md:flex absolute -right-6 lg:-right-12 z-20 w-12 h-12 rounded-full bg-neutral-900 border border-white/20 items-center justify-center text-white hover:bg-white hover:text-black transition-all shadow-xl cursor-pointer"
-                  aria-label="Suivant"
-                >
-                  <ChevronRight className="w-6 h-6" />
-                </button>
+                {/* Flèche Droite */}
+                {events.length > 3 && (
+                  <button 
+                    onClick={nextSlide}
+                    className="hidden md:flex absolute -right-4 lg:-right-10 z-20 w-12 h-12 rounded-full bg-neutral-900 border border-white/20 items-center justify-center text-white hover:bg-white hover:text-black transition-all shadow-xl cursor-pointer"
+                    aria-label="Suivant"
+                  >
+                    <ChevronRight className="w-6 h-6" />
+                  </button>
+                )}
               </>
             )}
           </div>
