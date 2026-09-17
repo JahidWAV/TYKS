@@ -83,21 +83,21 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       {/* Barre de navigation horizontale */}
       <header className="fixed top-0 left-0 right-0 h-20 border-b border-white/10 bg-[#0f0f0f] flex items-center justify-between px-8 z-50 select-none">
         
-        {/* 1. Logo à la taille exacte des pages publiques */}
+        {/* 1. Logo à la bonne taille (identique aux pages publiques) */}
         <div className="flex items-center shrink-0">
           <Link href="/" className="flex items-center group py-2">
             <Image 
               src="/tyks.svg" 
               alt="TYKS" 
-              width={100} 
-              height={32} 
+              width={140} 
+              height={44} 
               priority 
-              className="h-7 w-auto object-contain brightness-0 invert transition-transform group-hover:scale-105" 
+              className="h-9 w-auto object-contain brightness-0 invert transition-transform group-hover:scale-105" 
             />
           </Link>
         </div>
 
-        {/* 2. Catégories du menu centrées, sans icônes, style transparent identique */}
+        {/* 2. Catégories du menu centrées, texte parfaitement aligné verticalement */}
         <nav className="hidden lg:flex items-center justify-center gap-2 font-grotesque absolute left-1/2 -translate-x-1/2">
           {navItems.map((item) => {
             const isActive = pathname === item.href;
@@ -106,7 +106,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               <Link
                 key={item.href}
                 href={item.href}
-                className={`h-11 flex items-center px-6 rounded-full transition-all font-grotesque text-xs tracking-wider border whitespace-nowrap shadow-md ${
+                className={`h-11 flex items-center justify-center px-6 rounded-full transition-all font-grotesque text-xs tracking-wider border whitespace-nowrap shadow-md leading-none ${
                   isActive
                     ? 'bg-white text-black border-white font-bold'
                     : 'bg-transparent text-white/80 border-white/15 hover:bg-white/10 hover:text-white'
