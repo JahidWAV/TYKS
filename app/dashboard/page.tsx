@@ -6,7 +6,7 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { 
   ArrowUpRight, Plus, Calendar, MapPin, Trash2, Edit3, 
-  Euro, Ticket, Search, RefreshCw, ShieldCheck
+  Euro, Ticket, Search, ShieldCheck
 } from 'lucide-react';
 import type { IortiEvent } from '@/types/event';
 import { supabaseBrowser } from '@/lib/supabase-browser';
@@ -41,8 +41,6 @@ export default function OrganizerDashboard() {
   });
   
   const [searchQuery, setSearchQuery] = useState('');
-  const [statusFilter, setStatusFilter] = useState<string>('all');
-  const [refreshing, setRefreshing] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
   useEffect(() => {
@@ -60,10 +58,9 @@ export default function OrganizerDashboard() {
     return () => subscription.unsubscribe();
   }, []);
 
-  const loadDashboard = useCallback(async (userId: string, isRefresh = false) => {
+  const loadDashboard = useCallback(async (userId: string) => {
     try {
-      if (isRefresh) setRefreshing(true);
-      else setLoading(true);
+      setLoading(true);
 
       const { data: eventsData, error } = await supabaseBrowser
         .from('events')
@@ -108,7 +105,6 @@ export default function OrganizerDashboard() {
       console.error('Erreur de chargement du dashboard :', err);
     } finally {
       setLoading(false);
-      setRefreshing(false);
     }
   }, []);
 
@@ -218,10 +214,8 @@ export default function OrganizerDashboard() {
   }
 
   const filteredEvents = events.filter((evt: any) => {
-    const matchesSearch = evt.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                          evt.location?.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesStatus = statusFilter === 'all' || evt.status === statusFilter;
-    return matchesSearch && matchesStatus;
+    return evt.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+           evt.location?.toLowerCase().includes(searchQuery.toLowerCase());
   });
 
   const fillRate = stats.totalCapacity > 0 
@@ -231,36 +225,6 @@ export default function OrganizerDashboard() {
   return (
     <div className="w-full px-6 lg:px-12 pt-4 pb-12 space-y-8 font-grotesque text-white bg-[#0f0f0f] min-h-full uppercase">
       
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 border-b border-white/10">
-        <div className="space-y-2">
-          <div className="flex items-center gap-2">
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-white/20 text-xs font-grotesque bg-white/10 font-bold text-white">
-              <ShieldCheck className="w-3.5 h-3.5 text-white" /> ACCÈS ILLIMITÉ (SANS ABONNEMENT)
-            </span>
-          </div>
-          <h1 className="text-3xl lg:text-5xl font-grotesque font-normal tracking-tight leading-none text-white">APERÇU DES VENTES</h1>
-          <p className="text-xs font-grotesque text-white/60">ANALYSEZ ET OPTIMISEZ VOS VENTES EN TEMPS RÉEL</p>
-        </div>
-
-        <div className="flex items-center gap-3">
-          <button
-            onClick={() => loadDashboard(user.id, true)}
-            disabled={refreshing}
-            className="h-11 px-5 rounded-full border border-white/20 bg-neutral-900 hover:bg-neutral-800 text-white font-grotesque text-xs transition-all flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer font-bold shadow-xs"
-          >
-            <RefreshCw className={`h-3.5 w-3.5 ${refreshing ? 'animate-spin' : ''}`} />
-            <span className="hidden sm:inline">ACTUALISER</span>
-          </button>
-          <Link
-            href="/new"
-            className="h-11 px-6 rounded-full bg-white text-black hover:bg-neutral-200 font-grotesque text-xs transition-all flex items-center justify-center gap-2 cursor-pointer font-bold shadow-lg"
-          >
-            <Plus className="h-4 w-4" />
-            <span>CRÉER UN ÉVÉNEMENT ILLIMITÉ</span>
-          </Link>
-        </div>
-      </div>
-
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 font-grotesque">
         <div className="p-6 rounded-3xl border border-white/15 bg-neutral-900 space-y-3 shadow-xs">
           <div className="flex items-center justify-between">
@@ -308,32 +272,15 @@ export default function OrganizerDashboard() {
       </div>
 
       <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4 pt-4">
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 flex-1">
-          <div className="relative flex-1 max-w-md">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-white/40" />
-            <input
-              type="text"
-              placeholder="RECHERCHER PAR TITRE OU LIEU..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full h-11 rounded-full border border-white/15 bg-neutral-900 pl-11 pr-4 font-grotesque text-xs text-white placeholder:text-white/40 focus:outline-none focus:border-white shadow-xs"
-            />
-          </div>
-          <div className="flex items-center gap-2 overflow-x-auto py-1 font-grotesque">
-            {['all', 'published', 'draft', 'cancelled'].map((status) => (
-              <button
-                key={status}
-                onClick={() => setStatusFilter(status)}
-                className={`h-11 flex items-center justify-center px-5 rounded-full border font-grotesque text-xs transition-all whitespace-nowrap cursor-pointer font-bold shadow-xs leading-none ${
-                  statusFilter === status 
-                    ? 'bg-white text-black border-white' 
-                    : 'bg-neutral-900 border-white/15 text-white/80 hover:bg-neutral-800'
-                }`}
-              >
-                <span>{status === 'all' ? 'TOUS' : STATUS_LABEL[status] || status}</span>
-              </button>
-            ))}
-          </div>
+        <div className="relative flex-1 max-w-md">
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-white/40" />
+          <input
+            type="text"
+            placeholder="RECHERCHER PAR TITRE OU LIEU..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full h-11 rounded-full border border-white/15 bg-neutral-900 pl-11 pr-4 font-grotesque text-xs text-white placeholder:text-white/40 focus:outline-none focus:border-white shadow-xs"
+          />
         </div>
         <span className="font-grotesque text-xs text-white/60 text-right">
           {filteredEvents.length} ÉVÉNEMENT(S)
@@ -346,19 +293,9 @@ export default function OrganizerDashboard() {
             <Calendar className="mx-auto h-8 w-8 text-white" />
             <p className="font-grotesque text-xs text-white/60">
               {events.length === 0 
-                ? "VOUS N'AVEZ PAS ENCORE CRÉÉ D'ÉVÉNEMENT. LANCEZ-VOUS, C'EST ILLIMITÉ !" 
-                : "AUCUN ÉVÉNEMENT NE CORRESPOND À VOS FILTRES."}
+                ? "VOUS N'AVEZ PAS ENCORE CRÉÉ D'ÉVÉNEMENT." 
+                : "AUCUN ÉVÉNEMENT NE CORRESPOND À VOTRE RECHERCHE."}
             </p>
-            {events.length === 0 && (
-              <div className="pt-2">
-                <Link
-                  href="/new"
-                  className="inline-flex items-center justify-center gap-2 h-11 px-6 rounded-full bg-white text-black font-grotesque text-xs font-bold hover:bg-neutral-200 transition-all shadow-md"
-                >
-                  CRÉER MON PREMIER ÉVÉNEMENT
-                </Link>
-              </div>
-            )}
           </div>
         ) : (
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
