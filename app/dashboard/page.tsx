@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { 
   ArrowUpRight, Plus, Calendar, MapPin, Trash2, Edit3, 
@@ -64,7 +65,6 @@ export default function OrganizerDashboard() {
       if (isRefresh) setRefreshing(true);
       else setLoading(true);
 
-      // CORRECTION : On récupère directement tous les événements créés par l'utilisateur connecté
       const { data: eventsData, error } = await supabaseBrowser
         .from('events')
         .select('*')
@@ -150,13 +150,19 @@ export default function OrganizerDashboard() {
       <div className="min-h-screen bg-[#0f0f0f] text-white flex flex-col lg:flex-row w-full overflow-hidden selection:bg-white selection:text-black font-grotesque uppercase">
         
         <div className="w-full lg:w-1/2 flex flex-col justify-between p-8 lg:p-16 z-10 bg-[#0f0f0f] border-b lg:border-b-0 lg:border-r border-white/10">
-          <div className="flex items-center gap-3">
-            <span className="h-9 w-9 rounded-lg bg-white text-black flex items-center justify-center font-grotesque font-bold text-xs">T</span>
-            <span className="font-grotesque text-xs font-bold text-white">TYKS PRO</span>
+          <div className="flex items-center">
+            <Image 
+              src="/tyks.svg" 
+              alt="TYKS" 
+              width={140} 
+              height={44} 
+              priority 
+              className="h-9 w-auto object-contain brightness-0 invert" 
+            />
           </div>
 
           <div className="space-y-6 my-auto py-12">
-            <span className="inline-block font-grotesque text-[11px] bg-white/10 border border-white/20 text-white px-3 py-1.5 rounded-full">
+            <span className="inline-flex items-center justify-center font-grotesque text-[11px] bg-white/10 border border-white/20 text-white px-3 py-1.5 rounded-full font-bold">
               TYKS PRO · ESPACE ORGANISATEUR
             </span>
             <h1 className="text-4xl lg:text-6xl font-grotesque font-normal tracking-tight text-white leading-[1.05]">
@@ -168,7 +174,7 @@ export default function OrganizerDashboard() {
             <div>
               <button
                 onClick={() => setIsAuthModalOpen(true)}
-                className="w-full sm:w-auto px-8 py-4 bg-white text-black font-grotesque text-xs hover:bg-neutral-200 transition-colors flex items-center justify-center gap-3 cursor-pointer font-bold rounded-xl shadow-lg"
+                className="w-full sm:w-auto px-8 h-12 bg-white text-black font-grotesque text-xs hover:bg-neutral-200 transition-colors flex items-center justify-center gap-3 cursor-pointer font-bold rounded-full shadow-lg"
               >
                 <span>ACCÉDER À MON ESPACE PRO</span>
                 <ArrowUpRight className="w-4 h-4" />
@@ -240,14 +246,14 @@ export default function OrganizerDashboard() {
           <button
             onClick={() => loadDashboard(user.id, true)}
             disabled={refreshing}
-            className="h-12 px-5 rounded-xl border border-white/20 bg-neutral-900 hover:bg-neutral-800 text-white font-grotesque text-xs transition-all flex items-center gap-2 disabled:opacity-50 cursor-pointer font-bold shadow-xs"
+            className="h-11 px-5 rounded-full border border-white/20 bg-neutral-900 hover:bg-neutral-800 text-white font-grotesque text-xs transition-all flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer font-bold shadow-xs"
           >
             <RefreshCw className={`h-3.5 w-3.5 ${refreshing ? 'animate-spin' : ''}`} />
             <span className="hidden sm:inline">ACTUALISER</span>
           </button>
           <Link
             href="/new"
-            className="h-12 px-6 rounded-xl bg-white text-black hover:bg-neutral-200 font-grotesque text-xs transition-all flex items-center justify-center gap-2 cursor-pointer font-bold shadow-lg"
+            className="h-11 px-6 rounded-full bg-white text-black hover:bg-neutral-200 font-grotesque text-xs transition-all flex items-center justify-center gap-2 cursor-pointer font-bold shadow-lg"
           >
             <Plus className="h-4 w-4" />
             <span>CRÉER UN ÉVÉNEMENT ILLIMITÉ</span>
@@ -256,7 +262,7 @@ export default function OrganizerDashboard() {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 font-grotesque">
-        <div className="p-6 rounded-2xl border border-white/10 bg-neutral-900 space-y-3 shadow-xs">
+        <div className="p-6 rounded-3xl border border-white/15 bg-neutral-900 space-y-3 shadow-xs">
           <div className="flex items-center justify-between">
             <p className="text-xs text-white/60 font-bold">CHIFFRE D&apos;AFFAIRES</p>
             <Euro className="w-4 h-4 text-white" />
@@ -267,7 +273,7 @@ export default function OrganizerDashboard() {
           <p className="text-[11px] text-white/50">VOLUME BRUT ENCAISSÉ</p>
         </div>
 
-        <div className="p-6 rounded-2xl border border-white/10 bg-neutral-900 space-y-3 shadow-xs">
+        <div className="p-6 rounded-3xl border border-white/15 bg-neutral-900 space-y-3 shadow-xs">
           <div className="flex items-center justify-between">
             <p className="text-xs text-white/60 font-bold">BILLETS VENDUS</p>
             <Ticket className="w-4 h-4 text-white" />
@@ -278,7 +284,7 @@ export default function OrganizerDashboard() {
           <p className="text-[11px] text-white/50">TAUX DE REMPLISSAGE : {fillRate}%</p>
         </div>
 
-        <div className="p-6 rounded-2xl border border-white/10 bg-neutral-900 space-y-3 shadow-xs">
+        <div className="p-6 rounded-3xl border border-white/15 bg-neutral-900 space-y-3 shadow-xs">
           <div className="flex items-center justify-between">
             <p className="text-xs text-white/60 font-bold">ÉVÉNEMENTS PUBLIÉS</p>
             <Calendar className="w-4 h-4 text-white" />
@@ -289,7 +295,7 @@ export default function OrganizerDashboard() {
           <p className="text-[11px] text-white/50">CRÉATION ILLIMITÉE</p>
         </div>
 
-        <div className="p-6 rounded-2xl border border-white/10 bg-neutral-900 space-y-3 shadow-xs">
+        <div className="p-6 rounded-3xl border border-white/15 bg-neutral-900 space-y-3 shadow-xs">
           <div className="flex items-center justify-between">
             <p className="text-xs text-white/60 font-bold">MODÈLE TARIFAIRE</p>
             <span className="h-3 w-3 rounded-full bg-white animate-pulse" />
@@ -310,7 +316,7 @@ export default function OrganizerDashboard() {
               placeholder="RECHERCHER PAR TITRE OU LIEU..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full h-12 rounded-xl border border-white/20 bg-neutral-900 pl-11 pr-4 font-grotesque text-xs text-white placeholder:text-white/40 focus:outline-none focus:border-white shadow-xs"
+              className="w-full h-11 rounded-full border border-white/15 bg-neutral-900 pl-11 pr-4 font-grotesque text-xs text-white placeholder:text-white/40 focus:outline-none focus:border-white shadow-xs"
             />
           </div>
           <div className="flex items-center gap-2 overflow-x-auto py-1 font-grotesque">
@@ -318,13 +324,13 @@ export default function OrganizerDashboard() {
               <button
                 key={status}
                 onClick={() => setStatusFilter(status)}
-                className={`h-12 px-4 rounded-xl border font-grotesque text-xs transition-all whitespace-nowrap cursor-pointer font-bold shadow-xs ${
+                className={`h-11 flex items-center justify-center px-5 rounded-full border font-grotesque text-xs transition-all whitespace-nowrap cursor-pointer font-bold shadow-xs leading-none ${
                   statusFilter === status 
                     ? 'bg-white text-black border-white' 
-                    : 'bg-neutral-900 border-white/20 text-white/80 hover:bg-neutral-800'
+                    : 'bg-neutral-900 border-white/15 text-white/80 hover:bg-neutral-800'
                 }`}
               >
-                {status === 'all' ? 'TOUS' : STATUS_LABEL[status] || status}
+                <span>{status === 'all' ? 'TOUS' : STATUS_LABEL[status] || status}</span>
               </button>
             ))}
           </div>
@@ -336,7 +342,7 @@ export default function OrganizerDashboard() {
 
       <div className="space-y-6">
         {filteredEvents.length === 0 ? (
-          <div className="rounded-2xl border border-white/10 bg-neutral-900 p-16 text-center space-y-4 shadow-xs font-grotesque">
+          <div className="rounded-3xl border border-white/15 bg-neutral-900 p-16 text-center space-y-4 shadow-xs font-grotesque">
             <Calendar className="mx-auto h-8 w-8 text-white" />
             <p className="font-grotesque text-xs text-white/60">
               {events.length === 0 
@@ -347,7 +353,7 @@ export default function OrganizerDashboard() {
               <div className="pt-2">
                 <Link
                   href="/new"
-                  className="inline-flex items-center gap-2 h-12 px-6 rounded-xl bg-white text-black font-grotesque text-xs font-bold hover:bg-neutral-200 transition-all shadow-md"
+                  className="inline-flex items-center justify-center gap-2 h-11 px-6 rounded-full bg-white text-black font-grotesque text-xs font-bold hover:bg-neutral-200 transition-all shadow-md"
                 >
                   CRÉER MON PREMIER ÉVÉNEMENT
                 </Link>
@@ -361,7 +367,7 @@ export default function OrganizerDashboard() {
               return (
                 <article
                   key={evt.id}
-                  className="group flex flex-col rounded-2xl border border-white/15 bg-neutral-900 shadow-xs transition-all hover:border-white hover:shadow-md overflow-hidden font-grotesque"
+                  className="group flex flex-col rounded-3xl border border-white/15 bg-neutral-900 shadow-xs transition-all hover:border-white hover:shadow-md overflow-hidden font-grotesque"
                 >
                   <div className="space-y-3 p-6 flex-1">
                     <div className="flex items-center justify-between font-grotesque">
@@ -410,14 +416,14 @@ export default function OrganizerDashboard() {
                     <div className="flex items-center gap-2">
                       <Link
                         href={`/dashboard/admin-events/${evt.slug || evt.id}/edit`}
-                        className="w-10 h-10 rounded-xl border border-white/20 bg-neutral-900 text-white flex items-center justify-center hover:bg-white hover:text-black transition-colors cursor-pointer shadow-xs"
+                        className="w-10 h-10 rounded-full border border-white/20 bg-neutral-900 text-white flex items-center justify-center hover:bg-white hover:text-black transition-colors cursor-pointer shadow-xs"
                         title="MODIFIER"
                       >
                         <Edit3 className="h-4 w-4" />
                       </Link>
                       <button
                         onClick={() => handleDeleteEvent(evt.id)}
-                        className="w-10 h-10 rounded-xl border border-white/20 bg-neutral-900 text-white flex items-center justify-center hover:bg-white hover:text-black transition-colors cursor-pointer shadow-xs"
+                        className="w-10 h-10 rounded-full border border-white/20 bg-neutral-900 text-white flex items-center justify-center hover:bg-white hover:text-black transition-colors cursor-pointer shadow-xs"
                         title="SUPPRIMER"
                       >
                         <Trash2 className="h-4 w-4" />
