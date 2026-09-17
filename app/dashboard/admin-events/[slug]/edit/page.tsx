@@ -151,12 +151,20 @@ export default function EditEventPage() {
       });
 
       const data = await response.json();
+      console.log('Réponse de l\'API upload :', data); // Pour voir ce que renvoie ton API dans la console du navigateur
 
       if (!response.ok) {
         throw new Error(data.error || "Erreur lors de l'upload");
       }
 
-      setForm((prev) => ({ ...prev, image_url: data.url }));
+      // Sécurité : on gère toutes les variantes possibles de noms de propriétés renvoyées par l'API
+      const uploadedUrl = data.url || data.imageUrl || data.fileUrl || (typeof data === 'string' ? data : '');
+
+      if (!uploadedUrl) {
+        throw new Error("L'API n'a pas renvoyé d'URL valide.");
+      }
+
+      setForm((prev) => ({ ...prev, image_url: uploadedUrl }));
       setShowCropperModal(false);
       setImageSrc(null);
     } catch (err: any) {
