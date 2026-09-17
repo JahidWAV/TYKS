@@ -63,7 +63,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     { label: "VUE D'ENSEMBLE", href: '/', icon: LayoutDashboard },
     { label: 'ÉVÉNEMENTS', href: '/events', icon: Calendar },
     { label: 'STATISTIQUES', href: '/stats', icon: BarChart3 },
-    { label: 'FINANCES & PAIEMENTS', href: '/banking', icon: Wallet },
+    { label: 'FINANCES', href: '/banking', icon: Wallet }, // Raccourci pour garantir une seule ligne propre
   ];
 
   if (user === undefined) {
@@ -81,25 +81,25 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   return (
     <div className="min-h-screen bg-[#0f0f0f] text-white font-sans selection:bg-white selection:text-black flex flex-col uppercase overflow-x-hidden">
 
-      {/* Barre de navigation horizontale classique en grille 3 colonnes pour un centrage parfait */}
-      <header className="fixed top-0 left-0 right-0 h-20 border-b border-white/10 bg-[#0f0f0f] grid grid-cols-3 items-center px-8 z-50 select-none">
+      {/* Barre de navigation horizontale élégante */}
+      <header className="fixed top-0 left-0 right-0 h-20 border-b border-white/10 bg-[#0f0f0f] flex items-center justify-between px-8 z-50 select-none">
         
-        {/* Colonne 1 : Logo grand format */}
-        <div className="flex items-center justify-start">
+        {/* 1. Logo grand format aligné à gauche */}
+        <div className="flex items-center shrink-0">
           <Link href="/" className="flex items-center group py-2">
             <Image 
               src="/tyks.svg" 
               alt="TYKS" 
-              width={150} 
-              height={50} 
+              width={160} 
+              height={55} 
               priority 
-              className="h-9 w-auto object-contain brightness-0 invert transition-transform group-hover:scale-105" 
+              className="h-8 w-auto object-contain brightness-0 invert transition-transform group-hover:scale-105" 
             />
           </Link>
         </div>
 
-        {/* Colonne 2 : Catégories du menu parfaitement centrées */}
-        <nav className="hidden lg:flex items-center justify-center gap-2 font-grotesque">
+        {/* 2. Catégories du menu parfaitement centrées (flex-1 avec absolute center ou conteneur centré) */}
+        <nav className="hidden lg:flex items-center justify-center gap-2.5 font-grotesque absolute left-1/2 -translate-x-1/2">
           {navItems.map((item) => {
             const Icon = item.icon;
             const isActive = pathname === item.href;
@@ -108,7 +108,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               <Link
                 key={item.href}
                 href={item.href}
-                className={`flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all font-grotesque text-xs tracking-wide border ${
+                className={`flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all font-grotesque text-xs tracking-wider border whitespace-nowrap ${
                   isActive
                     ? 'bg-white text-black border-white font-bold shadow-md'
                     : 'bg-neutral-900 text-white/80 border-white/10 hover:bg-white/10 hover:text-white'
@@ -121,8 +121,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           })}
         </nav>
 
-        {/* Colonne 3 : Bouton utilisateur & profil aligné à droite */}
-        <div className="flex items-center justify-end">
+        {/* 3. Bouton utilisateur & profil aligné à droite */}
+        <div className="flex items-center shrink-0">
           <div className="relative" ref={profileMenuRef}>
             <button 
               onClick={() => setProfileOpen(!profileOpen)}
@@ -187,7 +187,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
       </header>
 
-      {/* Menu mobile (si l'écran est trop petit) */}
+      {/* Menu mobile (écrans petits) */}
       <div className="flex lg:hidden items-center justify-around bg-neutral-950 border-b border-white/10 px-4 py-3 fixed top-20 left-0 right-0 z-40">
         {navItems.map((item) => {
           const Icon = item.icon;
