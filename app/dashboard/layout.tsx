@@ -84,7 +84,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   const navItems = [
     { label: "VUE D'ENSEMBLE", href: '/', icon: LayoutDashboard },
-    { label: 'ÉVÉNEMENTS', href: '/admin-events', icon: Calendar },
+    { label: 'ÉVÉNEMENTS', href: '/events', icon: Calendar },
     { label: 'STATISTIQUES', href: '/stats', icon: BarChart3 },
     { label: 'FINANCES & PAIEMENTS', href: '/banking', icon: Wallet },
   ];
