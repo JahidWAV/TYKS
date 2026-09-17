@@ -84,21 +84,21 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       {/* Barre de navigation horizontale */}
       <header className="fixed top-0 left-0 right-0 h-20 border-b border-white/10 bg-[#0f0f0f] flex items-center justify-between px-8 z-50 select-none">
         
-        {/* 1. Logo aligné à gauche */}
+        {/* 1. Logo plus grand aligné à gauche */}
         <div className="flex items-center shrink-0">
           <Link href="/" className="flex items-center group py-2">
             <Image 
               src="/tyks.svg" 
               alt="TYKS" 
-              width={180} 
-              height={60} 
+              width={200} 
+              height={70} 
               priority 
-              className="h-9 w-auto object-contain brightness-0 invert transition-transform group-hover:scale-105" 
+              className="h-10 w-auto object-contain brightness-0 invert transition-transform group-hover:scale-105" 
             />
           </Link>
         </div>
 
-        {/* 2. Catégories du menu centrées avec arrondi identique (rounded-full) */}
+        {/* 2. Catégories du menu centrées (même hauteur h-11 et même style transparent que le bouton profil) */}
         <nav className="hidden lg:flex items-center justify-center gap-2 font-grotesque absolute left-1/2 -translate-x-1/2">
           {navItems.map((item) => {
             const Icon = item.icon;
@@ -108,10 +108,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               <Link
                 key={item.href}
                 href={item.href}
-                className={`flex items-center gap-2 px-5 py-2.5 rounded-full transition-all font-grotesque text-xs tracking-wider border whitespace-nowrap ${
+                className={`h-11 flex items-center gap-2 px-6 rounded-full transition-all font-grotesque text-xs tracking-wider border whitespace-nowrap shadow-md ${
                   isActive
-                    ? 'bg-white text-black border-white font-bold shadow-md'
-                    : 'bg-neutral-900 text-white/80 border-white/15 hover:bg-white/10 hover:text-white'
+                    ? 'bg-white text-black border-white font-bold'
+                    : 'bg-transparent text-white/80 border-white/15 hover:bg-white/10 hover:text-white'
                 }`}
               >
                 <Icon className={`w-4 h-4 shrink-0 ${isActive ? 'text-black' : 'text-white'}`} />
@@ -197,7 +197,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               key={item.href}
               href={item.href}
               className={`p-2.5 rounded-full border transition-all ${
-                isActive ? 'bg-white text-black border-white' : 'bg-neutral-900 text-white/80 border-white/15'
+                isActive ? 'bg-white text-black border-white' : 'bg-transparent text-white/80 border-white/15'
               }`}
               title={item.label}
             >
