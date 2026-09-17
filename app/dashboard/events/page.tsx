@@ -1,244 +1,320 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { Calendar, MapPin, ArrowUpRight, Ticket, Edit3, Trash2, Loader2, Image as ImageIcon, AlertTriangle, X } from 'lucide-react';
+import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
+import { useRouter } from 'next/navigation';
+import { 
+  ArrowUpRight, Calendar, Search, Edit3, Trash2
+} from 'lucide-react';
+import type { IortiEvent } from '@/types/event';
 import { supabaseBrowser } from '@/lib/supabase-browser';
+import CustomAuthModal from '@/components/CustomAuthModal';
 
-export default function AdminEventsPage() {
-  const [events, setEvents] = useState<any[]>([]);
+const STATUS_LABEL: Record<string, string> = {
+  draft: 'BROUILLON',
+  published: 'PUBLIÉ',
+  cancelled: 'ANNULÉ',
+};
+
+export default function OrganizerDashboard() {
+  const router = useRouter();
+  const [user, setUser] = useState<any>(null);
+  const [ready, setReady] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [events, setEvents] = useState<IortiEvent[]>([]);
   
-  const [eventToDelete, setEventToDelete] = useState<any | null>(null);
-  const [isDeleting, setIsDeleting] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
-  async function loadEvents() {
+  useEffect(() => {
+    async function getSession() {
+      const { data: { session } } = await supabaseBrowser.auth.getSession();
+      setUser(session?.user ?? null);
+      setReady(true);
+    }
+    getSession();
+
+    const { data: { subscription } } = supabaseBrowser.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const loadDashboard = useCallback(async (userId: string) => {
     try {
       setLoading(true);
-      const { data, error } = await supabaseBrowser
+
+      const { data: eventsData, error } = await supabaseBrowser
         .from('events')
-        .select('*, organizations(name)')
+        .select('*')
+        .eq('created_by', userId)
         .order('starts_at', { ascending: true });
 
-      if (error) throw error;
-      if (data) setEvents(data);
+      if (error) {
+        console.error('Erreur Supabase :', error.message);
+        return;
+      }
+
+      if (eventsData) {
+        setEvents(eventsData);
+      }
     } catch (err) {
-      console.error('ERREUR LORS DU CHARGEMENT DES ÉVÉNEMENTS :', err);
+      console.error('Erreur de chargement du dashboard :', err);
     } finally {
       setLoading(false);
     }
-  }
-
-  useEffect(() => {
-    loadEvents();
   }, []);
 
-  const confirmDeleteEvent = async () => {
-    if (!eventToDelete) return;
+  useEffect(() => {
+    if (ready && user?.id) {
+      loadDashboard(user.id);
+    } else if (ready && !user) {
+      setLoading(false);
+    }
+  }, [ready, user, loadDashboard]);
+
+  const handleDeleteEvent = async (eventId: string) => {
+    if (!confirm('ATTENTION : CETTE ACTION EST IRRÉVERSIBLE. VOULEZ-VOUS VRAIMENT SUPPRIMER CET ÉVÉNEMENT ?')) return;
 
     try {
-      setIsDeleting(true);
       const { error } = await supabaseBrowser
         .from('events')
         .delete()
-        .eq('id', eventToDelete.id);
+        .eq('id', eventId);
 
       if (error) throw error;
-      setEvents((prev) => prev.filter((e) => e.id !== eventToDelete.id));
-      setEventToDelete(null);
+      setEvents((prev) => prev.filter((e) => e.id !== eventId));
     } catch (err) {
-      console.error('ERREUR LORS DE LA SUPPRESSION :', err);
-      alert("IMPOSSIBLE DE SUPPRIMER CET ÉVÉNEMENT.");
-    } finally {
-      setIsDeleting(false);
+      console.error('Erreur lors de la suppression :', err);
+      alert("IMPOSSIBLE DE SUPPRIMER L'ÉVÉNEMENT EN RAISON D'UNE CONTRAINTE TECHNIQUE.");
     }
   };
 
-  if (loading) {
+  if (!ready) {
     return (
-      <div className="w-full px-6 lg:px-12 py-8 bg-[#0f0f0f] min-h-full flex items-center justify-center font-grotesque text-xs text-white/60 uppercase">
-        <Loader2 className="w-5 h-5 animate-spin mr-2" /> CHARGEMENT...
+      <div className="min-h-screen bg-[#0f0f0f] text-white/60 font-grotesque text-xs flex items-center justify-center uppercase">
+        CHARGEMENT...
       </div>
     );
   }
 
-  return (
-    <div className="w-full px-6 lg:px-12 py-8 space-y-8 font-grotesque text-white bg-[#0f0f0f] min-h-full uppercase relative">
-      <div className="w-full space-y-8">
-        
-        {/* Compteur discret en haut à droite */}
-        <div className="flex justify-end">
-          <span className="text-xs font-bold px-3.5 py-1.5 rounded-full bg-neutral-900 border border-white/15 text-white shadow-xs">
-            {events.length} ÉVÉNEMENT(S)
-          </span>
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-[#0f0f0f] text-white flex flex-col lg:flex-row w-full overflow-hidden selection:bg-white selection:text-black font-grotesque uppercase">
+        <div className="w-full lg:w-1/2 flex flex-col justify-between p-8 lg:p-16 z-10 bg-[#0f0f0f] border-b lg:border-b-0 lg:border-r border-white/10">
+          <div className="flex items-center">
+            <Image 
+              src="/tyks.svg" 
+              alt="TYKS" 
+              width={140} 
+              height={44} 
+              priority 
+              className="h-9 w-auto object-contain brightness-0 invert" 
+            />
+          </div>
+
+          <div className="space-y-6 my-auto py-12">
+            <span className="inline-flex items-center justify-center font-grotesque text-[11px] bg-white/10 border border-white/20 text-white px-3 py-1.5 rounded-full font-bold">
+              TYKS PRO · ESPACE ORGANISATEUR
+            </span>
+            <h1 className="text-4xl lg:text-6xl font-grotesque font-normal tracking-tight text-white leading-[1.05]">
+              REPRENEZ LE CONTRÔLE DE VOTRE BILLETTERIE ET DE VOS MARGES.
+            </h1>
+            <p className="font-grotesque text-xs leading-relaxed text-white/70 max-w-md">
+              FINS DE COMMISSIONS ABUSIVES ET DE DONNÉES CAPTIVES. TYKS PRO VOUS OFFRE UNE PLATEFORME SUR-MESURE, DES FRAIS RÉDUITS ET L&apos;ACCÈS DIRECT À VOTRE COMMUNAUTÉ.
+            </p>
+            <div>
+              <button
+                onClick={() => setIsAuthModalOpen(true)}
+                className="w-full sm:w-auto px-8 h-12 bg-white text-black font-grotesque text-xs hover:bg-neutral-200 transition-colors flex items-center justify-center gap-3 cursor-pointer font-bold rounded-full shadow-lg"
+              >
+                <span>ACCÉDER À MON ESPACE PRO</span>
+                <ArrowUpRight className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+
+          <div className="font-grotesque text-xs text-white/40">
+            © TYKS INC.
+          </div>
         </div>
 
-        {/* Grille pleine largeur */}
-        {events.length === 0 ? (
-          <div className="rounded-2xl border border-white/10 bg-neutral-900 p-16 text-center text-xs text-white/60 shadow-xs">
-            AUCUN ÉVÉNEMENT TROUVÉ DANS LA BASE DE DONNÉES.
+        <div className="hidden lg:flex w-1/2 bg-neutral-900 p-12 relative overflow-hidden items-center justify-center select-none pointer-events-none">
+          <div className="w-full max-w-lg bg-[#0f0f0f] border border-white/15 rounded-3xl p-6 space-y-6 shadow-xl font-grotesque">
+            <div className="flex items-center justify-between border-b border-white/10 pb-4">
+              <div className="flex items-center gap-2">
+                <span className="h-3 w-3 rounded-full bg-white/20"></span>
+                <span className="h-3 w-3 rounded-full bg-white/20"></span>
+                <span className="h-3 w-3 rounded-full bg-white/20"></span>
+              </div>
+              <span className="text-xs font-grotesque text-white/50 lowercase">dashboard.tyks.app</span>
+            </div>
+          </div>
+        </div>
+
+        <CustomAuthModal 
+          isOpen={isAuthModalOpen} 
+          onClose={() => setIsAuthModalOpen(false)} 
+        />
+      </div>
+    );
+  }
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#0f0f0f] text-white/60 font-grotesque text-xs flex items-center justify-center uppercase">
+        CHARGEMENT...
+      </div>
+    );
+  }
+
+  const filteredEvents = events.filter((evt: any) => {
+    return evt.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+           evt.location?.toLowerCase().includes(searchQuery.toLowerCase());
+  });
+
+  return (
+    <div className="w-full px-6 lg:px-12 pt-4 pb-12 space-y-8 font-grotesque text-white bg-[#0f0f0f] min-h-full uppercase">
+      
+      {/* Search & Counter */}
+      <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4 pt-2">
+        <div className="relative flex-1 max-w-md">
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-white/40" />
+          <input
+            type="text"
+            placeholder="RECHERCHER PAR TITRE OU LIEU..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full h-11 rounded-full border border-white/15 bg-neutral-900 pl-11 pr-4 font-grotesque text-xs text-white placeholder:text-white/40 focus:outline-none focus:border-white shadow-xs"
+          />
+        </div>
+        <span className="font-grotesque text-xs text-white/60 text-right">
+          {filteredEvents.length} ÉVÉNEMENT(S)
+        </span>
+      </div>
+
+      {/* Event Cards Grid */}
+      <div className="space-y-6">
+        {filteredEvents.length === 0 ? (
+          <div className="rounded-3xl border border-white/15 bg-neutral-900 p-16 text-center space-y-4 shadow-xs font-grotesque">
+            <Calendar className="mx-auto h-8 w-8 text-white" />
+            <p className="font-grotesque text-xs text-white/60">
+              {events.length === 0 
+                ? "VOUS N'AVEZ PAS ENCORE CRÉÉ D'ÉVÉNEMENT." 
+                : "AUCUN ÉVÉNEMENT NE CORRESPOND À VOTRE RECHERCHE."}
+            </p>
           </div>
         ) : (
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {events.map((event: any) => {
-              const startDate = event.starts_at ? new Date(event.starts_at) : null;
-              const formattedDate = startDate
-                ? startDate.toLocaleDateString('fr-FR', {
-                    day: '2-digit',
-                    month: 'short',
-                    year: 'numeric',
-                  }).toUpperCase()
-                : 'DATE NON DÉFINIE';
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {filteredEvents.map((evt: any) => {
+              const eventPrice = Number(evt.price || evt.ticket_price || 0);
+              
+              // Résolution robuste de l'URL de l'affiche
+              const rawImage = evt.image_url || evt.cover_image || evt.flyer_url || evt.poster_url;
+              let imageUrl = '';
+              
+              if (rawImage) {
+                if (rawImage.startsWith('http://') || rawImage.startsWith('https://')) {
+                  imageUrl = rawImage;
+                } else if (rawImage.startsWith('/')) {
+                  imageUrl = rawImage;
+                } else {
+                  const cleanPath = rawImage.startsWith('events/') ? rawImage.replace('events/', '') : rawImage;
+                  const { data } = supabaseBrowser.storage.from('events').getPublicUrl(cleanPath);
+                  imageUrl = data.publicUrl;
+                }
+              }
 
-              const priceFormatted = Number(event.price) === 0 ? 'GRATUIT' : `${event.price} €`;
-              const publicUrl = `https://tyks.app/events/${event.slug || event.id}`;
+              const formattedDate = evt.starts_at ? new Date(evt.starts_at).toLocaleDateString('fr-FR', {
+                weekday: 'short',
+                day: 'numeric',
+                month: 'short',
+              }).toUpperCase() : '';
 
               return (
-                <div
-                  key={event.id}
-                  className="rounded-2xl border border-white/10 bg-neutral-900 overflow-hidden shadow-xs flex flex-col justify-between hover:border-white transition group"
+                <article
+                  key={evt.id}
+                  className="group relative flex flex-col rounded-3xl border border-white/15 bg-neutral-950 overflow-hidden shadow-xl transition-all hover:border-white font-grotesque"
                 >
-                  <div>
-                    {/* Affiche de l'événement */}
-                    <div className="w-full h-44 bg-neutral-950 border-b border-white/10 relative overflow-hidden">
-                      {event.image_url ? (
-                        <img 
-                          src={event.image_url} 
-                          alt={event.title} 
-                          className="w-full h-full object-cover group-hover:scale-105 transition duration-300" 
-                        />
-                      ) : (
-                        <div className="w-full h-full flex flex-col items-center justify-center text-white/30 gap-1">
-                          <ImageIcon className="w-6 h-6" />
-                          <span className="text-[10px]">AUCUN VISUEL</span>
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Contenu textuel */}
-                    <div className="p-6 space-y-3">
-                      <div className="flex items-center justify-between text-[11px] text-white/50 font-bold">
-                        <span>{formattedDate}</span>
-                        <span className="px-2.5 py-0.5 rounded-full bg-neutral-950 border border-white/15 text-white text-[10px]">
-                          {event.status?.toUpperCase() || 'ACTIF'}
-                        </span>
+                  {/* PARTIE SUPÉRIEURE : L'affiche carrée avec son dégradé de fondu appliqué uniquement dans sa partie basse */}
+                  <div className="relative w-full aspect-square bg-neutral-900 overflow-hidden">
+                    {imageUrl ? (
+                      <Image 
+                        src={imageUrl} 
+                        alt={evt.title || 'Event Flyer'} 
+                        fill 
+                        sizes="(max-width: 768px) 100vw, 33vw"
+                        className="object-cover object-center brightness-90 group-hover:scale-105 transition-transform duration-500"
+                        unoptimized
+                      />
+                    ) : (
+                      <div className="absolute inset-0 bg-neutral-900 flex items-center justify-center">
+                        <span className="text-white/30 text-xs font-bold">AUCUNE AFFICHE</span>
                       </div>
+                    )}
 
-                      <h3 className="text-xl font-normal text-white leading-snug line-clamp-1">
-                        {event.title}
+                    {/* Dégradé doux uniquement sur le bas de l'image (fondu vers le noir du fond de carte) */}
+                    <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-neutral-950 via-neutral-950/40 to-transparent pointer-events-none z-10" />
+
+                    {/* Badge de statut en haut à gauche */}
+                    <div className="absolute top-4 left-4 z-20">
+                      <span className={`inline-flex items-center px-2.5 py-1 rounded-full border text-[10px] font-bold backdrop-blur-md ${
+                        evt.status === 'published' 
+                          ? 'bg-black/60 text-white border-white/30' 
+                          : evt.status === 'cancelled'
+                          ? 'bg-neutral-900/80 text-white/60 border-white/20 line-through'
+                          : 'bg-black/60 text-white/70 border-white/20'
+                      }`}>
+                        {STATUS_LABEL[evt.status] ?? evt.status}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* PARTIE INFÉRIEURE : Le bloc d'informations distinct sous l'affiche */}
+                  <div className="p-5 space-y-4 bg-neutral-950 flex-1 flex flex-col justify-between border-t border-white/10">
+                    <div className="space-y-1">
+                      <p className="text-[10px] text-white/50 tracking-wider">FEATURED</p>
+                      <h3 className="text-xl font-normal text-white tracking-wide">
+                        {evt.title}
                       </h3>
-
-                      <p className="text-xs text-white/60 font-bold truncate">
-                        {event.organizations?.name || 'ORGANISATEUR INDÉPENDANT'}
+                      <p className="text-xs text-white/70">
+                        {formattedDate}{evt.location ? `, ${evt.location}` : ''}
                       </p>
+                    </div>
 
-                      {event.location && (
-                        <div className="flex items-center gap-2 text-xs text-white/70 pt-1">
-                          <MapPin className="w-3.5 h-3.5 text-white shrink-0" />
-                          <span className="truncate">{event.location}</span>
-                        </div>
-                      )}
+                    <div className="flex items-center justify-between pt-2">
+                      <span className="text-sm font-bold text-white tracking-wider">
+                        {eventPrice > 0 ? `€${eventPrice.toLocaleString('fr-FR')}` : 'GRATUIT'}
+                      </span>
+
+                      {/* Boutons modifier et supprimer */}
+                      <div className="flex items-center gap-2">
+                        <Link
+                          href={`/dashboard/admin-events/${evt.slug || evt.id}/edit`}
+                          className="w-9 h-9 rounded-full border border-white/20 bg-neutral-900 text-white flex items-center justify-center hover:bg-white hover:text-black transition-colors cursor-pointer shadow-xs"
+                          title="MODIFIER"
+                        >
+                          <Edit3 className="h-3.5 w-3.5" />
+                        </Link>
+                        <button
+                          key={`delete-${evt.id}`}
+                          onClick={() => handleDeleteEvent(evt.id)}
+                          className="w-9 h-9 rounded-full border border-white/20 bg-neutral-900 text-white flex items-center justify-center hover:bg-white hover:text-black transition-colors cursor-pointer shadow-xs"
+                          title="SUPPRIMER"
+                        >
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </button>
+                      </div>
                     </div>
                   </div>
-
-                  {/* Boutons d'actions et prix */}
-                  <div className="p-6 pt-0 space-y-4">
-                    <div className="flex items-center justify-between pt-4 border-t border-white/10">
-                      <span className="text-xs font-bold text-white">
-                        {priceFormatted}
-                      </span>
-                      <span className="text-[11px] text-white/50">
-                        {event.capacity ? `${event.capacity} PLACES` : 'JAUGE LIBRE'}
-                      </span>
-                    </div>
-
-                    <div className="flex items-center gap-2">
-                      <a
-                        href={publicUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl bg-white text-black text-xs font-bold hover:bg-neutral-200 transition shadow-xs text-center"
-                      >
-                        <span>VOIR</span>
-                        <ArrowUpRight className="w-3.5 h-3.5" />
-                      </a>
-
-                      <Link
-                        href={`/events/${event.slug || event.id}/edit`}
-                        className="w-10 h-10 rounded-xl border border-white/20 bg-neutral-950 text-white flex items-center justify-center hover:bg-white hover:text-black transition-colors cursor-pointer shadow-xs"
-                        title="MODIFIER"
-                      >
-                        <Edit3 className="w-4 h-4" />
-                      </Link>
-
-                      <button
-                        onClick={() => setEventToDelete(event)}
-                        className="w-10 h-10 rounded-xl border border-white/20 bg-neutral-950 text-white flex items-center justify-center hover:bg-white hover:text-black transition-colors cursor-pointer shadow-xs"
-                        title="SUPPRIMER"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </div>
-                </div>
+                </article>
               );
             })}
           </div>
         )}
-
       </div>
-
-      {/* MODALE DE CONFIRMATION DE SUPPRESSION SUR MESURE (Vraie DA : fond noir) */}
-      {eventToDelete && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-xs px-4">
-          <div className="w-full max-w-md rounded-2xl border border-white/20 bg-black p-6 md:p-8 space-y-6 shadow-2xl font-grotesque">
-            
-            <div className="flex items-center justify-between border-b border-white/10 pb-4">
-              <div className="flex items-center gap-2 text-white">
-                <AlertTriangle className="w-5 h-5 text-white" />
-                <h3 className="text-sm font-bold tracking-wider">CONFIRMER LA SUPPRESSION</h3>
-              </div>
-              <button 
-                onClick={() => setEventToDelete(null)}
-                className="text-white/50 hover:text-white transition-colors cursor-pointer"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            <div className="space-y-2">
-              <p className="text-xs text-white/70">
-                ÊTES-VOUS SÛR DE VOULOIR SUPPRIMER DÉFINITIVEMENT CET ÉVÉNEMENT ?
-              </p>
-              <p className="text-sm font-bold text-white bg-neutral-950 p-3 rounded-xl border border-white/10 truncate">
-                {eventToDelete.title}
-              </p>
-            </div>
-
-            <div className="flex items-center justify-end gap-3 pt-2 border-t border-white/10">
-              <button
-                type="button"
-                onClick={() => setEventToDelete(null)}
-                disabled={isDeleting}
-                className="px-5 py-3 rounded-xl border border-white/20 bg-neutral-950 text-white text-xs font-bold hover:bg-neutral-900 transition cursor-pointer shadow-xs"
-              >
-                ANNULER
-              </button>
-
-              <button
-                type="button"
-                onClick={confirmDeleteEvent}
-                disabled={isDeleting}
-                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-white text-black text-xs font-bold hover:bg-neutral-200 transition cursor-pointer shadow-lg disabled:opacity-50"
-              >
-                {isDeleting && <Loader2 className="w-4 h-4 animate-spin" />}
-                <span>{isDeleting ? 'SUPPRESSION...' : 'SUPPRIMER'}</span>
-              </button>
-            </div>
-
-          </div>
-        </div>
-      )}
 
     </div>
   );
