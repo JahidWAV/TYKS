@@ -239,10 +239,11 @@ export default function PublicHome() {
                   </button>
                 )}
 
-                {/* Conteneur du Slider Horizontal */}
+                {/* Conteneur du Slider Horizontal CORRIGÉ pour alignement et visibilité parfaite */}
                 <div 
                   ref={sliderRef}
-                  className="w-full flex gap-6 overflow-x-auto scrollbar-none snap-x snap-mandatory py-4 px-2 justify-start xl:justify-center items-center"
+                  onScroll={checkScroll}
+                  className="w-full flex gap-6 overflow-x-auto scrollbar-none snap-x snap-mandatory py-4 px-2 items-center justify-start"
                   style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
                 >
                   {events.map((evt) => {
