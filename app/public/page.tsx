@@ -82,28 +82,38 @@ export default function PublicHome() {
     fetchPublishedEvents();
   }, []);
 
-  // Positionner le scroll au milieu de la liste triplée au premier chargement pour l'effet infini
+  // On multiplie les éléments par 5 pour avoir une grande marge de défilement infini de chaque côté
+  const extendedEvents = events.length > 0 ? [...events, ...events, ...events, ...events, ...events] : [];
+
+  // Positionner le scroll au milieu exact au premier chargement
   useEffect(() => {
     if (events.length > 0 && sliderRef.current) {
       const slider = sliderRef.current;
-      slider.scrollLeft = slider.scrollWidth / 3;
+      const cardWidth = 364; // Largeur d'une carte (340px) + gap (24px)
+      // On se place au milieu du bloc (sur la 3ème copie)
+      slider.scrollLeft = cardWidth * events.length * 2;
     }
   }, [events]);
 
-  // Boucle invisible pour l'infini
+  // Gestion de la boucle infinie sans à-coup lors du scroll (manuel ou flèches)
   const handleInfiniteScroll = () => {
     const slider = sliderRef.current;
-    if (!slider) return;
+    if (!slider || events.length === 0) return;
 
-    const thirdWidth = slider.scrollWidth / 3;
-    if (slider.scrollLeft < thirdWidth * 0.5) {
-      slider.scrollLeft += thirdWidth;
-    } else if (slider.scrollLeft > thirdWidth * 2.5) {
-      slider.scrollLeft -= thirdWidth;
+    const cardWidth = 364;
+    const singleSetWidth = cardWidth * events.length;
+
+    // Si on arrive trop près du début (1ère copie), on décale instantanément vers la 3ème copie
+    if (slider.scrollLeft <= singleSetWidth) {
+      slider.scrollLeft += singleSetWidth * 2;
+    } 
+    // Si on arrive trop près de la fin (5ème copie), on décale instantanément vers la 3ème copie
+    else if (slider.scrollLeft >= singleSetWidth * 3) {
+      slider.scrollLeft -= singleSetWidth * 2;
     }
   };
 
-  // Défilement fluide par clic sur les flèches (équivalent à la largeur d'une carte + gap)
+  // Défilement fluide par clic sur les flèches
   const scrollSlider = (direction: 'left' | 'right') => {
     if (sliderRef.current) {
       const cardWidth = 364; // Largeur d'une carte (340px) + gap (24px)
@@ -111,9 +121,6 @@ export default function PublicHome() {
       sliderRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
     }
   };
-
-  // On duplique les événements x3 pour assurer la boucle fluide
-  const extendedEvents = events.length > 0 ? [...events, ...events, ...events] : [];
 
   return (
     <div 
@@ -194,7 +201,7 @@ export default function PublicHome() {
           </div>
         </section>
 
-        {/* SECTION ÉVÉNEMENTS (Carrousel infini fluide de droite à gauche avec flèches fixes) */}
+        {/* SECTION ÉVÉNEMENTS (Carrousel infini bidirectionnel fluide) */}
         <section id="evenements" className="h-screen w-full snap-start snap-always flex items-center justify-between px-4 sm:px-8 lg:px-12 py-4 shrink-0 relative overflow-hidden">
           
           {/* Texte vertical gauche */}
@@ -231,7 +238,7 @@ export default function PublicHome() {
               </div>
             ) : (
               <>
-                {/* Flèche Gauche (Toujours visible et fixe) */}
+                {/* Flèche Gauche */}
                 <button 
                   onClick={() => scrollSlider('left')}
                   className="hidden md:flex absolute -left-4 lg:-left-10 z-30 w-12 h-12 rounded-full bg-neutral-900 border border-white/20 items-center justify-center text-white hover:bg-white hover:text-black transition-all shadow-xl cursor-pointer"
@@ -240,7 +247,7 @@ export default function PublicHome() {
                   <ChevronLeft className="w-6 h-6" />
                 </button>
 
-                {/* Conteneur de défilement horizontal fluide */}
+                {/* Conteneur de défilement horizontal infini */}
                 <div 
                   ref={sliderRef}
                   onScroll={handleInfiniteScroll}
@@ -322,7 +329,7 @@ export default function PublicHome() {
                   })}
                 </div>
 
-                {/* Flèche Droite (Toujours visible et fixe) */}
+                {/* Flèche Droite */}
                 <button 
                   onClick={() => scrollSlider('right')}
                   className="hidden md:flex absolute -right-4 lg:-right-10 z-30 w-12 h-12 rounded-full bg-neutral-900 border border-white/20 items-center justify-center text-white hover:bg-white hover:text-black transition-all shadow-xl cursor-pointer"
