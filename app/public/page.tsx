@@ -67,7 +67,9 @@ export default function PublicHome() {
       .from('events')
       .select('*')
       .eq('status', 'published')
-      .order('starts_at', { ascending: true });
+      .order('starts_at', { ascending: true })
+      // Filtre anti-cache pour forcer Supabase à récupérer les données fraîches du serveur
+      .neq('id', '00000000-0000-0000-0000-000000000000'); 
 
     if (!error && data) {
       setEvents(data);
@@ -78,7 +80,6 @@ export default function PublicHome() {
     setLoading(false);
   };
 
-  // Chargement initial + Rafraîchissement automatique quand l'utilisateur revient sur l'onglet (ex: après un edit admin)
   useEffect(() => {
     fetchPublishedEvents();
 
