@@ -11,12 +11,6 @@ import type { IortiEvent } from '@/types/event';
 import { supabaseBrowser } from '@/lib/supabase-browser';
 import CustomAuthModal from '@/components/CustomAuthModal';
 
-const STATUS_LABEL: Record<string, string> = {
-  draft: 'BROUILLON',
-  published: 'PUBLIÉ',
-  cancelled: 'ANNULÉ',
-};
-
 export default function OrganizerDashboard() {
   const router = useRouter();
   const [user, setUser] = useState<any>(null);
@@ -178,21 +172,28 @@ export default function OrganizerDashboard() {
   return (
     <div className="w-full px-6 lg:px-12 pt-4 pb-12 space-y-8 font-grotesque text-white bg-[#0f0f0f] min-h-full uppercase">
       
-      {/* Search & Counter */}
-      <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4 pt-2">
-        <div className="relative flex-1 max-w-md">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-white/40" />
-          <input
-            type="text"
-            placeholder="RECHERCHER PAR TITRE OU LIEU..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full h-11 rounded-full border border-white/15 bg-neutral-900 pl-11 pr-4 font-grotesque text-xs text-white placeholder:text-white/40 focus:outline-none focus:border-white shadow-xs"
-          />
+      {/* Search & Counter alignés sur la grille à 3 colonnes des cartes */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 items-center gap-4 pt-2">
+        {/* Colonne 1 et 2 fusionnées pour centrer parfaitement la barre de recherche sur la taille de 2 cartes */}
+        <div className="lg:col-span-2 flex justify-center w-full">
+          <div className="relative w-full max-w-xl">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-white/40" />
+            <input
+              type="text"
+              placeholder="RECHERCHER PAR TITRE OU LIEU..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full h-11 rounded-full border border-white/15 bg-neutral-900 pl-11 pr-4 font-grotesque text-xs text-white placeholder:text-white/40 focus:outline-none focus:border-white shadow-xs"
+            />
+          </div>
         </div>
-        <span className="font-grotesque text-xs text-white/60 text-right">
-          {filteredEvents.length} ÉVÉNEMENT(S)
-        </span>
+
+        {/* Colonne 3 : Compte d'événements aligné et collé à droite de la 3e colonne */}
+        <div className="flex justify-end w-full">
+          <span className="font-grotesque text-xs text-white/60">
+            {filteredEvents.length} ÉVÉNEMENT(S)
+          </span>
+        </div>
       </div>
 
       {/* Event Cards Grid */}
@@ -227,11 +228,12 @@ export default function OrganizerDashboard() {
                 }
               }
 
+              // Nettoyage des points parasites dans la date formatée
               const formattedDate = evt.starts_at ? new Date(evt.starts_at).toLocaleDateString('fr-FR', {
                 weekday: 'short',
                 day: 'numeric',
                 month: 'short',
-              }).toUpperCase() : '';
+              }).toUpperCase().replace(/\./g, '') : '';
 
               return (
                 <article
@@ -257,25 +259,11 @@ export default function OrganizerDashboard() {
 
                     {/* Dégradé doux uniquement sur le bas de l'image (fondu vers le noir du fond de carte) */}
                     <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-neutral-950 via-neutral-950/40 to-transparent pointer-events-none z-10" />
-
-                    {/* Badge de statut en haut à gauche */}
-                    <div className="absolute top-4 left-4 z-20">
-                      <span className={`inline-flex items-center px-2.5 py-1 rounded-full border text-[10px] font-bold backdrop-blur-md ${
-                        evt.status === 'published' 
-                          ? 'bg-black/60 text-white border-white/30' 
-                          : evt.status === 'cancelled'
-                          ? 'bg-neutral-900/80 text-white/60 border-white/20 line-through'
-                          : 'bg-black/60 text-white/70 border-white/20'
-                      }`}>
-                        {STATUS_LABEL[evt.status] ?? evt.status}
-                      </span>
-                    </div>
                   </div>
 
                   {/* PARTIE INFÉRIEURE : Le bloc d'informations distinct sous l'affiche */}
                   <div className="p-5 space-y-4 bg-neutral-950 flex-1 flex flex-col justify-between border-t border-white/10">
                     <div className="space-y-1">
-                      <p className="text-[10px] text-white/50 tracking-wider">FEATURED</p>
                       <h3 className="text-xl font-normal text-white tracking-wide">
                         {evt.title}
                       </h3>
