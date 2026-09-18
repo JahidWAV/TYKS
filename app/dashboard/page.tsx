@@ -5,7 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { 
-  ArrowUpRight, Calendar, Search, Edit3, Trash2
+  ArrowUpRight, Calendar, Search, Edit3, Trash2, AlertTriangle, X
 } from 'lucide-react';
 import type { IortiEvent } from '@/types/event';
 import { supabaseBrowser } from '@/lib/supabase-browser';
@@ -20,6 +20,10 @@ export default function OrganizerDashboard() {
   
   const [searchQuery, setSearchQuery] = useState('');
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+
+  // État pour gérer l'ouverture du popup de suppression personnalisé
+  const [eventToDelete, setEventToDelete] = useState<IortiEvent | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
     async function getSession() {
@@ -69,27 +73,31 @@ export default function OrganizerDashboard() {
     }
   }, [ready, user, loadDashboard]);
 
-  const handleDeleteEvent = async (eventId: string) => {
-    if (!confirm('ATTENTION : CETTE ACTION EST IRRÉVERSIBLE. VOULEZ-VOUS VRAIMENT SUPPRIMER CET ÉVÉNEMENT ?')) return;
+  const confirmDeleteEvent = async () => {
+    if (!eventToDelete) return;
 
     try {
+      setIsDeleting(true);
       const { error } = await supabaseBrowser
         .from('events')
         .delete()
-        .eq('id', eventId);
+        .eq('id', eventToDelete.id);
 
       if (error) throw error;
-      setEvents((prev) => prev.filter((e) => e.id !== eventId));
+      setEvents((prev) => prev.filter((e) => e.id !== eventToDelete.id));
+      setEventToDelete(null);
     } catch (err) {
       console.error('Erreur lors de la suppression :', err);
-      alert("IMPOSSIBLE DE SUPPRIMER L'ÉVÉNEMENT EN RAISON D'UNE CONTRAINTE TECHNIQUE.");
+      alert("Impossible de supprimer l'événement en raison d'une contrainte technique.");
+    } finally {
+      setIsDeleting(false);
     }
   };
 
   if (!ready) {
     return (
       <div className="min-h-screen bg-[#0f0f0f] text-white/60 font-grotesque text-xs flex items-center justify-center uppercase">
-        CHARGEMENT...
+        Chargement...
       </div>
     );
   }
@@ -111,20 +119,20 @@ export default function OrganizerDashboard() {
 
           <div className="space-y-6 my-auto py-12">
             <span className="inline-flex items-center justify-center font-grotesque text-[11px] bg-white/10 border border-white/20 text-white px-3 py-1.5 rounded-full font-bold">
-              TYKS PRO · ESPACE ORGANISATEUR
+              TYKS PRO · Espace organisateur
             </span>
             <h1 className="text-4xl lg:text-6xl font-grotesque font-normal tracking-tight text-white leading-[1.05]">
-              REPRENEZ LE CONTRÔLE DE VOTRE BILLETTERIE ET DE VOS MARGES.
+              Reprenez le contrôle de votre billetterie et de vos marges.
             </h1>
-            <p className="font-grotesque text-xs leading-relaxed text-white/70 max-w-md">
-              FINS DE COMMISSIONS ABUSIVES ET DE DONNÉES CAPTIVES. TYKS PRO VOUS OFFRE UNE PLATEFORME SUR-MESURE, DES FRAIS RÉDUITS ET L&apos;ACCÈS DIRECT À VOTRE COMMUNAUTÉ.
+            <p className="font-grotesque text-xs leading-relaxed text-white/70 max-w-md normal-case">
+              Fins de commissions abusives et de données captives. Tyks Pro vous offre une plateforme sur-mesure, des frais réduits et l'accès direct à votre communauté.
             </p>
             <div>
               <button
                 onClick={() => setIsAuthModalOpen(true)}
                 className="w-full sm:w-auto px-8 h-12 bg-white text-black font-grotesque text-xs hover:bg-neutral-200 transition-colors flex items-center justify-center gap-3 cursor-pointer font-bold rounded-full shadow-lg"
               >
-                <span>ACCÉDER À MON ESPACE PRO</span>
+                <span>Accéder à mon espace pro</span>
                 <ArrowUpRight className="w-4 h-4" />
               </button>
             </div>
@@ -159,7 +167,7 @@ export default function OrganizerDashboard() {
   if (loading) {
     return (
       <div className="min-h-screen bg-[#0f0f0f] text-white/60 font-grotesque text-xs flex items-center justify-center uppercase">
-        CHARGEMENT...
+        Chargement...
       </div>
     );
   }
@@ -170,7 +178,7 @@ export default function OrganizerDashboard() {
   });
 
   return (
-    <div className="w-full px-6 lg:px-12 pt-4 pb-12 space-y-8 font-grotesque text-white bg-[#0f0f0f] min-h-full uppercase">
+    <div className="w-full px-6 lg:px-12 pt-4 pb-12 space-y-8 font-grotesque text-white bg-[#0f0f0f] min-h-full">
       
       {/* Barre unifiée (Recherche + Compte) intégrée dans une grille à 3 colonnes pour épouser exactement la largeur de la carte */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-center pt-2">
@@ -182,7 +190,7 @@ export default function OrganizerDashboard() {
               <Search className="h-4 w-4 text-white/40 shrink-0" />
               <input
                 type="text"
-                placeholder="RECHERCHER PAR TITRE OU LIEU..."
+                placeholder="Rechercher par titre ou lieu..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full bg-transparent font-grotesque text-xs text-white placeholder:text-white/40 focus:outline-none truncate"
@@ -208,8 +216,8 @@ export default function OrganizerDashboard() {
             <Calendar className="mx-auto h-8 w-8 text-white" />
             <p className="font-grotesque text-xs text-white/60">
               {events.length === 0 
-                ? "VOUS N'AVEZ PAS ENCORE CRÉÉ D'ÉVÉNEMENT." 
-                : "AUCUN ÉVÉNEMENT NE CORRESPOND À VOTRE RECHERCHE."}
+                ? "Vous n'avez pas encore créé d'événement." 
+                : "Aucun événement ne correspond à votre recherche."}
             </p>
           </div>
         ) : (
@@ -217,7 +225,6 @@ export default function OrganizerDashboard() {
             {filteredEvents.map((evt: any) => {
               const eventPrice = Number(evt.price || evt.ticket_price || 0);
               
-              // Résolution robuste de l'URL de l'affiche
               const rawImage = evt.image_url || evt.cover_image || evt.flyer_url || evt.poster_url;
               let imageUrl = '';
               
@@ -233,7 +240,6 @@ export default function OrganizerDashboard() {
                 }
               }
 
-              // Nettoyage des points parasites dans la date formatée
               const formattedDate = evt.starts_at ? new Date(evt.starts_at).toLocaleDateString('fr-FR', {
                 weekday: 'short',
                 day: 'numeric',
@@ -245,7 +251,6 @@ export default function OrganizerDashboard() {
                   key={evt.id}
                   className="group relative flex flex-col rounded-3xl border border-white/15 bg-neutral-950 overflow-hidden shadow-xl transition-all hover:border-white font-grotesque"
                 >
-                  {/* PARTIE SUPÉRIEURE : L'affiche carrée avec son dégradé de fondu appliqué uniquement dans sa partie basse */}
                   <div className="relative w-full aspect-square bg-neutral-900 overflow-hidden">
                     {imageUrl ? (
                       <Image 
@@ -258,21 +263,19 @@ export default function OrganizerDashboard() {
                       />
                     ) : (
                       <div className="absolute inset-0 bg-neutral-900 flex items-center justify-center">
-                        <span className="text-white/30 text-xs font-bold">AUCUNE AFFICHE</span>
+                        <span className="text-white/30 text-xs font-bold uppercase">Aucune affiche</span>
                       </div>
                     )}
 
-                    {/* Dégradé doux uniquement sur le bas de l'image (fondu vers le noir du fond de carte) */}
                     <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-neutral-950 via-neutral-950/40 to-transparent pointer-events-none z-10" />
                   </div>
 
-                  {/* PARTIE INFÉRIEURE : Le bloc d'informations distinct sous l'affiche */}
                   <div className="p-5 space-y-4 bg-neutral-950 flex-1 flex flex-col justify-between border-t border-white/10">
                     <div className="space-y-1">
-                      <h3 className="text-xl font-normal text-white tracking-wide">
+                      <h3 className="text-xl font-normal text-white tracking-wide uppercase">
                         {evt.title}
                       </h3>
-                      <p className="text-xs text-white/70">
+                      <p className="text-xs text-white/70 uppercase">
                         {formattedDate}{evt.location ? `, ${evt.location}` : ''}
                       </p>
                     </div>
@@ -282,20 +285,19 @@ export default function OrganizerDashboard() {
                         {eventPrice > 0 ? `€${eventPrice.toLocaleString('fr-FR')}` : 'GRATUIT'}
                       </span>
 
-                      {/* Boutons modifier et supprimer */}
                       <div className="flex items-center gap-2">
                         <Link
                           href={`/events/${evt.slug || evt.id}/edit`}
                           className="w-9 h-9 rounded-full border border-white/20 bg-neutral-900 text-white flex items-center justify-center hover:bg-white hover:text-black transition-colors cursor-pointer shadow-xs"
-                          title="MODIFIER"
+                          title="Modifier"
                         >
                           <Edit3 className="h-3.5 w-3.5" />
                         </Link>
                         <button
                           key={`delete-${evt.id}`}
-                          onClick={() => handleDeleteEvent(evt.id)}
+                          onClick={() => setEventToDelete(evt)}
                           className="w-9 h-9 rounded-full border border-white/20 bg-neutral-900 text-white flex items-center justify-center hover:bg-white hover:text-black transition-colors cursor-pointer shadow-xs"
-                          title="SUPPRIMER"
+                          title="Supprimer"
                         >
                           <Trash2 className="h-3.5 w-3.5" />
                         </button>
@@ -308,6 +310,55 @@ export default function OrganizerDashboard() {
           </div>
         )}
       </div>
+
+      {/* POPUP DE SUPPRESSION PERSONNALISÉ (DA #0f0f0f, full rounded, grotesque, non full-cap pour le confort de lecture) */}
+      {eventToDelete && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-fadeIn">
+          <div className="w-full max-w-md rounded-3xl border border-white/15 bg-[#0f0f0f] p-8 space-y-6 shadow-2xl font-grotesque text-white relative">
+            
+            {/* Bouton croix de fermeture */}
+            <button 
+              onClick={() => setEventToDelete(null)}
+              className="absolute top-6 right-6 text-white/50 hover:text-white transition-colors p-1"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            <div className="flex items-center gap-3 text-red-400">
+              <div className="w-10 h-10 rounded-full bg-red-500/10 border border-red-500/20 flex items-center justify-center shrink-0">
+                <AlertTriangle className="w-5 h-5" />
+              </div>
+              <h3 className="text-lg font-bold uppercase tracking-wide">
+                Supprimer l'événement
+              </h3>
+            </div>
+
+            <p className="text-xs text-white/70 leading-relaxed">
+              Êtes-vous sûr de vouloir supprimer définitivement l'événement <strong className="text-white uppercase">"{eventToDelete.title}"</strong> ? Cette action est irréversible et supprimera toutes les données associées.
+            </p>
+
+            <div className="flex items-center justify-end gap-3 pt-2">
+              <button
+                type="button"
+                onClick={() => setEventToDelete(null)}
+                disabled={isDeleting}
+                className="px-5 h-11 rounded-full border border-white/20 bg-transparent text-xs text-white hover:bg-white/10 transition-colors cursor-pointer font-medium"
+              >
+                Annuler
+              </button>
+              <button
+                type="button"
+                onClick={confirmDeleteEvent}
+                disabled={isDeleting}
+                className="px-6 h-11 rounded-full bg-red-600 text-xs text-white hover:bg-red-500 transition-colors cursor-pointer font-bold shadow-lg flex items-center gap-2"
+              >
+                {isDeleting ? "Suppression..." : "Supprimer"}
+              </button>
+            </div>
+
+          </div>
+        </div>
+      )}
 
     </div>
   );
