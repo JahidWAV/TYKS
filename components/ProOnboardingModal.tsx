@@ -17,7 +17,7 @@ export default function ProOnboardingModal({ isOpen, onClose, selectedPlan }: Pr
   const [formData, setFormData] = useState({
     companyName: '',
     displayName: '',
-    partnerType: 'Promoter',
+    partnerType: 'Promoteur',
     city: '',
   });
 
@@ -104,7 +104,7 @@ export default function ProOnboardingModal({ isOpen, onClose, selectedPlan }: Pr
               <div className="space-y-5 animate-in fade-in duration-150">
                 <div className="space-y-2">
                   <label className="text-xs font-bold text-white/80 flex items-center gap-1.5">
-                    <Building2 className="w-4 h-4" /> Company name
+                    <Building2 className="w-4 h-4" /> Nom de l&apos;entreprise
                   </label>
                   <input
                     type="text"
@@ -119,7 +119,7 @@ export default function ProOnboardingModal({ isOpen, onClose, selectedPlan }: Pr
 
                 <div className="space-y-2">
                   <label className="text-xs font-bold text-white/80 flex items-center gap-1.5">
-                    <Tag className="w-4 h-4" /> Display name
+                    <Tag className="w-4 h-4" /> Nom d&apos;affichage public
                   </label>
                   <input
                     type="text"
@@ -146,24 +146,24 @@ export default function ProOnboardingModal({ isOpen, onClose, selectedPlan }: Pr
               <div className="space-y-5 animate-in fade-in duration-150">
                 <div className="space-y-2">
                   <label className="text-xs font-bold text-white/80 flex items-center gap-1.5">
-                    <Tag className="w-4 h-4" /> Partner type
+                    <Tag className="w-4 h-4" /> Type de partenaire
                   </label>
                   <select
                     value={formData.partnerType}
                     onChange={(e) => setFormData({ ...formData, partnerType: e.target.value })}
                     className="w-full h-14 px-5 bg-neutral-900 border border-white/15 rounded-2xl text-sm text-white focus:outline-none focus:border-white transition-colors cursor-pointer"
                   >
-                    <option value="Promoter">Promoter</option>
-                    <option value="Venue">Venue / Salle</option>
+                    <option value="Promoteur">Promoteur</option>
+                    <option value="Salle de concert">Salle de concert / Venue</option>
                     <option value="Festival">Festival</option>
                     <option value="Club">Club</option>
-                    <option value="Independent">Indépendant</option>
+                    <option value="Indépendant">Indépendant</option>
                   </select>
                 </div>
 
                 <div className="space-y-2">
                   <label className="text-xs font-bold text-white/80 flex items-center gap-1.5">
-                    <MapPin className="w-4 h-4" /> City
+                    <MapPin className="w-4 h-4" /> Ville principale
                   </label>
                   <input
                     type="text"
