@@ -10,8 +10,13 @@ export const DeleteModalContext = createContext<DeleteModalContextType | null>(n
 
 export const useDeleteModal = () => {
   const context = useContext(DeleteModalContext);
+  // Au lieu de crasher l'app, on retourne une fonction vide par sécurité si hors contexte
   if (!context) {
-    throw new Error("useDeleteModal doit être utilisé à l'intérieur d'un DashboardLayout");
+    return {
+      openDeleteModal: () => {
+        console.warn("openDeleteModal a été appelé en dehors du DashboardLayout");
+      }
+    };
   }
   return context;
 };
