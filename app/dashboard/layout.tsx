@@ -72,11 +72,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           </Link>
         </div>
 
-        {/* Étage 2 : Catégories à gauche et boutons de droite, alignés sur les cartes */}
+        {/* Étage 2 : Conteneur global aligné sur les marges des cartes */}
         <div className="w-full grid grid-cols-[1fr_auto_1fr] items-center px-6 lg:px-12 py-3 bg-[#0f0f0f]">
           
-          {/* Menu de gauche : 3 bulles */}
-          <nav className="hidden lg:grid grid-cols-3 gap-6 font-grotesque w-full">
+          {/* Bloc de gauche : Barre continue englobant les 3 sections */}
+          <nav className="hidden lg:flex items-center bg-neutral-950 border border-white/15 rounded-full p-1.5 font-grotesque w-full shadow-lg">
             {navItems.map((item) => {
               const isActive = pathname === item.href;
 
@@ -84,10 +84,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 <Link
                   key={item.href}
                   href={item.href}
-                  className={`h-11 w-full flex items-center justify-center rounded-full transition-all font-grotesque text-xs tracking-wider border whitespace-nowrap shadow-md leading-none ${
+                  className={`h-10 flex-1 flex items-center justify-center rounded-full transition-all font-grotesque text-xs tracking-wider whitespace-nowrap leading-none ${
                     isActive
-                      ? 'bg-white text-black border-white font-bold'
-                      : 'bg-transparent text-white/80 border-white/15 hover:bg-white/10 hover:text-white'
+                      ? 'bg-white text-black font-bold shadow-sm'
+                      : 'bg-transparent text-white/80 hover:bg-white/10 hover:text-white'
                   }`}
                 >
                   <span className="truncate">{item.label}</span>
@@ -96,34 +96,34 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             })}
           </nav>
 
-          {/* Espace vide central pour conserver la structure de la grille */}
+          {/* Espace vide central pour conserver la grille */}
           <div className="hidden lg:block"></div>
 
-          {/* Menu de droite : 3 bulles */}
-          <div className="hidden lg:grid grid-cols-3 gap-6 font-grotesque w-full justify-self-end">
+          {/* Bloc de droite : Barre continue englobant Profil, Paramètres et Déconnexion */}
+          <div className="hidden lg:flex items-center bg-neutral-950 border border-white/15 rounded-full p-1.5 font-grotesque w-full justify-self-end shadow-lg">
             <Link
               href="/settings"
-              className={`h-11 w-full flex items-center justify-center rounded-full transition-all font-grotesque text-xs tracking-wider border whitespace-nowrap shadow-md leading-none ${
+              className={`h-10 flex-1 flex items-center justify-center rounded-full transition-all font-grotesque text-xs tracking-wider whitespace-nowrap leading-none ${
                 isProfileActive
-                  ? 'bg-white text-black border-white font-bold'
-                  : 'bg-transparent text-white/80 border-white/15 hover:bg-white/10 hover:text-white'
+                  ? 'bg-white text-black font-bold shadow-sm'
+                  : 'bg-transparent text-white/80 hover:bg-white/10 hover:text-white'
               }`}
             >
               PROFIL
             </Link>
             <Link
               href="/settings"
-              className={`h-11 w-full flex items-center justify-center rounded-full transition-all font-grotesque text-xs tracking-wider border whitespace-nowrap shadow-md leading-none ${
+              className={`h-10 flex-1 flex items-center justify-center rounded-full transition-all font-grotesque text-xs tracking-wider whitespace-nowrap leading-none ${
                 isSettingsActive
-                  ? 'bg-white text-black border-white font-bold'
-                  : 'bg-transparent text-white/80 border-white/15 hover:bg-white/10 hover:text-white'
+                  ? 'bg-white text-black font-bold shadow-sm'
+                  : 'bg-transparent text-white/80 hover:bg-white/10 hover:text-white'
               }`}
             >
               PARAMÈTRES
             </Link>
             <button
               onClick={handleLogout}
-              className="h-11 w-full flex items-center justify-center rounded-full transition-all font-grotesque text-xs tracking-wider border whitespace-nowrap shadow-md leading-none bg-transparent text-white/80 border-white/15 hover:bg-white/10 hover:text-white cursor-pointer"
+              className="h-10 flex-1 flex items-center justify-center rounded-full transition-all font-grotesque text-xs tracking-wider whitespace-nowrap leading-none bg-transparent text-white/80 hover:bg-white/10 hover:text-white cursor-pointer"
             >
               DÉCONNEXION
             </button>
