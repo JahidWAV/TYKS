@@ -55,11 +55,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   return (
     <div className="min-h-screen bg-[#0f0f0f] text-white font-sans selection:bg-white selection:text-black flex flex-col uppercase overflow-x-hidden">
 
-      {/* Barre de navigation horizontale */}
+      {/* Barre de navigation horizontale : alignée exactement sur la grille à 3 colonnes des cartes (px de 6/12 et gap-6) */}
       <header className="fixed top-0 left-0 right-0 h-20 border-b border-white/10 bg-[#0f0f0f] grid grid-cols-[1fr_auto_1fr] items-center px-6 lg:px-12 z-50 select-none">
         
-        {/* 1. Menu de gauche : 3 bulles occupant la largeur d'une carte */}
-        <nav className="hidden lg:grid grid-cols-3 gap-3 font-grotesque w-full max-w-[420px]">
+        {/* 1. Menu de gauche : 3 bulles occupant précisément la largeur de la première colonne de cartes */}
+        <nav className="hidden lg:grid grid-cols-3 gap-6 font-grotesque w-full">
           {navItems.map((item) => {
             const isActive = pathname === item.href;
 
@@ -79,8 +79,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           })}
         </nav>
 
-        {/* 2. Bloc milieu : Logo centré et agrandi par 2 */}
-        <div className="flex items-center justify-center">
+        {/* 2. Bloc milieu : Logo centré */}
+        <div className="flex items-center justify-center px-8">
           <Link href="/" className="flex items-center group py-2">
             <Image 
               src="/tyks.svg" 
@@ -93,8 +93,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           </Link>
         </div>
 
-        {/* 3. Bloc droite : 3 bulles occupant la largeur d'une carte */}
-        <div className="hidden lg:grid grid-cols-3 gap-3 font-grotesque w-full max-w-[420px] justify-self-end">
+        {/* 3. Bloc droite : 3 bulles occupant précisément la largeur de la dernière colonne de cartes */}
+        <div className="hidden lg:grid grid-cols-3 gap-6 font-grotesque w-full justify-self-end">
           <Link
             href="/settings"
             className={`h-11 w-full flex items-center justify-center rounded-full transition-all font-grotesque text-xs tracking-wider border whitespace-nowrap shadow-md leading-none ${
@@ -119,7 +119,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             onClick={handleLogout}
             className="h-11 w-full flex items-center justify-center rounded-full transition-all font-grotesque text-xs tracking-wider border whitespace-nowrap shadow-md leading-none bg-transparent text-white/80 border-white/15 hover:bg-white/10 hover:text-white cursor-pointer"
           >
-            SE DÉCONNECTER
+            DÉCONNEXION
           </button>
         </div>
 
