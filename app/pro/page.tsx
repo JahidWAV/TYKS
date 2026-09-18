@@ -1,15 +1,19 @@
 'use client';
 
 import { useState } from 'react';
-import { ArrowUpRight, Loader2, DollarSign, ShieldCheck, Zap, Database, Check, Smartphone, QrCode, Wallet } from 'lucide-react';
+import { ArrowUpRight, Loader2, DollarSign, ShieldCheck, Zap, Database, Check, Smartphone } from 'lucide-react';
 import { supabaseBrowser } from '@/lib/supabase-browser';
 
 export default function ProLandingPage() {
-  const [authLoading, setAuthLoading] = useState(false);
+  const [authLoading, setAuthLoading] = useState<string | null>(null); // 'standard' | 'pro' | null
 
-  const handleGoogleLogin = async () => {
+  const handleGoogleLogin = async (selectedPlan: 'standard' | 'pro') => {
     try {
-      setAuthLoading(true);
+      setAuthLoading(selectedPlan);
+      
+      // On stocke le choix du plan dans le localStorage pour le récupérer après l'authentification
+      localStorage.setItem('tyks_selected_plan', selectedPlan);
+
       const { error } = await supabaseBrowser.auth.signInWithOAuth({
         provider: 'google',
         options: {
@@ -19,7 +23,7 @@ export default function ProLandingPage() {
       if (error) throw error;
     } catch (err) {
       console.error('Erreur de connexion :', err);
-      setAuthLoading(false);
+      setAuthLoading(null);
     }
   };
 
@@ -45,11 +49,11 @@ export default function ProLandingPage() {
 
             <div className="pt-2">
               <button
-                onClick={handleGoogleLogin}
-                disabled={authLoading}
+                onClick={() => handleGoogleLogin('standard')}
+                disabled={authLoading !== null}
                 className="h-12 px-8 bg-white hover:bg-neutral-200 text-black font-bold text-xs uppercase tracking-wider transition-all duration-300 flex items-center justify-center rounded-full shadow-lg cursor-pointer disabled:opacity-50"
               >
-                {authLoading ? (
+                {authLoading === 'standard' ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
                 ) : (
                   <>
@@ -182,10 +186,11 @@ export default function ProLandingPage() {
               </div>
 
               <button
-                onClick={handleGoogleLogin}
-                className="w-full h-12 rounded-full border border-white/20 bg-white/5 hover:bg-white/10 text-white font-bold text-xs uppercase tracking-wider transition-all duration-300 cursor-pointer flex items-center justify-center"
+                onClick={() => handleGoogleLogin('standard')}
+                disabled={authLoading !== null}
+                className="w-full h-12 rounded-full border border-white/20 bg-white/5 hover:bg-white/10 text-white font-bold text-xs uppercase tracking-wider transition-all duration-300 cursor-pointer flex items-center justify-center disabled:opacity-50"
               >
-                COMMENCER GRATUITEMENT
+                {authLoading === 'standard' ? <Loader2 className="h-4 w-4 animate-spin" /> : 'COMMENCER GRATUITEMENT'}
               </button>
             </div>
 
@@ -227,10 +232,11 @@ export default function ProLandingPage() {
               </div>
 
               <button
-                onClick={handleGoogleLogin}
-                className="w-full h-12 rounded-full bg-white hover:bg-neutral-200 text-black font-bold text-xs uppercase tracking-wider transition-all duration-300 cursor-pointer flex items-center justify-center shadow-lg"
+                onClick={() => handleGoogleLogin('pro')}
+                disabled={authLoading !== null}
+                className="w-full h-12 rounded-full bg-white hover:bg-neutral-200 text-black font-bold text-xs uppercase tracking-wider transition-all duration-300 cursor-pointer flex items-center justify-center shadow-lg disabled:opacity-50"
               >
-                DEVENIR PARTENAIRE PRO
+                {authLoading === 'pro' ? <Loader2 className="h-4 w-4 animate-spin text-black" /> : 'DEVENIR PARTENAIRE PRO'}
               </button>
             </div>
           </div>
