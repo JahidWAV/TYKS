@@ -19,6 +19,7 @@ export async function GET(req: NextRequest) {
   const requestUrl = new URL(req.url);
   const code = requestUrl.searchParams.get("code");
   const next = requestUrl.searchParams.get("next") ?? "/";
+  const selectedPlan = requestUrl.searchParams.get("plan") ?? "standard";
 
   if (code) {
     const cookieStore = await cookies();
@@ -49,11 +50,9 @@ export async function GET(req: NextRequest) {
     if (!error && sessionData?.user) {
       const user = sessionData.user;
 
-      // On vérifie si la connexion provient bien du sous-domaine pro
       const isProSubdomain = requestUrl.hostname.startsWith("pro.");
 
       if (isProSubdomain) {
-        // Utilisation du client Admin (Service Role) pour contourner les RLS et créer l'orga en toute sécurité
         const supabaseAdmin = createClient(
           process.env.NEXT_PUBLIC_SUPABASE_URL!,
           process.env.SUPABASE_SERVICE_ROLE_KEY!,
@@ -65,14 +64,12 @@ export async function GET(req: NextRequest) {
           }
         );
 
-        // 1. Vérifier si l'utilisateur a déjà une organisation liée
         const { data: existingMember } = await supabaseAdmin
           .from("organization_members")
           .select("organization_id")
           .eq("user_id", user.id)
           .maybeSingle();
 
-        // 2. Si aucune organisation n'existe, on la crée automatiquement (uniquement sur pro)
         if (!existingMember) {
           const emailPrefix = user.email ? user.email.split("@")[0] : "Mon Organisation";
           const orgName = `Organisation de ${emailPrefix}`;
@@ -84,6 +81,7 @@ export async function GET(req: NextRequest) {
             .insert({
               name: orgName,
               slug: uniqueSlug,
+              plan: selectedPlan,
             })
             .select()
             .single();
@@ -97,6 +95,11 @@ export async function GET(req: NextRequest) {
                 role: "owner",
               });
           }
+        }
+
+        // Si l'utilisateur a choisi le plan pro, on peut l'aiguiller vers les paramètres de facturation/paiement
+        if (selectedPlan === 'pro') {
+          return NextResponse.redirect(new URL("/dashboard/settings/billing", requestUrl.origin));
         }
       }
 
