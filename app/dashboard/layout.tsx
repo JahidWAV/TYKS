@@ -1,55 +1,28 @@
 'use client';
 
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
-import { 
-  LogOut, Shield, Sliders 
-} from 'lucide-react';
 import { supabaseBrowser } from '@/lib/supabase-browser';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
   const [user, setUser] = useState<any>(undefined);
-  const [profileOpen, setProfileOpen] = useState(false);
-  const [userName, setUserName] = useState<string>("MON COMPTE");
-  const profileMenuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     async function checkAuth() {
       const { data: { session } } = await supabaseBrowser.auth.getSession();
-      const currentUser = session?.user ?? null;
-      setUser(currentUser);
-
-      if (currentUser) {
-        const metaName = currentUser.user_metadata?.first_name || currentUser.user_metadata?.full_name || currentUser.user_metadata?.name || currentUser.email?.split('@')[0] || "MON COMPTE";
-        setUserName(metaName.toUpperCase());
-      }
+      setUser(session?.user ?? null);
     }
     checkAuth();
 
     const { data: { subscription } } = supabaseBrowser.auth.onAuthStateChange((_event, session) => {
-      const currentUser = session?.user ?? null;
-      setUser(currentUser);
-      if (currentUser) {
-        const metaName = currentUser.user_metadata?.first_name || currentUser.user_metadata?.full_name || currentUser.user_metadata?.name || currentUser.email?.split('@')[0] || "MON COMPTE";
-        setUserName(metaName.toUpperCase());
-      }
+      setUser(session?.user ?? null);
     });
 
     return () => subscription.unsubscribe();
-  }, []);
-
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (profileMenuRef.current && !profileMenuRef.current.contains(event.target as Node)) {
-        setProfileOpen(false);
-      }
-    }
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
   const handleLogout = async () => {
@@ -80,10 +53,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     <div className="min-h-screen bg-[#0f0f0f] text-white font-sans selection:bg-white selection:text-black flex flex-col uppercase overflow-x-hidden">
 
       {/* Barre de navigation horizontale */}
-      <header className="fixed top-0 left-0 right-0 h-20 border-b border-white/10 bg-[#0f0f0f] flex items-center justify-between px-8 z-50 select-none">
+      <header className="fixed top-0 left-0 right-0 h-20 border-b border-white/10 bg-[#0f0f0f] flex items-center justify-between px-6 lg:px-12 z-50 select-none">
         
         {/* 1. Bloc gauche */}
-        <div className="flex items-center justify-start w-48 shrink-0">
+        <div className="flex items-center justify-start shrink-0">
           <Link href="/" className="flex items-center group py-2">
             <Image 
               src="/tyks.svg" 
@@ -117,68 +90,20 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           })}
         </nav>
 
-        {/* 3. Bloc droite */}
-        <div className="flex items-center justify-end w-48 shrink-0">
-          <div className="relative" ref={profileMenuRef}>
-            <button 
-              onClick={() => setProfileOpen(!profileOpen)}
-              className="h-11 px-7 bg-transparent hover:bg-white/10 text-white border border-white/15 transition-all text-xs tracking-wider font-grotesque font-bold rounded-full shadow-md flex items-center justify-center shrink-0 cursor-pointer"
-            >
-              {userName}
-            </button>
-
-            {profileOpen && (
-              <div className="absolute right-0 mt-3 w-72 bg-neutral-900 border border-white/15 shadow-2xl rounded-3xl py-2 z-50 font-grotesque text-xs text-white">
-                <div className="flex items-center gap-3 px-5 py-3 border-b border-white/10 bg-neutral-950/50">
-                  <div className="min-w-0">
-                    <p className="font-bold truncate text-white">{userName}</p>
-                    <p className="text-[10px] text-white/50 truncate lowercase">{user.email}</p>
-                  </div>
-                </div>
-
-                <div className="py-2 space-y-1 px-2">
-                  <Link 
-                    href="/settings" 
-                    onClick={() => setProfileOpen(false)}
-                    className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 hover:text-white transition-colors tracking-wide font-bold text-white/80"
-                  >
-                    <span>PROFIL</span>
-                  </Link>
-
-                  <Link 
-                    href="/settings/security" 
-                    onClick={() => setProfileOpen(false)}
-                    className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 hover:text-white transition-colors tracking-wide font-bold text-white/80"
-                  >
-                    <Shield className="w-4 h-4 text-white" />
-                    <span>SÉCURITÉ</span>
-                  </Link>
-
-                  <Link 
-                    href="/settings/preferences" 
-                    onClick={() => setProfileOpen(false)}
-                    className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 hover:text-white transition-colors tracking-wide font-bold text-white/80"
-                  >
-                    <Sliders className="w-4 h-4 text-white" />
-                    <span>PRÉFÉRENCES</span>
-                  </Link>
-                </div>
-
-                <div className="border-t border-white/10 pt-2 px-2">
-                  <button
-                    onClick={() => {
-                      setProfileOpen(false);
-                      handleLogout();
-                    }}
-                    className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-white hover:bg-neutral-800 transition-colors tracking-wide font-bold cursor-pointer"
-                  >
-                    <LogOut className="w-4 h-4" />
-                    <span>SE DÉCONNECTER</span>
-                  </button>
-                </div>
-              </div>
-            )}
-          </div>
+        {/* 3. Bloc droite : Bulles PARAMÈTRES et SE DÉCONNECTER */}
+        <div className="hidden lg:flex items-center justify-end gap-3 shrink-0">
+          <Link
+            href="/settings"
+            className="h-11 px-5 flex items-center justify-center rounded-full transition-all font-grotesque text-xs tracking-wider border whitespace-nowrap shadow-md leading-none bg-transparent text-white/80 border-white/15 hover:bg-white/10 hover:text-white font-bold"
+          >
+            PARAMÈTRES
+          </Link>
+          <button
+            onClick={handleLogout}
+            className="h-11 px-5 flex items-center justify-center rounded-full transition-all font-grotesque text-xs tracking-wider border whitespace-nowrap shadow-md leading-none bg-transparent text-white/80 border-white/15 hover:bg-white/10 hover:text-white font-bold cursor-pointer"
+          >
+            SE DÉCONNECTER
+          </button>
         </div>
 
       </header>
@@ -202,7 +127,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       </div>
 
       {/* Conteneur principal */}
-      <main className="flex-1 w-full pt-20 lg:pt-20 p-8 bg-[#0f0f0f] font-grotesque text-white">
+      <main className="flex-1 w-full pt-24 lg:pt-28 pb-12 bg-[#0f0f0f] font-grotesque text-white">
         {children}
       </main>
 
