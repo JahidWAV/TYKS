@@ -5,19 +5,16 @@ import { ArrowUpRight, Loader2, DollarSign, ShieldCheck, Zap, Database, Check, S
 import { supabaseBrowser } from '@/lib/supabase-browser';
 
 export default function ProLandingPage() {
-  const [authLoading, setAuthLoading] = useState<string | null>(null); // 'standard' | 'pro' | null
+  const [authLoading, setAuthLoading] = useState<string | null>(null);
 
   const handleGoogleLogin = async (selectedPlan: 'standard' | 'pro') => {
     try {
       setAuthLoading(selectedPlan);
-      
-      // On stocke le choix du plan dans le localStorage pour le récupérer après l'authentification
-      localStorage.setItem('tyks_selected_plan', selectedPlan);
 
       const { error } = await supabaseBrowser.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/auth/callback`,
+          redirectTo: `${window.location.origin}/auth/callback?plan=${selectedPlan}`,
         },
       });
       if (error) throw error;
