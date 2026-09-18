@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { headers } from 'next/headers';
 import { Inter, Space_Grotesk, JetBrains_Mono } from 'next/font/google';
+import { Analytics } from '@vercel/analytics/next';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import './globals.css';
@@ -60,6 +61,7 @@ export default async function RootLayout({
         {/* Footer public masqué sur tyks.app */}
         {!isAppDomain && <Footer />}
 
+        <Analytics />
       </body>
     </html>
   );
