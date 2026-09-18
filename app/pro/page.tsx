@@ -1,27 +1,16 @@
 'use client';
 
 import { useState } from 'react';
-import { ArrowUpRight, Loader2, DollarSign, ShieldCheck, Zap, Database, Check, Smartphone } from 'lucide-react';
-import { supabaseBrowser } from '@/lib/supabase-browser';
+import { ArrowUpRight, DollarSign, ShieldCheck, Zap, Database, Check, Smartphone } from 'lucide-react';
+import CustomAuthModal from '@/components/CustomAuthModal';
 
 export default function ProLandingPage() {
-  const [authLoading, setAuthLoading] = useState<string | null>(null);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
-  const handleGoogleLogin = async (selectedPlan: 'standard' | 'pro') => {
-    try {
-      setAuthLoading(selectedPlan);
-
-      const { error } = await supabaseBrowser.auth.signInWithOAuth({
-        provider: 'google',
-        options: {
-          redirectTo: `${window.location.origin}/auth/callback?plan=${selectedPlan}`,
-        },
-      });
-      if (error) throw error;
-    } catch (err) {
-      console.error('Erreur de connexion :', err);
-      setAuthLoading(null);
-    }
+  const handleOpenAuth = (selectedPlan: 'standard' | 'pro') => {
+    // On stocke le plan choisi pour pouvoir le récupérer après la connexion dans le callback
+    localStorage.setItem('tyks_selected_plan', selectedPlan);
+    setIsAuthModalOpen(true);
   };
 
   return (
@@ -46,18 +35,11 @@ export default function ProLandingPage() {
 
             <div className="pt-2">
               <button
-                onClick={() => handleGoogleLogin('standard')}
-                disabled={authLoading !== null}
-                className="h-12 px-8 bg-white hover:bg-neutral-200 text-black font-bold text-xs uppercase tracking-wider transition-all duration-300 flex items-center justify-center rounded-full shadow-lg cursor-pointer disabled:opacity-50"
+                onClick={() => handleOpenAuth('standard')}
+                className="h-12 px-8 bg-white hover:bg-neutral-200 text-black font-bold text-xs uppercase tracking-wider transition-all duration-300 flex items-center justify-center rounded-full shadow-lg cursor-pointer"
               >
-                {authLoading === 'standard' ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                ) : (
-                  <>
-                    <span>ACCÉDER À MON ESPACE PRO</span>
-                    <ArrowUpRight className="w-4 h-4 ml-2" />
-                  </>
-                )}
+                <span>ACCÉDER À MON ESPACE PRO</span>
+                <ArrowUpRight className="w-4 h-4 ml-2" />
               </button>
             </div>
           </div>
@@ -183,11 +165,10 @@ export default function ProLandingPage() {
               </div>
 
               <button
-                onClick={() => handleGoogleLogin('standard')}
-                disabled={authLoading !== null}
-                className="w-full h-12 rounded-full border border-white/20 bg-white/5 hover:bg-white/10 text-white font-bold text-xs uppercase tracking-wider transition-all duration-300 cursor-pointer flex items-center justify-center disabled:opacity-50"
+                onClick={() => handleOpenAuth('standard')}
+                className="w-full h-12 rounded-full border border-white/20 bg-white/5 hover:bg-white/10 text-white font-bold text-xs uppercase tracking-wider transition-all duration-300 cursor-pointer flex items-center justify-center"
               >
-                {authLoading === 'standard' ? <Loader2 className="h-4 w-4 animate-spin" /> : 'COMMENCER GRATUITEMENT'}
+                COMMENCER GRATUITEMENT
               </button>
             </div>
 
@@ -229,16 +210,21 @@ export default function ProLandingPage() {
               </div>
 
               <button
-                onClick={() => handleGoogleLogin('pro')}
-                disabled={authLoading !== null}
-                className="w-full h-12 rounded-full bg-white hover:bg-neutral-200 text-black font-bold text-xs uppercase tracking-wider transition-all duration-300 cursor-pointer flex items-center justify-center shadow-lg disabled:opacity-50"
+                onClick={() => handleOpenAuth('pro')}
+                className="w-full h-12 rounded-full bg-white hover:bg-neutral-200 text-black font-bold text-xs uppercase tracking-wider transition-all duration-300 cursor-pointer flex items-center justify-center shadow-lg"
               >
-                {authLoading === 'pro' ? <Loader2 className="h-4 w-4 animate-spin text-black" /> : 'DEVENIR PARTENAIRE PRO'}
+                DEVENIR PARTENAIRE PRO
               </button>
             </div>
           </div>
         </div>
       </section>
+
+      {/* Modale d'authentification personnalisée */}
+      <CustomAuthModal 
+        isOpen={isAuthModalOpen} 
+        onClose={() => setIsAuthModalOpen(false)} 
+      />
 
     </div>
   );
