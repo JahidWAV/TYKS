@@ -285,7 +285,7 @@ export default function OrganizerDashboard() {
                       {/* Boutons modifier et supprimer */}
                       <div className="flex items-center gap-2">
                         <Link
-                          href={`/dashboard/admin-events/${evt.slug || evt.id}/edit`}
+                          href={`/events/${evt.slug || evt.id}/edit`}
                           className="w-9 h-9 rounded-full border border-white/20 bg-neutral-900 text-white flex items-center justify-center hover:bg-white hover:text-black transition-colors cursor-pointer shadow-xs"
                           title="MODIFIER"
                         >
