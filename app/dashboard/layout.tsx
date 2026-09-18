@@ -55,32 +55,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   return (
     <div className="min-h-screen bg-[#0f0f0f] text-white font-sans selection:bg-white selection:text-black flex flex-col uppercase overflow-x-hidden">
 
-      {/* Barre de navigation horizontale : alignée exactement sur la grille à 3 colonnes des cartes (px de 6/12 et gap-6) */}
-      <header className="fixed top-0 left-0 right-0 h-20 border-b border-white/10 bg-[#0f0f0f] grid grid-cols-[1fr_auto_1fr] items-center px-6 lg:px-12 z-50 select-none">
+      {/* Barre de navigation horizontale à deux étages */}
+      <header className="fixed top-0 left-0 right-0 border-b border-white/10 bg-[#0f0f0f] z-50 select-none flex flex-col">
         
-        {/* 1. Menu de gauche : 3 bulles occupant précisément la largeur de la première colonne de cartes */}
-        <nav className="hidden lg:grid grid-cols-3 gap-6 font-grotesque w-full">
-          {navItems.map((item) => {
-            const isActive = pathname === item.href;
-
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={`h-11 w-full flex items-center justify-center rounded-full transition-all font-grotesque text-xs tracking-wider border whitespace-nowrap shadow-md leading-none ${
-                  isActive
-                    ? 'bg-white text-black border-white font-bold'
-                    : 'bg-transparent text-white/80 border-white/15 hover:bg-white/10 hover:text-white'
-                }`}
-              >
-                <span className="truncate">{item.label}</span>
-              </Link>
-            );
-          })}
-        </nav>
-
-        {/* 2. Bloc milieu : Logo centré */}
-        <div className="flex items-center justify-center px-8">
+        {/* Étage 1 : Logo centré */}
+        <div className="h-20 w-full flex items-center justify-center border-b border-white/10 bg-[#0f0f0f]">
           <Link href="/" className="flex items-center group py-2">
             <Image 
               src="/tyks.svg" 
@@ -93,40 +72,69 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           </Link>
         </div>
 
-        {/* 3. Bloc droite : 3 bulles occupant précisément la largeur de la dernière colonne de cartes */}
-        <div className="hidden lg:grid grid-cols-3 gap-6 font-grotesque w-full justify-self-end">
-          <Link
-            href="/settings"
-            className={`h-11 w-full flex items-center justify-center rounded-full transition-all font-grotesque text-xs tracking-wider border whitespace-nowrap shadow-md leading-none ${
-              isProfileActive
-                ? 'bg-white text-black border-white font-bold'
-                : 'bg-transparent text-white/80 border-white/15 hover:bg-white/10 hover:text-white'
-            }`}
-          >
-            PROFIL
-          </Link>
-          <Link
-            href="/settings"
-            className={`h-11 w-full flex items-center justify-center rounded-full transition-all font-grotesque text-xs tracking-wider border whitespace-nowrap shadow-md leading-none ${
-              isSettingsActive
-                ? 'bg-white text-black border-white font-bold'
-                : 'bg-transparent text-white/80 border-white/15 hover:bg-white/10 hover:text-white'
-            }`}
-          >
-            PARAMÈTRES
-          </Link>
-          <button
-            onClick={handleLogout}
-            className="h-11 w-full flex items-center justify-center rounded-full transition-all font-grotesque text-xs tracking-wider border whitespace-nowrap shadow-md leading-none bg-transparent text-white/80 border-white/15 hover:bg-white/10 hover:text-white cursor-pointer"
-          >
-            DÉCONNEXION
-          </button>
+        {/* Étage 2 : Catégories à gauche et boutons de droite, alignés sur les cartes */}
+        <div className="w-full grid grid-cols-[1fr_auto_1fr] items-center px-6 lg:px-12 py-3 bg-[#0f0f0f]">
+          
+          {/* Menu de gauche : 3 bulles */}
+          <nav className="hidden lg:grid grid-cols-3 gap-6 font-grotesque w-full">
+            {navItems.map((item) => {
+              const isActive = pathname === item.href;
+
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={`h-11 w-full flex items-center justify-center rounded-full transition-all font-grotesque text-xs tracking-wider border whitespace-nowrap shadow-md leading-none ${
+                    isActive
+                      ? 'bg-white text-black border-white font-bold'
+                      : 'bg-transparent text-white/80 border-white/15 hover:bg-white/10 hover:text-white'
+                  }`}
+                >
+                  <span className="truncate">{item.label}</span>
+                </Link>
+              );
+            })}
+          </nav>
+
+          {/* Espace vide central pour conserver la structure de la grille */}
+          <div className="hidden lg:block"></div>
+
+          {/* Menu de droite : 3 bulles */}
+          <div className="hidden lg:grid grid-cols-3 gap-6 font-grotesque w-full justify-self-end">
+            <Link
+              href="/settings"
+              className={`h-11 w-full flex items-center justify-center rounded-full transition-all font-grotesque text-xs tracking-wider border whitespace-nowrap shadow-md leading-none ${
+                isProfileActive
+                  ? 'bg-white text-black border-white font-bold'
+                  : 'bg-transparent text-white/80 border-white/15 hover:bg-white/10 hover:text-white'
+              }`}
+            >
+              PROFIL
+            </Link>
+            <Link
+              href="/settings"
+              className={`h-11 w-full flex items-center justify-center rounded-full transition-all font-grotesque text-xs tracking-wider border whitespace-nowrap shadow-md leading-none ${
+                isSettingsActive
+                  ? 'bg-white text-black border-white font-bold'
+                  : 'bg-transparent text-white/80 border-white/15 hover:bg-white/10 hover:text-white'
+              }`}
+            >
+              PARAMÈTRES
+            </Link>
+            <button
+              onClick={handleLogout}
+              className="h-11 w-full flex items-center justify-center rounded-full transition-all font-grotesque text-xs tracking-wider border whitespace-nowrap shadow-md leading-none bg-transparent text-white/80 border-white/15 hover:bg-white/10 hover:text-white cursor-pointer"
+            >
+              DÉCONNEXION
+            </button>
+          </div>
+
         </div>
 
       </header>
 
       {/* Menu mobile (écrans petits) */}
-      <div className="flex lg:hidden items-center justify-around bg-neutral-950 border-b border-white/10 px-4 py-3 fixed top-20 left-0 right-0 z-40">
+      <div className="flex lg:hidden items-center justify-around bg-neutral-950 border-b border-white/10 px-4 py-3 fixed top-[132px] left-0 right-0 z-40">
         {navItems.map((item) => {
           const isActive = pathname === item.href;
           return (
@@ -144,7 +152,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       </div>
 
       {/* Conteneur principal */}
-      <main className="flex-1 w-full pt-28 lg:pt-32 pb-12 bg-[#0f0f0f] font-grotesque text-white">
+      <main className="flex-1 w-full pt-36 lg:pt-40 pb-12 bg-[#0f0f0f] font-grotesque text-white">
         {children}
       </main>
 
