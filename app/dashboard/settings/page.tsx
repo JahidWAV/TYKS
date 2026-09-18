@@ -38,15 +38,6 @@ export default function SettingsPage() {
     { id: "danger", title: "Danger", icon: Shield, desc: "Suppression du compte" },
   ];
 
-  // Calcul du pourcentage de complétion du profil
-  const calculateCompletion = () => {
-    const fields = [firstName, lastName, birthDate, address, postalCode, city];
-    const filledFields = fields.filter((field) => field && field.trim() !== "").length;
-    return Math.round((filledFields / fields.length) * 100);
-  };
-
-  const profileCompletion = calculateCompletion();
-
   useEffect(() => {
     const fetchUserData = async () => {
       const { data: { session } } = await supabaseBrowser.auth.getSession();
@@ -117,7 +108,7 @@ export default function SettingsPage() {
         });
 
       if (error) throw error;
-      setSuccessMessage("Profil enregistré avec succès dans la table profiles !");
+      setSuccessMessage("Profil enregistré avec succès !");
     } catch (err: any) {
       setErrorMessage(err.message || "Erreur lors de la sauvegarde.");
     } finally {
@@ -136,23 +127,6 @@ export default function SettingsPage() {
   return (
     <div className="w-full px-6 lg:px-12 py-10 space-y-8 font-grotesque text-white bg-[#0f0f0f] min-h-full">
       <div className="space-y-8">
-        
-        {/* En-tête avec bulle en haut à droite */}
-        <div className="flex items-center justify-end pb-2">
-          <div className="flex items-center gap-3 bg-neutral-900 border border-white/15 rounded-3xl px-5 py-3 shadow-lg">
-            <div className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center text-xs font-bold text-white">
-              {firstName ? firstName.charAt(0).toUpperCase() : email.charAt(0).toUpperCase()}
-            </div>
-            <div className="space-y-0.5">
-              <p className="text-xs font-bold tracking-wider text-white">
-                {firstName ? `${firstName} ${lastName}` : email}
-              </p>
-              <p className="text-[10px] text-white/50">
-                Profil complété à {profileCompletion}%
-              </p>
-            </div>
-          </div>
-        </div>
 
         {successMessage && (
           <div className="flex items-center gap-2 rounded-2xl border border-white/20 bg-white/5 px-5 py-3 text-xs text-white tracking-wider">
@@ -203,7 +177,6 @@ export default function SettingsPage() {
                 <div className="flex items-center justify-between border-b border-white/10 pb-4">
                   <div className="space-y-1">
                     <h2 className="text-xs font-bold tracking-wider text-white">Informations personnelles & Adresse</h2>
-                    <p className="text-[11px] text-white/50">Enregistré dans la table publique <code className="bg-neutral-950 border border-white/10 px-1.5 py-0.5 rounded text-white">profiles</code>.</p>
                   </div>
                   <button
                     type="submit"
