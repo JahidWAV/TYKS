@@ -2,15 +2,15 @@
 
 import { useState } from 'react';
 import { ArrowUpRight, DollarSign, ShieldCheck, Zap, Database, Check, Smartphone } from 'lucide-react';
-import CustomAuthModal from '@/components/CustomAuthModal';
+import ProOnboardingModal from '@/components/ProOnboardingModal';
 
 export default function ProLandingPage() {
-  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [isProModalOpen, setIsProModalOpen] = useState(false);
+  const [selectedPlan, setSelectedPlan] = useState<'standard' | 'pro'>('standard');
 
-  const handleOpenAuth = (selectedPlan: 'standard' | 'pro') => {
-    // On stocke le plan choisi pour pouvoir le récupérer après la connexion dans le callback
-    localStorage.setItem('tyks_selected_plan', selectedPlan);
-    setIsAuthModalOpen(true);
+  const handleOpenProModal = (plan: 'standard' | 'pro') => {
+    setSelectedPlan(plan);
+    setIsProModalOpen(true);
   };
 
   return (
@@ -35,7 +35,7 @@ export default function ProLandingPage() {
 
             <div className="pt-2">
               <button
-                onClick={() => handleOpenAuth('standard')}
+                onClick={() => handleOpenProModal('standard')}
                 className="h-12 px-8 bg-white hover:bg-neutral-200 text-black font-bold text-xs uppercase tracking-wider transition-all duration-300 flex items-center justify-center rounded-full shadow-lg cursor-pointer"
               >
                 <span>ACCÉDER À MON ESPACE PRO</span>
@@ -165,7 +165,7 @@ export default function ProLandingPage() {
               </div>
 
               <button
-                onClick={() => handleOpenAuth('standard')}
+                onClick={() => handleOpenProModal('standard')}
                 className="w-full h-12 rounded-full border border-white/20 bg-white/5 hover:bg-white/10 text-white font-bold text-xs uppercase tracking-wider transition-all duration-300 cursor-pointer flex items-center justify-center"
               >
                 COMMENCER GRATUITEMENT
@@ -210,7 +210,7 @@ export default function ProLandingPage() {
               </div>
 
               <button
-                onClick={() => handleOpenAuth('pro')}
+                onClick={() => handleOpenProModal('pro')}
                 className="w-full h-12 rounded-full bg-white hover:bg-neutral-200 text-black font-bold text-xs uppercase tracking-wider transition-all duration-300 cursor-pointer flex items-center justify-center shadow-lg"
               >
                 DEVENIR PARTENAIRE PRO
@@ -220,10 +220,11 @@ export default function ProLandingPage() {
         </div>
       </section>
 
-      {/* Modale d'authentification personnalisée */}
-      <CustomAuthModal 
-        isOpen={isAuthModalOpen} 
-        onClose={() => setIsAuthModalOpen(false)} 
+      {/* Modale d'onboarding pro multi-étapes */}
+      <ProOnboardingModal 
+        isOpen={isProModalOpen} 
+        onClose={() => setIsProModalOpen(false)} 
+        selectedPlan={selectedPlan}
       />
 
     </div>
