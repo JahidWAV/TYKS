@@ -2,12 +2,18 @@ import { NextResponse } from 'next/server';
 import { supabaseServer } from '@/lib/supabase-server';
 import Stripe from 'stripe';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
-  typescript: true,
-});
-
 export async function POST(req: Request) {
   try {
+    // Initialisation sécurisée à l'intérieur de la fonction (exécutée uniquement lors d'une vraie requête HTTP, pas au build)
+    const stripeKey = process.env.STRIPE_SECRET_KEY;
+    if (!stripeKey) {
+      return NextResponse.json({ error: 'Configuration Stripe manquante' }, { status: 500 });
+    }
+
+    const stripe = new Stripe(stripeKey, {
+      typescript: true,
+    });
+
     const { eventId, quantity, unitPrice, includeSupport } = await req.json();
 
     const { data: event, error } = await supabaseServer
@@ -20,7 +26,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Événement introuvable' }, { status: 404 });
     }
 
-    // 1. Ce que touche l'organisateur (ex: 10.00€ par billet)
+    // 1. Ce que touche l'organisateur
     const organizerBaseAmount = unitPrice * quantity;
     
     if (organizerBaseAmount === 0) {
@@ -31,20 +37,19 @@ export async function POST(req: Request) {
       });
     }
 
-    // 2. Tes frais de service plateforme (ex: 0.90€ par billet) qui s'ajoutent pour l'acheteur
+    // 2. Frais de service plateforme
     const platformFeePerTicket = 0.90;
     const totalPlatformFee = platformFeePerTicket * quantity;
 
-    // 3. Sous-total avant frais bancaires Stripe (Organisateur + Plateforme)
+    // 3. Sous-total avant frais bancaires Stripe
     const subtotal = organizerBaseAmount + totalPlatformFee;
 
-    // 4. Calcul des frais Stripe réels estimés sur le total payé par l'acheteur (~1.5% + 0.25€ en Europe)
-    // Formule mathématique pour que les frais Stripe soient entièrement à la charge de l'acheteur sans mordre sur ta com ou celle de l'org.
+    // 4. Calcul des frais Stripe réels estimés
     const stripePercentage = 0.015;
     const stripeFixed = 0.25;
     const estimatedStripeFees = (subtotal + stripeFixed) / (1 - stripePercentage) - subtotal;
 
-    // 5. Total final exact facturé à l'acheteur (Prix billet + Tes frais + Frais Stripe)
+    // 5. Total final exact facturé à l'acheteur
     const finalTotalAmount = subtotal + estimatedStripeFees;
     const totalAmountCents = Math.round(finalTotalAmount * 100);
 
