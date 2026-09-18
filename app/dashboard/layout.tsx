@@ -1,32 +1,17 @@
 'use client';
 
-import { useEffect, useState, createContext, useContext } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import { supabaseBrowser } from '@/lib/supabase-browser';
-
-// Contexte pour permettre aux pages enfants de déclencher la modale de suppression
-interface DeleteModalContextType {
-  openDeleteModal: (event: { id: string; title: string }, onDeleteSuccess: () => void) => void;
-}
-
-const DeleteModalContext = createContext<DeleteModalContextType | null>(null);
-
-export const useDeleteModal = () => {
-  const context = useContext(DeleteModalContext);
-  if (!context) {
-    throw new Error("useDeleteModal doit être utilisé à l'intérieur d'un DashboardLayout");
-  }
-  return context;
-};
+import { DeleteModalContext } from './DeleteModalContext'; // <-- Import depuis le nouveau fichier
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
   const [user, setUser] = useState<any>(undefined);
 
-  // États pour la modale globale
   const [eventToDelete, setEventToDelete] = useState<{ id: string; title: string } | null>(null);
   const [onSuccessCallback, setOnSuccessCallback] = useState<(() => void) | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -105,7 +90,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     <DeleteModalContext.Provider value={{ openDeleteModal }}>
       <div className="min-h-screen bg-[#0f0f0f] text-white font-sans selection:bg-white selection:text-black flex flex-col uppercase overflow-x-hidden relative">
 
-        {/* Barre de navigation horizontale */}
         <header className="fixed top-0 left-0 right-0 h-20 border-b border-white/10 bg-[#0f0f0f] flex items-center justify-between px-6 lg:px-12 z-40 select-none">
           <div className="flex items-center">
             <Link href="/" className="flex items-center group py-2">
@@ -173,7 +157,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           </div>
         </header>
 
-        {/* Menu mobile */}
         <div className="flex lg:hidden items-center justify-around bg-neutral-950 border-b border-white/10 px-4 py-3 fixed top-20 left-0 right-0 z-30 overflow-x-auto">
           {navItems.map((item) => {
             const isActive = pathname === item.href;
@@ -191,12 +174,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           })}
         </div>
 
-        {/* Conteneur principal */}
         <main className="flex-1 w-full pt-28 lg:pt-32 pb-12 bg-[#0f0f0f] font-grotesque text-white">
           {children}
         </main>
 
-        {/* MODALE DE SUPPRESSION GLOBALE (Floute absolument tout l'écran, y compris le header) */}
         {eventToDelete && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4 w-screen h-screen">
             <div className="w-full max-w-md rounded-3xl border border-white/15 bg-[#0f0f0f] p-8 space-y-6 shadow-2xl font-grotesque text-white relative">
