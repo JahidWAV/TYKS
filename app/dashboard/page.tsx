@@ -21,7 +21,6 @@ export default function OrganizerDashboard() {
   const [searchQuery, setSearchQuery] = useState('');
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
-  // État pour gérer l'ouverture du popup de suppression personnalisé
   const [eventToDelete, setEventToDelete] = useState<IortiEvent | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
@@ -125,7 +124,7 @@ export default function OrganizerDashboard() {
               Reprenez le contrôle de votre billetterie et de vos marges.
             </h1>
             <p className="font-grotesque text-xs leading-relaxed text-white/70 max-w-md normal-case">
-              Fins de commissions abusives et de données captives. Tyks Pro vous offre une plateforme sur-mesure, des frais réduits et l'accès direct à votre communauté.
+              Fins de commissions abusives et de données captives. Tyks Pro vous offre une plateforme sur-mesure, des frais réduits et l&apos;accès direct à votre communauté.
             </p>
             <div>
               <button
@@ -311,15 +310,14 @@ export default function OrganizerDashboard() {
         )}
       </div>
 
-      {/* POPUP DE SUPPRESSION PERSONNALISÉ (DA #0f0f0f, full rounded, grotesque, non full-cap pour le confort de lecture) */}
+      {/* POPUP DE SUPPRESSION PERSONNALISÉ (DA #0f0f0f, full rounded, grotesque, texte en casse normale) */}
       {eventToDelete && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-fadeIn">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
           <div className="w-full max-w-md rounded-3xl border border-white/15 bg-[#0f0f0f] p-8 space-y-6 shadow-2xl font-grotesque text-white relative">
             
-            {/* Bouton croix de fermeture */}
             <button 
               onClick={() => setEventToDelete(null)}
-              className="absolute top-6 right-6 text-white/50 hover:text-white transition-colors p-1"
+              className="absolute top-6 right-6 text-white/50 hover:text-white transition-colors p-1 cursor-pointer"
             >
               <X className="w-5 h-5" />
             </button>
@@ -328,13 +326,13 @@ export default function OrganizerDashboard() {
               <div className="w-10 h-10 rounded-full bg-red-500/10 border border-red-500/20 flex items-center justify-center shrink-0">
                 <AlertTriangle className="w-5 h-5" />
               </div>
-              <h3 className="text-lg font-bold uppercase tracking-wide">
+              <h3 className="text-base font-bold tracking-wide">
                 Supprimer l'événement
               </h3>
             </div>
 
-            <p className="text-xs text-white/70 leading-relaxed">
-              Êtes-vous sûr de vouloir supprimer définitivement l'événement <strong className="text-white uppercase">"{eventToDelete.title}"</strong> ? Cette action est irréversible et supprimera toutes les données associées.
+            <p className="text-xs text-white/70 leading-relaxed normal-case">
+              Êtes-vous sûr de vouloir supprimer définitivement l'événement <span className="text-white font-medium">&ldquo;{eventToDelete.title}&rdquo;</span> ? Cette action est irréversible et supprimera toutes les données associées.
             </p>
 
             <div className="flex items-center justify-end gap-3 pt-2">
