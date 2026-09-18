@@ -49,6 +49,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     return <main className="min-h-screen w-full bg-[#0f0f0f]">{children}</main>;
   }
 
+  const isProfileActive = pathname === '/settings'; // ou /settings/profile selon ta route
   const isSettingsActive = pathname.startsWith('/settings');
 
   return (
@@ -57,7 +58,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       {/* Barre de navigation horizontale */}
       <header className="fixed top-0 left-0 right-0 h-20 border-b border-white/10 bg-[#0f0f0f] flex items-center justify-between px-6 lg:px-12 z-50 select-none">
         
-        {/* 1. Menu de gauche : Catégories */}
+        {/* 1. Menu de gauche : 3 bulles (ÉVÉNEMENTS, STATISTIQUES, FINANCES) */}
         <nav className="hidden lg:flex items-center justify-start gap-3 font-grotesque shrink-0">
           {navItems.map((item) => {
             const isActive = pathname === item.href;
@@ -92,11 +93,21 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           </Link>
         </div>
 
-        {/* 3. Bloc droite : Bulles PARAMÈTRES et SE DÉCONNECTER */}
+        {/* 3. Bloc droite : 3 bulles (PROFIL, PARAMÈTRES, SE DÉCONNECTER) calibrées à w-40 */}
         <div className="hidden lg:flex items-center justify-end gap-3 shrink-0">
           <Link
             href="/settings"
-            className={`h-11 px-5 flex items-center justify-center rounded-full transition-all font-grotesque text-xs tracking-wider border whitespace-nowrap shadow-md leading-none font-bold ${
+            className={`h-11 w-40 flex items-center justify-center rounded-full transition-all font-grotesque text-xs tracking-wider border whitespace-nowrap shadow-md leading-none font-bold ${
+              isProfileActive
+                ? 'bg-white text-black border-white'
+                : 'bg-transparent text-white/80 border-white/15 hover:bg-white/10 hover:text-white'
+            }`}
+          >
+            PROFIL
+          </Link>
+          <Link
+            href="/settings"
+            className={`h-11 w-40 flex items-center justify-center rounded-full transition-all font-grotesque text-xs tracking-wider border whitespace-nowrap shadow-md leading-none font-bold ${
               isSettingsActive
                 ? 'bg-white text-black border-white'
                 : 'bg-transparent text-white/80 border-white/15 hover:bg-white/10 hover:text-white'
@@ -106,7 +117,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           </Link>
           <button
             onClick={handleLogout}
-            className="h-11 px-5 flex items-center justify-center rounded-full transition-all font-grotesque text-xs tracking-wider border whitespace-nowrap shadow-md leading-none bg-transparent text-white/80 border-white/15 hover:bg-white/10 hover:text-white font-bold cursor-pointer"
+            className="h-11 w-40 flex items-center justify-center rounded-full transition-all font-grotesque text-xs tracking-wider border whitespace-nowrap shadow-md leading-none bg-transparent text-white/80 border-white/15 hover:bg-white/10 hover:text-white font-bold cursor-pointer"
           >
             SE DÉCONNECTER
           </button>
