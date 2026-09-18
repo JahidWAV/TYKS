@@ -172,27 +172,33 @@ export default function OrganizerDashboard() {
   return (
     <div className="w-full px-6 lg:px-12 pt-4 pb-12 space-y-8 font-grotesque text-white bg-[#0f0f0f] min-h-full uppercase">
       
-      {/* Search & Counter alignés sur la grille à 3 colonnes des cartes */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 items-center gap-4 pt-2">
-        {/* Colonne 1 et 2 fusionnées pour centrer parfaitement la barre de recherche sur la taille de 2 cartes */}
-        <div className="lg:col-span-2 flex justify-center w-full">
-          <div className="relative w-full max-w-xl">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-white/40" />
-            <input
-              type="text"
-              placeholder="RECHERCHER PAR TITRE OU LIEU..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full h-11 rounded-full border border-white/15 bg-neutral-900 pl-11 pr-4 font-grotesque text-xs text-white placeholder:text-white/40 focus:outline-none focus:border-white shadow-xs"
-            />
-          </div>
-        </div>
+      {/* Barre unifiée (Recherche + Compte) centrée sur la grille à 3 colonnes */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 items-center pt-2">
+        {/* Colonne centrale occupée par une seule grande bulle contenant les deux sections */}
+        <div className="lg:col-start-2 lg:col-span-1 flex justify-center w-full">
+          <div className="w-full h-11 rounded-full border border-white/15 bg-neutral-900 flex items-center justify-between px-4 shadow-md">
+            
+            {/* Partie gauche : Champ de recherche intégré */}
+            <div className="flex items-center gap-2 flex-1">
+              <Search className="h-4 w-4 text-white/40 shrink-0" />
+              <input
+                type="text"
+                placeholder="RECHERCHER PAR TITRE OU LIEU..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full bg-transparent font-grotesque text-xs text-white placeholder:text-white/40 focus:outline-none"
+              />
+            </div>
 
-        {/* Colonne 3 : Compte d'événements aligné et collé à droite de la 3e colonne */}
-        <div className="flex justify-end w-full">
-          <span className="font-grotesque text-xs text-white/60">
-            {filteredEvents.length} ÉVÉNEMENT(S)
-          </span>
+            {/* Séparateur vertical entre les deux parties de la bulle */}
+            <div className="h-4 w-[1px] bg-white/15 mx-3 shrink-0" />
+
+            {/* Partie droite : Compteur d'événements */}
+            <span className="font-grotesque text-xs text-white/70 whitespace-nowrap shrink-0">
+              {filteredEvents.length} ÉVÉNEMENT(S)
+            </span>
+
+          </div>
         </div>
       </div>
 
