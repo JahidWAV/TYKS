@@ -135,46 +135,34 @@ export default function SettingsPage() {
 
   return (
     <div className="w-full px-6 lg:px-12 py-10 space-y-8 font-grotesque text-white bg-[#0f0f0f] min-h-full">
-      <div className="space-y-10">
+      <div className="space-y-8">
         
-        {/* En-tête */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 border-b border-white/10">
-          <div className="space-y-2">
-            <h1 className="text-3xl lg:text-5xl font-bold tracking-tight leading-none text-white">Paramètres</h1>
-            <p className="text-xs tracking-wider text-white/50">Espace personnel & table profiles</p>
-          </div>
-
-          <div className="flex items-center gap-4 bg-neutral-900 border border-white/15 rounded-2xl p-4 shadow-lg">
-            <div className="relative flex items-center justify-center">
-              <div className="w-12 h-12 rounded-full border-4 border-white/10 text-white flex items-center justify-center text-xs font-bold">
-                {profileCompletion}%
-              </div>
+        {/* En-tête avec bulle en haut à droite */}
+        <div className="flex items-center justify-end pb-2">
+          <div className="flex items-center gap-3 bg-neutral-900 border border-white/15 rounded-3xl px-5 py-3 shadow-lg">
+            <div className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center text-xs font-bold text-white">
+              {firstName ? firstName.charAt(0).toUpperCase() : email.charAt(0).toUpperCase()}
             </div>
             <div className="space-y-0.5">
-              <div className="flex items-center gap-2">
-                <p className="text-xs font-bold tracking-wider text-white">Complétion</p>
-                {profileCompletion < 100 && (
-                  <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] bg-white/10 text-white border border-white/20 font-bold">
-                    Incomplet
-                  </span>
-                )}
-              </div>
+              <p className="text-xs font-bold tracking-wider text-white">
+                {firstName ? `${firstName} ${lastName}` : email}
+              </p>
               <p className="text-[10px] text-white/50">
-                {profileCompletion === 100 ? "Profil à 100%, parfait !" : "Remplissez vos champs manquants"}
+                Profil complété à {profileCompletion}%
               </p>
             </div>
           </div>
         </div>
 
         {successMessage && (
-          <div className="flex items-center gap-2 rounded-xl border border-white/20 bg-white/5 px-5 py-3 text-xs text-white tracking-wider">
+          <div className="flex items-center gap-2 rounded-2xl border border-white/20 bg-white/5 px-5 py-3 text-xs text-white tracking-wider">
             <Check className="h-4 w-4 shrink-0 text-white" />
             <span>{successMessage}</span>
           </div>
         )}
 
         {errorMessage && (
-          <div className="rounded-xl border border-red-500/30 bg-red-950/20 px-5 py-3 text-xs text-red-300 tracking-wider">
+          <div className="rounded-2xl border border-red-500/30 bg-red-950/20 px-5 py-3 text-xs text-red-300 tracking-wider">
             <span>{errorMessage}</span>
           </div>
         )}
@@ -190,7 +178,7 @@ export default function SettingsPage() {
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`flex items-center gap-3 p-4 rounded-2xl border transition-all text-left cursor-pointer ${
+                  className={`flex items-center gap-3 p-4 rounded-3xl border transition-all text-left cursor-pointer ${
                     isActive
                       ? "bg-white text-black border-white shadow-lg font-bold"
                       : "bg-neutral-900 text-white/80 border-white/15 hover:bg-white/10 hover:text-white"
@@ -207,7 +195,7 @@ export default function SettingsPage() {
           </div>
 
           {/* Panneau de contenu */}
-          <div className="rounded-2xl border border-white/15 bg-neutral-900 p-6 md:p-8 shadow-xl transition-all">
+          <div className="rounded-3xl border border-white/15 bg-neutral-900 p-6 md:p-8 shadow-xl transition-all">
             
             {/* ONGLET 1 : PROFIL & ADRESSE */}
             {activeTab === "profile" && (
@@ -220,7 +208,7 @@ export default function SettingsPage() {
                   <button
                     type="submit"
                     disabled={saving}
-                    className="inline-flex items-center gap-2 rounded-xl bg-white px-5 py-3 text-xs font-bold tracking-widest text-black hover:bg-white/90 transition-all disabled:opacity-50 cursor-pointer shadow-lg"
+                    className="inline-flex items-center gap-2 rounded-2xl bg-white px-5 py-3 text-xs font-bold tracking-widest text-black hover:bg-white/90 transition-all disabled:opacity-50 cursor-pointer shadow-lg"
                   >
                     {saving && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
                     Enregistrer
@@ -235,7 +223,7 @@ export default function SettingsPage() {
                       value={firstName}
                       onChange={(e) => setFirstName(e.target.value)}
                       placeholder="Votre prénom"
-                      className="w-full rounded-xl border border-white/15 bg-neutral-950 px-4 py-3 text-xs text-white placeholder:text-white/30 focus:outline-none focus:border-white transition-colors"
+                      className="w-full rounded-2xl border border-white/15 bg-neutral-950 px-4 py-3 text-xs text-white placeholder:text-white/30 focus:outline-none focus:border-white transition-colors"
                     />
                   </div>
 
@@ -246,7 +234,7 @@ export default function SettingsPage() {
                       value={lastName}
                       onChange={(e) => setLastName(e.target.value)}
                       placeholder="Votre nom"
-                      className="w-full rounded-xl border border-white/15 bg-neutral-950 px-4 py-3 text-xs text-white placeholder:text-white/30 focus:outline-none focus:border-white transition-colors"
+                      className="w-full rounded-2xl border border-white/15 bg-neutral-950 px-4 py-3 text-xs text-white placeholder:text-white/30 focus:outline-none focus:border-white transition-colors"
                     />
                   </div>
 
@@ -258,7 +246,7 @@ export default function SettingsPage() {
                         type="email"
                         value={email}
                         disabled
-                        className="w-full rounded-xl border border-white/15 bg-neutral-950/50 px-4 py-3 pl-11 text-xs text-white/50 cursor-not-allowed"
+                        className="w-full rounded-2xl border border-white/15 bg-neutral-950/50 px-4 py-3 pl-11 text-xs text-white/50 cursor-not-allowed"
                       />
                     </div>
                   </div>
@@ -271,7 +259,7 @@ export default function SettingsPage() {
                         type="date"
                         value={birthDate}
                         onChange={(e) => setBirthDate(e.target.value)}
-                        className="w-full rounded-xl border border-white/15 bg-neutral-950 px-4 py-3 pl-11 text-xs text-white focus:outline-none focus:border-white"
+                        className="w-full rounded-2xl border border-white/15 bg-neutral-950 px-4 py-3 pl-11 text-xs text-white focus:outline-none focus:border-white"
                       />
                     </div>
                   </div>
@@ -285,7 +273,7 @@ export default function SettingsPage() {
                         value={address}
                         onChange={(e) => setAddress(e.target.value)}
                         placeholder="Numéro et nom de rue"
-                        className="w-full rounded-xl border border-white/15 bg-neutral-950 px-4 py-3 pl-11 text-xs text-white placeholder:text-white/30 focus:outline-none focus:border-white"
+                        className="w-full rounded-2xl border border-white/15 bg-neutral-950 px-4 py-3 pl-11 text-xs text-white placeholder:text-white/30 focus:outline-none focus:border-white"
                       />
                     </div>
                   </div>
@@ -299,7 +287,7 @@ export default function SettingsPage() {
                         value={addressComplement}
                         onChange={(e) => setAddressComplement(e.target.value)}
                         placeholder="Appartement, bâtiment, étage, interphone..."
-                        className="w-full rounded-xl border border-white/15 bg-neutral-950 px-4 py-3 pl-11 text-xs text-white placeholder:text-white/30 focus:outline-none focus:border-white"
+                        className="w-full rounded-2xl border border-white/15 bg-neutral-950 px-4 py-3 pl-11 text-xs text-white placeholder:text-white/30 focus:outline-none focus:border-white"
                       />
                     </div>
                   </div>
@@ -313,7 +301,7 @@ export default function SettingsPage() {
                         value={postalCode}
                         onChange={(e) => setPostalCode(e.target.value)}
                         placeholder="Ex: 59100"
-                        className="w-full rounded-xl border border-white/15 bg-neutral-950 px-4 py-3 pl-11 text-xs text-white placeholder:text-white/30 focus:outline-none focus:border-white"
+                        className="w-full rounded-2xl border border-white/15 bg-neutral-950 px-4 py-3 pl-11 text-xs text-white placeholder:text-white/30 focus:outline-none focus:border-white"
                       />
                     </div>
                   </div>
@@ -325,7 +313,7 @@ export default function SettingsPage() {
                       value={city}
                       onChange={(e) => setCity(e.target.value)}
                       placeholder="Ex: Roubaix"
-                      className="w-full rounded-xl border border-white/15 bg-neutral-950 px-4 py-3 text-xs text-white placeholder:text-white/30 focus:outline-none focus:border-white"
+                      className="w-full rounded-2xl border border-white/15 bg-neutral-950 px-4 py-3 text-xs text-white placeholder:text-white/30 focus:outline-none focus:border-white"
                     />
                   </div>
                 </div>
@@ -340,7 +328,7 @@ export default function SettingsPage() {
                   <p className="text-[11px] text-white/50">Gérez la méthode d&apos;authentification de votre compte.</p>
                 </div>
 
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-5 rounded-xl border border-white/15 bg-neutral-950">
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-5 rounded-2xl border border-white/15 bg-neutral-950">
                   <div className="space-y-1">
                     <p className="text-xs font-bold tracking-wider text-white">Fournisseur d&apos;accès</p>
                     <p className="text-[11px] text-white/50">
@@ -351,7 +339,7 @@ export default function SettingsPage() {
                   </div>
                   <div className="shrink-0">
                     {isGoogleProvider ? (
-                      <span className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-white/15 bg-neutral-900 text-xs font-bold tracking-widest text-white shadow-sm">
+                      <span className="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl border border-white/15 bg-neutral-900 text-xs font-bold tracking-widest text-white shadow-sm">
                         <svg className="w-3.5 h-3.5" viewBox="0 0 24 24">
                           <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.66-5.17 3.66-9.17z"/>
                           <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.13 0-5.78-2.11-6.73-4.96H1.19v3.15C3.17 21.36 7.22 24 12 24z"/>
@@ -363,7 +351,7 @@ export default function SettingsPage() {
                     ) : (
                       <button 
                         onClick={() => alert("Réinitialisation du mot de passe")}
-                        className="px-4 py-2.5 rounded-xl border border-white bg-white text-black text-xs font-bold tracking-widest hover:bg-white/90 transition-colors cursor-pointer shadow-lg"
+                        className="px-4 py-2.5 rounded-2xl border border-white bg-white text-black text-xs font-bold tracking-widest hover:bg-white/90 transition-colors cursor-pointer shadow-lg"
                       >
                         Modifier le mot de passe
                       </button>
@@ -382,7 +370,7 @@ export default function SettingsPage() {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="flex items-center justify-between p-4 rounded-xl border border-white/15 bg-neutral-950">
+                  <div className="flex items-center justify-between p-4 rounded-2xl border border-white/15 bg-neutral-950">
                     <div className="space-y-1">
                       <p className="text-xs font-bold tracking-wider text-white">Rappels par e-mail</p>
                       <p className="text-[10px] text-white/50">Billets et horaires</p>
@@ -395,7 +383,7 @@ export default function SettingsPage() {
                     />
                   </div>
 
-                  <div className="flex items-center justify-between p-4 rounded-xl border border-white/15 bg-neutral-950">
+                  <div className="flex items-center justify-between p-4 rounded-2xl border border-white/15 bg-neutral-950">
                     <div className="space-y-1">
                       <p className="text-xs font-bold tracking-wider text-white">Alertes SMS</p>
                       <p className="text-[10px] text-white/50">Accès rapides</p>
@@ -408,7 +396,7 @@ export default function SettingsPage() {
                     />
                   </div>
 
-                  <div className="flex items-center justify-between p-4 rounded-xl border border-white/15 bg-neutral-950">
+                  <div className="flex items-center justify-between p-4 rounded-2xl border border-white/15 bg-neutral-950">
                     <div className="space-y-1">
                       <p className="text-xs font-bold tracking-wider text-white">Newsletter culturelle</p>
                       <p className="text-[10px] text-white/50">Sélection hebdomadaire</p>
@@ -421,7 +409,7 @@ export default function SettingsPage() {
                     />
                   </div>
 
-                  <div className="flex items-center justify-between p-4 rounded-xl border border-white/15 bg-neutral-950">
+                  <div className="flex items-center justify-between p-4 rounded-2xl border border-white/15 bg-neutral-950">
                     <div className="space-y-1">
                       <p className="text-xs font-bold tracking-wider text-white">Devise par défaut</p>
                       <p className="text-[10px] text-white/50">Affichage billetterie</p>
@@ -429,7 +417,7 @@ export default function SettingsPage() {
                     <select 
                       value={currency} 
                       onChange={(e) => setCurrency(e.target.value)}
-                      className="bg-neutral-900 text-xs font-bold border border-white/15 rounded-xl px-3 py-2 focus:outline-none focus:border-white text-white cursor-pointer"
+                      className="bg-neutral-900 text-xs font-bold border border-white/15 rounded-2xl px-3 py-2 focus:outline-none focus:border-white text-white cursor-pointer"
                     >
                       <option value="EUR">EUR (€)</option>
                       <option value="USD">USD ($)</option>
@@ -448,14 +436,14 @@ export default function SettingsPage() {
                   <p className="text-[11px] text-white/50">Actions irréversibles concernant votre compte.</p>
                 </div>
 
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-5 rounded-xl border border-red-500/30 bg-red-950/20">
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-5 rounded-2xl border border-red-500/30 bg-red-950/20">
                   <div className="space-y-1">
                     <p className="text-xs font-bold tracking-wider text-red-300">Suppression du compte</p>
                     <p className="text-[10px] text-white/50">Supprime définitivement vos données</p>
                   </div>
                   <button 
                     onClick={() => alert("Veuillez contacter le support.")}
-                    className="px-4 py-2.5 rounded-xl border border-red-500/40 bg-red-950 text-red-300 text-xs font-bold tracking-widest hover:bg-red-900 transition-colors shrink-0 cursor-pointer shadow-lg"
+                    className="px-4 py-2.5 rounded-2xl border border-red-500/40 bg-red-950 text-red-300 text-xs font-bold tracking-widest hover:bg-red-900 transition-colors shrink-0 cursor-pointer shadow-lg"
                   >
                     Supprimer mon compte
                   </button>
