@@ -177,7 +177,7 @@ export default function OrganizerDashboard() {
   });
 
   return (
-    <div className="w-full px-6 lg:px-12 pt-4 pb-12 space-y-8 font-grotesque text-white bg-[#0f0f0f] min-h-full">
+    <div className="w-full px-6 lg:px-12 pt-4 pb-12 space-y-8 font-grotesque text-white bg-[#0f0f0f] min-h-screen">
       
       {/* Barre unifiée (Recherche + Compte) intégrée dans une grille à 3 colonnes pour épouser exactement la largeur de la carte */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-center pt-2">
@@ -310,9 +310,9 @@ export default function OrganizerDashboard() {
         )}
       </div>
 
-      {/* POPUP DE SUPPRESSION PERSONNALISÉ (DA #0f0f0f, full rounded, grotesque, texte en casse normale) */}
+      {/* POPUP DE SUPPRESSION PERSONNALISÉ (Isolé en fixed z-50 avec un backdrop couvrant tout l'écran) */}
       {eventToDelete && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4 w-screen h-screen">
           <div className="w-full max-w-md rounded-3xl border border-white/15 bg-[#0f0f0f] p-8 space-y-6 shadow-2xl font-grotesque text-white relative">
             
             <button 
