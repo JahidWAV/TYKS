@@ -49,17 +49,17 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     return <main className="min-h-screen w-full bg-[#0f0f0f]">{children}</main>;
   }
 
-  const isProfileActive = pathname === '/settings'; // ou /settings/profile selon ta route
+  const isProfileActive = pathname === '/settings'; 
   const isSettingsActive = pathname.startsWith('/settings');
 
   return (
     <div className="min-h-screen bg-[#0f0f0f] text-white font-sans selection:bg-white selection:text-black flex flex-col uppercase overflow-x-hidden">
 
       {/* Barre de navigation horizontale */}
-      <header className="fixed top-0 left-0 right-0 h-20 border-b border-white/10 bg-[#0f0f0f] flex items-center justify-between px-6 lg:px-12 z-50 select-none">
+      <header className="fixed top-0 left-0 right-0 h-20 border-b border-white/10 bg-[#0f0f0f] grid grid-cols-[1fr_auto_1fr] items-center px-6 lg:px-12 z-50 select-none">
         
-        {/* 1. Menu de gauche : 3 bulles (ÉVÉNEMENTS, STATISTIQUES, FINANCES) */}
-        <nav className="hidden lg:flex items-center justify-start gap-3 font-grotesque shrink-0">
+        {/* 1. Menu de gauche : 3 bulles occupant la largeur d'une carte */}
+        <nav className="hidden lg:grid grid-cols-3 gap-3 font-grotesque w-full max-w-[420px]">
           {navItems.map((item) => {
             const isActive = pathname === item.href;
 
@@ -67,7 +67,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               <Link
                 key={item.href}
                 href={item.href}
-                className={`h-11 w-40 flex items-center justify-center rounded-full transition-all font-grotesque text-xs tracking-wider border whitespace-nowrap shadow-md leading-none ${
+                className={`h-11 w-full flex items-center justify-center rounded-full transition-all font-grotesque text-xs tracking-wider border whitespace-nowrap shadow-md leading-none ${
                   isActive
                     ? 'bg-white text-black border-white font-bold'
                     : 'bg-transparent text-white/80 border-white/15 hover:bg-white/10 hover:text-white'
@@ -79,27 +79,27 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           })}
         </nav>
 
-        {/* 2. Bloc milieu : Logo centré */}
-        <div className="absolute left-1/2 -translate-x-1/2 flex items-center justify-center">
+        {/* 2. Bloc milieu : Logo centré et agrandi par 2 */}
+        <div className="flex items-center justify-center">
           <Link href="/" className="flex items-center group py-2">
             <Image 
               src="/tyks.svg" 
               alt="TYKS" 
-              width={140} 
-              height={44} 
+              width={280} 
+              height={88} 
               priority 
-              className="h-9 w-auto object-contain brightness-0 invert transition-transform group-hover:scale-105" 
+              className="h-[4.5rem] w-auto object-contain brightness-0 invert transition-transform group-hover:scale-105" 
             />
           </Link>
         </div>
 
-        {/* 3. Bloc droite : 3 bulles (PROFIL, PARAMÈTRES, SE DÉCONNECTER) calibrées à w-40 */}
-        <div className="hidden lg:flex items-center justify-end gap-3 shrink-0">
+        {/* 3. Bloc droite : 3 bulles occupant la largeur d'une carte */}
+        <div className="hidden lg:grid grid-cols-3 gap-3 font-grotesque w-full max-w-[420px] justify-self-end">
           <Link
             href="/settings"
-            className={`h-11 w-40 flex items-center justify-center rounded-full transition-all font-grotesque text-xs tracking-wider border whitespace-nowrap shadow-md leading-none font-bold ${
+            className={`h-11 w-full flex items-center justify-center rounded-full transition-all font-grotesque text-xs tracking-wider border whitespace-nowrap shadow-md leading-none ${
               isProfileActive
-                ? 'bg-white text-black border-white'
+                ? 'bg-white text-black border-white font-bold'
                 : 'bg-transparent text-white/80 border-white/15 hover:bg-white/10 hover:text-white'
             }`}
           >
@@ -107,9 +107,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           </Link>
           <Link
             href="/settings"
-            className={`h-11 w-40 flex items-center justify-center rounded-full transition-all font-grotesque text-xs tracking-wider border whitespace-nowrap shadow-md leading-none font-bold ${
+            className={`h-11 w-full flex items-center justify-center rounded-full transition-all font-grotesque text-xs tracking-wider border whitespace-nowrap shadow-md leading-none ${
               isSettingsActive
-                ? 'bg-white text-black border-white'
+                ? 'bg-white text-black border-white font-bold'
                 : 'bg-transparent text-white/80 border-white/15 hover:bg-white/10 hover:text-white'
             }`}
           >
@@ -117,7 +117,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           </Link>
           <button
             onClick={handleLogout}
-            className="h-11 w-40 flex items-center justify-center rounded-full transition-all font-grotesque text-xs tracking-wider border whitespace-nowrap shadow-md leading-none bg-transparent text-white/80 border-white/15 hover:bg-white/10 hover:text-white font-bold cursor-pointer"
+            className="h-11 w-full flex items-center justify-center rounded-full transition-all font-grotesque text-xs tracking-wider border whitespace-nowrap shadow-md leading-none bg-transparent text-white/80 border-white/15 hover:bg-white/10 hover:text-white cursor-pointer"
           >
             SE DÉCONNECTER
           </button>
@@ -144,7 +144,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       </div>
 
       {/* Conteneur principal */}
-      <main className="flex-1 w-full pt-24 lg:pt-28 pb-12 bg-[#0f0f0f] font-grotesque text-white">
+      <main className="flex-1 w-full pt-28 lg:pt-32 pb-12 bg-[#0f0f0f] font-grotesque text-white">
         {children}
       </main>
 
