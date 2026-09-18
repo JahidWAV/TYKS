@@ -49,28 +49,16 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     return <main className="min-h-screen w-full bg-[#0f0f0f]">{children}</main>;
   }
 
+  const isSettingsActive = pathname.startsWith('/settings');
+
   return (
     <div className="min-h-screen bg-[#0f0f0f] text-white font-sans selection:bg-white selection:text-black flex flex-col uppercase overflow-x-hidden">
 
       {/* Barre de navigation horizontale */}
       <header className="fixed top-0 left-0 right-0 h-20 border-b border-white/10 bg-[#0f0f0f] flex items-center justify-between px-6 lg:px-12 z-50 select-none">
         
-        {/* 1. Bloc gauche */}
-        <div className="flex items-center justify-start shrink-0">
-          <Link href="/" className="flex items-center group py-2">
-            <Image 
-              src="/tyks.svg" 
-              alt="TYKS" 
-              width={140} 
-              height={44} 
-              priority 
-              className="h-9 w-auto object-contain brightness-0 invert transition-transform group-hover:scale-105" 
-            />
-          </Link>
-        </div>
-
-        {/* 2. Menu du milieu : 3 bulles de taille rigoureusement identique (w-40) */}
-        <nav className="hidden lg:flex items-center justify-center gap-3 font-grotesque absolute left-1/2 -translate-x-1/2">
+        {/* 1. Menu de gauche : Catégories */}
+        <nav className="hidden lg:flex items-center justify-start gap-3 font-grotesque shrink-0">
           {navItems.map((item) => {
             const isActive = pathname === item.href;
 
@@ -90,11 +78,29 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           })}
         </nav>
 
+        {/* 2. Bloc milieu : Logo centré */}
+        <div className="absolute left-1/2 -translate-x-1/2 flex items-center justify-center">
+          <Link href="/" className="flex items-center group py-2">
+            <Image 
+              src="/tyks.svg" 
+              alt="TYKS" 
+              width={140} 
+              height={44} 
+              priority 
+              className="h-9 w-auto object-contain brightness-0 invert transition-transform group-hover:scale-105" 
+            />
+          </Link>
+        </div>
+
         {/* 3. Bloc droite : Bulles PARAMÈTRES et SE DÉCONNECTER */}
         <div className="hidden lg:flex items-center justify-end gap-3 shrink-0">
           <Link
             href="/settings"
-            className="h-11 px-5 flex items-center justify-center rounded-full transition-all font-grotesque text-xs tracking-wider border whitespace-nowrap shadow-md leading-none bg-transparent text-white/80 border-white/15 hover:bg-white/10 hover:text-white font-bold"
+            className={`h-11 px-5 flex items-center justify-center rounded-full transition-all font-grotesque text-xs tracking-wider border whitespace-nowrap shadow-md leading-none font-bold ${
+              isSettingsActive
+                ? 'bg-white text-black border-white'
+                : 'bg-transparent text-white/80 border-white/15 hover:bg-white/10 hover:text-white'
+            }`}
           >
             PARAMÈTRES
           </Link>
