@@ -5,14 +5,17 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { 
-  ArrowUpRight, Calendar, Search, Edit3, Trash2, AlertTriangle, X
+  ArrowUpRight, Calendar, Search, Edit3, Trash2
 } from 'lucide-react';
 import type { IortiEvent } from '@/types/event';
 import { supabaseBrowser } from '@/lib/supabase-browser';
 import CustomAuthModal from '@/components/CustomAuthModal';
+import { useDeleteModal } from './DeleteModalContext'; // <-- Import du hook global
 
 export default function OrganizerDashboard() {
   const router = useRouter();
+  const { openDeleteModal } = useDeleteModal(); // <-- Récupération de la fonction globale
+
   const [user, setUser] = useState<any>(null);
   const [ready, setReady] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -20,9 +23,6 @@ export default function OrganizerDashboard() {
   
   const [searchQuery, setSearchQuery] = useState('');
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
-
-  const [eventToDelete, setEventToDelete] = useState<IortiEvent | null>(null);
-  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
     async function getSession() {
@@ -71,27 +71,6 @@ export default function OrganizerDashboard() {
       setLoading(false);
     }
   }, [ready, user, loadDashboard]);
-
-  const confirmDeleteEvent = async () => {
-    if (!eventToDelete) return;
-
-    try {
-      setIsDeleting(true);
-      const { error } = await supabaseBrowser
-        .from('events')
-        .delete()
-        .eq('id', eventToDelete.id);
-
-      if (error) throw error;
-      setEvents((prev) => prev.filter((e) => e.id !== eventToDelete.id));
-      setEventToDelete(null);
-    } catch (err) {
-      console.error('Erreur lors de la suppression :', err);
-      alert("Impossible de supprimer l'événement en raison d'une contrainte technique.");
-    } finally {
-      setIsDeleting(false);
-    }
-  };
 
   if (!ready) {
     return (
@@ -179,12 +158,11 @@ export default function OrganizerDashboard() {
   return (
     <div className="w-full px-6 lg:px-12 pt-4 pb-12 space-y-8 font-grotesque text-white bg-[#0f0f0f] min-h-screen">
       
-      {/* Barre unifiée (Recherche + Compte) intégrée dans une grille à 3 colonnes pour épouser exactement la largeur de la carte */}
+      {/* Barre unifiée (Recherche + Compte) */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-center pt-2">
         <div className="lg:col-start-2 lg:col-span-1 w-full">
           <div className="w-full h-11 rounded-full border border-white/15 bg-neutral-900 flex items-center justify-between px-4 shadow-md">
             
-            {/* Partie gauche : Champ de recherche */}
             <div className="flex items-center gap-2 flex-1 min-w-0">
               <Search className="h-4 w-4 text-white/40 shrink-0" />
               <input
@@ -196,10 +174,8 @@ export default function OrganizerDashboard() {
               />
             </div>
 
-            {/* Séparateur vertical */}
             <div className="h-4 w-[1px] bg-white/15 mx-3 shrink-0" />
 
-            {/* Partie droite : Compteur d'événements */}
             <span className="font-grotesque text-xs text-white/70 whitespace-nowrap shrink-0">
               {filteredEvents.length} ÉVÉNEMENT(S)
             </span>
@@ -292,9 +268,17 @@ export default function OrganizerDashboard() {
                         >
                           <Edit3 className="h-3.5 w-3.5" />
                         </Link>
+                        
+                        {/* Bouton de suppression lié au contexte global */}
                         <button
-                          key={`delete-${evt.id}`}
-                          onClick={() => setEventToDelete(evt)}
+                          type="button"
+                          onClick={() => openDeleteModal(
+                            { id: evt.id, title: evt.title },
+                            () => {
+                              // Callback pour retirer l'élément de la liste locale une fois supprimé en BDD
+                              setEvents((prev) => prev.filter((e) => e.id !== evt.id));
+                            }
+                          )}
                           className="w-9 h-9 rounded-full border border-white/20 bg-neutral-900 text-white flex items-center justify-center hover:bg-white hover:text-black transition-colors cursor-pointer shadow-xs"
                           title="Supprimer"
                         >
@@ -309,54 +293,6 @@ export default function OrganizerDashboard() {
           </div>
         )}
       </div>
-
-      {/* POPUP DE SUPPRESSION PERSONNALISÉ (Isolé en fixed z-50 avec un backdrop couvrant tout l'écran) */}
-      {eventToDelete && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4 w-screen h-screen">
-          <div className="w-full max-w-md rounded-3xl border border-white/15 bg-[#0f0f0f] p-8 space-y-6 shadow-2xl font-grotesque text-white relative">
-            
-            <button 
-              onClick={() => setEventToDelete(null)}
-              className="absolute top-6 right-6 text-white/50 hover:text-white transition-colors p-1 cursor-pointer"
-            >
-              <X className="w-5 h-5" />
-            </button>
-
-            <div className="flex items-center gap-3 text-red-400">
-              <div className="w-10 h-10 rounded-full bg-red-500/10 border border-red-500/20 flex items-center justify-center shrink-0">
-                <AlertTriangle className="w-5 h-5" />
-              </div>
-              <h3 className="text-base font-bold tracking-wide">
-                Supprimer l'événement
-              </h3>
-            </div>
-
-            <p className="text-xs text-white/70 leading-relaxed normal-case">
-              Êtes-vous sûr de vouloir supprimer définitivement l'événement <span className="text-white font-medium">&ldquo;{eventToDelete.title}&rdquo;</span> ? Cette action est irréversible et supprimera toutes les données associées.
-            </p>
-
-            <div className="flex items-center justify-end gap-3 pt-2">
-              <button
-                type="button"
-                onClick={() => setEventToDelete(null)}
-                disabled={isDeleting}
-                className="px-5 h-11 rounded-full border border-white/20 bg-transparent text-xs text-white hover:bg-white/10 transition-colors cursor-pointer font-medium"
-              >
-                Annuler
-              </button>
-              <button
-                type="button"
-                onClick={confirmDeleteEvent}
-                disabled={isDeleting}
-                className="px-6 h-11 rounded-full bg-red-600 text-xs text-white hover:bg-red-500 transition-colors cursor-pointer font-bold shadow-lg flex items-center gap-2"
-              >
-                {isDeleting ? "Suppression..." : "Supprimer"}
-              </button>
-            </div>
-
-          </div>
-        </div>
-      )}
 
     </div>
   );
