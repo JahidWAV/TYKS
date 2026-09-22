@@ -1,11 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import { X, ArrowRight, Building2, MapPin, Tag, ShieldCheck } from 'lucide-react';
-// Assure-toi d'importer ton client Supabase configuré
+import { X, ArrowRight, Building2, MapPin, Tag, ShieldCheck, AlertCircle } from 'lucide-react';
 import { createClient } from '@supabase/supabase-js';
 
-// Initialise ton client Supabase (ou importe-le depuis ton fichier de config global)
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
@@ -33,22 +31,20 @@ export default function ProOnboardingModal({
   });
 
   const [citySuggestions, setCitySuggestions] = useState<string[]>([]);
-  const [isSearching, setIsSearching] = useState(false);
+  const [cityError, setCityError] = useState(false);
 
   if (!isOpen) return null;
 
-  // Fonction de recherche dynamique dans Supabase
   const handleCityChange = async (value: string) => {
     setFormData({ ...formData, city: value });
+    setCityError(false);
 
     if (value.length < 2) {
       setCitySuggestions([]);
       return;
     }
 
-    setIsSearching(true);
     try {
-      // Remplace 'french_cities' et 'name' par le nom exact de ta table et de ta colonne dans Supabase
       const { data, error } = await supabase
         .from('french_cities')
         .select('name')
@@ -60,8 +56,6 @@ export default function ProOnboardingModal({
       }
     } catch (err) {
       console.error('Erreur lors de la recherche de ville:', err);
-    } finally {
-      setIsSearching(false);
     }
   };
 
@@ -69,6 +63,13 @@ export default function ProOnboardingModal({
     e.preventDefault();
     if (!formData.companyName.trim() || !formData.displayName.trim() || !formData.city.trim()) return;
     
+    // Vérification stricte : est-ce que la ville saisie fait partie des suggestions valides de Supabase ?
+    // Si l'utilisateur a tapé un truc au pif qui ne matche aucune suggestion de la liste, on bloque.
+    if (!citySuggestions.includes(formData.city)) {
+      setCityError(true);
+      return;
+    }
+
     localStorage.setItem('tyks_pro_onboarding', JSON.stringify({
       ...formData,
       plan: selectedPlan
@@ -80,7 +81,6 @@ export default function ProOnboardingModal({
   return (
     <div className="fixed inset-0 z-50 flex bg-neutral-950 text-white animate-in fade-in duration-200 overflow-y-auto">
       
-      {/* Bouton de fermeture */}
       <button
         onClick={onClose}
         className="absolute top-6 right-6 w-12 h-12 rounded-full bg-white/5 hover:bg-white/10 border border-white/15 flex items-center justify-center transition-colors cursor-pointer z-20"
@@ -88,10 +88,8 @@ export default function ProOnboardingModal({
         <X className="w-5 h-5 text-white" />
       </button>
 
-      {/* Disposition en deux colonnes style DICE */}
       <div className="w-full grid lg:grid-cols-12 min-h-screen">
         
-        {/* Colonne gauche : Ambiance / Visuel */}
         <div className="hidden lg:flex lg:col-span-5 relative bg-neutral-900 border-r border-white/10 p-12 flex-col justify-between overflow-hidden">
           <div className="absolute inset-0 opacity-20 bg-[radial-gradient(#ffffff_1px,transparent_1px)] [background-size:16px_16px]"></div>
           
@@ -113,7 +111,6 @@ export default function ProOnboardingModal({
           </div>
         </div>
 
-        {/* Colonne droite : Formulaire unique complet */}
         <div className="lg:col-span-7 flex flex-col justify-center px-6 sm:px-16 lg:px-20 py-12 max-w-3xl mx-auto w-full">
           
           <div className="space-y-2 mb-8">
@@ -123,7 +120,6 @@ export default function ProOnboardingModal({
 
           <form onSubmit={handleSubmit} className="space-y-5">
             
-            {/* Ligne 1 : Company name & Display name */}
             <div className="grid sm:grid-cols-2 gap-4">
               <div className="space-y-1.5">
                 <label className="text-xs font-bold text-white/80 flex items-center gap-1.5">
@@ -156,7 +152,6 @@ export default function ProOnboardingModal({
               </div>
             </div>
 
-            {/* Ligne 2 : Partner type */}
             <div className="space-y-1.5">
               <label className="text-xs font-bold text-white/80 flex items-center gap-1.5">
                 <Tag className="w-3.5 h-3.5" /> Partner type
@@ -174,7 +169,6 @@ export default function ProOnboardingModal({
               </select>
             </div>
 
-            {/* Ligne 3 : City (avec autocomplétion Supabase) */}
             <div className="space-y-1.5">
               <label className="text-xs font-bold text-white/80 flex items-center gap-1.5">
                 <MapPin className="w-3.5 h-3.5" /> City
@@ -183,19 +177,25 @@ export default function ProOnboardingModal({
                 type="text"
                 required
                 list="french-cities-supabase"
-                placeholder="Ex: Lille, France"
+                placeholder="Tapez pour chercher une ville..."
                 value={formData.city}
                 onChange={(e) => handleCityChange(e.target.value)}
-                className="w-full h-12 px-4 bg-neutral-900 border border-white/15 rounded-xl text-xs text-white placeholder:text-white/30 focus:outline-none focus:border-white transition-colors"
+                className={`w-full h-12 px-4 bg-neutral-900 border rounded-xl text-xs text-white placeholder:text-white/30 focus:outline-none transition-colors ${
+                  cityError ? 'border-red-500' : 'border-white/15 focus:border-white'
+                }`}
               />
               <datalist id="french-cities-supabase">
                 {citySuggestions.map((cityName) => (
                   <option key={cityName} value={cityName} />
                 ))}
               </datalist>
+              {cityError && (
+                <p className="text-[10px] text-red-400 flex items-center gap-1 mt-1">
+                  <AlertCircle className="w-3 h-3" /> Veuillez sélectionner une ville valide dans la liste déroulante.
+                </p>
+              )}
             </div>
 
-            {/* Ligne 4 : License number */}
             <div className="space-y-1.5">
               <label className="text-xs font-bold text-white/80 flex items-center gap-1.5">
                 <Building2 className="w-3.5 h-3.5" /> License number (Optionnel)
@@ -209,7 +209,6 @@ export default function ProOnboardingModal({
               />
             </div>
 
-            {/* Bouton de validation final ouvrant la Custom Auth Modale */}
             <div className="pt-6 flex justify-end">
               <button
                 type="submit"
