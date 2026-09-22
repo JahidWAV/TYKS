@@ -45,15 +45,18 @@ export default function ProOnboardingModal({
     }
 
     try {
-      // On cible la colonne 'Commune' comme vu sur ton schéma Supabase
       const { data, error } = await supabase
         .from('french_cities')
-        .select('Commune')
+        .select('Commune, "Département (numéro)"')
         .ilike('Commune', `%${value}%`)
         .limit(10);
 
       if (!error && data) {
-        setCitySuggestions(data.map((item: any) => item.Commune));
+        // Formatage mis à jour : "Nom de la commune (Numéro de département)"
+        const formattedSuggestions = data.map(
+          (item: any) => `${item.Commune} (${item['Département (numéro)']})`
+        );
+        setCitySuggestions(formattedSuggestions);
       } else {
         console.error('Erreur Supabase:', error);
       }
@@ -66,7 +69,6 @@ export default function ProOnboardingModal({
     e.preventDefault();
     if (!formData.companyName.trim() || !formData.displayName.trim() || !formData.city.trim()) return;
     
-    // Vérification stricte : la ville doit faire partie des suggestions valides
     if (!citySuggestions.includes(formData.city)) {
       setCityError(true);
       return;
@@ -169,7 +171,6 @@ export default function ProOnboardingModal({
               </select>
             </div>
 
-            {/* Champ City avec liste déroulante custom */}
             <div className="space-y-1.5 relative">
               <label className="text-xs font-bold text-white/80 flex items-center gap-1.5">
                 <MapPin className="w-3.5 h-3.5" /> City
@@ -178,7 +179,7 @@ export default function ProOnboardingModal({
                 type="text"
                 required
                 autoComplete="off"
-                placeholder="Tapez pour chercher une ville..."
+                placeholder="Tapez le nom d'une ville (ex: Lille)..."
                 value={formData.city}
                 onChange={(e) => handleCityChange(e.target.value)}
                 className={`w-full h-12 px-4 bg-neutral-900 border rounded-xl text-xs text-white placeholder:text-white/30 focus:outline-none transition-colors ${
@@ -186,20 +187,19 @@ export default function ProOnboardingModal({
                 }`}
               />
 
-              {/* Menu déroulant personnalisé visible dès qu'il y a des suggestions */}
               {citySuggestions.length > 0 && (
                 <ul className="absolute left-0 right-0 top-[calc(100%+4px)] bg-neutral-900 border border-white/15 rounded-xl max-h-48 overflow-y-auto z-30 shadow-2xl">
-                  {citySuggestions.map((cityName) => (
+                  {citySuggestions.map((cityString) => (
                     <li
-                      key={cityName}
+                      key={cityString}
                       onClick={() => {
-                        setFormData({ ...formData, city: cityName });
+                        setFormData({ ...formData, city: cityString });
                         setCitySuggestions([]);
                         setCityError(false);
                       }}
-                      className="px-4 py-2.5 text-xs text-white hover:bg-white/10 cursor-pointer transition-colors border-b border-white/5 last:border-none"
+                      className="px-4 py-2.5 text-xs text-white hover:bg-white/10 cursor-pointer transition-colors border-b border-white/5 last:border-none flex justify-between items-center"
                     >
-                      {cityName}
+                      <span>{cityString}</span>
                     </li>
                   ))}
                 </ul>
