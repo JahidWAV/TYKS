@@ -35,15 +35,6 @@ export default function ProOnboardingModal({
 
   if (!isOpen) return null;
 
-  // Fonction utilitaire pour normaliser une chaîne (supprime accents, tirets, espaces et met en minuscules)
-  const normalizeString = (str: string) => {
-    return str
-      .toLowerCase()
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '') // Supprime les accents
-      .replace(/[-_,\s]+/g, '');       // Supprime tirets, underscores, virgules et espaces
-  };
-
   const handleCityChange = async (value: string) => {
     setFormData({ ...formData, city: value });
     setCityError(false);
@@ -54,28 +45,19 @@ export default function ProOnboardingModal({
     }
 
     try {
-      // On récupère une liste large basée sur les premiers caractères pour filtrer ensuite proprement en JS
-      const searchKeyword = value.trim().charAt(0);
+      // On assouplit la recherche : on remplace les espaces par des % pour que "saint molf" trouve "Saint-Molf"
+      const searchTerm = value.trim().replace(/\s+/g, '%');
+
       const { data, error } = await supabase
         .from('french_cities')
         .select('Commune, "Département (numéro)"')
-        .ilike('Commune', `%${searchKeyword}%`)
-        .limit(100);
+        .ilike('Commune', `%${searchTerm}%`)
+        .limit(10);
 
       if (!error && data) {
-        const normalizedInput = normalizeString(value);
-
-        // Filtrage ultra-indulgent (tirets, espaces, majuscules, accents ignorés)
-        const filtered = data.filter((item: any) => {
-          const normalizedCommune = normalizeString(item.Commune);
-          return normalizedCommune.includes(normalizedInput);
-        });
-
-        // On formate les résultats retenus sous la forme "Nom (Département)" et on limite à 10
-        const formattedSuggestions = filtered
-          .slice(0, 10)
-          .map((item: any) => `${item.Commune} (${item['Département (numéro)']})`);
-
+        const formattedSuggestions = data.map(
+          (item: any) => `${item.Commune} (${item['Département (numéro)']})`
+        );
         setCitySuggestions(formattedSuggestions);
       } else {
         console.error('Erreur Supabase:', error);
@@ -199,7 +181,7 @@ export default function ProOnboardingModal({
                 type="text"
                 required
                 autoComplete="off"
-                placeholder="Tapez le nom d'une ville (ex: saint molf)..."
+                placeholder="Tapez le nom d'une ville (ex: Saint-Molf)..."
                 value={formData.city}
                 onChange={(e) => handleCityChange(e.target.value)}
                 className={`w-full h-12 px-4 bg-neutral-900 border rounded-xl text-xs text-white placeholder:text-white/30 focus:outline-none transition-colors ${
