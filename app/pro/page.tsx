@@ -3,14 +3,22 @@
 import { useState } from 'react';
 import { ArrowUpRight, DollarSign, ShieldCheck, Zap, Database, Check, Smartphone } from 'lucide-react';
 import ProOnboardingModal from '@/components/ProOnboardingModal';
+import CustomAuthModal from '@/components/CustomAuthModal';
 
 export default function ProLandingPage() {
   const [isProModalOpen, setIsProModalOpen] = useState(false);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState<'standard' | 'pro'>('standard');
 
   const handleOpenProModal = (plan: 'standard' | 'pro') => {
     setSelectedPlan(plan);
     setIsProModalOpen(true);
+  };
+
+  const handleOpenAuthModal = (formData: any) => {
+    // Ferme l'onboarding pro et ouvre la modale d'authentification personnalisée
+    setIsProModalOpen(false);
+    setIsAuthModalOpen(true);
   };
 
   return (
@@ -220,11 +228,18 @@ export default function ProLandingPage() {
         </div>
       </section>
 
-      {/* Modale d'onboarding pro multi-étapes */}
+      {/* Modale d'onboarding pro en plein écran */}
       <ProOnboardingModal 
         isOpen={isProModalOpen} 
         onClose={() => setIsProModalOpen(false)} 
         selectedPlan={selectedPlan}
+        onOpenAuthModal={handleOpenAuthModal}
+      />
+
+      {/* Modale d'authentification personnalisée finale */}
+      <CustomAuthModal 
+        isOpen={isAuthModalOpen} 
+        onClose={() => setIsAuthModalOpen(false)} 
       />
 
     </div>
