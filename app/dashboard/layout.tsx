@@ -94,7 +94,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           <div className="flex items-center">
             <Link href="/" className="flex items-center group py-2">
               <Image 
-                src="/tyks.svg" 
+                src="/icon.svg" 
                 alt="TYKS" 
                 width={280} 
                 height={88} 
