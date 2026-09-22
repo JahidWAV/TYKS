@@ -63,10 +63,10 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
 
   return (
     <>
-      <div className="absolute top-6 left-0 right-0 z-50 max-w-7xl mx-auto px-6 lg:px-12 font-grotesque uppercase">
+      <div className="absolute top-6 left-0 right-0 z-50 max-w-7xl mx-auto px-6 lg:px-12 font-sans">
         <header className="w-full flex items-center justify-between gap-4">
 
-          {/* 1. BLOC GAUCHE (Logo TYKS) */}
+          {/* 1. BLOC GAUCHE (Logo TYKS en Noir) */}
           <div className="flex items-center justify-start">
             <Link 
               href="/" 
@@ -78,7 +78,7 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
                 width={340} 
                 height={110} 
                 priority 
-                className="h-11 sm:h-14 md:h-16 w-auto object-contain brightness-0 invert transition-all duration-300" 
+                className="h-11 sm:h-14 md:h-16 w-auto object-contain transition-all duration-300" 
               />
             </Link>
           </div>
@@ -88,16 +88,16 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
             {!isPro && (
               <button
                 onClick={() => setIsSearchModalOpen(true)}
-                className="h-11 w-11 bg-transparent hover:bg-white/10 text-white border border-white/15 transition-all duration-300 rounded-full flex items-center justify-center shrink-0 cursor-pointer"
+                className="h-11 w-11 bg-transparent hover:bg-neutral-100 text-neutral-950 border border-neutral-300 transition-all duration-300 rounded-full flex items-center justify-center shrink-0 cursor-pointer shadow-xs"
                 aria-label="Rechercher"
               >
-                <Search className="h-4 w-4 shrink-0" strokeWidth={2.5} style={{ color: '#ffffff' }} />
+                <Search className="h-4 w-4 shrink-0" strokeWidth={2} />
               </button>
             )}
 
             <button
               onClick={handleMainButtonClick}
-              className={`h-11 px-7 bg-transparent hover:bg-white/10 text-white border border-white/15 transition-all duration-300 text-xs tracking-wider font-bold rounded-full flex items-center justify-center shrink-0 cursor-pointer ${
+              className={`h-11 px-7 bg-transparent hover:bg-neutral-100 text-neutral-950 border border-neutral-300 transition-all duration-300 text-xs tracking-wider font-bold rounded-full flex items-center justify-center shrink-0 cursor-pointer shadow-xs ${
                 !isInitialized ? "opacity-0 pointer-events-none" : "opacity-100"
               }`}
             >
@@ -110,35 +110,35 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
             {!isPro && (
               <button
                 onClick={() => setIsSearchModalOpen(true)}
-                className="h-11 w-11 bg-transparent hover:bg-white/10 text-white border border-white/15 transition-all duration-300 rounded-full flex items-center justify-center shrink-0 cursor-pointer"
+                className="h-11 w-11 bg-transparent hover:bg-neutral-100 text-neutral-950 border border-neutral-300 transition-all duration-300 rounded-full flex items-center justify-center shrink-0 cursor-pointer shadow-xs"
                 aria-label="Rechercher"
               >
-                <Search className="h-4 w-4 shrink-0" strokeWidth={2.5} style={{ color: '#ffffff' }} />
+                <Search className="h-4 w-4 shrink-0" strokeWidth={2} />
               </button>
             )}
 
             <button
-              className="inline-flex items-center justify-center bg-transparent text-white border border-white/15 p-3 rounded-full transition-all duration-300 cursor-pointer hover:bg-white/10"
+              className="inline-flex items-center justify-center bg-transparent text-neutral-950 border border-neutral-300 p-3 rounded-full transition-all duration-300 cursor-pointer hover:bg-neutral-100 shadow-xs"
               onClick={() => setMobileOpen((open) => !open)}
               aria-label="Ouvrir le menu"
             >
               {mobileOpen ? (
-                <X className="h-4 w-4" strokeWidth={2.5} style={{ color: '#ffffff' }} />
+                <X className="h-4 w-4" strokeWidth={2} />
               ) : (
-                <Menu className="h-4 w-4" strokeWidth={2.5} style={{ color: '#ffffff' }} />
+                <Menu className="h-4 w-4" strokeWidth={2} />
               )}
             </button>
           </div>
         </header>
 
         {mobileOpen && (
-          <div className="px-6 py-6 md:hidden space-y-4 bg-neutral-900 border border-white/15 rounded-[2.5rem] mt-3 shadow-2xl text-white">
+          <div className="px-6 py-6 md:hidden space-y-4 bg-white border border-neutral-200 rounded-[2.5rem] mt-3 shadow-xl text-neutral-950">
             <button
               onClick={() => {
                 setMobileOpen(false);
                 handleMainButtonClick();
               }}
-              className={`w-full h-12 bg-white text-black hover:bg-neutral-200 text-xs tracking-wider font-bold rounded-full shadow-md flex items-center justify-center cursor-pointer ${
+              className={`w-full h-12 bg-neutral-950 text-white hover:bg-neutral-800 text-xs tracking-wider font-bold rounded-full shadow-md flex items-center justify-center cursor-pointer ${
                 !isInitialized ? "opacity-0 pointer-events-none" : "opacity-100"
               }`}
             >
