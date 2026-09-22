@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { X, ArrowRight, Building2, MapPin, Tag, ShieldCheck, AlertCircle } from 'lucide-react';
 import { createClient } from '@supabase/supabase-js';
 
@@ -32,12 +32,25 @@ export default function ProOnboardingModal({
 
   const [citySuggestions, setCitySuggestions] = useState<string[]>([]);
   const [cityError, setCityError] = useState(false);
+  const [isCityValid, setIsCityValid] = useState(false); // Suivi fiable de la sélection de la ville
+
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
   const handleCityChange = async (value: string) => {
     setFormData({ ...formData, city: value });
     setCityError(false);
+    setIsCityValid(false); // L'utilisateur modifie le texte, on invalide temporairement
 
     if (value.length < 2) {
       setCitySuggestions([]);
@@ -45,7 +58,6 @@ export default function ProOnboardingModal({
     }
 
     try {
-      // On assouplit la recherche : on remplace les espaces par des % pour que "saint molf" trouve "Saint-Molf"
       const searchTerm = value.trim().replace(/\s+/g, '%');
 
       const { data, error } = await supabase
@@ -67,11 +79,19 @@ export default function ProOnboardingModal({
     }
   };
 
+  const handleSelectCity = (cityString: string) => {
+    setFormData({ ...formData, city: cityString });
+    setCitySuggestions([]);
+    setCityError(false);
+    setIsCityValid(true); // Validation explicite de la ville choisie
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.companyName.trim() || !formData.displayName.trim() || !formData.city.trim()) return;
     
-    if (!citySuggestions.includes(formData.city)) {
+    // Vérification de la validité via notre état dédié
+    if (!isCityValid) {
       setCityError(true);
       return;
     }
@@ -85,7 +105,7 @@ export default function ProOnboardingModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex bg-neutral-950 text-white animate-in fade-in duration-200 overflow-y-auto">
+    <div className="fixed inset-0 z-[999] flex bg-neutral-950 text-white animate-in fade-in duration-200 overflow-y-auto">
       
       <button
         onClick={onClose}
@@ -129,7 +149,7 @@ export default function ProOnboardingModal({
             <div className="grid sm:grid-cols-2 gap-4">
               <div className="space-y-1.5">
                 <label className="text-xs font-bold text-white/80 flex items-center gap-1.5">
-                  <Building2 className="w-3.5 h-3.5" /> Company name
+                  <Building2 className="w-3.5 h-3.5" /> Nom de l&apos;entreprise
                 </label>
                 <input
                   type="text"
@@ -143,7 +163,7 @@ export default function ProOnboardingModal({
 
               <div className="space-y-1.5">
                 <label className="text-xs font-bold text-white/80 flex items-center gap-1.5">
-                  <Tag className="w-3.5 h-3.5" /> Display name
+                  <Tag className="w-3.5 h-3.5" /> Nom d&apos;affichage
                 </label>
                 <input
                   type="text"
@@ -158,7 +178,7 @@ export default function ProOnboardingModal({
 
             <div className="space-y-1.5">
               <label className="text-xs font-bold text-white/80 flex items-center gap-1.5">
-                <Tag className="w-3.5 h-3.5" /> Partner type
+                <Tag className="w-3.5 h-3.5" /> Type de partenaire
               </label>
               <select
                 value={formData.partnerType}
@@ -175,7 +195,7 @@ export default function ProOnboardingModal({
 
             <div className="space-y-1.5 relative">
               <label className="text-xs font-bold text-white/80 flex items-center gap-1.5">
-                <MapPin className="w-3.5 h-3.5" /> City
+                <MapPin className="w-3.5 h-3.5" /> Ville
               </label>
               <input
                 type="text"
@@ -194,11 +214,7 @@ export default function ProOnboardingModal({
                   {citySuggestions.map((cityString) => (
                     <li
                       key={cityString}
-                      onClick={() => {
-                        setFormData({ ...formData, city: cityString });
-                        setCitySuggestions([]);
-                        setCityError(false);
-                      }}
+                      onClick={() => handleSelectCity(cityString)}
                       className="px-4 py-2.5 text-xs text-white hover:bg-white/10 cursor-pointer transition-colors border-b border-white/5 last:border-none flex justify-between items-center"
                     >
                       <span>{cityString}</span>
@@ -216,7 +232,7 @@ export default function ProOnboardingModal({
 
             <div className="space-y-1.5">
               <label className="text-xs font-bold text-white/80 flex items-center gap-1.5">
-                <Building2 className="w-3.5 h-3.5" /> License number (Optionnel)
+                <Building2 className="w-3.5 h-3.5" /> Numéro de licence (Optionnel)
               </label>
               <input
                 type="text"
