@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { X, ArrowRight, Building2, MapPin, Tag, ShieldCheck, AlertCircle } from 'lucide-react';
 import { createClient } from '@supabase/supabase-js';
 
@@ -22,6 +23,7 @@ export default function ProOnboardingModal({
   selectedPlan, 
   onOpenAuthModal 
 }: ProOnboardingModalProps) {
+  const [mounted, setMounted] = useState(false);
   const [formData, setFormData] = useState({
     companyName: '',
     displayName: '',
@@ -32,7 +34,11 @@ export default function ProOnboardingModal({
 
   const [citySuggestions, setCitySuggestions] = useState<string[]>([]);
   const [cityError, setCityError] = useState(false);
-  const [isCityValid, setIsCityValid] = useState(false); // Suivi fiable de la sélection de la ville
+  const [isCityValid, setIsCityValid] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     if (isOpen) {
@@ -45,12 +51,12 @@ export default function ProOnboardingModal({
     };
   }, [isOpen]);
 
-  if (!isOpen) return null;
+  if (!isOpen || !mounted) return null;
 
   const handleCityChange = async (value: string) => {
     setFormData({ ...formData, city: value });
     setCityError(false);
-    setIsCityValid(false); // L'utilisateur modifie le texte, on invalide temporairement
+    setIsCityValid(false);
 
     if (value.length < 2) {
       setCitySuggestions([]);
@@ -83,14 +89,13 @@ export default function ProOnboardingModal({
     setFormData({ ...formData, city: cityString });
     setCitySuggestions([]);
     setCityError(false);
-    setIsCityValid(true); // Validation explicite de la ville choisie
+    setIsCityValid(true);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.companyName.trim() || !formData.displayName.trim() || !formData.city.trim()) return;
     
-    // Vérification de la validité via notre état dédié
     if (!isCityValid) {
       setCityError(true);
       return;
@@ -104,8 +109,9 @@ export default function ProOnboardingModal({
     onOpenAuthModal(formData);
   };
 
-  return (
-    <div className="fixed inset-0 z-[999] flex bg-neutral-950 text-white animate-in fade-in duration-200 overflow-y-auto">
+  // createPortal projette la modale directement à la racine du body (au-dessus de tout le reste)
+  return createPortal(
+    <div className="fixed inset-0 z-[99999] flex bg-neutral-950 text-white animate-in fade-in duration-200 overflow-y-auto">
       
       <button
         onClick={onClose}
@@ -257,6 +263,7 @@ export default function ProOnboardingModal({
 
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
