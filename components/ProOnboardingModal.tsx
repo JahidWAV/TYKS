@@ -45,14 +45,17 @@ export default function ProOnboardingModal({
     }
 
     try {
+      // On cible la colonne 'Commune' comme vu sur ton schéma Supabase
       const { data, error } = await supabase
         .from('french_cities')
-        .select('name')
-        .ilike('name', `%${value}%`)
+        .select('Commune')
+        .ilike('Commune', `%${value}%`)
         .limit(10);
 
       if (!error && data) {
-        setCitySuggestions(data.map((item: any) => item.name));
+        setCitySuggestions(data.map((item: any) => item.Commune));
+      } else {
+        console.error('Erreur Supabase:', error);
       }
     } catch (err) {
       console.error('Erreur lors de la recherche de ville:', err);
@@ -63,8 +66,7 @@ export default function ProOnboardingModal({
     e.preventDefault();
     if (!formData.companyName.trim() || !formData.displayName.trim() || !formData.city.trim()) return;
     
-    // Vérification stricte : est-ce que la ville saisie fait partie des suggestions valides de Supabase ?
-    // Si l'utilisateur a tapé un truc au pif qui ne matche aucune suggestion de la liste, on bloque.
+    // Vérification stricte : la ville doit faire partie des suggestions valides
     if (!citySuggestions.includes(formData.city)) {
       setCityError(true);
       return;
@@ -133,7 +135,6 @@ export default function ProOnboardingModal({
                   onChange={(e) => setFormData({ ...formData, companyName: e.target.value })}
                   className="w-full h-12 px-4 bg-neutral-900 border border-white/15 rounded-xl text-xs text-white placeholder:text-white/30 focus:outline-none focus:border-white transition-colors"
                 />
-                <span className="text-[10px] text-white/40 block">Nom légal enregistré.</span>
               </div>
 
               <div className="space-y-1.5">
@@ -148,7 +149,6 @@ export default function ProOnboardingModal({
                   onChange={(e) => setFormData({ ...formData, displayName: e.target.value })}
                   className="w-full h-12 px-4 bg-neutral-900 border border-white/15 rounded-xl text-xs text-white placeholder:text-white/30 focus:outline-none focus:border-white transition-colors"
                 />
-                <span className="text-[10px] text-white/40 block">Nom public sur la billetterie.</span>
               </div>
             </div>
 
@@ -169,14 +169,15 @@ export default function ProOnboardingModal({
               </select>
             </div>
 
-            <div className="space-y-1.5">
+            {/* Champ City avec liste déroulante custom */}
+            <div className="space-y-1.5 relative">
               <label className="text-xs font-bold text-white/80 flex items-center gap-1.5">
                 <MapPin className="w-3.5 h-3.5" /> City
               </label>
               <input
                 type="text"
                 required
-                list="french-cities-supabase"
+                autoComplete="off"
                 placeholder="Tapez pour chercher une ville..."
                 value={formData.city}
                 onChange={(e) => handleCityChange(e.target.value)}
@@ -184,11 +185,26 @@ export default function ProOnboardingModal({
                   cityError ? 'border-red-500' : 'border-white/15 focus:border-white'
                 }`}
               />
-              <datalist id="french-cities-supabase">
-                {citySuggestions.map((cityName) => (
-                  <option key={cityName} value={cityName} />
-                ))}
-              </datalist>
+
+              {/* Menu déroulant personnalisé visible dès qu'il y a des suggestions */}
+              {citySuggestions.length > 0 && (
+                <ul className="absolute left-0 right-0 top-[calc(100%+4px)] bg-neutral-900 border border-white/15 rounded-xl max-h-48 overflow-y-auto z-30 shadow-2xl">
+                  {citySuggestions.map((cityName) => (
+                    <li
+                      key={cityName}
+                      onClick={() => {
+                        setFormData({ ...formData, city: cityName });
+                        setCitySuggestions([]);
+                        setCityError(false);
+                      }}
+                      className="px-4 py-2.5 text-xs text-white hover:bg-white/10 cursor-pointer transition-colors border-b border-white/5 last:border-none"
+                    >
+                      {cityName}
+                    </li>
+                  ))}
+                </ul>
+              )}
+
               {cityError && (
                 <p className="text-[10px] text-red-400 flex items-center gap-1 mt-1">
                   <AlertCircle className="w-3 h-3" /> Veuillez sélectionner une ville valide dans la liste déroulante.
