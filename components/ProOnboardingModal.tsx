@@ -2,67 +2,21 @@
 
 import { useState } from 'react';
 import { X, ArrowRight, Building2, MapPin, Tag, ShieldCheck } from 'lucide-react';
+// Assure-toi d'importer ton client Supabase configuré
+import { createClient } from '@supabase/supabase-js';
+
+// Initialise ton client Supabase (ou importe-le depuis ton fichier de config global)
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+);
 
 interface ProOnboardingModalProps {
   isOpen: boolean;
   onClose: () => void;
   selectedPlan: 'standard' | 'pro';
-  onOpenAuthModal: (formData: any) => void; // Permet de passer les données à ta modale d'auth custom
+  onOpenAuthModal: (formData: any) => void;
 }
-
-// Liste de villes françaises principales pour l'autocomplétion
-const FRENCH_CITIES = [
-  'Paris, France',
-  'Marseille, France',
-  'Lyon, France',
-  'Toulouse, France',
-  'Nice, France',
-  'Nantes, France',
-  'Montpellier, France',
-  'Strasbourg, France',
-  'Bordeaux, France',
-  'Lille, France',
-  'Rennes, France',
-  'Reims, France',
-  'Toulon, France',
-  'Saint-Étienne, France',
-  'Le Havre, France',
-  'Grenoble, France',
-  'Dijon, France',
-  'Angers, France',
-  'Nîmes, France',
-  'Villeurbanne, France',
-  'Clermont-Ferrand, France',
-  'Le Mans, France',
-  'Aix-en-Provence, France',
-  'Brest, France',
-  'Tours, France',
-  'Amiens, France',
-  'Limoges, France',
-  'Annecy, France',
-  'Perpignan, France',
-  'Boulogne-Billancourt, France',
-  'Metz, France',
-  'Besançon, France',
-  'Orléans, France',
-  'Saint-Denis, France',
-  'Rouen, France',
-  'Argenteuil, France',
-  'Mulhouse, France',
-  'Montreuil, France',
-  'Caen, France',
-  'Nancy, France',
-  'Saint-Paul, France',
-  'Roubaix, France',
-  'Tourcoing, France',
-  'Nanterre, France',
-  'Vitry-sur-Seine, France',
-  'Créteil, France',
-  'Dunkerque, France',
-  'Pau, France',
-  'Bayonne, France',
-  'Biarritz, France'
-];
 
 export default function ProOnboardingModal({ 
   isOpen, 
@@ -78,13 +32,43 @@ export default function ProOnboardingModal({
     licenseNumber: '',
   });
 
+  const [citySuggestions, setCitySuggestions] = useState<string[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
+
   if (!isOpen) return null;
+
+  // Fonction de recherche dynamique dans Supabase
+  const handleCityChange = async (value: string) => {
+    setFormData({ ...formData, city: value });
+
+    if (value.length < 2) {
+      setCitySuggestions([]);
+      return;
+    }
+
+    setIsSearching(true);
+    try {
+      // Remplace 'french_cities' et 'name' par le nom exact de ta table et de ta colonne dans Supabase
+      const { data, error } = await supabase
+        .from('french_cities')
+        .select('name')
+        .ilike('name', `%${value}%`)
+        .limit(10);
+
+      if (!error && data) {
+        setCitySuggestions(data.map((item: any) => item.name));
+      }
+    } catch (err) {
+      console.error('Erreur lors de la recherche de ville:', err);
+    } finally {
+      setIsSearching(false);
+    }
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.companyName.trim() || !formData.displayName.trim() || !formData.city.trim()) return;
     
-    // On sauvegarde temporairement et on déclenche la modale d'auth custom
     localStorage.setItem('tyks_pro_onboarding', JSON.stringify({
       ...formData,
       plan: selectedPlan
@@ -190,7 +174,7 @@ export default function ProOnboardingModal({
               </select>
             </div>
 
-            {/* Ligne 3 : City (avec liste de villes françaises) */}
+            {/* Ligne 3 : City (avec autocomplétion Supabase) */}
             <div className="space-y-1.5">
               <label className="text-xs font-bold text-white/80 flex items-center gap-1.5">
                 <MapPin className="w-3.5 h-3.5" /> City
@@ -198,20 +182,20 @@ export default function ProOnboardingModal({
               <input
                 type="text"
                 required
-                list="french-cities-list"
+                list="french-cities-supabase"
                 placeholder="Ex: Lille, France"
                 value={formData.city}
-                onChange={(e) => setFormData({ ...formData, city: e.target.value })}
+                onChange={(e) => handleCityChange(e.target.value)}
                 className="w-full h-12 px-4 bg-neutral-900 border border-white/15 rounded-xl text-xs text-white placeholder:text-white/30 focus:outline-none focus:border-white transition-colors"
               />
-              <datalist id="french-cities-list">
-                {FRENCH_CITIES.map((cityOption) => (
-                  <option key={cityOption} value={cityOption} />
+              <datalist id="french-cities-supabase">
+                {citySuggestions.map((cityName) => (
+                  <option key={cityName} value={cityName} />
                 ))}
               </datalist>
             </div>
 
-            {/* Ligne 4 : License number (optionnel comme sur DICE) */}
+            {/* Ligne 4 : License number */}
             <div className="space-y-1.5">
               <label className="text-xs font-bold text-white/80 flex items-center gap-1.5">
                 <Building2 className="w-3.5 h-3.5" /> License number (Optionnel)
