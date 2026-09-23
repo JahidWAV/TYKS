@@ -63,10 +63,10 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
 
   return (
     <>
-      <div className="absolute top-6 left-0 right-0 z-50 max-w-7xl mx-auto px-6 lg:px-12 font-sans">
+      <div className="w-full bg-white z-50 max-w-7xl mx-auto px-6 lg:px-12 pt-6 pb-4 font-sans shrink-0">
         <header className="w-full flex items-center justify-between gap-4">
 
-          {/* 1. BLOC GAUCHE (Logo TYKS grand format forcé) */}
+          {/* 1. BLOC GAUCHE (Logo TYKS grand format) */}
           <div className="flex items-center justify-start">
             <Link 
               href="/" 
