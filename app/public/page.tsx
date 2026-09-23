@@ -129,15 +129,15 @@ export default function PublicHome() {
       className="bg-white text-neutral-950 selection:bg-neutral-950 selection:text-white font-grotesque antialiased h-screen overflow-y-scroll snap-y snap-mandatory flex flex-col"
     >
       
+      {/* Navbar intégrée proprement dans le flux */}
       <Navbar />
 
-      <main className="w-full flex-1">
+      <main className="w-full flex-1 flex flex-col">
         
         {/* HERO SECTION */}
-        <section className="h-screen w-full snap-start snap-always flex items-center max-w-7xl mx-auto px-6 lg:px-12 py-12 shrink-0">
+        <section className="min-h-[calc(100vh-88px)] w-full snap-start snap-always flex items-center max-w-7xl mx-auto px-6 lg:px-12 py-12 shrink-0">
           <div className="w-full grid lg:grid-cols-12 gap-12 lg:gap-16 items-center">
             <div className="lg:col-span-7 space-y-8 flex flex-col justify-center">
-              {/* Titre principal en Lucidity (majuscules) */}
               <h1 className="text-5xl sm:text-7xl lg:text-8xl font-lucidity uppercase tracking-tight leading-[0.95] text-neutral-950">
                 L&apos;ART DU SPECTACLE, <br />
                 SANS ARTIFICE.
@@ -297,7 +297,6 @@ export default function PublicHome() {
                           </div>
 
                           <div className="p-6 flex-1 space-y-2.5 flex flex-col justify-center text-center">
-                            {/* Titre de l'événement en Lucidity majuscules */}
                             <h3 className="text-lg font-lucidity uppercase text-neutral-950 group-hover:underline transition-colors line-clamp-1">
                               {evt.title}
                             </h3>
@@ -390,7 +389,7 @@ export default function PublicHome() {
           </div>
         </section>
 
-        {/* DERNIÈRE SECTION + FOOTER GLOBAL */}
+        {/* DERNIÈRE SECTION */}
         <section className="h-screen w-full snap-end snap-always flex flex-col justify-between max-w-7xl mx-auto px-6 lg:px-12 pt-12 pb-6 shrink-0">
           <div className="grid lg:grid-cols-2 gap-10 items-center w-full my-auto">
             <div className="space-y-6">
