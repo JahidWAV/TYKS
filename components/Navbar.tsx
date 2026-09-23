@@ -66,7 +66,7 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
       <div className="absolute top-6 left-0 right-0 z-50 max-w-7xl mx-auto px-6 lg:px-12 font-sans">
         <header className="w-full flex items-center justify-between gap-4">
 
-          {/* 1. BLOC GAUCHE (Logo TYKS en Noir) */}
+          {/* 1. BLOC GAUCHE (Logo TYKS agrandi) */}
           <div className="flex items-center justify-start">
             <Link 
               href="/" 
@@ -75,10 +75,10 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
               <Image 
                 src="/logo.svg" 
                 alt="TYKS" 
-                width={340} 
-                height={110} 
+                width={480} 
+                height={160} 
                 priority 
-                className="h-11 sm:h-14 md:h-16 w-auto object-contain transition-all duration-300" 
+                className="h-20 sm:h-24 md:h-28 w-auto object-contain transition-all duration-300" 
               />
             </Link>
           </div>
