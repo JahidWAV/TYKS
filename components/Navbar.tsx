@@ -32,8 +32,8 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
       setUser(currentUser);
 
       if (currentUser) {
-        const metaName = currentUser.user_metadata?.full_name || currentUser.user_metadata?.name || currentUser.email?.split('@')[0] || "MON COMPTE";
-        setUserName(metaName.toUpperCase());
+        const metaName = currentUser.user_metadata?.full_name || currentUser.user_metadata?.name || currentUser.email?.split('@')[0] || "mon compte";
+        setUserName(metaName.toLowerCase());
       }
       setIsInitialized(true);
     };
@@ -44,8 +44,8 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
       const currentUser = session?.user ?? null;
       setUser(currentUser);
       if (currentUser) {
-        const metaName = currentUser.user_metadata?.full_name || currentUser.user_metadata?.name || currentUser.email?.split('@')[0] || "MON COMPTE";
-        setUserName(metaName.toUpperCase());
+        const metaName = currentUser.user_metadata?.full_name || currentUser.user_metadata?.name || currentUser.email?.split('@')[0] || "mon compte";
+        setUserName(metaName.toLowerCase());
       }
       setIsInitialized(true);
     });
@@ -63,8 +63,8 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
 
   return (
     <>
-      {/* Header classique, intégré dans le flux normal (pas de fixed/sticky) */}
-      <header className="w-full bg-white border-b border-neutral-200/85 shrink-0 font-sans">
+      {/* Navbar fixée en haut avec transparence, flou et sans bordure */}
+      <header className="fixed top-0 left-0 right-0 z-50 w-full bg-white/70 backdrop-blur-md shrink-0 font-sans">
         <div className="max-w-7xl mx-auto px-6 lg:px-12 h-20 flex items-center justify-between gap-6">
 
           {/* 1. LOGO */}
@@ -86,25 +86,25 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
             </Link>
           </div>
 
-          {/* 2. LIENS / ACTIONS DESKTOP */}
+          {/* 2. LIENS / ACTIONS DESKTOP (Textes en minuscules) */}
           <div className="hidden md:flex items-center gap-3">
             {!isPro && (
               <button
                 onClick={() => setIsSearchModalOpen(true)}
-                className="h-11 px-5 bg-neutral-100 hover:bg-neutral-200/70 text-neutral-950 transition-all duration-300 rounded-full flex items-center gap-2 text-xs font-grotesque font-bold cursor-pointer"
+                className="h-11 px-5 bg-neutral-100/80 hover:bg-neutral-200/80 text-neutral-950 transition-all duration-300 rounded-full flex items-center gap-2 text-xs font-grotesque font-bold cursor-pointer"
               >
                 <Search className="h-3.5 w-3.5 shrink-0" strokeWidth={2.5} />
-                <span className="tracking-wide">RECHERCHER</span>
+                <span>rechercher</span>
               </button>
             )}
 
             <button
               onClick={handleMainButtonClick}
-              className={`h-11 px-6 bg-neutral-950 hover:bg-neutral-800 text-white transition-all duration-300 text-xs tracking-widest font-grotesque font-bold rounded-full flex items-center justify-center shrink-0 cursor-pointer shadow-sm ${
+              className={`h-11 px-6 bg-neutral-950 hover:bg-neutral-800 text-white transition-all duration-300 text-xs tracking-wide font-grotesque font-bold rounded-full flex items-center justify-center shrink-0 cursor-pointer shadow-sm ${
                 !isInitialized ? "opacity-0 pointer-events-none" : "opacity-100"
               }`}
             >
-              {user ? userName : "SE CONNECTER / S'INSCRIRE"}
+              {user ? userName : "se connecter / s'inscrire"}
             </button>
           </div>
 
@@ -113,7 +113,7 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
             {!isPro && (
               <button
                 onClick={() => setIsSearchModalOpen(true)}
-                className="h-10 w-10 bg-neutral-100 text-neutral-950 rounded-full flex items-center justify-center cursor-pointer"
+                className="h-10 w-10 bg-neutral-100/80 text-neutral-950 rounded-full flex items-center justify-center cursor-pointer"
                 aria-label="Rechercher"
               >
                 <Search className="h-4 w-4" strokeWidth={2} />
@@ -121,7 +121,7 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
             )}
 
             <button
-              className="inline-flex items-center justify-center bg-neutral-100 text-neutral-950 p-2.5 rounded-full cursor-pointer"
+              className="inline-flex items-center justify-center bg-neutral-100/80 text-neutral-950 p-2.5 rounded-full cursor-pointer"
               onClick={() => setMobileOpen((open) => !open)}
               aria-label="Ouvrir le menu"
             >
@@ -132,17 +132,17 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
 
         {/* MENU MOBILE DÉPLIÉ */}
         {mobileOpen && (
-          <div className="px-6 py-4 md:hidden border-t border-neutral-100 bg-white space-y-3">
+          <div className="px-6 py-4 md:hidden bg-white/95 backdrop-blur-md space-y-3">
             <button
               onClick={() => {
                 setMobileOpen(false);
                 handleMainButtonClick();
               }}
-              className={`w-full h-12 bg-neutral-950 text-white text-xs tracking-widest font-bold rounded-full flex items-center justify-center ${
+              className={`w-full h-12 bg-neutral-950 text-white text-xs tracking-wide font-bold rounded-full flex items-center justify-center ${
                 !isInitialized ? "opacity-0 pointer-events-none" : "opacity-100"
               }`}
             >
-              {user ? userName : "SE CONNECTER / S'INSCRIRE"}
+              {user ? userName : "se connecter / s'inscrire"}
             </button>
           </div>
         )}
