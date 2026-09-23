@@ -32,8 +32,8 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
       setUser(currentUser);
 
       if (currentUser) {
-        const metaName = currentUser.user_metadata?.full_name || currentUser.user_metadata?.name || currentUser.email?.split('@')[0] || "mon compte";
-        setUserName(metaName.toLowerCase());
+        const metaName = currentUser.user_metadata?.full_name || currentUser.user_metadata?.name || currentUser.email?.split('@')[0] || "Mon compte";
+        setUserName(metaName);
       }
       setIsInitialized(true);
     };
@@ -44,8 +44,8 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
       const currentUser = session?.user ?? null;
       setUser(currentUser);
       if (currentUser) {
-        const metaName = currentUser.user_metadata?.full_name || currentUser.user_metadata?.name || currentUser.email?.split('@')[0] || "mon compte";
-        setUserName(metaName.toLowerCase());
+        const metaName = currentUser.user_metadata?.full_name || currentUser.user_metadata?.name || currentUser.email?.split('@')[0] || "Mon compte";
+        setUserName(metaName);
       }
       setIsInitialized(true);
     });
@@ -86,25 +86,25 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
             </Link>
           </div>
 
-          {/* 2. LIENS / ACTIONS DESKTOP (Textes en minuscules) */}
+          {/* 2. LIENS / ACTIONS DESKTOP (15px + Première lettre en majuscule) */}
           <div className="hidden md:flex items-center gap-3">
             {!isPro && (
               <button
                 onClick={() => setIsSearchModalOpen(true)}
-                className="h-11 px-5 bg-neutral-100/80 hover:bg-neutral-200/80 text-neutral-950 transition-all duration-300 rounded-full flex items-center gap-2 text-xs font-grotesque font-bold cursor-pointer"
+                className="h-11 px-5 bg-neutral-100/80 hover:bg-neutral-200/80 text-neutral-950 transition-all duration-300 rounded-full flex items-center gap-2 text-[15px] font-grotesque font-bold cursor-pointer capitalize"
               >
-                <Search className="h-3.5 w-3.5 shrink-0" strokeWidth={2.5} />
-                <span>rechercher</span>
+                <Search className="h-4 w-4 shrink-0" strokeWidth={2.5} />
+                <span>Rechercher</span>
               </button>
             )}
 
             <button
               onClick={handleMainButtonClick}
-              className={`h-11 px-6 bg-neutral-950 hover:bg-neutral-800 text-white transition-all duration-300 text-xs tracking-wide font-grotesque font-bold rounded-full flex items-center justify-center shrink-0 cursor-pointer shadow-sm ${
+              className={`h-11 px-6 bg-neutral-950 hover:bg-neutral-800 text-white transition-all duration-300 text-[15px] font-grotesque font-bold rounded-full flex items-center justify-center shrink-0 cursor-pointer shadow-sm capitalize ${
                 !isInitialized ? "opacity-0 pointer-events-none" : "opacity-100"
               }`}
             >
-              {user ? userName : "se connecter / s'inscrire"}
+              {user ? userName : "Se connecter / S'inscrire"}
             </button>
           </div>
 
@@ -138,11 +138,11 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
                 setMobileOpen(false);
                 handleMainButtonClick();
               }}
-              className={`w-full h-12 bg-neutral-950 text-white text-xs tracking-wide font-bold rounded-full flex items-center justify-center ${
+              className={`w-full h-12 bg-neutral-950 text-white text-[15px] font-bold rounded-full flex items-center justify-center capitalize ${
                 !isInitialized ? "opacity-0 pointer-events-none" : "opacity-100"
               }`}
             >
-              {user ? userName : "se connecter / s'inscrire"}
+              {user ? userName : "Se connecter / S'inscrire"}
             </button>
           </div>
         )}
