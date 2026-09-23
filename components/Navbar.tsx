@@ -66,20 +66,22 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
       <div className="absolute top-6 left-0 right-0 z-50 max-w-7xl mx-auto px-6 lg:px-12 font-sans">
         <header className="w-full flex items-center justify-between gap-4">
 
-          {/* 1. BLOC GAUCHE (Logo TYKS style DICE - Large et impactant) */}
+          {/* 1. BLOC GAUCHE (Logo TYKS grand format forcé) */}
           <div className="flex items-center justify-start">
             <Link 
               href="/" 
               className="group flex items-center justify-center shrink-0 transition-opacity duration-300 hover:opacity-75"
             >
-              <Image 
-                src="/logo.svg" 
-                alt="TYKS" 
-                width={500} 
-                height={140} 
-                priority 
-                className="h-14 sm:h-18 md:h-22 w-auto object-contain transition-all duration-300 scale-110 origin-left" 
-              />
+              <div className="w-[160px] sm:w-[200px] md:w-[240px] flex items-center">
+                <Image 
+                  src="/logo.svg" 
+                  alt="TYKS" 
+                  width={600} 
+                  height={200} 
+                  priority 
+                  className="w-full h-auto object-contain" 
+                />
+              </div>
             </Link>
           </div>
 
