@@ -63,9 +63,9 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
 
   return (
     <>
-      {/* Navbar fixe en haut, plus compacte (py-3 au lieu de top-6 large) */}
-      <div className="fixed top-0 left-0 right-0 z-50 max-w-7xl mx-auto px-6 lg:px-12 pt-4 font-sans pointer-events-none">
-        <header className="w-full flex items-center justify-between gap-4 pointer-events-auto bg-white/80 backdrop-blur-md border border-neutral-200/60 px-5 py-2.5 rounded-full shadow-xs">
+      {/* Header classique, intégré dans le flux normal (pas de fixed/sticky) */}
+      <header className="w-full bg-white border-b border-neutral-200/85 shrink-0 font-sans">
+        <div className="max-w-7xl mx-auto px-6 lg:px-12 h-20 flex items-center justify-between gap-6">
 
           {/* 1. LOGO */}
           <div className="flex items-center justify-start">
@@ -73,12 +73,12 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
               href="/" 
               className="group flex items-center justify-center shrink-0 transition-opacity duration-300 hover:opacity-75"
             >
-              <div className="w-[110px] sm:w-[130px] flex items-center">
+              <div className="w-[130px] sm:w-[150px] flex items-center">
                 <Image 
                   src="/logo.svg" 
                   alt="TYKS" 
-                  width={400} 
-                  height={130} 
+                  width={500} 
+                  height={160} 
                   priority 
                   className="w-full h-auto object-contain brightness-0" 
                 />
@@ -86,21 +86,21 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
             </Link>
           </div>
 
-          {/* 2. ACTIONS DESKTOP (Plus compactes : h-9 au lieu de h-11) */}
-          <div className="hidden md:flex items-center gap-2">
+          {/* 2. LIENS / ACTIONS DESKTOP */}
+          <div className="hidden md:flex items-center gap-3">
             {!isPro && (
               <button
                 onClick={() => setIsSearchModalOpen(true)}
-                className="h-9 w-9 bg-neutral-50 hover:bg-neutral-100 text-neutral-950 border border-neutral-200 transition-all duration-300 rounded-full flex items-center justify-center shrink-0 cursor-pointer shadow-xs"
-                aria-label="Rechercher"
+                className="h-11 px-5 bg-neutral-100 hover:bg-neutral-200/70 text-neutral-950 transition-all duration-300 rounded-full flex items-center gap-2 text-xs font-grotesque font-bold cursor-pointer"
               >
-                <Search className="h-3.5 w-3.5 shrink-0" strokeWidth={2} />
+                <Search className="h-3.5 w-3.5 shrink-0" strokeWidth={2.5} />
+                <span className="tracking-wide">RECHERCHER</span>
               </button>
             )}
 
             <button
               onClick={handleMainButtonClick}
-              className={`h-9 px-5 bg-neutral-50 hover:bg-neutral-100 text-neutral-950 border border-neutral-200 transition-all duration-300 text-[11px] tracking-wider font-bold rounded-full flex items-center justify-center shrink-0 cursor-pointer shadow-xs ${
+              className={`h-11 px-6 bg-neutral-950 hover:bg-neutral-800 text-white transition-all duration-300 text-xs tracking-widest font-grotesque font-bold rounded-full flex items-center justify-center shrink-0 cursor-pointer shadow-sm ${
                 !isInitialized ? "opacity-0 pointer-events-none" : "opacity-100"
               }`}
             >
@@ -108,40 +108,37 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
             </button>
           </div>
 
-          {/* MENU MOBILE */}
+          {/* MENU MOBILE (BOUTON) */}
           <div className="flex items-center justify-end gap-2 md:hidden">
             {!isPro && (
               <button
                 onClick={() => setIsSearchModalOpen(true)}
-                className="h-9 w-9 bg-neutral-50 hover:bg-neutral-100 text-neutral-950 border border-neutral-200 transition-all duration-300 rounded-full flex items-center justify-center shrink-0 cursor-pointer shadow-xs"
+                className="h-10 w-10 bg-neutral-100 text-neutral-950 rounded-full flex items-center justify-center cursor-pointer"
                 aria-label="Rechercher"
               >
-                <Search className="h-3.5 w-3.5 shrink-0" strokeWidth={2} />
+                <Search className="h-4 w-4" strokeWidth={2} />
               </button>
             )}
 
             <button
-              className="inline-flex items-center justify-center bg-neutral-50 text-neutral-950 border border-neutral-200 p-2.5 rounded-full transition-all duration-300 cursor-pointer hover:bg-neutral-100 shadow-xs"
+              className="inline-flex items-center justify-center bg-neutral-100 text-neutral-950 p-2.5 rounded-full cursor-pointer"
               onClick={() => setMobileOpen((open) => !open)}
               aria-label="Ouvrir le menu"
             >
-              {mobileOpen ? (
-                <X className="h-3.5 w-3.5" strokeWidth={2} />
-              ) : (
-                <Menu className="h-3.5 w-3.5" strokeWidth={2} />
-              )}
+              {mobileOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
             </button>
           </div>
-        </header>
+        </div>
 
+        {/* MENU MOBILE DÉPLIÉ */}
         {mobileOpen && (
-          <div className="px-6 py-5 md:hidden space-y-3 bg-white border border-neutral-200 rounded-3xl mt-2 shadow-xl text-neutral-950 pointer-events-auto">
+          <div className="px-6 py-4 md:hidden border-t border-neutral-100 bg-white space-y-3">
             <button
               onClick={() => {
                 setMobileOpen(false);
                 handleMainButtonClick();
               }}
-              className={`w-full h-11 bg-neutral-950 text-white hover:bg-neutral-800 text-xs tracking-wider font-bold rounded-full shadow-md flex items-center justify-center cursor-pointer ${
+              className={`w-full h-12 bg-neutral-950 text-white text-xs tracking-widest font-bold rounded-full flex items-center justify-center ${
                 !isInitialized ? "opacity-0 pointer-events-none" : "opacity-100"
               }`}
             >
@@ -149,7 +146,7 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
             </button>
           </div>
         )}
-      </div>
+      </header>
 
       <SearchModal 
         isOpen={isSearchModalOpen} 
