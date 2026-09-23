@@ -10,6 +10,14 @@
   font-display: swap;
 }
 
+@font-face {
+  font-family: 'Lucidity';
+  src: url('/fonts/lucidity-condensed.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
 @layer base {
   html {
     scroll-behavior: smooth;
@@ -18,6 +26,7 @@
   body {
     background-color: #0b0b0e;
     color: #f1ead9;
+    font-family: 'Grotesque', sans-serif;
   }
 
   ::selection {
@@ -44,8 +53,6 @@
 }
 
 @layer components {
-  /* Perforated seam between a ticket's stub and its body: a dashed line
-     with two punched notches, cut through to the page background. */
   .ticket-seam {
     position: relative;
     border-top: 1px dashed rgba(241, 234, 217, 0.22);
@@ -67,8 +74,6 @@
     right: -33px;
   }
 
-  /* Vertical divider echoing the perforation motif at a smaller scale,
-     used between fine-print items without repeating card chrome. */
   .punch-divider {
     position: relative;
   }
@@ -88,15 +93,12 @@
     );
   }
 
-  /* Ink stamp: reserved for the one place a rotated, stamped mark is
-     earned by the content — a pass validation stamp, not decoration. */
   .ink-stamp {
     border: 1.5px solid currentColor;
     border-radius: 9999px;
     transform: rotate(-8deg);
   }
 
-  /* Elite glass surface used for chrome (nav, tab rail, panels). */
   .glass-panel {
     background: rgba(23, 22, 27, 0.72);
     backdrop-filter: blur(24px);
@@ -104,8 +106,6 @@
     border: 1px solid rgba(241, 234, 217, 0.07);
   }
 
-  /* Slow diagonal gloss sweep across the metal pass card — the one
-     signature ambient motion moment in the product. */
   .metal-card {
     position: relative;
     overflow: hidden;
@@ -138,8 +138,6 @@
     }
   }
 
-  /* Entrance used only for content that appears in response to a user
-     action (switching tabs) — never scattered across page load. */
   .fade-rise {
     animation: fade-rise 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
   }
@@ -155,8 +153,6 @@
     }
   }
 
-  /* Faint paper grain over the whole app, echoing the printed-ticket
-     material rather than a flat SaaS gradient. */
   .grain {
     position: fixed;
     inset: 0;
@@ -167,8 +163,6 @@
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   }
 
-  /* The one orchestrated page-load moment: the sample pass in the hero
-     settles into place, on mount only. */
   .hero-settle {
     animation: hero-settle 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
     animation-delay: 0.15s;
@@ -190,7 +184,6 @@
    OVERRIDE WHITE LABEL PRIVY MODAL
    ========================================== */
 
-/* 1. Masque uniquement l'élément conteneur du footer Privy */
 [id^="privy-modal"] div:has(> a[href*="privy.io"]),
 div[class*="PrivyModal"] div:has(> a[href*="privy.io"]),
 a[href*="privy.io"] {
@@ -201,7 +194,6 @@ a[href*="privy.io"] {
   overflow: hidden !important;
 }
 
-/* 2. Force l'affichage des SVGs à l'intérieur des boutons de connexion */
 [id^="privy-modal"] button svg,
 div[class*="PrivyModal"] button svg,
 div[class*="privy"] button svg {
@@ -210,7 +202,6 @@ div[class*="privy"] button svg {
   opacity: 1 !important;
 }
 
-/* 3. Réajuste le padding du bas pour compenser le footer masqué */
 div[class*="PrivyModal"] > div {
   padding-bottom: 20px !important;
 }
