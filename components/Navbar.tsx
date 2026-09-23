@@ -73,7 +73,7 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
               className="group flex items-center justify-center shrink-0 transition-opacity duration-300 hover:opacity-75"
             >
               <Image 
-                src="/icon.svg" 
+                src="/logo.svg" 
                 alt="TYKS" 
                 width={340} 
                 height={110} 
