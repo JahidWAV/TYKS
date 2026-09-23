@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useRef, useLayoutEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import Navbar from '@/components/Navbar';
 import { 
   ArrowUpRight, 
   Calendar, 
@@ -128,14 +127,11 @@ export default function PublicHome() {
       ref={mainContainerRef}
       className="bg-white text-neutral-950 selection:bg-neutral-950 selection:text-white font-grotesque antialiased h-screen overflow-y-scroll snap-y snap-mandatory flex flex-col"
     >
-      
-      {/* Navbar intégrée proprement dans le flux */}
-      <Navbar />
 
       <main className="w-full flex-1 flex flex-col">
         
         {/* HERO SECTION */}
-        <section className="min-h-[calc(100vh-88px)] w-full snap-start snap-always flex items-center max-w-7xl mx-auto px-6 lg:px-12 py-12 shrink-0">
+        <section className="h-screen w-full snap-start snap-always flex items-center max-w-7xl mx-auto px-6 lg:px-12 py-12 shrink-0">
           <div className="w-full grid lg:grid-cols-12 gap-12 lg:gap-16 items-center">
             <div className="lg:col-span-7 space-y-8 flex flex-col justify-center">
               <h1 className="text-5xl sm:text-7xl lg:text-8xl font-lucidity uppercase tracking-tight leading-[0.95] text-neutral-950">
