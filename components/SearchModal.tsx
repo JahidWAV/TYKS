@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { Search, Calendar, MapPin, X, Building2 } from "lucide-react";
+import { Search, X, Building2 } from "lucide-react";
 import { supabaseBrowser } from "@/lib/supabase-browser";
 
 interface SearchModalProps {
@@ -109,32 +109,32 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
   const displayedEvents = debouncedQuery.trim() === "" ? rawEvents.slice(0, 6) : filteredEvents;
 
   return (
-    <div className="fixed inset-0 z-50 bg-white/80 backdrop-blur-md flex flex-col font-sans text-neutral-950 animate-in fade-in duration-200 overflow-y-auto">
+    <div className="fixed inset-0 z-50 bg-[#FFFFFF]/80 backdrop-blur-md flex flex-col font-sans text-[#000000] animate-in fade-in duration-200 overflow-y-auto">
       
-      {/* HEADER DE RECHERCHE - Style barre flottante centrée */}
+      {/* HEADER DE RECHERCHE */}
       <div className="w-full pt-6 pb-4">
         <div className="max-w-2xl mx-auto px-4">
-          <div className="relative flex items-center bg-white border border-neutral-950 rounded-2xl shadow-xl overflow-hidden">
-            <Search className="absolute left-4 h-4 w-4 text-neutral-400 pointer-events-none" strokeWidth={2} />
+          <div className="relative flex items-center bg-[#FFFFFF] border border-[#000000] rounded-3xl shadow-xl overflow-hidden">
+            <Search className="absolute left-4 h-4 w-4 text-[#000000]/40 pointer-events-none" strokeWidth={2} />
             <input
               ref={searchInputRef}
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Rechercher un événement, un lieu ou une ville..."
-              className="w-full h-12 bg-transparent pl-11 pr-12 text-[15px] font-medium placeholder:text-neutral-400 focus:outline-none text-neutral-950"
+              className="w-full h-12 bg-transparent pl-11 pr-12 text-[15px] font-['Grotesque'] font-medium placeholder:text-[#000000]/40 focus:outline-none text-[#000000]"
             />
             {searchQuery ? (
               <button 
                 onClick={() => setSearchQuery("")}
-                className="absolute right-4 p-1 text-neutral-400 hover:text-neutral-950 cursor-pointer"
+                className="absolute right-4 p-1 text-[#000000]/40 hover:text-[#000000] cursor-pointer"
               >
                 <X className="w-4 h-4" strokeWidth={2} />
               </button>
             ) : (
               <button 
                 onClick={onClose}
-                className="absolute right-4 p-1 text-neutral-400 hover:text-neutral-950 cursor-pointer"
+                className="absolute right-4 p-1 text-[#000000]/40 hover:text-[#000000] cursor-pointer"
               >
                 <X className="w-4 h-4" strokeWidth={2} />
               </button>
@@ -143,12 +143,12 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
         </div>
       </div>
 
-      {/* CONTENEUR DE LA LISTE (Style modale flottante centrée type DICE) */}
+      {/* CONTENEUR DE LA LISTE */}
       <div className="flex-1 max-w-2xl w-full mx-auto px-4 pb-12">
-        <div className="bg-white border border-neutral-200 rounded-3xl shadow-2xl overflow-hidden p-3 space-y-2">
+        <div className="bg-[#FFFFFF] border border-[#000000]/10 rounded-3xl shadow-2xl overflow-hidden p-3 space-y-2">
           
           {isLoading ? (
-            <div className="py-16 text-center text-neutral-400 text-[15px] font-medium animate-pulse">
+            <div className="py-16 text-center text-[#000000]/40 text-[15px] font-['Grotesque'] font-medium animate-pulse">
               Chargement...
             </div>
           ) : (
@@ -156,7 +156,7 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
               {/* SECTION ORGANISATEURS */}
               {filteredOrgs.length > 0 && (
                 <div className="space-y-1 mb-3">
-                  <div className="px-3 py-1.5 text-[13px] font-semibold text-neutral-400 uppercase tracking-wider">
+                  <div className="px-3 py-1.5 text-[13px] font-['Lucidity'] uppercase tracking-widest text-[#000000]/40">
                     Organisateurs
                   </div>
                   {filteredOrgs.map((org) => {
@@ -168,18 +168,18 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
                           onClose();
                           router.push(`/organizations/${org.slug || org.id}`);
                         }}
-                        className="w-full p-2.5 hover:bg-neutral-50 rounded-2xl transition-all duration-200 flex items-center gap-3 cursor-pointer text-left group"
+                        className="w-full p-2.5 hover:bg-[#000000]/5 rounded-2xl transition-all duration-200 flex items-center gap-3 cursor-pointer text-left group"
                       >
-                        <div className="relative w-10 h-10 shrink-0 rounded-xl overflow-hidden bg-neutral-100 border border-neutral-200 flex items-center justify-center">
+                        <div className="relative w-10 h-10 shrink-0 rounded-2xl overflow-hidden bg-[#000000]/5 border border-[#000000]/10 flex items-center justify-center">
                           {orgLogo ? (
                             <img src={orgLogo} alt={org.name} className="w-full h-full object-cover" />
                           ) : (
-                            <Building2 className="w-4 h-4 text-neutral-400" />
+                            <Building2 className="w-4 h-4 text-[#000000]/40" />
                           )}
                         </div>
                         <div className="truncate flex-1">
-                          <p className="text-[15px] font-semibold truncate text-neutral-950 group-hover:text-black">{org.name}</p>
-                          <span className="text-[13px] text-neutral-500 font-medium">Organisateur</span>
+                          <p className="text-[15px] font-['Grotesque'] font-semibold truncate text-[#000000]">{org.name}</p>
+                          <span className="text-[13px] font-['Grotesque'] text-[#000000]/50 font-medium">Organisateur</span>
                         </div>
                       </button>
                     );
@@ -202,10 +202,10 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
                             onClose();
                             router.push(`/events/${evt.slug || evt.id}`);
                           }}
-                          className="w-full p-2.5 hover:bg-neutral-50 rounded-2xl transition-all duration-200 flex items-center gap-3.5 cursor-pointer text-left group"
+                          className="w-full p-2.5 hover:bg-[#000000]/5 rounded-2xl transition-all duration-200 flex items-center gap-3.5 cursor-pointer text-left group"
                         >
                           {/* Miniature carrée */}
-                          <div className="relative w-12 h-12 shrink-0 rounded-xl overflow-hidden bg-neutral-100 border border-neutral-200">
+                          <div className="relative w-12 h-12 shrink-0 rounded-2xl overflow-hidden bg-[#000000]/5 border border-[#000000]/10">
                             {flyer ? (
                               <img 
                                 src={flyer} 
@@ -213,18 +213,18 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
                                 className="w-full h-full object-cover" 
                               />
                             ) : (
-                              <div className="w-full h-full flex items-center justify-center text-[11px] font-semibold text-neutral-400">
+                              <div className="w-full h-full flex items-center justify-center text-[11px] font-['Grotesque'] font-semibold text-[#000000]/40">
                                 TYKS
                               </div>
                             )}
                           </div>
 
-                          {/* Infos textuelles sur la droite */}
+                          {/* Infos textuelles */}
                           <div className="flex-1 min-w-0">
-                            <p className="text-[15px] font-semibold truncate text-neutral-950 group-hover:text-black">
+                            <p className="text-[15px] font-['Grotesque'] font-semibold truncate text-[#000000]">
                               {evt.title}
                             </p>
-                            <div className="flex items-center gap-2 text-[13px] text-neutral-500 font-medium truncate mt-0.5">
+                            <div className="flex items-center gap-2 text-[13px] font-['Grotesque'] text-[#000000]/50 font-medium truncate mt-0.5">
                               {evt.starts_at && (
                                 <span>
                                   {new Date(evt.starts_at).toLocaleDateString("fr-FR", { weekday: 'short', day: "numeric", month: "short" })}
@@ -244,7 +244,7 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
                     })}
                   </div>
                 ) : (
-                  <div className="py-12 text-center text-neutral-400 text-[15px] font-medium">
+                  <div className="py-12 text-center text-[#000000]/40 text-[15px] font-['Grotesque'] font-medium">
                     Aucun résultat trouvé pour &quot;{searchQuery}&quot;
                   </div>
                 )}
