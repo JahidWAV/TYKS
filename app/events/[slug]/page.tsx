@@ -17,7 +17,7 @@ interface TyksEvent {
   description?: string;
   location?: string;
   starts_at?: string;
-  ends_at?: string; // Ajouté pour gérer l'heure de fin
+  ends_at?: string;
   price?: number;
   image_url?: string;
   organizations?: { name?: string };
@@ -69,11 +69,11 @@ function CustomCheckoutForm({ slug, eventTitle, quantity, totalPrice, onSuccess 
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6 pt-2 font-grotesque uppercase text-white">
+    <form onSubmit={handleSubmit} className="space-y-6 pt-2 font-['Grotesque'] uppercase text-[#000000]">
       <PaymentElement options={{ layout: 'tabs' }} />
       
       {errorMessage && (
-        <div className="p-3 bg-neutral-900 text-white text-xs font-bold border border-white/10 rounded-xl">
+        <div className="p-3 bg-[#000000]/5 text-[#000000] text-xs font-bold border border-[#000000]/10 rounded-2xl">
           {errorMessage}
         </div>
       )}
@@ -81,7 +81,7 @@ function CustomCheckoutForm({ slug, eventTitle, quantity, totalPrice, onSuccess 
       <button
         type="submit"
         disabled={isProcessing || !stripe || !elements}
-        className="w-full h-12 bg-white text-black text-xs font-bold tracking-widest transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 hover:bg-neutral-200 rounded-xl shadow-md"
+        className="w-full h-12 bg-[#000000] text-[#FFFFFF] text-xs font-bold tracking-widest transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 hover:bg-[#000000]/80 rounded-2xl shadow-md"
       >
         {isProcessing ? (
           <Loader2 className="w-4 h-4 animate-spin" />
@@ -191,7 +191,7 @@ export default function PublicEventPage() {
 
   if (loading) {
     return (
-      <div className="w-full min-h-screen bg-[#0f0f0f] flex items-center justify-center font-grotesque text-xs uppercase tracking-widest text-white/40">
+      <div className="w-full min-h-screen bg-[#FFFFFF] flex items-center justify-center font-['Grotesque'] text-xs uppercase tracking-widest text-[#000000]/40">
         CHARGEMENT...
       </div>
     );
@@ -209,7 +209,6 @@ export default function PublicEventPage() {
   const estimatedStripeFees = basePrice > 0 ? ((subtotal + (stripeFixed * quantity)) / (1 - stripePercentage) - subtotal) : 0;
   const totalPrice = subtotal + estimatedStripeFees;
 
-  // Formatage des dates et des horaires (début et fin)
   const startDate = event.starts_at ? new Date(event.starts_at) : null;
   const endDate = event.ends_at ? new Date(event.ends_at) : null;
 
@@ -259,18 +258,18 @@ export default function PublicEventPage() {
   };
 
   return (
-    <main className="w-full min-h-screen lg:py-20 lg:px-12 bg-[#0f0f0f] text-white font-grotesque selection:bg-white selection:text-black flex flex-col justify-center uppercase">
+    <main className="w-full min-h-screen lg:py-20 lg:px-12 bg-[#FFFFFF] text-[#000000] font-['Grotesque'] selection:bg-black selection:text-white flex flex-col justify-center uppercase">
       <div className="w-full max-w-5xl mx-auto h-screen lg:h-auto flex flex-col justify-between lg:justify-center py-6 px-4 sm:px-6 lg:px-0 overflow-hidden lg:overflow-visible">
         
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-12 items-center lg:items-start my-auto">
           
           <div className="lg:col-span-5 flex justify-center">
-            <div className="w-36 sm:w-48 lg:w-full max-w-md aspect-square bg-neutral-900/50 border border-white/10 rounded-2xl lg:rounded-3xl overflow-hidden shadow-2xl p-2">
+            <div className="w-36 sm:w-48 lg:w-full max-w-md aspect-square bg-[#000000]/5 border border-[#000000]/10 rounded-2xl lg:rounded-3xl overflow-hidden shadow-2xl p-2">
               {event.image_url ? (
                 <img src={event.image_url} alt={event.title} className="w-full h-full object-cover rounded-xl lg:rounded-2xl" />
               ) : (
-                <div className="w-full h-full p-4 lg:p-8 flex flex-col justify-between bg-neutral-900 text-white rounded-xl lg:rounded-2xl border border-white/10">
-                  <span className="text-[9px] lg:text-[10px] tracking-widest text-white/40 font-bold">VISUEL</span>
+                <div className="w-full h-full p-4 lg:p-8 flex flex-col justify-between bg-[#000000]/5 text-[#000000] rounded-xl lg:rounded-2xl border border-[#000000]/10">
+                  <span className="text-[9px] lg:text-[10px] tracking-widest text-[#000000]/40 font-bold">VISUEL</span>
                   <span className="text-xl lg:text-3xl font-normal tracking-tight">EVENT</span>
                 </div>
               )}
@@ -281,13 +280,13 @@ export default function PublicEventPage() {
             
             <div className="space-y-2 lg:space-y-4">
               {event.organizations?.name && (
-                <div className="inline-flex items-center gap-1.5 text-[10px] lg:text-xs font-bold tracking-wider text-white/60 bg-white/5 border border-white/10 px-3 py-1 lg:px-3.5 lg:py-1.5 rounded-full">
+                <div className="inline-flex items-center gap-1.5 text-[10px] lg:text-xs font-bold tracking-wider text-[#000000]/70 bg-[#000000]/5 border border-[#000000]/10 px-3 py-1 lg:px-3.5 lg:py-1.5 rounded-full">
                   <Building2 className="w-3 h-3 lg:w-3.5 lg:h-3.5" />
                   <span>{event.organizations.name}</span>
                 </div>
               )}
               
-              <h1 className="text-2xl sm:text-3xl lg:text-5xl font-normal tracking-tight leading-[1.1] text-white">
+              <h1 className="text-2xl sm:text-3xl lg:text-5xl font-normal tracking-tight leading-[1.1] text-[#000000] font-['Lucidity'] uppercase">
                 {event.title}
               </h1>
             </div>
@@ -295,14 +294,14 @@ export default function PublicEventPage() {
             {/* BLOC DATE ET HORAIRES (DÉBUT - FIN) */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 lg:gap-3 text-[11px] lg:text-xs font-bold tracking-wide">
               {formattedDate && (
-                <div className="flex items-center justify-center lg:justify-start gap-2.5 bg-neutral-900/85 border border-white/10 p-2.5 lg:p-3.5 rounded-xl lg:rounded-2xl">
-                  <Calendar className="w-3.5 h-3.5 lg:w-4 lg:h-4 text-white/70 shrink-0" />
+                <div className="flex items-center justify-center lg:justify-start gap-2.5 bg-[#FFFFFF] border border-[#000000]/10 p-2.5 lg:p-3.5 rounded-2xl shadow-sm">
+                  <Calendar className="w-3.5 h-3.5 lg:w-4 lg:h-4 text-[#000000]/70 shrink-0" />
                   <span className="truncate">{formattedDate}</span>
                 </div>
               )}
               
-              <div className="flex items-center justify-center lg:justify-start gap-2.5 bg-neutral-900/85 border border-white/10 p-2.5 lg:p-3.5 rounded-xl lg:rounded-2xl">
-                <Clock className="w-3.5 h-3.5 lg:w-4 lg:h-4 text-white/70 shrink-0" />
+              <div className="flex items-center justify-center lg:justify-start gap-2.5 bg-[#FFFFFF] border border-[#000000]/10 p-2.5 lg:p-3.5 rounded-2xl shadow-sm">
+                <Clock className="w-3.5 h-3.5 lg:w-4 lg:h-4 text-[#000000]/70 shrink-0" />
                 <span>
                   {startTimeStr && endTimeStr 
                     ? `DE ${startTimeStr} À ${endTimeStr}`
@@ -313,8 +312,8 @@ export default function PublicEventPage() {
               </div>
 
               {event.location && (
-                <div className="sm:col-span-2 flex items-center justify-center lg:justify-start gap-2.5 bg-neutral-900/85 border border-white/10 p-2.5 lg:p-3.5 rounded-xl lg:rounded-2xl">
-                  <MapPin className="w-3.5 h-3.5 lg:w-4 lg:h-4 text-white/70 shrink-0" />
+                <div className="sm:col-span-2 flex items-center justify-center lg:justify-start gap-2.5 bg-[#FFFFFF] border border-[#000000]/10 p-2.5 lg:p-3.5 rounded-2xl shadow-sm">
+                  <MapPin className="w-3.5 h-3.5 lg:w-4 lg:h-4 text-[#000000]/70 shrink-0" />
                   <span className="truncate">{event.location}</span>
                 </div>
               )}
@@ -327,7 +326,7 @@ export default function PublicEventPage() {
                   setIsSuccess(false);
                   setIsCheckoutOpen(true);
                 }}
-                className="w-full h-12 lg:h-14 bg-white text-black text-xs uppercase tracking-widest hover:bg-neutral-200 transition-all flex items-center justify-center gap-3 cursor-pointer shadow-lg font-bold rounded-xl lg:rounded-2xl"
+                className="w-full h-12 lg:h-14 bg-[#000000] text-[#FFFFFF] text-xs uppercase tracking-widest hover:bg-[#000000]/80 transition-all flex items-center justify-center gap-3 cursor-pointer shadow-lg font-bold rounded-2xl"
               >
                 <Ticket className="w-4 h-4" />
                 <span>
@@ -340,9 +339,9 @@ export default function PublicEventPage() {
             </div>
 
             {event.description && (
-              <div className="hidden lg:block bg-neutral-900/40 border border-white/10 p-6 lg:p-8 rounded-3xl space-y-3">
-                <h3 className="text-xs font-bold uppercase tracking-widest text-white/40">À PROPOS DE L&apos;ÉVÉNEMENT</h3>
-                <p className="text-xs sm:text-sm leading-relaxed text-white/80 whitespace-pre-line font-normal text-left">
+              <div className="hidden lg:block bg-[#000000]/5 border border-[#000000]/10 p-6 lg:p-8 rounded-3xl space-y-3">
+                <h3 className="text-xs font-bold uppercase tracking-widest text-[#000000]/40">À PROPOS DE L&apos;ÉVÉNEMENT</h3>
+                <p className="text-xs sm:text-sm leading-relaxed text-[#000000]/80 whitespace-pre-line font-normal text-left">
                   {event.description}
                 </p>
               </div>
@@ -357,20 +356,20 @@ export default function PublicEventPage() {
       {mounted && createPortal(
         <>
           {showAuthModal && (
-            <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-200">
-              <div className="bg-neutral-900 border border-white/15 p-8 max-w-md w-full space-y-6 relative shadow-2xl text-white rounded-3xl font-grotesque uppercase">
+            <div className="fixed inset-0 z-50 bg-[#FFFFFF]/80 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in duration-200">
+              <div className="bg-[#FFFFFF] border border-[#000000]/15 p-8 max-w-md w-full space-y-6 relative shadow-2xl text-[#000000] rounded-3xl font-['Grotesque'] uppercase">
                 <button 
                   onClick={() => setShowAuthModal(false)}
                   aria-label="Fermer"
-                  className="absolute top-5 right-5 w-8 h-8 border border-white/10 bg-neutral-800 text-white flex items-center justify-center hover:bg-white hover:text-black transition-colors cursor-pointer rounded-xl"
+                  className="absolute top-5 right-5 w-8 h-8 border border-[#000000]/10 bg-[#000000]/5 text-[#000000] flex items-center justify-center hover:bg-[#000000] hover:text-[#FFFFFF] transition-colors cursor-pointer rounded-2xl"
                 >
                   <X className="w-4 h-4" />
                 </button>
 
                 <div className="space-y-2">
-                  <span className="inline-block text-[10px] uppercase tracking-widest bg-white/10 text-white px-2.5 py-1 rounded-full font-bold">SÉCURITÉ</span>
-                  <h3 className="text-2xl font-normal tracking-tight">CONNEXION REQUISE</h3>
-                  <p className="text-xs text-white/50 leading-relaxed font-normal">
+                  <span className="inline-block text-[10px] uppercase tracking-widest bg-[#000000]/10 text-[#000000] px-2.5 py-1 rounded-full font-bold">SÉCURITÉ</span>
+                  <h3 className="text-2xl font-normal tracking-tight font-['Lucidity']">CONNEXION REQUISE</h3>
+                  <p className="text-xs text-[#000000]/60 leading-relaxed font-normal">
                     CONNECTEZ-VOUS POUR VALIDER VOTRE COMMANDE ET RETROUVER VOS BILLETS.
                   </p>
                 </div>
@@ -379,7 +378,7 @@ export default function PublicEventPage() {
                   <div className="space-y-4 pt-2">
                     <button
                       onClick={handleGoogleLogin}
-                      className="w-full h-12 border border-white/10 bg-neutral-900 hover:bg-white hover:text-black text-white text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-3 cursor-pointer rounded-xl"
+                      className="w-full h-12 border border-[#000000]/15 bg-[#FFFFFF] hover:bg-[#000000] hover:text-[#FFFFFF] text-[#000000] text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-3 cursor-pointer rounded-2xl shadow-sm"
                     >
                       <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
                         <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
@@ -392,7 +391,7 @@ export default function PublicEventPage() {
 
                     <button
                       onClick={handleAppleLogin}
-                      className="w-full h-12 border border-white/10 bg-neutral-900 hover:bg-white hover:text-black text-white text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-3 cursor-pointer rounded-xl"
+                      className="w-full h-12 border border-[#000000]/15 bg-[#FFFFFF] hover:bg-[#000000] hover:text-[#FFFFFF] text-[#000000] text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-3 cursor-pointer rounded-2xl shadow-sm"
                     >
                       <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
                         <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 6.01c.65-.79 1.09-1.89.97-2.99-.96.04-2.13.64-2.82 1.43-.6.68-1.13 1.78-.99 2.85 1.08.08 2.19-.53 2.84-1.29z"/>
@@ -401,9 +400,9 @@ export default function PublicEventPage() {
                     </button>
 
                     <div className="relative flex py-2 items-center">
-                      <div className="flex-grow border-t border-white/10"></div>
-                      <span className="flex-shrink mx-4 text-[10px] tracking-widest text-white/40 font-bold">OU</span>
-                      <div className="flex-grow border-t border-white/10"></div>
+                      <div className="flex-grow border-t border-[#000000]/10"></div>
+                      <span className="flex-shrink mx-4 text-[10px] tracking-widest text-[#000000]/40 font-bold">OU</span>
+                      <div className="flex-grow border-t border-[#000000]/10"></div>
                     </div>
 
                     <form onSubmit={handleMagicLinkLogin} className="space-y-3">
@@ -413,21 +412,21 @@ export default function PublicEventPage() {
                         placeholder="VOTRE@EMAIL.COM"
                         value={authEmail}
                         onChange={(e) => setAuthEmail(e.target.value)}
-                        className="w-full h-12 border border-white/10 bg-neutral-900 px-4 text-xs placeholder:text-white/30 focus:outline-none focus:border-white text-white rounded-xl font-bold"
+                        className="w-full h-12 border border-[#000000]/15 bg-[#FFFFFF] px-4 text-xs placeholder:text-[#000000]/30 focus:outline-none focus:border-[#000000] text-[#000000] rounded-2xl font-bold shadow-sm"
                       />
                       <button
                         type="submit"
                         disabled={authLoading}
-                        className="w-full h-12 border border-white/25 bg-white text-black text-xs font-bold uppercase tracking-widest hover:bg-neutral-200 transition-all disabled:opacity-50 cursor-pointer flex items-center justify-center gap-2 rounded-xl"
+                        className="w-full h-12 border border-[#000000] bg-[#000000] text-[#FFFFFF] text-xs font-bold uppercase tracking-widest hover:bg-[#000000]/80 transition-all disabled:opacity-50 cursor-pointer flex items-center justify-center gap-2 rounded-2xl shadow-md"
                       >
                         {authLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <span>LIEN MAGIQUE PAR EMAIL</span>}
                       </button>
                     </form>
                   </div>
                 ) : (
-                  <div className="border border-white/10 p-6 bg-neutral-900 text-center space-y-2 rounded-2xl">
+                  <div className="border border-[#000000]/10 p-6 bg-[#000000]/5 text-center space-y-2 rounded-2xl">
                     <p className="text-xs font-bold">LIEN ENVOYÉ</p>
-                    <p className="text-[11px] text-white/50 font-normal">VÉRIFIEZ VOTRE BOÎTE DE RÉCEPTION.</p>
+                    <p className="text-[11px] text-[#000000]/60 font-normal">VÉRIFIEZ VOTRE BOÎTE DE RÉCEPTION.</p>
                   </div>
                 )}
               </div>
@@ -435,8 +434,8 @@ export default function PublicEventPage() {
           )}
 
           {isCheckoutOpen && (
-            <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-200">
-              <div className="relative w-full max-w-lg bg-neutral-900 border border-white/15 p-8 space-y-6 shadow-2xl max-h-[90vh] overflow-y-auto text-white rounded-3xl font-grotesque uppercase">
+            <div className="fixed inset-0 z-50 bg-[#FFFFFF]/80 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in duration-200">
+              <div className="relative w-full max-w-lg bg-[#FFFFFF] border border-[#000000]/15 p-8 space-y-6 shadow-2xl max-h-[90vh] overflow-y-auto text-[#000000] rounded-3xl font-['Grotesque'] uppercase">
                 <button
                   onClick={() => {
                     setIsCheckoutOpen(false);
@@ -444,7 +443,7 @@ export default function PublicEventPage() {
                     setIsSuccess(false);
                   }}
                   aria-label="Fermer"
-                  className="absolute top-5 right-5 w-8 h-8 border border-white/10 bg-neutral-800 text-white flex items-center justify-center hover:bg-white hover:text-black transition-colors cursor-pointer z-10 rounded-xl"
+                  className="absolute top-5 right-5 w-8 h-8 border border-[#000000]/10 bg-[#000000]/5 text-[#000000] flex items-center justify-center hover:bg-[#000000] hover:text-[#FFFFFF] transition-colors cursor-pointer z-10 rounded-2xl"
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -452,14 +451,14 @@ export default function PublicEventPage() {
                 {isSuccess ? (
                   <div className="py-6 space-y-6 text-center">
                     <div className="flex justify-center">
-                      <div className="w-16 h-16 border border-white/15 bg-neutral-800 flex items-center justify-center text-white rounded-2xl">
+                      <div className="w-16 h-16 border border-[#000000]/15 bg-[#000000]/5 flex items-center justify-center text-[#000000] rounded-2xl">
                         <CheckCircle2 className="w-8 h-8" />
                       </div>
                     </div>
                     <div className="space-y-2">
-                      <span className="inline-block text-[10px] uppercase tracking-widest bg-white/10 text-white px-2.5 py-1 rounded-full font-bold">SUCCÈS</span>
-                      <h3 className="text-2xl font-normal tracking-tight">PLACES CONFIRMÉES</h3>
-                      <p className="text-xs text-white/50 font-normal">VOTRE BILLET VOUS A ÉTÉ ENVOYÉ PAR E-MAIL.</p>
+                      <span className="inline-block text-[10px] uppercase tracking-widest bg-[#000000]/10 text-[#000000] px-2.5 py-1 rounded-full font-bold">SUCCÈS</span>
+                      <h3 className="text-2xl font-normal tracking-tight font-['Lucidity']">PLACES CONFIRMÉES</h3>
+                      <p className="text-xs text-[#000000]/60 font-normal">VOTRE BILLET VOUS A ÉTÉ ENVOYÉ PAR E-MAIL.</p>
                     </div>
                     <button
                       onClick={() => {
@@ -467,7 +466,7 @@ export default function PublicEventPage() {
                         setClientSecret(null);
                         setIsSuccess(false);
                       }}
-                      className="w-full h-12 bg-white text-black text-xs font-bold uppercase tracking-widest hover:bg-neutral-200 transition-all cursor-pointer rounded-xl"
+                      className="w-full h-12 bg-[#000000] text-[#FFFFFF] text-xs font-bold uppercase tracking-widest hover:bg-[#000000]/80 transition-all cursor-pointer rounded-2xl shadow-md"
                     >
                       FERMER
                     </button>
@@ -475,22 +474,22 @@ export default function PublicEventPage() {
                 ) : !clientSecret ? (
                   <>
                     <div className="space-y-1">
-                      <span className="inline-block text-[10px] uppercase tracking-widest bg-white/10 text-white px-2.5 py-1 rounded-full font-bold">PANIER</span>
-                      <h3 className="text-xl font-normal tracking-tight pt-1">{event.title}</h3>
+                      <span className="inline-block text-[10px] uppercase tracking-widest bg-[#000000]/10 text-[#000000] px-2.5 py-1 rounded-full font-bold">PANIER</span>
+                      <h3 className="text-xl font-normal tracking-tight pt-1 font-['Lucidity'] uppercase">{event.title}</h3>
                     </div>
 
                     <div className="space-y-3 pt-2">
-                      <div className="flex justify-between items-center text-xs text-white/50 font-bold">
+                      <div className="flex justify-between items-center text-xs text-[#000000]/60 font-bold">
                         <span>QUANTITÉ DE PLACES</span>
-                        <span className="text-white flex items-center gap-1.5 font-bold">
+                        <span className="text-[#000000] flex items-center gap-1.5 font-bold">
                           <Users className="w-3.5 h-3.5" /> {quantity}
                         </span>
                       </div>
-                      <div className="flex items-center justify-between border border-white/10 p-1.5 bg-neutral-950 rounded-2xl">
+                      <div className="flex items-center justify-between border border-[#000000]/10 p-1.5 bg-[#000000]/5 rounded-2xl">
                         <button
                           onClick={() => setQuantity(Math.max(1, quantity - 1))}
                           disabled={quantity <= 1}
-                          className="w-10 h-10 border border-white/10 bg-neutral-900 text-white flex items-center justify-center hover:bg-white hover:text-black disabled:opacity-30 transition-all cursor-pointer rounded-xl font-bold"
+                          className="w-10 h-10 border border-[#000000]/10 bg-[#FFFFFF] text-[#000000] flex items-center justify-center hover:bg-[#000000] hover:text-[#FFFFFF] disabled:opacity-30 transition-all cursor-pointer rounded-2xl font-bold shadow-xs"
                         >
                           <Minus className="w-4 h-4" />
                         </button>
@@ -498,7 +497,7 @@ export default function PublicEventPage() {
                         <button
                           onClick={() => setQuantity(Math.min(10, quantity + 1))}
                           disabled={quantity >= 10}
-                          className="w-10 h-10 border border-white/10 bg-neutral-900 text-white flex items-center justify-center hover:bg-white hover:text-black disabled:opacity-30 transition-all cursor-pointer rounded-xl font-bold"
+                          className="w-10 h-10 border border-[#000000]/10 bg-[#FFFFFF] text-[#000000] flex items-center justify-center hover:bg-[#000000] hover:text-[#FFFFFF] disabled:opacity-30 transition-all cursor-pointer rounded-2xl font-bold shadow-xs"
                         >
                           <Plus className="w-4 h-4" />
                         </button>
@@ -506,19 +505,19 @@ export default function PublicEventPage() {
                     </div>
 
                     {basePrice > 0 && (
-                      <div className="border border-white/10 p-4 bg-neutral-950 space-y-2 rounded-2xl">
-                        <div className="flex items-center gap-2 text-xs font-bold text-white/80">
+                      <div className="border border-[#000000]/10 p-4 bg-[#000000]/5 space-y-2 rounded-2xl">
+                        <div className="flex items-center gap-2 text-xs font-bold text-[#000000]/80">
                           <ShieldCheck className="w-4 h-4" />
                           <span>DÉTAIL DU TARIF</span>
                         </div>
-                        <div className="space-y-1 text-xs text-white/50 font-medium">
+                        <div className="space-y-1 text-xs text-[#000000]/60 font-medium">
                           <div className="flex justify-between">
                             <span>BILLET(S) ({quantity}X)</span>
-                            <span className="text-white font-bold">{(organizerSharePerTicket * quantity).toFixed(2)} €</span>
+                            <span className="text-[#000000] font-bold">{(organizerSharePerTicket * quantity).toFixed(2)} €</span>
                           </div>
                           <div className="flex justify-between">
                             <span>FRAIS DE PAIEMENT SÉCURISÉ (STRIPE)</span>
-                            <span className="text-white font-bold">{estimatedStripeFees.toFixed(2)} €</span>
+                            <span className="text-[#000000] font-bold">{estimatedStripeFees.toFixed(2)} €</span>
                           </div>
                         </div>
                       </div>
@@ -526,14 +525,14 @@ export default function PublicEventPage() {
 
                     <div className="space-y-4 pt-2">
                       <div className="flex items-baseline justify-between">
-                        <span className="text-xs uppercase tracking-wider text-white/50 font-bold">TOTAL À PAYER</span>
+                        <span className="text-xs uppercase tracking-wider text-[#000000]/60 font-bold">TOTAL À PAYER</span>
                         <p className="text-3xl font-normal tracking-tight">{totalPrice.toFixed(2)} €</p>
                       </div>
 
                       <button 
                         onClick={handleInitCheckout}
                         disabled={isInitializingPayment}
-                        className="w-full h-12 bg-white text-black text-xs uppercase tracking-widest transition-all flex items-center justify-center gap-2 cursor-pointer shadow-md font-bold disabled:opacity-50 hover:bg-neutral-200 rounded-xl"
+                        className="w-full h-12 bg-[#000000] text-[#FFFFFF] text-xs uppercase tracking-widest transition-all flex items-center justify-center gap-2 cursor-pointer shadow-md font-bold disabled:opacity-50 hover:bg-[#000000]/80 rounded-2xl"
                       >
                         {isInitializingPayment ? (
                           <Loader2 className="w-4 h-4 animate-spin" />
@@ -548,14 +547,14 @@ export default function PublicEventPage() {
                   </>
                 ) : (
                   <div className="space-y-4">
-                    <div className="flex items-center justify-between border-b border-white/10 pb-3">
+                    <div className="flex items-center justify-between border-b border-[#000000]/10 pb-3">
                       <div>
-                        <span className="inline-block text-[10px] uppercase tracking-widest bg-white/10 text-white px-2.5 py-1 rounded-full font-bold mb-1">PAIEMENT SÉCURISÉ</span>
+                        <span className="inline-block text-[10px] uppercase tracking-widest bg-[#000000]/10 text-[#000000] px-2.5 py-1 rounded-full font-bold mb-1">PAIEMENT SÉCURISÉ</span>
                         <h4 className="text-sm font-bold pt-1">{totalPrice.toFixed(2)} € • {quantity} PLACE(S)</h4>
                       </div>
                       <button 
                         onClick={() => setClientSecret(null)}
-                        className="text-xs underline text-white/50 hover:text-white cursor-pointer font-bold"
+                        className="text-xs underline text-[#000000]/60 hover:text-[#000000] cursor-pointer font-bold"
                       >
                         RETOUR
                       </button>
@@ -569,12 +568,12 @@ export default function PublicEventPage() {
                         appearance: {
                           theme: 'stripe',
                           variables: {
-                            colorPrimary: '#ffffff',
-                            colorBackground: '#0f0f0f',
-                            colorText: '#ffffff',
+                            colorPrimary: '#000000',
+                            colorBackground: '#ffffff',
+                            colorText: '#000000',
                             colorDanger: '#ff4b4b',
                             fontFamily: 'inherit',
-                            borderRadius: '12px',
+                            borderRadius: '16px',
                           },
                         },
                       }}
