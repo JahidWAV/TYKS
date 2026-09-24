@@ -80,7 +80,7 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
                   width={500} 
                   height={160} 
                   priority 
-                  className="w-full h-auto object-contain brightness-0" 
+                  className="w-full h-auto object-contain" 
                 />
               </div>
             </Link>
@@ -91,7 +91,7 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
             {!isPro && (
               <button
                 onClick={() => setIsSearchModalOpen(true)}
-                className="h-11 px-5 bg-neutral-100/80 hover:bg-neutral-200/80 text-neutral-950 transition-all duration-300 rounded-full flex items-center gap-2 text-[15px] font-grotesque font-medium cursor-pointer capitalize"
+                className="h-11 px-5 bg-white border border-neutral-950 hover:bg-neutral-50 text-neutral-950 transition-all duration-300 rounded-full flex items-center gap-2 text-[15px] font-grotesque font-medium cursor-pointer capitalize"
               >
                 <Search className="h-4 w-4 shrink-0" strokeWidth={2} />
                 <span>Rechercher</span>
@@ -113,7 +113,7 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
             {!isPro && (
               <button
                 onClick={() => setIsSearchModalOpen(true)}
-                className="h-10 w-10 bg-neutral-100/80 text-neutral-950 rounded-full flex items-center justify-center cursor-pointer"
+                className="h-10 w-10 bg-white border border-neutral-950 text-neutral-950 rounded-full flex items-center justify-center cursor-pointer"
                 aria-label="Rechercher"
               >
                 <Search className="h-4 w-4" strokeWidth={2} />
