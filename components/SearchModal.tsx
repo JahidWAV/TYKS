@@ -156,8 +156,8 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
               {/* SECTION ORGANISATEURS */}
               {filteredOrgs.length > 0 && (
                 <div className="space-y-1 mb-3">
-                  <div className="px-3 py-1.5 text-[13px] font-['Lucidity'] uppercase tracking-widest text-[#000000]/40">
-                    Organisateurs
+                  <div className="px-3 py-1.5 text-[13px] font-['Lucidity'] font-bold uppercase tracking-widest text-[#000000]/40">
+                    ORGANISATEURS
                   </div>
                   {filteredOrgs.map((org) => {
                     const orgLogo = org.logo_url || org.image_url;
