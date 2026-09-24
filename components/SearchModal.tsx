@@ -111,39 +111,41 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
   return (
     <div className="fixed inset-0 z-50 bg-white flex flex-col font-sans text-neutral-950 animate-in fade-in duration-200 overflow-y-auto">
       
-      {/* HEADER DE RECHERCHE - Ajusté pour épouser la taille exacte des bulles de la navbar */}
-      <div className="w-full max-w-5xl mx-auto px-6 pt-8 pb-6 flex items-center gap-3 border-b border-neutral-200">
-        <div className="relative flex-1 flex items-center">
-          <Search className="absolute left-5 h-4 w-4 text-neutral-400 pointer-events-none" strokeWidth={2} />
-          <input
-            ref={searchInputRef}
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Rechercher un événement, un artiste, un organisateur..."
-            className="w-full h-11 bg-neutral-50 border border-neutral-950 pl-12 pr-12 text-[15px] font-medium placeholder:text-neutral-400 focus:outline-none focus:bg-white text-neutral-950 rounded-full shadow-inner"
-          />
-          {searchQuery && (
-            <button 
-              onClick={() => setSearchQuery("")}
-              className="absolute right-4 text-[15px] text-neutral-400 hover:text-neutral-950 cursor-pointer font-medium"
-            >
-              Effacer
-            </button>
-          )}
-        </div>
+      {/* HEADER DE RECHERCHE - Aligné strictement sur la grille et la hauteur des bulles de la navbar */}
+      <div className="w-full border-b border-neutral-200 bg-white sticky top-0 z-20 backdrop-blur-md bg-white/90">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex items-center gap-3">
+          <div className="relative flex-1 flex items-center">
+            <Search className="absolute left-4 h-4 w-4 text-neutral-400 pointer-events-none" strokeWidth={2} />
+            <input
+              ref={searchInputRef}
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Rechercher un événement, un artiste, un organisateur..."
+              className="w-full h-11 bg-neutral-50 border border-neutral-950 pl-11 pr-12 text-[15px] font-medium placeholder:text-neutral-400 focus:outline-none focus:bg-white text-neutral-950 rounded-full shadow-inner"
+            />
+            {searchQuery && (
+              <button 
+                onClick={() => setSearchQuery("")}
+                className="absolute right-4 text-[15px] text-neutral-400 hover:text-neutral-950 cursor-pointer font-medium"
+              >
+                Effacer
+              </button>
+            )}
+          </div>
 
-        <button
-          onClick={onClose}
-          className="h-11 px-6 shrink-0 bg-white hover:bg-neutral-950 hover:text-white border border-neutral-950 text-neutral-950 rounded-full transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer font-medium text-[15px]"
-        >
-          <X className="w-4 h-4" strokeWidth={2} />
-          <span className="hidden sm:inline">Fermer</span>
-        </button>
+          <button
+            onClick={onClose}
+            className="h-11 px-5 shrink-0 bg-white hover:bg-neutral-950 hover:text-white border border-neutral-950 text-neutral-950 rounded-full transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer font-medium text-[15px]"
+          >
+            <X className="w-4 h-4" strokeWidth={2} />
+            <span className="hidden sm:inline">Fermer</span>
+          </button>
+        </div>
       </div>
 
       {/* RÉSULTATS */}
-      <div className="flex-1 max-w-5xl w-full mx-auto px-6 py-8 space-y-10">
+      <div className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 py-8 space-y-10">
         
         {isLoading ? (
           <div className="py-24 text-center text-neutral-400 text-[15px] font-medium animate-pulse">
@@ -196,7 +198,7 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
               </h3>
 
               {displayedEvents.length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                   {displayedEvents.map((evt) => {
                     const priceFormatted = evt.price && parseFloat(evt.price) > 0
                       ? `${parseFloat(evt.price).toFixed(2)} €`
