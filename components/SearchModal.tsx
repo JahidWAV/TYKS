@@ -106,45 +106,44 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
     return normalizeString(org.name).includes(q);
   });
 
-  const displayedEvents = debouncedQuery.trim() === "" ? rawEvents.slice(0, 6) : filteredEvents;
+  // Limité à maximum 5 événements affichés
+  const displayedEvents = (debouncedQuery.trim() === "" ? rawEvents : filteredEvents).slice(0, 5);
 
   return (
-    <div className="fixed inset-0 z-50 bg-[#FFFFFF]/80 backdrop-blur-md flex flex-col font-sans text-[#000000] animate-in fade-in duration-200 overflow-y-auto">
+    <div className="fixed inset-0 z-50 bg-[#FFFFFF]/80 backdrop-blur-md flex flex-col items-center justify-center p-4 font-sans text-[#000000] animate-in fade-in duration-200 overflow-y-auto">
       
-      {/* HEADER DE RECHERCHE */}
-      <div className="w-full pt-6 pb-4">
-        <div className="max-w-2xl mx-auto px-4">
-          <div className="relative flex items-center bg-[#FFFFFF] border border-[#000000] rounded-3xl shadow-xl overflow-hidden">
-            <Search className="absolute left-4 h-4 w-4 text-[#000000]/40 pointer-events-none" strokeWidth={2} />
-            <input
-              ref={searchInputRef}
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Rechercher un événement, un lieu ou un·e artiste..."
-              className="w-full h-12 bg-transparent pl-11 pr-12 text-[15px] font-['Grotesque'] font-medium placeholder:text-[#000000]/40 focus:outline-none text-[#000000]"
-            />
-            {searchQuery ? (
-              <button 
-                onClick={() => setSearchQuery("")}
-                className="absolute right-4 p-1 text-[#000000]/40 hover:text-[#000000] cursor-pointer"
-              >
-                <X className="w-4 h-4" strokeWidth={2} />
-              </button>
-            ) : (
-              <button 
-                onClick={onClose}
-                className="absolute right-4 p-1 text-[#000000]/40 hover:text-[#000000] cursor-pointer"
-              >
-                <X className="w-4 h-4" strokeWidth={2} />
-              </button>
-            )}
-          </div>
+      {/* CONTENEUR GLOBAL CENTRÉ */}
+      <div className="w-full max-w-2xl space-y-3 my-auto">
+        
+        {/* HEADER DE RECHERCHE */}
+        <div className="relative flex items-center bg-[#FFFFFF] border border-[#000000] rounded-3xl shadow-xl overflow-hidden">
+          <Search className="absolute left-4 h-4 w-4 text-[#000000]/40 pointer-events-none" strokeWidth={2} />
+          <input
+            ref={searchInputRef}
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Rechercher un événement, un lieu ou un·e artiste..."
+            className="w-full h-12 bg-transparent pl-11 pr-12 text-[15px] font-['Grotesque'] font-medium placeholder:text-[#000000]/40 focus:outline-none text-[#000000]"
+          />
+          {searchQuery ? (
+            <button 
+              onClick={() => setSearchQuery("")}
+              className="absolute right-4 p-1 text-[#000000]/40 hover:text-[#000000] cursor-pointer"
+            >
+              <X className="w-4 h-4" strokeWidth={2} />
+            </button>
+          ) : (
+            <button 
+              onClick={onClose}
+              className="absolute right-4 p-1 text-[#000000]/40 hover:text-[#000000] cursor-pointer"
+            >
+              <X className="w-4 h-4" strokeWidth={2} />
+            </button>
+          )}
         </div>
-      </div>
 
-      {/* CONTENEUR DE LA LISTE */}
-      <div className="flex-1 max-w-2xl w-full mx-auto px-4 pb-12">
+        {/* BLOC DES RÉSULTATS */}
         <div className="bg-[#FFFFFF] border border-[#000000]/10 rounded-3xl shadow-2xl overflow-hidden p-3 space-y-2">
           
           {isLoading ? (
@@ -156,11 +155,10 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
               {/* SECTION ORGANISATEURS */}
               {filteredOrgs.length > 0 && (
                 <div className="space-y-1 mb-3">
-                  {/* Application directe de Lucidity pour les majuscules */}
                   <div className="px-3 py-1.5 text-[13px] font-['Lucidity'] uppercase tracking-widest text-[#000000]/40">
                     ORGANISATEURS
                   </div>
-                  {filteredOrgs.map((org) => {
+                  {filteredOrgs.slice(0, 3).map((org) => {
                     const orgLogo = org.logo_url || org.image_url;
                     return (
                       <button
@@ -179,7 +177,6 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
                           )}
                         </div>
                         <div className="truncate flex-1">
-                          {/* Titre en majuscules avec Lucidity */}
                           <p className="text-[15px] font-['Lucidity'] uppercase truncate text-[#000000]">{org.name}</p>
                           <span className="text-[13px] font-['Grotesque'] text-[#000000]/50 font-medium">Organisateur</span>
                         </div>
@@ -189,7 +186,7 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
                 </div>
               )}
 
-              {/* SECTION ÉVÉNEMENTS EN LISTE */}
+              {/* SECTION ÉVÉNEMENTS EN LISTE (MAX 5) */}
               <div className="space-y-1">
                 {displayedEvents.length > 0 ? (
                   <div className="space-y-1">
@@ -223,7 +220,6 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
 
                           {/* Infos textuelles */}
                           <div className="flex-1 min-w-0">
-                            {/* Application de la police Lucidity pour les titres majuscules des événements */}
                             <p className="text-[15px] font-['Lucidity'] uppercase truncate text-[#000000]">
                               {evt.title}
                             </p>
