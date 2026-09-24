@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { Search, Calendar, MapPin, ArrowUpRight, X, Building2, Sparkles } from "lucide-react";
+import { Search, Calendar, MapPin, X, Building2 } from "lucide-react";
 import { supabaseBrowser } from "@/lib/supabase-browser";
 
 interface SearchModalProps {
@@ -109,57 +109,56 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
   const displayedEvents = debouncedQuery.trim() === "" ? rawEvents.slice(0, 6) : filteredEvents;
 
   return (
-    <div className="fixed inset-0 z-50 bg-white flex flex-col font-sans text-neutral-950 animate-in fade-in duration-200 overflow-y-auto">
+    <div className="fixed inset-0 z-50 bg-white/80 backdrop-blur-md flex flex-col font-sans text-neutral-950 animate-in fade-in duration-200 overflow-y-auto">
       
-      {/* HEADER DE RECHERCHE */}
-      <div className="w-full border-b border-neutral-200 bg-white sticky top-0 z-20 backdrop-blur-md bg-white/90">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex items-center gap-3">
-          <div className="relative flex-1 flex items-center">
+      {/* HEADER DE RECHERCHE - Style barre flottante centrée */}
+      <div className="w-full pt-6 pb-4">
+        <div className="max-w-2xl mx-auto px-4">
+          <div className="relative flex items-center bg-white border border-neutral-950 rounded-2xl shadow-xl overflow-hidden">
             <Search className="absolute left-4 h-4 w-4 text-neutral-400 pointer-events-none" strokeWidth={2} />
             <input
               ref={searchInputRef}
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Rechercher un événement, un artiste, un organisateur..."
-              className="w-full h-11 bg-neutral-50 border border-neutral-950 pl-11 pr-12 text-[15px] font-medium placeholder:text-neutral-400 focus:outline-none focus:bg-white text-neutral-950 rounded-full shadow-inner"
+              placeholder="Rechercher un événement, un lieu ou une ville..."
+              className="w-full h-12 bg-transparent pl-11 pr-12 text-[15px] font-medium placeholder:text-neutral-400 focus:outline-none text-neutral-950"
             />
-            {searchQuery && (
+            {searchQuery ? (
               <button 
                 onClick={() => setSearchQuery("")}
-                className="absolute right-4 text-[15px] text-neutral-400 hover:text-neutral-950 cursor-pointer font-medium"
+                className="absolute right-4 p-1 text-neutral-400 hover:text-neutral-950 cursor-pointer"
               >
-                Effacer
+                <X className="w-4 h-4" strokeWidth={2} />
+              </button>
+            ) : (
+              <button 
+                onClick={onClose}
+                className="absolute right-4 p-1 text-neutral-400 hover:text-neutral-950 cursor-pointer"
+              >
+                <X className="w-4 h-4" strokeWidth={2} />
               </button>
             )}
           </div>
-
-          <button
-            onClick={onClose}
-            className="h-11 px-5 shrink-0 bg-white hover:bg-neutral-950 hover:text-white border border-neutral-950 text-neutral-950 rounded-full transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer font-medium text-[15px]"
-          >
-            <X className="w-4 h-4" strokeWidth={2} />
-            <span className="hidden sm:inline">Fermer</span>
-          </button>
         </div>
       </div>
 
-      {/* RÉSULTATS */}
-      <div className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 py-8 space-y-10">
-        
-        {isLoading ? (
-          <div className="py-24 text-center text-neutral-400 text-[15px] font-medium animate-pulse">
-            Chargement des données...
-          </div>
-        ) : (
-          <>
-            {/* SECTION ORGANISATEURS */}
-            {filteredOrgs.length > 0 && (
-              <div className="space-y-4">
-                <h3 className="text-[15px] font-semibold text-neutral-500 flex items-center gap-2">
-                  <Building2 className="w-4 h-4 text-neutral-950" /> Organisateurs & collectifs ({filteredOrgs.length})
-                </h3>
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+      {/* CONTENEUR DE LA LISTE (Style modale flottante centrée type DICE) */}
+      <div className="flex-1 max-w-2xl w-full mx-auto px-4 pb-12">
+        <div className="bg-white border border-neutral-200 rounded-3xl shadow-2xl overflow-hidden p-3 space-y-2">
+          
+          {isLoading ? (
+            <div className="py-16 text-center text-neutral-400 text-[15px] font-medium animate-pulse">
+              Chargement...
+            </div>
+          ) : (
+            <>
+              {/* SECTION ORGANISATEURS */}
+              {filteredOrgs.length > 0 && (
+                <div className="space-y-1 mb-3">
+                  <div className="px-3 py-1.5 text-[13px] font-semibold text-neutral-400 uppercase tracking-wider">
+                    Organisateurs
+                  </div>
                   {filteredOrgs.map((org) => {
                     const orgLogo = org.logo_url || org.image_url;
                     return (
@@ -169,116 +168,91 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
                           onClose();
                           router.push(`/organizations/${org.slug || org.id}`);
                         }}
-                        className="p-4 bg-white hover:bg-neutral-50 border border-neutral-950 rounded-3xl transition-all duration-300 flex items-center gap-4 group cursor-pointer text-left shadow-sm"
+                        className="w-full p-2.5 hover:bg-neutral-50 rounded-2xl transition-all duration-200 flex items-center gap-3 cursor-pointer text-left group"
                       >
-                        <div className="relative w-12 h-12 shrink-0 rounded-2xl overflow-hidden bg-neutral-100 border border-neutral-200 flex items-center justify-center">
+                        <div className="relative w-10 h-10 shrink-0 rounded-xl overflow-hidden bg-neutral-100 border border-neutral-200 flex items-center justify-center">
                           {orgLogo ? (
                             <img src={orgLogo} alt={org.name} className="w-full h-full object-cover" />
                           ) : (
-                            <Building2 className="w-5 h-5 text-neutral-400" />
+                            <Building2 className="w-4 h-4 text-neutral-400" />
                           )}
                         </div>
                         <div className="truncate flex-1">
-                          <p className="text-[15px] font-semibold truncate text-neutral-950">{org.name}</p>
+                          <p className="text-[15px] font-semibold truncate text-neutral-950 group-hover:text-black">{org.name}</p>
                           <span className="text-[13px] text-neutral-500 font-medium">Organisateur</span>
                         </div>
-                        <ArrowUpRight className="w-4 h-4 text-neutral-400 group-hover:text-neutral-950 shrink-0" />
                       </button>
                     );
                   })}
-                </div>
-              </div>
-            )}
-
-            {/* SECTION ÉVÉNEMENTS */}
-            <div className="space-y-4">
-              <h3 className="text-[15px] font-semibold text-neutral-500 flex items-center gap-2">
-                {debouncedQuery.trim() === "" ? <Sparkles className="w-4 h-4 text-neutral-950" /> : <Calendar className="w-4 h-4 text-neutral-950" />}
-                {debouncedQuery.trim() === "" ? "Événements en tendance" : `Événements (${displayedEvents.length})`}
-              </h3>
-
-              {displayedEvents.length > 0 ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                  {displayedEvents.map((evt) => {
-                    const priceFormatted = evt.price && parseFloat(evt.price) > 0
-                      ? `${parseFloat(evt.price).toFixed(2)} €`
-                      : evt.price_cents && evt.price_cents > 0
-                      ? `${(evt.price_cents / 100).toFixed(2)} €`
-                      : 'Gratuit';
-
-                    const flyer = evt.image_url || evt.flyer || evt.poster || evt.cover_image;
-                    const orgName = evt.organizations?.name;
-
-                    return (
-                      <button
-                        key={evt.id}
-                        onClick={() => {
-                          onClose();
-                          router.push(`/events/${evt.slug || evt.id}`);
-                        }}
-                        className="group text-left bg-neutral-950 hover:bg-neutral-900 border border-neutral-950 rounded-[2rem] p-4 transition-all duration-300 flex flex-col justify-between cursor-pointer space-y-4 shadow-md"
-                      >
-                        <div className="relative w-full aspect-square rounded-2xl overflow-hidden bg-neutral-900 border border-neutral-800">
-                          {flyer ? (
-                            <img 
-                              src={flyer} 
-                              alt={evt.title || "Événement"} 
-                              className="w-full h-full object-cover" 
-                            />
-                          ) : (
-                            <div className="w-full h-full flex items-center justify-center text-[15px] font-semibold text-neutral-500">
-                              TYKS
-                            </div>
-                          )}
-                          <div className="absolute top-3 right-3 bg-neutral-950/90 backdrop-blur-md border border-white/20 text-white text-[13px] font-semibold px-3 py-1 rounded-full shadow-sm">
-                            {priceFormatted}
-                          </div>
-                        </div>
-
-                        <div className="space-y-2 flex-1">
-                          <p className="text-[15px] font-semibold line-clamp-1 text-white">
-                            {evt.title}
-                          </p>
-
-                          <div className="space-y-1 text-[13px] text-neutral-400 font-medium">
-                            {evt.starts_at && (
-                              <div className="flex items-center gap-1.5">
-                                <Calendar className="w-3.5 h-3.5 shrink-0 text-neutral-500" />
-                                {new Date(evt.starts_at).toLocaleDateString("fr-FR", { day: "numeric", month: "short", year: "numeric" })}
-                              </div>
-                            )}
-                            {evt.location && (
-                              <div className="flex items-center gap-1.5 truncate">
-                                <MapPin className="w-3.5 h-3.5 shrink-0 text-neutral-500" />
-                                <span className="truncate">{evt.location}</span>
-                              </div>
-                            )}
-                            {orgName && (
-                              <div className="flex items-center gap-1.5 truncate text-neutral-300">
-                                <Building2 className="w-3.5 h-3.5 shrink-0 text-neutral-500" />
-                                <span className="truncate">{orgName}</span>
-                              </div>
-                            )}
-                          </div>
-                        </div>
-
-                        <div className="pt-3 border-t border-neutral-800 flex items-center justify-between text-[13px] text-neutral-400 group-hover:text-white font-semibold transition-colors">
-                          <span>Voir la billetterie</span>
-                          <ArrowUpRight className="w-4 h-4" />
-                        </div>
-                      </button>
-                    );
-                  })}
-                </div>
-              ) : (
-                <div className="py-20 text-center text-neutral-400 text-[15px] font-medium">
-                  Aucun résultat trouvé pour &quot;{searchQuery}&quot;
                 </div>
               )}
-            </div>
-          </>
-        )}
 
+              {/* SECTION ÉVÉNEMENTS EN LISTE */}
+              <div className="space-y-1">
+                {displayedEvents.length > 0 ? (
+                  <div className="space-y-1">
+                    {displayedEvents.map((evt) => {
+                      const flyer = evt.image_url || evt.flyer || evt.poster || evt.cover_image;
+                      const orgName = evt.organizations?.name;
+
+                      return (
+                        <button
+                          key={evt.id}
+                          onClick={() => {
+                            onClose();
+                            router.push(`/events/${evt.slug || evt.id}`);
+                          }}
+                          className="w-full p-2.5 hover:bg-neutral-50 rounded-2xl transition-all duration-200 flex items-center gap-3.5 cursor-pointer text-left group"
+                        >
+                          {/* Miniature carrée */}
+                          <div className="relative w-12 h-12 shrink-0 rounded-xl overflow-hidden bg-neutral-100 border border-neutral-200">
+                            {flyer ? (
+                              <img 
+                                src={flyer} 
+                                alt={evt.title || "Événement"} 
+                                className="w-full h-full object-cover" 
+                              />
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center text-[11px] font-semibold text-neutral-400">
+                                TYKS
+                              </div>
+                            )}
+                          </div>
+
+                          {/* Infos textuelles sur la droite */}
+                          <div className="flex-1 min-w-0">
+                            <p className="text-[15px] font-semibold truncate text-neutral-950 group-hover:text-black">
+                              {evt.title}
+                            </p>
+                            <div className="flex items-center gap-2 text-[13px] text-neutral-500 font-medium truncate mt-0.5">
+                              {evt.starts_at && (
+                                <span>
+                                  {new Date(evt.starts_at).toLocaleDateString("fr-FR", { weekday: 'short', day: "numeric", month: "short" })}
+                                </span>
+                              )}
+                              {evt.starts_at && evt.location && <span>•</span>}
+                              {evt.location && (
+                                <span className="truncate">{evt.location}</span>
+                              )}
+                              {orgName && !evt.location && (
+                                <span className="truncate">({orgName})</span>
+                              )}
+                            </div>
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <div className="py-12 text-center text-neutral-400 text-[15px] font-medium">
+                    Aucun résultat trouvé pour &quot;{searchQuery}&quot;
+                  </div>
+                )}
+              </div>
+            </>
+          )}
+
+        </div>
       </div>
     </div>
   );
