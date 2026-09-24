@@ -138,16 +138,21 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
   // Détermination des événements à afficher (Max 5)
   let displayedEvents: any[] = [];
   if (debouncedQuery.trim() === "") {
-    // Si rien n'est tapé : on affiche les récents dans l'ordre mémorisé
-    const recentMap = new Map(rawEvents.map(evt => [evt.id, evt]));
-    const matchedRecent = recentEventIds.map(id => recentMap.get(id)).filter(Boolean);
-    
-    // Compléter avec les premiers événements disponibles si pas assez d'historique
-    const remainingEvents = rawEvents.filter(evt => !recentEventIds.includes(evt.id));
-    displayedEvents = [...matchedRecent, ...remainingEvents].slice(0, 5);
+    if (recentEventIds.length > 0) {
+      const recentMap = new Map(rawEvents.map(evt => [evt.id, evt]));
+      const matchedRecent = recentEventIds.map(id => recentMap.get(id)).filter(Boolean);
+      const remainingEvents = rawEvents.filter(evt => !recentEventIds.includes(evt.id));
+      displayedEvents = [...matchedRecent, ...remainingEvents].slice(0, 5);
+    } else {
+      displayedEvents = rawEvents.slice(0, 5);
+    }
   } else {
     displayedEvents = filteredEvents.slice(0, 5);
   }
+
+  const sectionTitle = debouncedQuery.trim() === "" 
+    ? (recentEventIds.length > 0 ? "Récemment consultés" : "Recommandations")
+    : null;
 
   return (
     <div className="fixed inset-0 z-50 bg-[#FFFFFF]/80 backdrop-blur-md flex flex-col items-center justify-center p-4 font-sans text-[#000000] animate-in fade-in duration-200 overflow-y-auto">
@@ -230,9 +235,9 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
               <div className="space-y-1">
                 {displayedEvents.length > 0 ? (
                   <div className="space-y-1">
-                    {debouncedQuery.trim() === "" && recentEventIds.length > 0 && (
+                    {sectionTitle && (
                       <div className="px-3 py-1 text-[11px] font-['Lucidity'] uppercase tracking-widest text-[#000000]/30">
-                        Récemment consultés
+                        {sectionTitle}
                       </div>
                     )}
                     {displayedEvents.map((evt) => {
