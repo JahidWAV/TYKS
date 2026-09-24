@@ -121,7 +121,7 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Rechercher un événement, un lieu ou un(e) artiste..."
+              placeholder="Rechercher un événement, un lieu ou un.e artiste..."
               className="w-full h-12 bg-transparent pl-11 pr-12 text-[15px] font-['Grotesque'] font-medium placeholder:text-[#000000]/40 focus:outline-none text-[#000000]"
             />
             {searchQuery ? (
