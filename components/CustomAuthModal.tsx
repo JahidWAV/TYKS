@@ -170,11 +170,12 @@ export default function CustomAuthModal({ isOpen, onClose }: CustomAuthModalProp
               className="w-full h-auto object-contain" 
             />
           </div>
-          <p className="text-[15px] text-neutral-600 font-medium">
-            {step === 'email' && "Entrez votre e-mail pour continuer"}
-            {step === 'signin' && "Bon retour ! Entrez votre mot de passe"}
-            {step === 'signup' && "Première visite ? Créez votre mot de passe"}
-          </p>
+          {step !== 'email' && (
+            <p className="text-[15px] text-neutral-600 font-medium">
+              {step === 'signin' && "Bon retour ! Entrez votre mot de passe"}
+              {step === 'signup' && "Première visite ? Créez votre mot de passe"}
+            </p>
+          )}
         </div>
 
         {error && (
