@@ -111,7 +111,7 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
   return (
     <div className="fixed inset-0 z-50 bg-white flex flex-col font-sans text-neutral-950 animate-in fade-in duration-200 overflow-y-auto">
       
-      {/* HEADER DE RECHERCHE - Aligné strictement sur la grille et la hauteur des bulles de la navbar */}
+      {/* HEADER DE RECHERCHE */}
       <div className="w-full border-b border-neutral-200 bg-white sticky top-0 z-20 backdrop-blur-md bg-white/90">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex items-center gap-3">
           <div className="relative flex-1 flex items-center">
@@ -216,53 +216,53 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
                           onClose();
                           router.push(`/events/${evt.slug || evt.id}`);
                         }}
-                        className="group text-left bg-white hover:bg-neutral-50 border border-neutral-950 rounded-[2rem] p-4 transition-all duration-300 flex flex-col justify-between cursor-pointer space-y-4 shadow-sm"
+                        className="group text-left bg-neutral-950 hover:bg-neutral-900 border border-neutral-950 rounded-[2rem] p-4 transition-all duration-300 flex flex-col justify-between cursor-pointer space-y-4 shadow-md"
                       >
-                        <div className="relative w-full aspect-square rounded-2xl overflow-hidden bg-neutral-100 border border-neutral-200">
+                        <div className="relative w-full aspect-square rounded-2xl overflow-hidden bg-neutral-900 border border-neutral-800">
                           {flyer ? (
                             <img 
                               src={flyer} 
                               alt={evt.title || "Événement"} 
-                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
+                              className="w-full h-full object-cover" 
                             />
                           ) : (
-                            <div className="w-full h-full flex items-center justify-center text-[15px] font-semibold text-neutral-400">
+                            <div className="w-full h-full flex items-center justify-center text-[15px] font-semibold text-neutral-500">
                               TYKS
                             </div>
                           )}
-                          <div className="absolute top-3 right-3 bg-white/90 backdrop-blur-md border border-neutral-950 text-neutral-950 text-[13px] font-semibold px-3 py-1 rounded-full shadow-sm">
+                          <div className="absolute top-3 right-3 bg-neutral-950/90 backdrop-blur-md border border-white/20 text-white text-[13px] font-semibold px-3 py-1 rounded-full shadow-sm">
                             {priceFormatted}
                           </div>
                         </div>
 
                         <div className="space-y-2 flex-1">
-                          <p className="text-[15px] font-semibold line-clamp-1 text-neutral-950">
+                          <p className="text-[15px] font-semibold line-clamp-1 text-white">
                             {evt.title}
                           </p>
 
-                          <div className="space-y-1 text-[13px] text-neutral-600 font-medium">
+                          <div className="space-y-1 text-[13px] text-neutral-400 font-medium">
                             {evt.starts_at && (
                               <div className="flex items-center gap-1.5">
-                                <Calendar className="w-3.5 h-3.5 shrink-0 text-neutral-400" />
+                                <Calendar className="w-3.5 h-3.5 shrink-0 text-neutral-500" />
                                 {new Date(evt.starts_at).toLocaleDateString("fr-FR", { day: "numeric", month: "short", year: "numeric" })}
                               </div>
                             )}
                             {evt.location && (
                               <div className="flex items-center gap-1.5 truncate">
-                                <MapPin className="w-3.5 h-3.5 shrink-0 text-neutral-400" />
+                                <MapPin className="w-3.5 h-3.5 shrink-0 text-neutral-500" />
                                 <span className="truncate">{evt.location}</span>
                               </div>
                             )}
                             {orgName && (
-                              <div className="flex items-center gap-1.5 truncate text-neutral-800">
-                                <Building2 className="w-3.5 h-3.5 shrink-0 text-neutral-400" />
+                              <div className="flex items-center gap-1.5 truncate text-neutral-300">
+                                <Building2 className="w-3.5 h-3.5 shrink-0 text-neutral-500" />
                                 <span className="truncate">{orgName}</span>
                               </div>
                             )}
                           </div>
                         </div>
 
-                        <div className="pt-3 border-t border-neutral-200 flex items-center justify-between text-[13px] text-neutral-500 group-hover:text-neutral-950 font-semibold transition-colors">
+                        <div className="pt-3 border-t border-neutral-800 flex items-center justify-between text-[13px] text-neutral-400 group-hover:text-white font-semibold transition-colors">
                           <span>Voir la billetterie</span>
                           <ArrowUpRight className="w-4 h-4" />
                         </div>
