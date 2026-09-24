@@ -11,14 +11,29 @@ interface SearchModalProps {
   isPro?: boolean;
 }
 
+const RECENT_EVENTS_KEY = "tyks_recent_events";
+
 export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedQuery, setDebouncedQuery] = useState("");
   const [rawEvents, setRawEvents] = useState<any[]>([]);
   const [rawOrgs, setRawOrgs] = useState<any[]>([]);
+  const [recentEventIds, setRecentEventIds] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
+
+  // Charger l'historique récent du localStorage au montage
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem(RECENT_EVENTS_KEY);
+      if (stored) {
+        setRecentEventIds(JSON.parse(stored));
+      }
+    } catch (e) {
+      console.error("Erreur lecture localStorage :", e);
+    }
+  }, []);
 
   useEffect(() => {
     if (isOpen) {
@@ -77,6 +92,20 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
     }
   };
 
+  // Fonction pour enregistrer un événement vu récemment
+  const handleSelectEvent = (evt: any) => {
+    try {
+      const updatedIds = [evt.id, ...recentEventIds.filter(id => id !== evt.id)].slice(0, 5);
+      setRecentEventIds(updatedIds);
+      localStorage.setItem(RECENT_EVENTS_KEY, JSON.stringify(updatedIds));
+    } catch (e) {
+      console.error("Erreur écriture localStorage :", e);
+    }
+
+    onClose();
+    router.push(`/events/${evt.slug || evt.id}`);
+  };
+
   if (!isOpen) return null;
 
   const normalizeString = (str: string) => {
@@ -106,8 +135,19 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
     return normalizeString(org.name).includes(q);
   });
 
-  // Limité à maximum 5 événements affichés
-  const displayedEvents = (debouncedQuery.trim() === "" ? rawEvents : filteredEvents).slice(0, 5);
+  // Détermination des événements à afficher (Max 5)
+  let displayedEvents: any[] = [];
+  if (debouncedQuery.trim() === "") {
+    // Si rien n'est tapé : on affiche les récents dans l'ordre mémorisé
+    const recentMap = new Map(rawEvents.map(evt => [evt.id, evt]));
+    const matchedRecent = recentEventIds.map(id => recentMap.get(id)).filter(Boolean);
+    
+    // Compléter avec les premiers événements disponibles si pas assez d'historique
+    const remainingEvents = rawEvents.filter(evt => !recentEventIds.includes(evt.id));
+    displayedEvents = [...matchedRecent, ...remainingEvents].slice(0, 5);
+  } else {
+    displayedEvents = filteredEvents.slice(0, 5);
+  }
 
   return (
     <div className="fixed inset-0 z-50 bg-[#FFFFFF]/80 backdrop-blur-md flex flex-col items-center justify-center p-4 font-sans text-[#000000] animate-in fade-in duration-200 overflow-y-auto">
@@ -190,6 +230,11 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
               <div className="space-y-1">
                 {displayedEvents.length > 0 ? (
                   <div className="space-y-1">
+                    {debouncedQuery.trim() === "" && recentEventIds.length > 0 && (
+                      <div className="px-3 py-1 text-[11px] font-['Lucidity'] uppercase tracking-widest text-[#000000]/30">
+                        Récemment consultés
+                      </div>
+                    )}
                     {displayedEvents.map((evt) => {
                       const flyer = evt.image_url || evt.flyer || evt.poster || evt.cover_image;
                       const orgName = evt.organizations?.name;
@@ -197,10 +242,7 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
                       return (
                         <button
                           key={evt.id}
-                          onClick={() => {
-                            onClose();
-                            router.push(`/events/${evt.slug || evt.id}`);
-                          }}
+                          onClick={() => handleSelectEvent(evt)}
                           className="w-full p-2.5 hover:bg-[#000000]/5 rounded-2xl transition-all duration-200 flex items-center gap-3.5 cursor-pointer text-left group"
                         >
                           {/* Miniature carrée */}
