@@ -156,7 +156,8 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
               {/* SECTION ORGANISATEURS */}
               {filteredOrgs.length > 0 && (
                 <div className="space-y-1 mb-3">
-                  <div className="px-3 py-1.5 text-[13px] font-['Lucidity'] font-bold uppercase tracking-widest text-[#000000]/40">
+                  {/* Application directe de Lucidity pour les majuscules */}
+                  <div className="px-3 py-1.5 text-[13px] font-['Lucidity'] uppercase tracking-widest text-[#000000]/40">
                     ORGANISATEURS
                   </div>
                   {filteredOrgs.map((org) => {
@@ -178,7 +179,8 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
                           )}
                         </div>
                         <div className="truncate flex-1">
-                          <p className="text-[15px] font-['Grotesque'] font-semibold truncate text-[#000000]">{org.name}</p>
+                          {/* Titre en majuscules avec Lucidity */}
+                          <p className="text-[15px] font-['Lucidity'] uppercase truncate text-[#000000]">{org.name}</p>
                           <span className="text-[13px] font-['Grotesque'] text-[#000000]/50 font-medium">Organisateur</span>
                         </div>
                       </button>
@@ -221,7 +223,8 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
 
                           {/* Infos textuelles */}
                           <div className="flex-1 min-w-0">
-                            <p className="text-[15px] font-['Grotesque'] font-semibold truncate text-[#000000]">
+                            {/* Application de la police Lucidity pour les titres majuscules des événements */}
+                            <p className="text-[15px] font-['Lucidity'] uppercase truncate text-[#000000]">
                               {evt.title}
                             </p>
                             <div className="flex items-center gap-2 text-[13px] font-['Grotesque'] text-[#000000]/50 font-medium truncate mt-0.5">
