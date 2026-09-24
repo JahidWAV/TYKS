@@ -104,7 +104,7 @@ export default function Navbar({ isPro = false, isDarkMode = false }: NavbarProp
                 !isInitialized ? "opacity-0 pointer-events-none" : "opacity-100"
               }`}
             >
-              {user ? userName : "Se connecter / S'inscrire"}
+              {user ? userName : "Connexion / Inscription"}
             </button>
           </div>
 
