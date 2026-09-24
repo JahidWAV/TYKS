@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
+import Image from "next/image";
 import { supabaseBrowser } from "@/lib/supabase-browser";
 import { X, Loader2, ArrowRight, ArrowLeft } from "lucide-react";
 
@@ -11,6 +12,7 @@ interface CustomAuthModalProps {
 }
 
 export default function CustomAuthModal({ isOpen, onClose }: CustomAuthModalProps) {
+  const dialogRef = useRef<HTMLDialogElement>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -20,7 +22,20 @@ export default function CustomAuthModal({ isOpen, onClose }: CustomAuthModalProp
 
   const [step, setStep] = useState<'email' | 'signin' | 'signup'>('email');
 
-  if (!isOpen) return null;
+  useEffect(() => {
+    const dialogElement = dialogRef.current;
+    if (!dialogElement) return;
+
+    if (isOpen) {
+      if (!dialogElement.open) {
+        dialogElement.showModal();
+      }
+    } else {
+      if (dialogElement.open) {
+        dialogElement.close();
+      }
+    }
+  }, [isOpen]);
 
   const handleLoginWithGoogle = async () => {
     try {
@@ -125,8 +140,15 @@ export default function CustomAuthModal({ isOpen, onClose }: CustomAuthModalProp
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-neutral-950/60 backdrop-blur-md animate-in fade-in duration-200 font-grotesque uppercase text-neutral-950">
-      <div className="relative w-full max-w-md bg-white border border-neutral-950 p-8 shadow-2xl rounded-[2.5rem]">
+    <dialog
+      ref={dialogRef}
+      onCancel={(e) => {
+        e.preventDefault();
+        onClose();
+      }}
+      className="backdrop:bg-neutral-950/60 backdrop-blur-md bg-transparent p-0 m-auto max-w-md w-full outline-none font-sans text-neutral-950 open:animate-in open:fade-in duration-200"
+    >
+      <div className="relative w-full bg-white border border-neutral-950 p-8 shadow-2xl rounded-[2.5rem]">
         
         {/* Bouton de fermeture */}
         <button
@@ -136,21 +158,27 @@ export default function CustomAuthModal({ isOpen, onClose }: CustomAuthModalProp
           <X className="w-4 h-4" />
         </button>
 
-        {/* En-tête */}
-        <div className="text-center mb-6 space-y-2">
-          <div className="inline-flex h-9 w-9 border border-neutral-950 bg-neutral-950 text-white font-bold text-xs items-center justify-center mx-auto mb-2 rounded-2xl shadow-sm">
-            T
+        {/* En-tête avec le logo */}
+        <div className="text-center mb-6 space-y-3 flex flex-col items-center">
+          <div className="w-[120px] flex items-center justify-center my-1">
+            <Image 
+              src="/logo.svg" 
+              alt="TYKS" 
+              width={400} 
+              height={130} 
+              priority 
+              className="w-full h-auto object-contain" 
+            />
           </div>
-          <h2 className="text-base font-bold tracking-wider text-neutral-950">TYKS LIVE</h2>
-          <p className="text-[10px] tracking-wider text-neutral-500 font-bold normal-case">
-            {step === 'email' && "ENTREZ VOTRE E-MAIL POUR CONTINUER"}
-            {step === 'signin' && "BON RETOUR ! ENTREZ VOTRE MOT DE PASSE"}
-            {step === 'signup' && "PREMIÈRE VISITE ? CRÉEZ VOTRE MOT DE PASSE"}
+          <p className="text-[15px] text-neutral-600 font-medium">
+            {step === 'email' && "Entrez votre e-mail pour continuer"}
+            {step === 'signin' && "Bon retour ! Entrez votre mot de passe"}
+            {step === 'signup' && "Première visite ? Créez votre mot de passe"}
           </p>
         </div>
 
         {error && (
-          <div className="mb-4 p-3 border border-red-500/30 bg-red-50 text-red-600 text-[10px] tracking-wider text-center rounded-2xl font-bold">
+          <div className="mb-4 p-3 border border-red-500/30 bg-red-50 text-red-600 text-[15px] text-center rounded-2xl font-medium">
             {error}
           </div>
         )}
@@ -163,7 +191,7 @@ export default function CustomAuthModal({ isOpen, onClose }: CustomAuthModalProp
                 type="button"
                 onClick={handleLoginWithGoogle}
                 disabled={loading}
-                className="w-full h-12 flex items-center justify-center gap-3 px-4 border border-neutral-950 bg-white hover:bg-neutral-100 text-neutral-950 text-xs font-bold tracking-wider transition-all duration-300 disabled:opacity-50 cursor-pointer rounded-full shadow-sm"
+                className="w-full h-12 flex items-center justify-center gap-3 px-4 border border-neutral-950 bg-white hover:bg-neutral-100 text-neutral-950 text-[15px] font-medium transition-all duration-300 disabled:opacity-50 cursor-pointer rounded-full shadow-sm"
               >
                 <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24">
                   <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
@@ -171,19 +199,19 @@ export default function CustomAuthModal({ isOpen, onClose }: CustomAuthModalProp
                   <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" />
                   <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" />
                 </svg>
-                CONTINUER AVEC GOOGLE
+                Continuer avec Google
               </button>
 
               <button
                 type="button"
                 onClick={handleLoginWithApple}
                 disabled={loading}
-                className="w-full h-12 flex items-center justify-center gap-3 px-4 border border-neutral-950 bg-white hover:bg-neutral-100 text-neutral-950 text-xs font-bold tracking-wider transition-all duration-300 disabled:opacity-50 cursor-pointer rounded-full shadow-sm"
+                className="w-full h-12 flex items-center justify-center gap-3 px-4 border border-neutral-950 bg-white hover:bg-neutral-100 text-neutral-950 text-[15px] font-medium transition-all duration-300 disabled:opacity-50 cursor-pointer rounded-full shadow-sm"
               >
                 <svg className="w-4 h-4 fill-current shrink-0" viewBox="0 0 24 24">
                   <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 6.01c.65-.79 1.09-1.89.97-2.99-.96.04-2.13.64-2.82 1.43-.6.68-1.13 1.78-.99 2.85 1.08.08 2.19-.53 2.84-1.29z"/>
                 </svg>
-                CONTINUER AVEC APPLE
+                Continuer avec Apple
               </button>
             </div>
 
@@ -191,8 +219,8 @@ export default function CustomAuthModal({ isOpen, onClose }: CustomAuthModalProp
               <div className="absolute inset-0 flex items-center">
                 <div className="w-full border-t border-neutral-200" />
               </div>
-              <span className="relative px-3 text-[10px] tracking-wider bg-white text-neutral-400 font-bold">
-                OU PAR E-MAIL
+              <span className="relative px-3 text-[15px] bg-white text-neutral-400 font-medium">
+                ou par e-mail
               </span>
             </div>
           </>
@@ -203,60 +231,60 @@ export default function CustomAuthModal({ isOpen, onClose }: CustomAuthModalProp
           <form onSubmit={handleCheckEmail} className="space-y-4">
             <input
               type="email"
-              placeholder="NAME@EXAMPLE.COM"
+              placeholder="nom@exemple.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="w-full h-12 px-5 border border-neutral-950 bg-neutral-50 text-xs font-bold placeholder:text-neutral-400 focus:outline-none focus:bg-white text-neutral-950 rounded-full shadow-inner uppercase"
+              className="w-full h-12 px-5 border border-neutral-950 bg-neutral-50 text-[15px] font-medium placeholder:text-neutral-400 focus:outline-none focus:bg-white text-neutral-950 rounded-full shadow-inner"
             />
             <button
               type="submit"
               disabled={loading}
-              className="w-full h-12 flex items-center justify-center gap-2 px-4 border border-neutral-950 bg-neutral-950 hover:bg-neutral-800 text-white text-xs font-bold tracking-wider transition-all duration-300 disabled:opacity-50 cursor-pointer rounded-full shadow-md"
+              className="w-full h-12 flex items-center justify-center gap-2 px-4 border border-neutral-950 bg-neutral-950 hover:bg-neutral-800 text-white text-[15px] font-medium transition-all duration-300 disabled:opacity-50 cursor-pointer rounded-full shadow-md"
             >
               {loading ? (
                 <Loader2 className="w-4 h-4 animate-spin" />
               ) : (
                 <>
-                  <span>CONTINUER AVEC L&apos;E-MAIL</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
+                  <span>Continuer avec l&apos;e-mail</span>
+                  <ArrowRight className="w-4 h-4" />
                 </>
               )}
             </button>
           </form>
         ) : (
           <form onSubmit={handleSubmitAuth} className="space-y-4 animate-in fade-in slide-in-from-right-2 duration-200">
-            <div className="flex items-center justify-between px-5 py-3 border border-neutral-950 bg-neutral-50 text-xs rounded-full text-neutral-950">
-              <span className="font-bold truncate max-w-[220px] normal-case">{email}</span>
+            <div className="flex items-center justify-between px-5 py-3 border border-neutral-950 bg-neutral-50 text-[15px] rounded-full text-neutral-950">
+              <span className="font-medium truncate max-w-[200px]">{email}</span>
               <button
                 type="button"
                 onClick={() => { setStep('email'); setPassword(''); setConfirmPassword(''); setError(null); }}
-                className="inline-flex items-center gap-1 font-bold underline text-neutral-950 hover:opacity-70 cursor-pointer text-[10px]"
+                className="inline-flex items-center gap-1 font-medium underline text-neutral-950 hover:opacity-70 cursor-pointer text-[15px]"
               >
-                <ArrowLeft className="w-3 h-3" /> CHANGER
+                <ArrowLeft className="w-4 h-4" /> Changer
               </button>
             </div>
 
             <div className="space-y-3">
               <input
                 type="password"
-                placeholder={step === 'signin' ? "VOTRE MOT DE PASSE" : "CRÉER UN MOT DE PASSE"}
+                placeholder={step === 'signin' ? "Votre mot de passe" : "Créer un mot de passe"}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 autoFocus
-                className="w-full h-12 px-5 border border-neutral-950 bg-neutral-50 text-xs font-bold placeholder:text-neutral-400 focus:outline-none focus:bg-white text-neutral-950 rounded-full shadow-inner uppercase"
+                className="w-full h-12 px-5 border border-neutral-950 bg-neutral-50 text-[15px] font-medium placeholder:text-neutral-400 focus:outline-none focus:bg-white text-neutral-950 rounded-full shadow-inner"
               />
 
               {step === 'signup' && (
                 <div className="animate-in fade-in slide-in-from-top-2 duration-200">
                   <input
                     type="password"
-                    placeholder="CONFIRMER LE MOT DE PASSE"
+                    placeholder="Confirmer le mot de passe"
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     required
-                    className="w-full h-12 px-5 border border-neutral-950 bg-neutral-50 text-xs font-bold placeholder:text-neutral-400 focus:outline-none focus:bg-white text-neutral-950 rounded-full shadow-inner uppercase"
+                    className="w-full h-12 px-5 border border-neutral-950 bg-neutral-50 text-[15px] font-medium placeholder:text-neutral-400 focus:outline-none focus:bg-white text-neutral-950 rounded-full shadow-inner"
                   />
                 </div>
               )}
@@ -265,20 +293,20 @@ export default function CustomAuthModal({ isOpen, onClose }: CustomAuthModalProp
             <button
               type="submit"
               disabled={loading}
-              className="w-full h-12 flex items-center justify-center gap-2 px-4 border border-neutral-950 bg-neutral-950 hover:bg-neutral-800 text-white text-xs font-bold tracking-wider transition-all duration-300 disabled:opacity-50 cursor-pointer mt-2 rounded-full shadow-md"
+              className="w-full h-12 flex items-center justify-center gap-2 px-4 border border-neutral-950 bg-neutral-950 hover:bg-neutral-800 text-white text-[15px] font-medium transition-all duration-300 disabled:opacity-50 cursor-pointer mt-2 rounded-full shadow-md"
             >
               {loading ? (
                 <Loader2 className="w-4 h-4 animate-spin" />
               ) : (
                 <>
-                  <span>{step === 'signin' ? "SE CONNECTER" : "CRÉER MON COMPTE"}</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
+                  <span>{step === 'signin' ? "Se connecter" : "Créer mon compte"}</span>
+                  <ArrowRight className="w-4 h-4" />
                 </>
               )}
             </button>
           </form>
         )}
       </div>
-    </div>
+    </dialog>
   );
 }
